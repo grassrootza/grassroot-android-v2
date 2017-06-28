@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources>
+    <string name="app_name">Grassroot | MediaRecorder</string>
+    <string name="intro_message">
+        <![CDATA[
+        
+            Grassroot | Media Recorder test.
+
+        
+        ]]>
+    </string>
+</resources>
