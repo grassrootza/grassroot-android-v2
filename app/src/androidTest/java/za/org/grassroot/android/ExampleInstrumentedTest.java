@@ -1,4 +1,4 @@
-package za.org.grassroot.androidza.org.grassroot.android;
+package za.org.grassroot.android;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
@@ -21,6 +21,6 @@ public class ExampleInstrumentedTest {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getTargetContext();
 
-        assertEquals("za.org.grassroot.androidza.org.grassroot.android", appContext.getPackageName());
+        assertEquals("za.org.grassroot.android", appContext.getPackageName());
     }
 }

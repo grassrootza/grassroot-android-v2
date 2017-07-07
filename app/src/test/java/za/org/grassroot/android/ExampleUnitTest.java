@@ -1,4 +1,4 @@
-package za.org.grassroot.androidza.org.grassroot.android;
+package za.org.grassroot.android;
 
 import org.junit.Test;
 
