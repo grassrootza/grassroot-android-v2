@@ -35,4 +35,8 @@ abstract class Presenter {
         view.showAuthenticationRecoveryDialog().subscribe();
     }
 
+    void onNextButtonClick(){
+
+    }
+
 }

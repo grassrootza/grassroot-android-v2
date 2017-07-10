@@ -64,6 +64,12 @@ public class LoginPresenter extends Presenter {
         }
     }
 
+    @Override
+    public void onNextButtonClick() {
+        view.gotoActivity();
+
+    }
+
     private void validateUsernameAndRequestOtp(CharSequence charSequence) {
         // check if charsequence is valid & make a rest call
         view.requestOtpEntry();

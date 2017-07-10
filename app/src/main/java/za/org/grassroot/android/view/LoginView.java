@@ -12,4 +12,5 @@ public interface LoginView extends GrassrootView {
     Observable<CharSequence> otpEntered();
 
     void requestOtpEntry();
+    void gotoActivity();
 }
