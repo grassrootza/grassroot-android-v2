@@ -36,10 +36,10 @@
             android:text="New user" />
 
         <Button
+            android:id="@+id/login_next"
             android:layout_weight="0.5"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:id="@+id/nextBtn"
             android:text="Next" />
 
     </LinearLayout>

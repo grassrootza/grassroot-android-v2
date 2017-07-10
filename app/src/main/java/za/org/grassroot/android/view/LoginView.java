@@ -8,9 +8,10 @@ import io.reactivex.Observable;
 
 public interface LoginView extends GrassrootView {
 
-    Observable<CharSequence> usernameEntered();
+    Observable<CharSequence> usernameChanged();
+    Observable<CharSequence> usernameNext();
     Observable<CharSequence> otpEntered();
 
+    void toggleNextButton(boolean enabled);
     void requestOtpEntry();
-    void gotoActivity();
 }

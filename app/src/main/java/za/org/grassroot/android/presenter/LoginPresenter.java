@@ -1,10 +1,13 @@
 package za.org.grassroot.android.presenter;
 
+import android.util.Log;
+
 import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.functions.Consumer;
 import za.org.grassroot.android.model.exception.InvalidViewForPresenterException;
 import za.org.grassroot.android.model.exception.LifecycleOutOfSyncException;
+import za.org.grassroot.android.model.util.ValidationUtil;
 import za.org.grassroot.android.view.GrassrootView;
 import za.org.grassroot.android.view.LoginView;
 
@@ -14,8 +17,9 @@ import za.org.grassroot.android.view.LoginView;
 
 public class LoginPresenter extends Presenter {
 
-    private LoginView view;
+    private static final String TAG = LoginPresenter.class.getSimpleName();
 
+    private LoginView view;
     private String userName;
 
     @Override
@@ -31,16 +35,25 @@ public class LoginPresenter extends Presenter {
 
     @Override
     public void detach(GrassrootView view) {
-
+        this.view = null;
+        onViewDetached();
     }
 
     @Override
     protected void onViewAttached() {
         try {
-            subscriptions.add(view.usernameEntered().subscribe(new Consumer<CharSequence>() {
+            subscriptions.add(view.usernameChanged().subscribe(new Consumer<CharSequence>() {
                 @Override
                 public void accept(@NonNull CharSequence charSequence) throws Exception {
-                    validateUsernameAndRequestOtp(charSequence);
+                    Log.v(TAG, "Username text changed, now: " + charSequence);
+                    view.toggleNextButton(ValidationUtil.isPossibleNumber(charSequence));
+                }
+            }));
+
+            subscriptions.add(view.usernameNext().subscribe(new Consumer<CharSequence>() {
+                @Override
+                public void accept(@NonNull CharSequence charSequence) throws Exception {
+                    Log.d(TAG, "Username text entered! Returned as: " + charSequence);
                 }
             }));
 
@@ -62,12 +75,6 @@ public class LoginPresenter extends Presenter {
         } catch (NullPointerException e) {
             handleException(new LifecycleOutOfSyncException());
         }
-    }
-
-    @Override
-    public void onNextButtonClick() {
-        view.gotoActivity();
-
     }
 
     private void validateUsernameAndRequestOtp(CharSequence charSequence) {

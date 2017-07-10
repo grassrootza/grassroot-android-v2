@@ -1,19 +1,21 @@
 package za.org.grassroot.android.view;
 
-import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.reactivex.Observable;
-import za.org.grassroot.android.view.activity.MainActivity;
+import io.reactivex.annotations.NonNull;
+import io.reactivex.functions.Function;
 import za.org.grassroot.android.R;
 import za.org.grassroot.android.model.enums.AuthRecoveryResult;
 import za.org.grassroot.android.model.enums.ConnectionResult;
 import za.org.grassroot.android.presenter.LoginPresenter;
+import za.org.grassroot.android.rxbinding.RxTextView;
+import za.org.grassroot.android.rxbinding.RxTextViewUtils;
+import za.org.grassroot.android.rxbinding.RxView;
 import za.org.grassroot.android.view.activity.GrassrootActivity;
 
 /**
@@ -25,8 +27,7 @@ public class LoginActivity extends GrassrootActivity implements LoginView {
     private LoginPresenter loginPresenter;
 
     @BindView(R.id.login_username) EditText userNameEditText;
-    @BindView(R.id.nextBtn)
-    Button nextBtn;
+    @BindView(R.id.login_next) Button nextButton;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -37,13 +38,7 @@ public class LoginActivity extends GrassrootActivity implements LoginView {
             loginPresenter = new LoginPresenter();
         }
         loginPresenter.attach(this);
-
-        nextBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-               loginPresenter.onNextButtonClick();
-            }
-        });
+        nextButton.setEnabled(false);
     }
 
     @Override
@@ -53,9 +48,28 @@ public class LoginActivity extends GrassrootActivity implements LoginView {
     }
 
     @Override
-    public Observable<CharSequence> usernameEntered() {
-         //return RxTextView.editorActionEvents(userNameEditText);
-        return null;
+    public Observable<CharSequence> usernameChanged() {
+        return RxTextView.textChanges(userNameEditText);
+    }
+
+    @Override
+    public Observable<CharSequence> usernameNext() {
+        Observable<CharSequence> editTextNext = RxTextView
+                .editorActions(userNameEditText, RxTextViewUtils.imeNextDonePredicate())
+                .map(new Function<Integer, CharSequence>() {
+                    @Override
+                    public CharSequence apply(@NonNull Integer integer) throws Exception {
+                        return userNameEditText.getText();
+                    }
+                });
+        Observable<CharSequence> nextButtonClicked = RxView
+                .clicks(nextButton).map(new Function<Object, CharSequence>() {
+                    @Override
+                    public CharSequence apply(@NonNull Object o) throws Exception {
+                        return userNameEditText.getText();
+                    }
+                });
+        return Observable.merge(editTextNext, nextButtonClicked);
     }
 
     @Override
@@ -64,15 +78,12 @@ public class LoginActivity extends GrassrootActivity implements LoginView {
     }
 
     @Override
-    public void requestOtpEntry() {
-
+    public void toggleNextButton(boolean enabled) {
+        nextButton.setEnabled(enabled);
     }
 
     @Override
-    public void gotoActivity() {
-        Intent intent=new Intent(LoginActivity.this, MainActivity.class);
-        startActivity(intent);
-        finish();
+    public void requestOtpEntry() {
 
     }
 
