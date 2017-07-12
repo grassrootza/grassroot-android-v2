@@ -15,7 +15,5 @@ public interface PictureView {
     interface presenter{
         File onCameraBtnClick(Activity activity, String filePath);
         void onGalleryBtnClick(Activity activity);
-
-
     }
 }

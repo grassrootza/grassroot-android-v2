@@ -5,9 +5,13 @@ import android.util.Log;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.functions.Consumer;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 import za.org.grassroot.android.model.exception.InvalidViewForPresenterException;
 import za.org.grassroot.android.model.exception.LifecycleOutOfSyncException;
 import za.org.grassroot.android.model.util.ValidationUtil;
+import za.org.grassroot.android.services.rest.GrassrootRestClient;
 import za.org.grassroot.android.view.GrassrootView;
 import za.org.grassroot.android.view.LoginView;
 
@@ -77,9 +81,22 @@ public class LoginPresenter extends Presenter {
         }
     }
 
-    private void validateUsernameAndRequestOtp(CharSequence charSequence) {
+    // probably make this an observable that is itself on background, and then do call ... maybe
+    private void validateUsernameAndRequestOtp(String msisdn) {
         // check if charsequence is valid & make a rest call
-        view.requestOtpEntry();
+        GrassrootRestClient.getService()
+                .requestOtp(msisdn)
+                .enqueue(new Callback<String>() {
+                    @Override
+                    public void onResponse(Call<String> call, Response<String> response) {
+                        view.requestOtpEntry();
+                    }
+
+                    @Override
+                    public void onFailure(Call<String> call, Throwable t) {
+
+                    }
+                });
     }
 
     private void validateOtpEntry(CharSequence charSequence) {
