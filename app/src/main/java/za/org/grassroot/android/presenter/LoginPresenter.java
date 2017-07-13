@@ -2,15 +2,18 @@ package za.org.grassroot.android.presenter;
 
 import android.util.Log;
 
+import io.reactivex.SingleObserver;
+import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
+import io.reactivex.schedulers.Schedulers;
+import za.org.grassroot.android.model.exception.InvalidPhoneNumberException;
 import za.org.grassroot.android.model.exception.InvalidViewForPresenterException;
 import za.org.grassroot.android.model.exception.LifecycleOutOfSyncException;
-import za.org.grassroot.android.model.util.ValidationUtil;
+import za.org.grassroot.android.model.exception.NetworkUnavailableException;
+import za.org.grassroot.android.model.util.PhoneNumberUtil;
 import za.org.grassroot.android.services.rest.GrassrootRestClient;
 import za.org.grassroot.android.view.GrassrootView;
 import za.org.grassroot.android.view.LoginView;
@@ -29,11 +32,13 @@ public class LoginPresenter extends Presenter {
     @Override
     public void attach(GrassrootView passedView) {
         try {
+            super.attach(passedView);
             view = (LoginView) passedView;
             subscriptions = new CompositeDisposable();
             onViewAttached();
         } catch (ClassCastException e) {
             handleException(new InvalidViewForPresenterException());
+            super.detach(view);
         }
     }
 
@@ -41,6 +46,7 @@ public class LoginPresenter extends Presenter {
     public void detach(GrassrootView view) {
         this.view = null;
         onViewDetached();
+        super.detach(view);
     }
 
     @Override
@@ -49,15 +55,23 @@ public class LoginPresenter extends Presenter {
             subscriptions.add(view.usernameChanged().subscribe(new Consumer<CharSequence>() {
                 @Override
                 public void accept(@NonNull CharSequence charSequence) throws Exception {
-                    Log.v(TAG, "Username text changed, now: " + charSequence);
-                    view.toggleNextButton(ValidationUtil.isPossibleNumber(charSequence));
+                    view.toggleNextButton(PhoneNumberUtil.isPossibleNumber(charSequence));
                 }
             }));
 
             subscriptions.add(view.usernameNext().subscribe(new Consumer<CharSequence>() {
                 @Override
                 public void accept(@NonNull CharSequence charSequence) throws Exception {
-                    Log.d(TAG, "Username text entered! Returned as: " + charSequence);
+                    try {
+                        stashUsernameAndRequestOtp(PhoneNumberUtil.convertToMsisdn(charSequence));
+                    } catch (InvalidPhoneNumberException e) {
+                        Log.e(TAG, "error converting number to msisdn! : " + charSequence);
+                    } catch (NetworkUnavailableException e) {
+                        handleNetworkConnectionError(e);
+                    } catch (Exception e) {
+                        Log.e(TAG, "inside login presenter, is view null? " + (view == null));
+                        handleUnknownError(e);
+                    }
                 }
             }));
 
@@ -81,25 +95,34 @@ public class LoginPresenter extends Presenter {
         }
     }
 
-    // probably make this an observable that is itself on background, and then do call ... maybe
-    private void validateUsernameAndRequestOtp(String msisdn) {
-        // check if charsequence is valid & make a rest call
+    private void stashUsernameAndRequestOtp(String msisdn) {
+        userName = msisdn;
         GrassrootRestClient.getService()
                 .requestOtp(msisdn)
-                .enqueue(new Callback<String>() {
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new RestSubscriber<>(this, new SingleObserver<String>() {
                     @Override
-                    public void onResponse(Call<String> call, Response<String> response) {
-                        view.requestOtpEntry();
+                    public void onSubscribe(@NonNull Disposable d) {
+                        Log.e(TAG, "alright, we subscribed");
+                        view.showProgressBar();
                     }
 
                     @Override
-                    public void onFailure(Call<String> call, Throwable t) {
-
+                    public void onSuccess(@NonNull String s) {
+                        Log.e(TAG, "and it's come back okay");
+                        view.closeProgressBar();
                     }
-                });
+
+                    // note: network or auth errors will have been caught already
+                    @Override
+                    public void onError(@NonNull Throwable e) {
+                        view.closeProgressBar();
+                    }
+                }));
     }
 
-    private void validateOtpEntry(CharSequence charSequence) {
+    private void validateOtpEntry(CharSequence charSequence) throws NetworkUnavailableException {
         // call the authentication service and check if these are okay, and if so, store and continue
     }
 }

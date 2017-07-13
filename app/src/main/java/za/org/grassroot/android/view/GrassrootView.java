@@ -13,4 +13,8 @@ public interface GrassrootView {
     // emits true when connection restored, or false if
     Observable<ConnectionResult> showConnectionFailedDialog();
     Observable<AuthRecoveryResult> showAuthenticationRecoveryDialog();
+
+    void showProgressBar();
+    void closeProgressBar();
+    void showErrorToast(int errorTextRes);
 }

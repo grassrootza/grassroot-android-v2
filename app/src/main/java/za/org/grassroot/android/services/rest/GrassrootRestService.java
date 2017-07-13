@@ -1,6 +1,6 @@
 package za.org.grassroot.android.services.rest;
 
-import retrofit2.Call;
+import io.reactivex.Single;
 import retrofit2.http.GET;
 import retrofit2.http.Query;
 
@@ -11,6 +11,6 @@ import retrofit2.http.Query;
 public interface GrassrootRestService {
 
     @GET("/auth/otp/request")
-    Call<String> requestOtp(@Query("msisdn") String msisdn);
+    Single<String> requestOtp(@Query("msisdn") String msisdn);
 
 }

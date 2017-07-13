@@ -14,4 +14,6 @@ public interface LoginView extends GrassrootView {
 
     void toggleNextButton(boolean enabled);
     void requestOtpEntry();
+    void displayInvalidUsername();
+    void displayInvalidOtp();
 }

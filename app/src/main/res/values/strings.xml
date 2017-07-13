@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Grassroot-Android-v2</string>
+
+    <string name="error_unknown_generic">Sorry, an error occurred</string>
 </resources>
