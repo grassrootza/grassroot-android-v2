@@ -28,6 +28,8 @@ public class LoginPresenter extends Presenter {
 
     private static final String TAG = LoginPresenter.class.getSimpleName();
 
+    private static final int MIN_OTP_LENGTH = 5;
+
     private LoginView view;
     private String userName;
 
@@ -40,6 +42,14 @@ public class LoginPresenter extends Presenter {
         } catch (ClassCastException e) {
             handleGenericKnownException(new InvalidViewForPresenterException());
             super.detach(view);
+        }
+    }
+
+    public void attachOtp(GrassrootView passedView) {
+        if (passedView == view) {
+            onOtpAttached();
+        } else {
+            handleGenericKnownException(new InvalidViewForPresenterException());
         }
     }
 
@@ -56,6 +66,7 @@ public class LoginPresenter extends Presenter {
             subscriptions.add(view.usernameChanged().subscribe(new Consumer<CharSequence>() {
                 @Override
                 public void accept(@NonNull CharSequence charSequence) throws Exception {
+                    Log.v(TAG, "username changed to: " + charSequence);
                     view.toggleNextButton(PhoneNumberUtil.isPossibleNumber(charSequence));
                 }
             }));
@@ -75,16 +86,28 @@ public class LoginPresenter extends Presenter {
                     }
                 }
             }));
-
-            subscriptions.add(view.otpEntered().subscribe(new Consumer<CharSequence>() {
-                @Override
-                public void accept(@NonNull CharSequence charSequence) throws Exception {
-
-                }
-            }));
         } catch (NullPointerException e) {
+            e.printStackTrace();
             handleGenericKnownException(new LifecycleOutOfSyncException());
         }
+    }
+
+    private void onOtpAttached() {
+        subscriptions.add(view.otpChanged().subscribe(new Consumer<CharSequence>() {
+            @Override
+            public void accept(@NonNull CharSequence sequence) throws Exception {
+                if (sequence.length() >= MIN_OTP_LENGTH) {
+                    view.toggleNextButton(true);
+                }
+            }
+        }));
+        subscriptions.add(view.otpEntered().subscribe(new Consumer<CharSequence>() {
+            @Override
+            public void accept(@NonNull CharSequence charSequence) throws Exception {
+                Log.v(TAG, "otp entered! now lenght: ");
+                validateOtpEntry(charSequence);
+            }
+        }));
     }
 
     @Override
@@ -115,7 +138,6 @@ public class LoginPresenter extends Presenter {
                     // note: network or auth errors will have been caught already
                     @Override
                     public void onError(@NonNull Throwable e) {
-                        Log.e(TAG, "there was an error");
                         e.printStackTrace();
                         view.closeProgressBar();
                     }
@@ -124,5 +146,28 @@ public class LoginPresenter extends Presenter {
 
     private void validateOtpEntry(CharSequence charSequence) throws NetworkUnavailableException {
         // call the authentication service and check if these are okay, and if so, store and continue
+        GrassrootRestClient.getService()
+                .validateOtp(userName, "" + charSequence, "ANDROID")
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new RestSubscriber<RestResponse<String>>(this, new SingleObserver<RestResponse<String>>() {
+                    @Override
+                    public void onSubscribe(@NonNull Disposable d) {
+                        Log.v(TAG, "subscribed to auth request call");
+                        view.showProgressBar();;
+                    }
+
+                    @Override
+                    public void onSuccess(@NonNull RestResponse<String> stringRestResponse) {
+                        Log.v(TAG, "otp came back valid"); // todo: proper checks
+                        view.closeProgressBar();
+                    }
+
+                    @Override
+                    public void onError(@NonNull Throwable e) {
+                        e.printStackTrace();
+                        view.closeProgressBar();
+                    }
+                }));
     }
 }

@@ -10,7 +10,10 @@ public interface LoginView extends GrassrootView {
 
     Observable<CharSequence> usernameChanged();
     Observable<CharSequence> usernameNext();
+    Observable<CharSequence> otpChanged();
     Observable<CharSequence> otpEntered();
+
+    Observable<CharSequence> newUserClicked();
 
     void toggleNextButton(boolean enabled);
     void requestOtpEntry(String defaultValue);

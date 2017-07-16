@@ -1,27 +1,17 @@
 package za.org.grassroot.android.view;
 
-import android.app.ProgressDialog;
 import android.os.Bundle;
-import android.text.TextUtils;
-import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ProgressBar;
-import android.widget.TextView;
 
-import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.reactivex.Observable;
 import io.reactivex.annotations.NonNull;
-import io.reactivex.functions.Function;
+import io.reactivex.functions.Consumer;
 import za.org.grassroot.android.R;
 import za.org.grassroot.android.model.enums.AuthRecoveryResult;
 import za.org.grassroot.android.model.enums.ConnectionResult;
 import za.org.grassroot.android.presenter.LoginPresenter;
-import za.org.grassroot.android.rxbinding.RxTextView;
-import za.org.grassroot.android.rxbinding.RxTextViewUtils;
-import za.org.grassroot.android.rxbinding.RxView;
 import za.org.grassroot.android.view.activity.GrassrootActivity;
+import za.org.grassroot.android.view.fragment.SingleTextInputFragment;
 
 /**
  * Created by luke on 2017/07/07.
@@ -31,11 +21,10 @@ public class LoginActivity extends GrassrootActivity implements LoginView {
 
     private LoginPresenter loginPresenter;
 
-    @BindView(R.id.header_text) TextView headerText;
-    @BindView(R.id.login_username) EditText userInputEditText;
-    @BindView(R.id.login_next) Button nextButton;
+    private SingleTextInputFragment currentFragment; // just as a pointer
+    private SingleTextInputFragment usernameFragment;
+    private SingleTextInputFragment otpFragment;
 
-    @BindView(R.id.progressBar) ProgressBar progressBar;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -45,8 +34,34 @@ public class LoginActivity extends GrassrootActivity implements LoginView {
         if (loginPresenter == null) {
             loginPresenter = new LoginPresenter();
         }
-        loginPresenter.attach(this);
-        nextButton.setEnabled(false);
+
+        usernameFragment = SingleTextInputFragment.newInstance(R.string.login_welcome,
+                R.string.login_enter_msisdn,
+                R.string.login_button_register,
+                R.string.button_next);
+        usernameFragment.viewCreated().subscribe(new Consumer<CharSequence>() {
+            @Override
+            public void accept(@NonNull CharSequence sequence) throws Exception {
+                loginPresenter.attach(LoginActivity.this);
+                usernameFragment.toggleNextDoneButton(false);
+            }
+        });
+
+        otpFragment = SingleTextInputFragment.newInstance(R.string.login_enter_otp_banner,
+                R.string.login_enter_otp_string,
+                R.string.login_button_register,
+                R.string.button_login);
+        otpFragment.viewCreated().subscribe(new Consumer<CharSequence>() {
+            @Override
+            public void accept(@NonNull CharSequence sequence) throws Exception {
+                loginPresenter.attachOtp(LoginActivity.this);
+                otpFragment.toggleNextDoneButton(false);
+                otpFragment.toggleBackOtherButton(false);
+            }
+        });
+
+        currentFragment = usernameFragment;
+        setToUsernameEntry();
     }
 
     @Override
@@ -55,50 +70,50 @@ public class LoginActivity extends GrassrootActivity implements LoginView {
         loginPresenter.detach(this);
     }
 
-    @Override
-    public Observable<CharSequence> usernameChanged() {
-        return RxTextView.textChanges(userInputEditText);
-    }
-
-    @Override
-    public Observable<CharSequence> usernameNext() {
-        Observable<CharSequence> editTextNext = RxTextView
-                .editorActions(userInputEditText, RxTextViewUtils.imeNextDonePredicate())
-                .map(new Function<Integer, CharSequence>() {
-                    @Override
-                    public CharSequence apply(@NonNull Integer integer) throws Exception {
-                        return userInputEditText.getText();
-                    }
-                });
-        Observable<CharSequence> nextButtonClicked = RxView
-                .clicks(nextButton).map(new Function<Object, CharSequence>() {
-                    @Override
-                    public CharSequence apply(@NonNull Object o) throws Exception {
-                        return userInputEditText.getText();
-                    }
-                });
-        return Observable.merge(editTextNext, nextButtonClicked);
-    }
-
-    @Override
-    public Observable<CharSequence> otpEntered() {
-        return null;
-    }
-
-    @Override
-    public void toggleNextButton(boolean enabled) {
-        nextButton.setEnabled(enabled);
+    private void setToUsernameEntry() {
+        getSupportFragmentManager().beginTransaction()
+                .add(R.id.login_frag_holder, usernameFragment, "USERNAME")
+                .commit();
+        currentFragment = usernameFragment;
     }
 
     @Override
     public void requestOtpEntry(String defaultValue) {
-        headerText.setText(R.string.login_enter_otp_banner);
-        if (TextUtils.isEmpty(defaultValue)) {
-            userInputEditText.getText().clear();
-        } else {
-            userInputEditText.setText(defaultValue);
-        }
-        userInputEditText.setHint(R.string.login_enter_otp_string);
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.login_frag_holder, otpFragment, "OTP")
+                .addToBackStack("OTP")
+                .commit();
+        currentFragment = otpFragment;
+    }
+
+    @Override
+    public Observable<CharSequence> usernameChanged() {
+        return usernameFragment.textInputChanged();
+    }
+
+    @Override
+    public Observable<CharSequence> usernameNext() {
+        return usernameFragment.textInputNextDone();
+    }
+
+    @Override
+    public Observable<CharSequence> otpChanged() {
+        return otpFragment.textInputChanged();
+    }
+
+    @Override
+    public Observable<CharSequence> otpEntered() {
+        return otpFragment.textInputNextDone();
+    }
+
+    @Override
+    public Observable<CharSequence> newUserClicked() {
+        return otpFragment.textInputBackOther();
+    }
+
+    @Override
+    public void toggleNextButton(boolean enabled) {
+        currentFragment.toggleNextDoneButton(enabled);
     }
 
     @Override
@@ -123,15 +138,11 @@ public class LoginActivity extends GrassrootActivity implements LoginView {
 
     @Override
     public void showProgressBar() {
-        if (progressBar != null) {
-            progressBar.setVisibility(View.VISIBLE);
-        }
+        currentFragment.showProgressBar();
     }
 
     @Override
     public void closeProgressBar() {
-        if (progressBar != null) {
-            progressBar.setVisibility(View.GONE);
-        }
+        currentFragment.closeProgressBar();
     }
 }

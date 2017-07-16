@@ -14,4 +14,9 @@ public interface GrassrootRestService {
     @GET("/api/user/login/{msisdn}")
     Observable<RestResponse<String>> requestOtp(@Path("msisdn") String msisdn);
 
+    @GET("/api/auth/login")
+    Observable<RestResponse<String>> validateOtp(@Query("phoneNumber") String msisdn,
+                                                 @Query("otp") String otp,
+                                                 @Query("clientType") String clientType);
+
 }
