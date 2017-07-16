@@ -1,7 +1,8 @@
 package za.org.grassroot.android.services.rest;
 
-import io.reactivex.Single;
+import io.reactivex.Observable;
 import retrofit2.http.GET;
+import retrofit2.http.Path;
 import retrofit2.http.Query;
 
 /**
@@ -10,7 +11,7 @@ import retrofit2.http.Query;
 
 public interface GrassrootRestService {
 
-    @GET("/auth/otp/request")
-    Single<String> requestOtp(@Query("msisdn") String msisdn);
+    @GET("/api/user/login/{msisdn}")
+    Observable<RestResponse<String>> requestOtp(@Path("msisdn") String msisdn);
 
 }

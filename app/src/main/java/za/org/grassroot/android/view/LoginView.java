@@ -13,7 +13,7 @@ public interface LoginView extends GrassrootView {
     Observable<CharSequence> otpEntered();
 
     void toggleNextButton(boolean enabled);
-    void requestOtpEntry();
+    void requestOtpEntry(String defaultValue);
     void displayInvalidUsername();
     void displayInvalidOtp();
 }

@@ -5,16 +5,18 @@ import android.util.Log;
 import io.reactivex.SingleObserver;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.annotations.NonNull;
-import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
+import za.org.grassroot.android.R;
 import za.org.grassroot.android.model.exception.InvalidPhoneNumberException;
 import za.org.grassroot.android.model.exception.InvalidViewForPresenterException;
 import za.org.grassroot.android.model.exception.LifecycleOutOfSyncException;
 import za.org.grassroot.android.model.exception.NetworkUnavailableException;
 import za.org.grassroot.android.model.util.PhoneNumberUtil;
 import za.org.grassroot.android.services.rest.GrassrootRestClient;
+import za.org.grassroot.android.services.rest.RestResponse;
+import za.org.grassroot.android.services.rest.RestSubscriber;
 import za.org.grassroot.android.view.GrassrootView;
 import za.org.grassroot.android.view.LoginView;
 
@@ -34,10 +36,9 @@ public class LoginPresenter extends Presenter {
         try {
             super.attach(passedView);
             view = (LoginView) passedView;
-            subscriptions = new CompositeDisposable();
             onViewAttached();
         } catch (ClassCastException e) {
-            handleException(new InvalidViewForPresenterException());
+            handleGenericKnownException(new InvalidViewForPresenterException());
             super.detach(view);
         }
     }
@@ -45,8 +46,8 @@ public class LoginPresenter extends Presenter {
     @Override
     public void detach(GrassrootView view) {
         this.view = null;
-        onViewDetached();
         super.detach(view);
+        onViewDetached();
     }
 
     @Override
@@ -66,10 +67,10 @@ public class LoginPresenter extends Presenter {
                         stashUsernameAndRequestOtp(PhoneNumberUtil.convertToMsisdn(charSequence));
                     } catch (InvalidPhoneNumberException e) {
                         Log.e(TAG, "error converting number to msisdn! : " + charSequence);
+                        view.showErrorToast(R.string.error_phone_number);
                     } catch (NetworkUnavailableException e) {
                         handleNetworkConnectionError(e);
                     } catch (Exception e) {
-                        Log.e(TAG, "inside login presenter, is view null? " + (view == null));
                         handleUnknownError(e);
                     }
                 }
@@ -82,17 +83,13 @@ public class LoginPresenter extends Presenter {
                 }
             }));
         } catch (NullPointerException e) {
-            handleException(new LifecycleOutOfSyncException());
+            handleGenericKnownException(new LifecycleOutOfSyncException());
         }
     }
 
     @Override
     protected void onViewDetached() {
-        try {
-            subscriptions.dispose();
-        } catch (NullPointerException e) {
-            handleException(new LifecycleOutOfSyncException());
-        }
+        super.onViewDetached();
     }
 
     private void stashUsernameAndRequestOtp(String msisdn) {
@@ -101,22 +98,25 @@ public class LoginPresenter extends Presenter {
                 .requestOtp(msisdn)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new RestSubscriber<>(this, new SingleObserver<String>() {
+                .subscribe(new RestSubscriber<>(this, new SingleObserver<RestResponse<String>>() {
                     @Override
                     public void onSubscribe(@NonNull Disposable d) {
-                        Log.e(TAG, "alright, we subscribed");
+                        Log.v(TAG, "Subscribed to OTP request rest call");
                         view.showProgressBar();
                     }
 
                     @Override
-                    public void onSuccess(@NonNull String s) {
-                        Log.e(TAG, "and it's come back okay");
+                    public void onSuccess(@NonNull RestResponse<String> s) {
+                        Log.v(TAG, "and it's come back okay");
                         view.closeProgressBar();
+                        view.requestOtpEntry(s.getData());
                     }
 
                     // note: network or auth errors will have been caught already
                     @Override
                     public void onError(@NonNull Throwable e) {
+                        Log.e(TAG, "there was an error");
+                        e.printStackTrace();
                         view.closeProgressBar();
                     }
                 }));

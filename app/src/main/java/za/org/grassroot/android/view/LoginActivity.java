@@ -2,8 +2,12 @@ package za.org.grassroot.android.view;
 
 import android.app.ProgressDialog;
 import android.os.Bundle;
+import android.text.TextUtils;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -26,10 +30,12 @@ import za.org.grassroot.android.view.activity.GrassrootActivity;
 public class LoginActivity extends GrassrootActivity implements LoginView {
 
     private LoginPresenter loginPresenter;
-    private ProgressDialog progressDialog;
 
-    @BindView(R.id.login_username) EditText userNameEditText;
+    @BindView(R.id.header_text) TextView headerText;
+    @BindView(R.id.login_username) EditText userInputEditText;
     @BindView(R.id.login_next) Button nextButton;
+
+    @BindView(R.id.progressBar) ProgressBar progressBar;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -51,24 +57,24 @@ public class LoginActivity extends GrassrootActivity implements LoginView {
 
     @Override
     public Observable<CharSequence> usernameChanged() {
-        return RxTextView.textChanges(userNameEditText);
+        return RxTextView.textChanges(userInputEditText);
     }
 
     @Override
     public Observable<CharSequence> usernameNext() {
         Observable<CharSequence> editTextNext = RxTextView
-                .editorActions(userNameEditText, RxTextViewUtils.imeNextDonePredicate())
+                .editorActions(userInputEditText, RxTextViewUtils.imeNextDonePredicate())
                 .map(new Function<Integer, CharSequence>() {
                     @Override
                     public CharSequence apply(@NonNull Integer integer) throws Exception {
-                        return userNameEditText.getText();
+                        return userInputEditText.getText();
                     }
                 });
         Observable<CharSequence> nextButtonClicked = RxView
                 .clicks(nextButton).map(new Function<Object, CharSequence>() {
                     @Override
                     public CharSequence apply(@NonNull Object o) throws Exception {
-                        return userNameEditText.getText();
+                        return userInputEditText.getText();
                     }
                 });
         return Observable.merge(editTextNext, nextButtonClicked);
@@ -85,8 +91,14 @@ public class LoginActivity extends GrassrootActivity implements LoginView {
     }
 
     @Override
-    public void requestOtpEntry() {
-
+    public void requestOtpEntry(String defaultValue) {
+        headerText.setText(R.string.login_enter_otp_banner);
+        if (TextUtils.isEmpty(defaultValue)) {
+            userInputEditText.getText().clear();
+        } else {
+            userInputEditText.setText(defaultValue);
+        }
+        userInputEditText.setHint(R.string.login_enter_otp_string);
     }
 
     @Override
@@ -111,15 +123,15 @@ public class LoginActivity extends GrassrootActivity implements LoginView {
 
     @Override
     public void showProgressBar() {
-        if (progressDialog == null) {
-            progressDialog = new ProgressDialog(this);
-            progressDialog.setTitle("Hello this is a progress dialog");
+        if (progressBar != null) {
+            progressBar.setVisibility(View.VISIBLE);
         }
-        progressDialog.show();
     }
 
     @Override
     public void closeProgressBar() {
-        progressDialog.cancel();
+        if (progressBar != null) {
+            progressBar.setVisibility(View.GONE);
+        }
     }
 }

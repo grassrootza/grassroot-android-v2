@@ -2,4 +2,17 @@
     <string name="app_name">Grassroot-Android-v2</string>
 
     <string name="error_unknown_generic">Sorry, an error occurred</string>
+    <string name="error_server_unreachable">Sorry, the Grassroot server is unreachable at present</string>
+    <string name="error_phone_number">Error with phone number, please check and try again</string>
+
+    <string name="button_next">Next</string>
+
+    <!-- Login activity strings -->
+    <string name="login_welcome">Welcome to Grassroot</string>
+    <string name="login_enter_msisdn">Enter your phone number</string>
+    <string name="login_button_register">New user</string>
+
+    <string name="login_enter_otp_banner">Enter OTP</string>
+    <string name="login_enter_otp_string">Please enter the code SMSd to you</string>
+
 </resources>
