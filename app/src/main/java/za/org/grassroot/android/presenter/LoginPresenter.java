@@ -1,6 +1,7 @@
 package za.org.grassroot.android.presenter;
 
-import android.util.Log;
+import android.accounts.Account;
+import android.accounts.AccountManager;
 
 import io.reactivex.SingleObserver;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -8,17 +9,22 @@ import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
+import timber.log.Timber;
+import za.org.grassroot.android.ApplicationLoader;
 import za.org.grassroot.android.R;
+import za.org.grassroot.android.model.TokenResponse;
 import za.org.grassroot.android.model.exception.InvalidPhoneNumberException;
 import za.org.grassroot.android.model.exception.InvalidViewForPresenterException;
 import za.org.grassroot.android.model.exception.LifecycleOutOfSyncException;
 import za.org.grassroot.android.model.exception.NetworkUnavailableException;
 import za.org.grassroot.android.model.util.PhoneNumberUtil;
+import za.org.grassroot.android.services.auth.AuthConstants;
 import za.org.grassroot.android.services.rest.GrassrootRestClient;
 import za.org.grassroot.android.services.rest.RestResponse;
 import za.org.grassroot.android.services.rest.RestSubscriber;
 import za.org.grassroot.android.view.GrassrootView;
 import za.org.grassroot.android.view.LoginView;
+import za.org.grassroot.android.view.activity.MainActivity;
 
 /**
  * Created by luke on 2017/07/06.
@@ -26,12 +32,13 @@ import za.org.grassroot.android.view.LoginView;
 
 public class LoginPresenter extends Presenter {
 
-    private static final String TAG = LoginPresenter.class.getSimpleName();
-
+    public static final String PARAM_AUTHTOKEN_TYPE = "auth_token_type";
     private static final int MIN_OTP_LENGTH = 5;
 
     private LoginView view;
     private String userName;
+
+    private AccountManager accountManager;
 
     @Override
     public void attach(GrassrootView passedView) {
@@ -66,7 +73,7 @@ public class LoginPresenter extends Presenter {
             subscriptions.add(view.usernameChanged().subscribe(new Consumer<CharSequence>() {
                 @Override
                 public void accept(@NonNull CharSequence charSequence) throws Exception {
-                    Log.v(TAG, "username changed to: " + charSequence);
+                    Timber.v("username changed to: " + charSequence);
                     view.toggleNextButton(PhoneNumberUtil.isPossibleNumber(charSequence));
                 }
             }));
@@ -77,7 +84,7 @@ public class LoginPresenter extends Presenter {
                     try {
                         stashUsernameAndRequestOtp(PhoneNumberUtil.convertToMsisdn(charSequence));
                     } catch (InvalidPhoneNumberException e) {
-                        Log.e(TAG, "error converting number to msisdn! : " + charSequence);
+                        Timber.e("error converting number to msisdn! : " + charSequence);
                         view.showErrorToast(R.string.error_phone_number);
                     } catch (NetworkUnavailableException e) {
                         handleNetworkConnectionError(e);
@@ -104,7 +111,7 @@ public class LoginPresenter extends Presenter {
         subscriptions.add(view.otpEntered().subscribe(new Consumer<CharSequence>() {
             @Override
             public void accept(@NonNull CharSequence charSequence) throws Exception {
-                Log.v(TAG, "otp entered! now lenght: ");
+                Timber.v("otp entered! now lenght: ");
                 validateOtpEntry(charSequence);
             }
         }));
@@ -113,6 +120,7 @@ public class LoginPresenter extends Presenter {
     @Override
     protected void onViewDetached() {
         super.onViewDetached();
+        accountManager = null;
     }
 
     private void stashUsernameAndRequestOtp(String msisdn) {
@@ -124,13 +132,13 @@ public class LoginPresenter extends Presenter {
                 .subscribe(new RestSubscriber<>(this, new SingleObserver<RestResponse<String>>() {
                     @Override
                     public void onSubscribe(@NonNull Disposable d) {
-                        Log.v(TAG, "Subscribed to OTP request rest call");
+                        Timber.v("Subscribed to OTP request rest call");
                         view.showProgressBar();
                     }
 
                     @Override
                     public void onSuccess(@NonNull RestResponse<String> s) {
-                        Log.v(TAG, "and it's come back okay");
+                        Timber.v("and it's come back okay");
                         view.closeProgressBar();
                         view.requestOtpEntry(s.getData());
                     }
@@ -150,17 +158,17 @@ public class LoginPresenter extends Presenter {
                 .validateOtp(userName, "" + charSequence, "ANDROID")
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new RestSubscriber<RestResponse<String>>(this, new SingleObserver<RestResponse<String>>() {
+                .subscribe(new RestSubscriber<>(this, new SingleObserver<RestResponse<TokenResponse>>() {
                     @Override
                     public void onSubscribe(@NonNull Disposable d) {
-                        Log.v(TAG, "subscribed to auth request call");
+                        Timber.v("subscribed to auth request call");
                         view.showProgressBar();;
                     }
 
                     @Override
-                    public void onSuccess(@NonNull RestResponse<String> stringRestResponse) {
-                        Log.v(TAG, "otp came back valid"); // todo: proper checks
-                        view.closeProgressBar();
+                    public void onSuccess(@NonNull RestResponse<TokenResponse> tokenRestResponse) {
+                        Timber.v("otp came back valid"); // todo: proper checks
+                        storeSuccessfulAuthAndProceed(tokenRestResponse);
                     }
 
                     @Override
@@ -169,5 +177,26 @@ public class LoginPresenter extends Presenter {
                         view.closeProgressBar();
                     }
                 }));
+    }
+
+    private void storeSuccessfulAuthAndProceed(RestResponse<TokenResponse> tokenResponse) {
+        final Account account = getOrCreateAccount();
+        accountManager.setAuthToken(account, AuthConstants.AUTH_TOKENTYPE, tokenResponse.getData().getToken());
+        view.closeProgressBar();
+        view.showSuccessMsg("Okay it's done");
+        view.loginSuccessContinue(tokenResponse.getData().getToken(), MainActivity.class);
+    }
+
+    private AccountManager getAccountManager() {
+        if (accountManager == null) {
+            accountManager = AccountManager.get(ApplicationLoader.applicationContext);
+        }
+        return accountManager;
+    }
+
+    // todo : cycle through if have multiple accounts
+    private Account getOrCreateAccount() {
+        Account[] accounts = getAccountManager().getAccountsByType(AuthConstants.ACCOUNT_TYPE);
+        return accounts.length != 0 ? accounts[0] : new Account(AuthConstants.ACCOUNT_NAME, AuthConstants.ACCOUNT_TYPE);
     }
 }

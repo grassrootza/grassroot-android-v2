@@ -14,5 +14,7 @@ public interface GrassrootView extends ProgressBarContainer {
     Observable<ConnectionResult> showConnectionFailedDialog();
     Observable<AuthRecoveryResult> showAuthenticationRecoveryDialog();
 
+    void showSuccessMsg(int successMsg);
+    void showSuccessMsg(String message);
     void showErrorToast(int errorTextRes);
 }

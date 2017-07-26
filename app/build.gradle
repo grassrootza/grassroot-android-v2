@@ -27,6 +27,8 @@ dependencies {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
 
+    compile group: 'com.jakewharton.timber', name: 'timber', version: '4.5.1'
+
     compile group: 'io.reactivex.rxjava2', name: 'rxjava', version: '2.1.1'
     compile group: 'io.reactivex.rxjava2', name: 'rxandroid', version: '2.0.1'
 
@@ -37,7 +39,6 @@ dependencies {
     compile group: 'com.squareup.retrofit2', name: 'adapter-rxjava2', version: '2.3.0'
 
     compile group: 'com.squareup.okhttp3', name: 'logging-interceptor', version: '3.8.1'
-
 
     compile 'com.jakewharton:butterknife:8.6.0'
     compile 'com.android.support:appcompat-v7:25.3.1'

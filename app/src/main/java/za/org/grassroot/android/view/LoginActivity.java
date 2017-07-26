@@ -1,5 +1,8 @@
 package za.org.grassroot.android.view;
 
+import android.accounts.AccountManager;
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 
 import butterknife.ButterKnife;
@@ -10,6 +13,7 @@ import za.org.grassroot.android.R;
 import za.org.grassroot.android.model.enums.AuthRecoveryResult;
 import za.org.grassroot.android.model.enums.ConnectionResult;
 import za.org.grassroot.android.presenter.LoginPresenter;
+import za.org.grassroot.android.services.auth.AuthConstants;
 import za.org.grassroot.android.view.activity.GrassrootActivity;
 import za.org.grassroot.android.view.fragment.SingleTextInputFragment;
 
@@ -124,6 +128,18 @@ public class LoginActivity extends GrassrootActivity implements LoginView {
     @Override
     public void displayInvalidOtp() {
 
+    }
+
+    @Override
+    public void loginSuccessContinue(@NonNull String authToken, @NonNull Class<?> nextActivity) {
+        Intent intent = new Intent(this, nextActivity);
+        intent.putExtra(AccountManager.KEY_ACCOUNT_NAME, AuthConstants.ACCOUNT_NAME);
+        intent.putExtra(AccountManager.KEY_ACCOUNT_TYPE, AuthConstants.ACCOUNT_TYPE);
+        intent.putExtra(AccountManager.KEY_AUTHTOKEN, authToken);
+        setAccountAuthenticatorResult(intent.getExtras());
+        setResult(Activity.RESULT_OK, intent);
+        finish();
+        startActivity(intent);
     }
 
     @Override
