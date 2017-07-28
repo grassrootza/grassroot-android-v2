@@ -4,11 +4,13 @@ import android.accounts.AccountManager;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.TextUtils;
 
 import butterknife.ButterKnife;
 import io.reactivex.Observable;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.functions.Consumer;
+import za.org.grassroot.android.BuildConfig;
 import za.org.grassroot.android.R;
 import za.org.grassroot.android.model.enums.AuthRecoveryResult;
 import za.org.grassroot.android.model.enums.ConnectionResult;
@@ -29,6 +31,7 @@ public class LoginActivity extends GrassrootActivity implements LoginView {
     private SingleTextInputFragment usernameFragment;
     private SingleTextInputFragment otpFragment;
 
+    private String debugOtp;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -61,6 +64,9 @@ public class LoginActivity extends GrassrootActivity implements LoginView {
                 loginPresenter.attachOtp(LoginActivity.this);
                 otpFragment.toggleNextDoneButton(false);
                 otpFragment.toggleBackOtherButton(false);
+                if (!TextUtils.isEmpty(debugOtp)) {
+                    otpFragment.setInputDefault(debugOtp);
+                }
             }
         });
 
@@ -83,6 +89,9 @@ public class LoginActivity extends GrassrootActivity implements LoginView {
 
     @Override
     public void requestOtpEntry(String defaultValue) {
+        if ( BuildConfig.DEBUG) {
+            debugOtp = defaultValue;
+        }
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.login_frag_holder, otpFragment, "OTP")
                 .addToBackStack("OTP")

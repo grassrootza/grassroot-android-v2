@@ -16,6 +16,7 @@ public interface  SingleInputView extends ProgressBarContainer {
     void toggleNextDoneButton(boolean enabled);
     void toggleBackOtherButton(boolean enabled);
 
+    void setInputDefault(CharSequence defaultValue);
     void displayErrorMessage(int messageRes);
 
 }

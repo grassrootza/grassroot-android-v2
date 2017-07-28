@@ -24,6 +24,7 @@ public class AccountAuthenticator extends AbstractAccountAuthenticator {
     public AccountAuthenticator(Context context) {
         super(context);
         this.context = context;
+        Timber.i("created the account authenticator");
     }
 
     @Override
@@ -33,9 +34,10 @@ public class AccountAuthenticator extends AbstractAccountAuthenticator {
 
     @Override
     public Bundle addAccount(AccountAuthenticatorResponse accountAuthenticatorResponse, String accountType, String authTokenType, String[] features, Bundle options) throws NetworkErrorException {
+        Timber.d("adding an account! inside authenticator, of type: " + accountType);
         final Intent intent = new Intent(context, LoginActivity.class);
         intent.putExtra(AccountManager.KEY_ACCOUNT_TYPE, accountType);
-        intent.putExtra(LoginPresenter.PARAM_AUTHTOKEN_TYPE, authTokenType);
+        // intent.putExtra(LoginPresenter.PARAM_AUTHTOKEN_TYPE, authTokenType);
         intent.putExtra(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE, accountAuthenticatorResponse);
         final Bundle bundle = new Bundle();
         bundle.putParcelable(AccountManager.KEY_INTENT, intent);

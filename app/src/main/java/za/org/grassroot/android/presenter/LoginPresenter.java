@@ -11,8 +11,10 @@ import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 import za.org.grassroot.android.ApplicationLoader;
+import za.org.grassroot.android.BuildConfig;
 import za.org.grassroot.android.R;
 import za.org.grassroot.android.model.TokenResponse;
+import za.org.grassroot.android.model.UserProfile;
 import za.org.grassroot.android.model.exception.InvalidPhoneNumberException;
 import za.org.grassroot.android.model.exception.InvalidViewForPresenterException;
 import za.org.grassroot.android.model.exception.LifecycleOutOfSyncException;
@@ -22,6 +24,7 @@ import za.org.grassroot.android.services.auth.AuthConstants;
 import za.org.grassroot.android.services.rest.GrassrootRestClient;
 import za.org.grassroot.android.services.rest.RestResponse;
 import za.org.grassroot.android.services.rest.RestSubscriber;
+import za.org.grassroot.android.services.user.UserDetailsService;
 import za.org.grassroot.android.view.GrassrootView;
 import za.org.grassroot.android.view.LoginView;
 import za.org.grassroot.android.view.activity.MainActivity;
@@ -32,7 +35,7 @@ import za.org.grassroot.android.view.activity.MainActivity;
 
 public class LoginPresenter extends Presenter {
 
-    public static final String PARAM_AUTHTOKEN_TYPE = "auth_token_type";
+    // public static final String PARAM_AUTHTOKEN_TYPE = "auth_token_type";
     private static final int MIN_OTP_LENGTH = 5;
 
     private LoginView view;
@@ -138,9 +141,9 @@ public class LoginPresenter extends Presenter {
 
                     @Override
                     public void onSuccess(@NonNull RestResponse<String> s) {
-                        Timber.v("and it's come back okay");
+                        Timber.v("OTP successfully requested");
                         view.closeProgressBar();
-                        view.requestOtpEntry(s.getData());
+                        view.requestOtpEntry(BuildConfig.DEBUG ? s.getData() : null);
                     }
 
                     // note: network or auth errors will have been caught already
@@ -161,13 +164,13 @@ public class LoginPresenter extends Presenter {
                 .subscribe(new RestSubscriber<>(this, new SingleObserver<RestResponse<TokenResponse>>() {
                     @Override
                     public void onSubscribe(@NonNull Disposable d) {
-                        Timber.v("subscribed to auth request call");
+                        Timber.d("subscribed to auth request call");
                         view.showProgressBar();;
                     }
 
                     @Override
                     public void onSuccess(@NonNull RestResponse<TokenResponse> tokenRestResponse) {
-                        Timber.v("otp came back valid"); // todo: proper checks
+                        Timber.d("otp came back valid"); // todo: proper checks
                         storeSuccessfulAuthAndProceed(tokenRestResponse);
                     }
 
@@ -179,12 +182,24 @@ public class LoginPresenter extends Presenter {
                 }));
     }
 
-    private void storeSuccessfulAuthAndProceed(RestResponse<TokenResponse> tokenResponse) {
+    private void storeSuccessfulAuthAndProceed(RestResponse<TokenResponse> response) {
         final Account account = getOrCreateAccount();
-        accountManager.setAuthToken(account, AuthConstants.AUTH_TOKENTYPE, tokenResponse.getData().getToken());
-        view.closeProgressBar();
-        view.showSuccessMsg("Okay it's done");
-        view.loginSuccessContinue(tokenResponse.getData().getToken(), MainActivity.class);
+        final TokenResponse tokenAndUserDetails = response.getData();
+        accountManager.setAuthToken(account, AuthConstants.AUTH_TOKENTYPE, tokenAndUserDetails.getToken());
+        Timber.v("stored auth token, number accounts = " + getAccountManager().getAccountsByType(AuthConstants.ACCOUNT_TYPE).length);
+        UserDetailsService.storeUserDetails(tokenAndUserDetails.getUserUid(),
+                tokenAndUserDetails.getMsisdn(),
+                tokenAndUserDetails.getDisplayName(),
+                tokenAndUserDetails.getSystemRole())
+                .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Consumer<UserProfile>() {
+                    @Override
+                    public void accept(@NonNull UserProfile userProfile) throws Exception {
+                        view.closeProgressBar();
+                        // need to pass back the JWT to the activity to ensure storage (via setResult)
+                        view.loginSuccessContinue(tokenAndUserDetails.getToken(), MainActivity.class);
+                    }
+                });
     }
 
     private AccountManager getAccountManager() {
@@ -194,9 +209,16 @@ public class LoginPresenter extends Presenter {
         return accountManager;
     }
 
-    // todo : cycle through if have multiple accounts
+    // todo : move this to service and cycle through if have multiple accounts
     private Account getOrCreateAccount() {
         Account[] accounts = getAccountManager().getAccountsByType(AuthConstants.ACCOUNT_TYPE);
-        return accounts.length != 0 ? accounts[0] : new Account(AuthConstants.ACCOUNT_NAME, AuthConstants.ACCOUNT_TYPE);
+        Timber.d("number of accounts: " + accounts.length);
+        if (accounts.length != 0) {
+            return accounts[0];
+        } else {
+            Account account = new Account(AuthConstants.ACCOUNT_NAME, AuthConstants.ACCOUNT_TYPE);
+            getAccountManager().addAccountExplicitly(account, null, null);
+            return account;
+        }
     }
 }

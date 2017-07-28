@@ -5,6 +5,7 @@ import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
 
+import timber.log.Timber;
 import za.org.grassroot.android.ApplicationLoader;
 
 /**
@@ -14,6 +15,7 @@ public class GrassrootAuthService extends Service {
 
     @Override
     public IBinder onBind(Intent intent) {
+        Timber.d("bound the auth service");
         AccountAuthenticator authenticator = new AccountAuthenticator(this);
         return authenticator.getIBinder();
     }

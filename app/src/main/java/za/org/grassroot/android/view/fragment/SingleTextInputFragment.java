@@ -164,6 +164,11 @@ public class SingleTextInputFragment extends Fragment implements SingleInputView
     }
 
     @Override
+    public void setInputDefault(CharSequence defaultValue) {
+        inputText.setText(defaultValue);
+    }
+
+    @Override
     public void displayErrorMessage(int messageRes) {
         inputText.setError(getString(messageRes));
     }

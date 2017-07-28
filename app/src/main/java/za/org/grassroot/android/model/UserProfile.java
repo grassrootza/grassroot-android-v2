@@ -1,5 +1,7 @@
 package za.org.grassroot.android.model;
 
+import android.text.TextUtils;
+
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 
@@ -10,10 +12,38 @@ import io.realm.annotations.PrimaryKey;
 public class UserProfile extends RealmObject {
 
     @PrimaryKey
-    private String uid;
+    private int id = 0;
 
+    private String uid;
     private String msisdn;
     private String displayName;
+    private String systemRole;
+
+    public UserProfile() {
+        // for Android / Realm
+    }
+
+    public UserProfile(String uid, String msisdn, String displayName, String systemRole) {
+        this.uid = uid;
+        this.msisdn = msisdn;
+        this.displayName = displayName;
+        this.systemRole = systemRole;
+    }
+
+    public void updateFields(String uid, String msisdn, String name, String role) {
+        if (!TextUtils.isEmpty(uid)) {
+            this.uid = uid;
+        }
+        if (!TextUtils.isEmpty(msisdn)) {
+            this.msisdn = msisdn;
+        }
+        if (!TextUtils.isEmpty(name)) {
+            this.displayName = name;
+        }
+        if (!TextUtils.isEmpty(role)) {
+            this.systemRole = role;
+        }
+    }
 
     public String getUid() {
         return uid;
@@ -37,5 +67,23 @@ public class UserProfile extends RealmObject {
 
     public void setDisplayName(String displayName) {
         this.displayName = displayName;
+    }
+
+    public String getSystemRole() {
+        return systemRole;
+    }
+
+    public void setSystemRole(String systemRole) {
+        this.systemRole = systemRole;
+    }
+
+    @Override
+    public String toString() {
+        return "UserProfile{" +
+                "uid='" + uid + '\'' +
+                ", msisdn='" + msisdn + '\'' +
+                ", displayName='" + displayName + '\'' +
+                ", systemRole='" + systemRole + '\'' +
+                '}';
     }
 }
