@@ -29,10 +29,6 @@ import za.org.grassroot.android.view.GrassrootView;
 import za.org.grassroot.android.view.LoginView;
 import za.org.grassroot.android.view.activity.MainActivity;
 
-/**
- * Created by luke on 2017/07/06.
- */
-
 public class LoginPresenter extends Presenter {
 
     // public static final String PARAM_AUTHTOKEN_TYPE = "auth_token_type";

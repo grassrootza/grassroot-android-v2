@@ -33,6 +33,7 @@ public class PictureActivity extends AppCompatActivity implements PictureView.vi
     private static final int TAKE_PHOTO_FROM_CAMERA_CODE=0;
     private static final int TAKE_PHOTO_FROM_GALLERY_CODE=1;
     private PicturePresenter picturePresenter;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

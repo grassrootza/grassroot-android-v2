@@ -6,14 +6,9 @@ import android.util.Log;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-/**
- * Created by luke on 2017/07/10.
- */
-
 public final class PhoneNumberFormatter {
 
     private static final String TAG = PhoneNumberFormatter.class.getSimpleName();
-
     private static final Pattern nationalRegex = Pattern.compile("0[6,7,8]\\d{8}");
     private static final Pattern zaPhoneE164 = Pattern.compile("27[6,7,8]\\d{8}");
     private static final Pattern zaPhoneE164Plus = Pattern.compile("\\+27[6,7,8]\\d{8}"); // make the "+" more general

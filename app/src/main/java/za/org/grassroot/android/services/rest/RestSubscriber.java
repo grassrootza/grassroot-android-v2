@@ -10,8 +10,7 @@ import za.org.grassroot.android.model.exception.ServerUnreachableException;
 import za.org.grassroot.android.presenter.Presenter;
 
 /**
- * Created by luke on 2017/07/13.
- * todo: work out if can do this better via an operator
+ * TODO: work out if can do this better via an operator
  */
 public class RestSubscriber<T> implements Observer<T> {
 

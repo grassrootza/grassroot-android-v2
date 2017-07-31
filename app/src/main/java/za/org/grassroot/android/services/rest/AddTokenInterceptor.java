@@ -8,9 +8,6 @@ import okhttp3.Response;
 import timber.log.Timber;
 import za.org.grassroot.android.services.auth.GrassrootAuthUtils;
 
-/**
- * Created by luke on 2017/07/12.
- */
 public final class AddTokenInterceptor implements Interceptor {
     @Override
     public Response intercept(Chain chain) throws IOException {

@@ -11,10 +11,6 @@ import za.org.grassroot.android.model.exception.NetworkUnavailableException;
 import za.org.grassroot.android.model.exception.ServerUnreachableException;
 import za.org.grassroot.android.view.GrassrootView;
 
-/**
- * Created by luke on 2017/07/06.
- */
-
 public abstract class Presenter {
 
     private GrassrootView view;
@@ -70,5 +66,4 @@ public abstract class Presenter {
         e.printStackTrace();
         view.showErrorToast(R.string.error_unknown_generic);
     }
-
 }

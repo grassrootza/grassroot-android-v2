@@ -10,12 +10,7 @@ import retrofit2.http.Query;
 import za.org.grassroot.android.model.Group;
 import za.org.grassroot.android.model.TokenResponse;
 
-/**
- * Created by luke on 2017/07/12.
- */
-
 public interface GrassrootRestService {
-
 
     // Some authentication related methods
     @GET("/api/user/login/{msisdn}")
@@ -33,5 +28,4 @@ public interface GrassrootRestService {
     // Fetching groups
     @GET("/api/group/get/all")
     Single<List<Group>> fetchAllGroups(@Query("userUid") String userUid);
-
 }

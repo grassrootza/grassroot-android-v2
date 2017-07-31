@@ -7,10 +7,6 @@ import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 import za.org.grassroot.android.BuildConfig;
 
-/**
- * Created by luke on 2017/07/12.
- */
-
 public class GrassrootRestClient {
 
     private static Retrofit retrofit = null;

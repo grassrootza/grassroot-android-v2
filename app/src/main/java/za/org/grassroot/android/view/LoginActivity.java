@@ -19,10 +19,6 @@ import za.org.grassroot.android.services.auth.AuthConstants;
 import za.org.grassroot.android.view.activity.GrassrootActivity;
 import za.org.grassroot.android.view.fragment.SingleTextInputFragment;
 
-/**
- * Created by luke on 2017/07/07.
- */
-
 public class LoginActivity extends GrassrootActivity implements LoginView {
 
     private LoginPresenter loginPresenter;

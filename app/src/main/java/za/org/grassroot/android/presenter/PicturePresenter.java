@@ -10,10 +10,6 @@ import java.io.IOException;
 
 import za.org.grassroot.android.view.PictureView;
 
-/**
- * Created by Pial on 10-Jul-17.
- */
-
 public class PicturePresenter implements PictureView.presenter {
     private final PictureView.view view;
     private File newfile;

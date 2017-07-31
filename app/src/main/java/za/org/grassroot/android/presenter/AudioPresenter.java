@@ -7,10 +7,6 @@ import java.io.IOException;
 
 import za.org.grassroot.android.view.AudioView;
 
-/**
- * Created by Pial on 10-Jul-17.
- */
-
 public class AudioPresenter implements AudioView.presenter {
     private final AudioView.view view;
     private MediaRecorder mediaRecorder;
@@ -20,7 +16,6 @@ public class AudioPresenter implements AudioView.presenter {
     {
         this.view=view;
     }
-
 
     @Override
     public void onButtonStart(MediaRecorder mediaRecorder, String audioSavePathInDevice) {
@@ -73,7 +68,6 @@ public class AudioPresenter implements AudioView.presenter {
         }
     }
 
-
     private void MediaRecorderReady() {
         mediaRecorder=new MediaRecorder();
         mediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
@@ -81,8 +75,5 @@ public class AudioPresenter implements AudioView.presenter {
         mediaRecorder.setAudioEncoder(MediaRecorder.OutputFormat.AMR_NB);
         mediaRecorder.setOutputFile(audioSavePathInDevice);
     }
-
-
-
 
 }

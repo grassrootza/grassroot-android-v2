@@ -8,10 +8,6 @@ import java.util.regex.Pattern;
 
 import za.org.grassroot.android.model.exception.InvalidPhoneNumberException;
 
-/**
- * Created by luke on 2017/07/10.
- */
-
 public final class PhoneNumberUtil {
 
     private static final Pattern zaPhoneE164 = Pattern.compile("27[6,7,8]\\d{8}");
