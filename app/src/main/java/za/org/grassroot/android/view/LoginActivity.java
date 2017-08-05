@@ -4,7 +4,9 @@ import android.accounts.AccountManager;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.InputType;
 import android.text.TextUtils;
+import android.view.inputmethod.EditorInfo;
 
 import butterknife.ButterKnife;
 import io.reactivex.Observable;
@@ -36,6 +38,7 @@ public class LoginActivity extends GrassrootActivity implements LoginView {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_login);
         ButterKnife.bind(this);
         if (loginPresenter == null) {
@@ -51,6 +54,9 @@ public class LoginActivity extends GrassrootActivity implements LoginView {
             public void accept(@NonNull CharSequence sequence) throws Exception {
                 loginPresenter.attach(LoginActivity.this);
                 usernameFragment.toggleNextDoneButton(false);
+                usernameFragment.setInputType(InputType.TYPE_CLASS_PHONE);
+                usernameFragment.setImeOptions(EditorInfo.IME_ACTION_NEXT);
+                usernameFragment.focusOnInput();
             }
         });
 
@@ -67,6 +73,9 @@ public class LoginActivity extends GrassrootActivity implements LoginView {
                 if (!TextUtils.isEmpty(debugOtp)) {
                     otpFragment.setInputDefault(debugOtp);
                 }
+                usernameFragment.setInputType(InputType.TYPE_CLASS_NUMBER);
+                usernameFragment.setImeOptions(EditorInfo.IME_ACTION_DONE);
+                usernameFragment.focusOnInput();
             }
         });
 

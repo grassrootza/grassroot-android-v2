@@ -58,6 +58,7 @@ public abstract class Presenter {
         Log.e("SERVER", e.toString());
         view.closeProgressBar();
         view.showErrorToast(R.string.error_server_unreachable);
+        view.closeKeyboard();
     }
 
     // these two should only be called internally, to enforce design

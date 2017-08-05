@@ -18,7 +18,7 @@ public final class AddTokenInterceptor implements Interceptor {
         Request.Builder requestBuilder = original.newBuilder();
         final String token = GrassrootAuthUtils.getToken();
         if (token != null) {
-            Timber.d("Adding header: " + token);
+            Timber.v("Adding header: " + token);
             requestBuilder.addHeader("Authorization", "Bearer " + token);
         }
         requestBuilder.addHeader("Accept", "application/json");

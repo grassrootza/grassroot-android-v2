@@ -8,4 +8,53 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <!-- Theme for no title bar -->
+    <style name="Theme.AppCompat.FullScreen" parent="AppTheme">
+        <item name="windowNoTitle">true</item>
+        <item name="windowActionBar">false</item>
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:windowContentOverlay">@null</item>
+    </style>
+
+    <!-- For headers on single inputs, etc -->
+    <style name="LargeHeader">
+        <item name="android:textSize">@dimen/txt_header_1</item>
+        <item name="android:textColor">@color/colorPrimary</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="LargeBodyText">
+        <item name="android:textSize">@dimen/txt_body_large</item>
+        <item name="android:textColor">@android:color/primary_text_light</item>
+    </style>
+
+    <!-- Styling text input -->
+    <style name="SingleEditTextInput">
+        <item name="colorControlNormal">@color/colorPrimary</item>
+    </style>
+
+    <style name="OneLineLargeTextInput" parent="SingleEditTextInput">
+        <item name="android:padding">@dimen/padding_std_medium</item>
+        <item name="android:layout_marginTop">@dimen/margin_std_large</item>
+        <item name="android:layout_marginBottom">@dimen/margin_std_medium</item>
+        <item name="android:singleLine">true</item>
+        <item name="android:textColor">@android:color/primary_text_light</item>
+    </style>
+
+    <!-- Styling buttons -->
+    <style name="DefaultActionButton">
+        <item name="android:background">@drawable/btn_primary_default</item>
+        <item name="android:layout_marginLeft">@dimen/margin_std_small</item>
+        <item name="android:layout_marginRight">@dimen/margin_std_small</item>
+    </style>
+
+    <!-- Progress bar -->
+    <style name="ProgressBarMedium" parent="@android:style/Widget.ProgressBar">
+        <item name="android:indeterminate">true</item>
+        <item name="android:indeterminateDrawable">@drawable/progress_bar_medium</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:gravity">center</item>
+    </style>
+
 </resources>

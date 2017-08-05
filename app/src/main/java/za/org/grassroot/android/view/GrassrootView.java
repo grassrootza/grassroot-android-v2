@@ -17,4 +17,6 @@ public interface GrassrootView extends ProgressBarContainer {
     void showSuccessMsg(int successMsg);
     void showSuccessMsg(String message);
     void showErrorToast(int errorTextRes);
+
+    void closeKeyboard();
 }

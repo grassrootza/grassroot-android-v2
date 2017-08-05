@@ -19,4 +19,9 @@ public interface  SingleInputView extends ProgressBarContainer {
     void setInputDefault(CharSequence defaultValue);
     void displayErrorMessage(int messageRes);
 
+    void setInputType(int type);
+    void setImeOptions(int imeOptions);
+
+    void focusOnInput();
+
 }

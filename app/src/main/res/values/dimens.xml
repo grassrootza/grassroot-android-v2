@@ -1,6 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <dimen name="large_margin_top">24dp</dimen>
+    <!-- margins -->
+    <dimen name="margin_std_xlarge">24dp</dimen>
+    <dimen name="margin_std_large">16dp</dimen>
+    <dimen name="margin_std_medium">8dp</dimen>
+    <dimen name="margin_std_small">4dp</dimen>
+
+    <!-- padding -->
+    <dimen name="padding_std_large">16dp</dimen>
+    <dimen name="padding_std_medium">8dp</dimen>
+
+    <!-- text -->
+    <dimen name="txt_header_1">24sp</dimen>
+    <dimen name="txt_body_large">15sp</dimen>
+
+    <!-- progress bar -->
+    <dimen name="prog_bar_mdm_size">84dip</dimen>
 
 </resources>

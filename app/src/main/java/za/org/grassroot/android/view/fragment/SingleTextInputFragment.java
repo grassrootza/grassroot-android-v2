@@ -39,11 +39,12 @@ public class SingleTextInputFragment extends Fragment implements SingleInputView
     private static final int ACTION_FRAGMENT_VIEW_CREATED = 3;
 
     private int headerTextRes;
-    private int inputHintRes;
+    private int explanTextRes;
     private int backBtnRes;
     private int nextBtnRes;
 
     @BindView(R.id.header_text) TextView header;
+    @BindView(R.id.explanation_text) TextView explanation;
     @BindView(R.id.text_input_field) EditText inputText;
     @BindView(R.id.button_back) Button backButton;
     @BindView(R.id.button_next) Button nextButton;
@@ -56,12 +57,12 @@ public class SingleTextInputFragment extends Fragment implements SingleInputView
         // Required empty public constructor
     }
 
-    public static SingleTextInputFragment newInstance(int headerTextRes, int inputHintRes,
+    public static SingleTextInputFragment newInstance(int headerTextRes, int explanTextRes,
                                                       int backButtonRes, int nextButtonRes) {
         SingleTextInputFragment fragment = new SingleTextInputFragment();
         Bundle args = new Bundle();
         args.putInt(HEADER_TEXT_RES, headerTextRes);
-        args.putInt(INPUT_HINT_RES, inputHintRes);
+        args.putInt(INPUT_HINT_RES, explanTextRes);
         args.putInt(BACK_BUTTON_RES, backButtonRes);
         args.putInt(NEXT_BUTTON_RES, nextButtonRes);
         fragment.setArguments(args);
@@ -74,7 +75,7 @@ public class SingleTextInputFragment extends Fragment implements SingleInputView
         if (getArguments() != null) {
             Bundle args = getArguments();
             headerTextRes = args.getInt(HEADER_TEXT_RES);
-            inputHintRes = args.getInt(INPUT_HINT_RES);
+            explanTextRes = args.getInt(INPUT_HINT_RES);
             backBtnRes = args.getInt(BACK_BUTTON_RES);
             nextBtnRes = args.getInt(NEXT_BUTTON_RES);
         }
@@ -87,7 +88,7 @@ public class SingleTextInputFragment extends Fragment implements SingleInputView
         View v = inflater.inflate(R.layout.fragment_single_text_input, container, false);
         unbinder = ButterKnife.bind(this, v);
         header.setText(headerTextRes);
-        inputText.setHint(inputHintRes);
+        explanation.setText(explanTextRes);
         backButton.setText(backBtnRes);
         nextButton.setText(nextBtnRes);
         lifecyclePublisher.onNext(ACTION_FRAGMENT_VIEW_CREATED);
@@ -174,6 +175,27 @@ public class SingleTextInputFragment extends Fragment implements SingleInputView
     }
 
     @Override
+    public void setInputType(int type) {
+        if (inputText != null) {
+            inputText.setInputType(type);
+        }
+    }
+
+    @Override
+    public void setImeOptions(int imeOptions) {
+        if (inputText != null) {
+            inputText.setImeOptions(imeOptions);
+        }
+    }
+
+    @Override
+    public void focusOnInput() {
+        if (inputText != null) {
+            inputText.requestFocus();
+        }
+    }
+
+    @Override
     public void showProgressBar() {
         ViewUtil.safeToggleProgressBar(progressBar, true);
     }
@@ -182,4 +204,6 @@ public class SingleTextInputFragment extends Fragment implements SingleInputView
     public void closeProgressBar() {
         ViewUtil.safeToggleProgressBar(progressBar, false);
     }
+
+
 }

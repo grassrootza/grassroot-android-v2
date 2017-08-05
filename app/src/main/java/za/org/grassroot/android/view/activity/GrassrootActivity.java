@@ -2,8 +2,11 @@ package za.org.grassroot.android.view.activity;
 
 import android.accounts.AccountAuthenticatorResponse;
 import android.accounts.AccountManager;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
 
 import io.reactivex.Observable;
@@ -81,6 +84,15 @@ public abstract class GrassrootActivity extends AppCompatActivity implements Gra
             authResponse = null;
         }
         super.finish();
+    }
+
+    @Override
+    public void closeKeyboard() {
+        View view = this.getCurrentFocus();
+        if (view != null) {
+            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+        }
     }
 
 }

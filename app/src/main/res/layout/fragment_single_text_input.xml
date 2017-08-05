@@ -3,33 +3,53 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:paddingLeft="@dimen/padding_std_large"
+    android:paddingRight="@dimen/padding_std_large"
+    android:gravity="center_vertical"
+    android:background="@android:color/white"
+    android:layout_centerInParent="true"
     tools:context="za.org.grassroot.android.view.fragment.SingleTextInputFragment">
 
     <TextView
         android:id="@+id/header_text"
+        style="@style/LargeHeader"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:text="@string/login_welcome" />
+        tools:text="@string/login_welcome" />
+
+    <TextView
+        android:id="@+id/explanation_text"
+        style="@style/LargeBodyText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/margin_std_medium"
+        android:layout_marginLeft="@dimen/margin_std_large"
+        android:layout_marginRight="@dimen/margin_std_large"
+        android:paddingLeft="@dimen/padding_std_medium"
+        android:paddingRight="@dimen/padding_std_medium"
+        tools:text="This is an explanation of what people should enter" />
 
     <EditText
         android:id="@+id/text_input_field"
+        style="@style/OneLineLargeTextInput"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="24dp"
-        android:layout_marginRight="24dp"
-        android:inputType="number"
+        android:layout_marginLeft="@dimen/margin_std_large"
+        android:layout_marginRight="@dimen/margin_std_large"
+        android:imeOptions="actionDone"
         android:hint="@string/login_enter_msisdn"/>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="24dp"
-        android:layout_marginRight="24dp"
+        android:layout_marginLeft="@dimen/margin_std_large"
+        android:layout_marginRight="@dimen/margin_std_large"
         android:orientation="horizontal">
 
         <Button
             android:id="@+id/button_back"
+            style="@style/DefaultActionButton"
             android:layout_weight="0.5"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -37,6 +57,7 @@
 
         <Button
             android:id="@+id/button_next"
+            style="@style/DefaultActionButton"
             android:layout_weight="0.5"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -46,11 +67,12 @@
 
     <ProgressBar
         android:id="@+id/progressBar"
+        style="@style/ProgressBarMedium"
         android:visibility="gone"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:layout_marginTop="@dimen/large_margin_top"
+        android:layout_marginTop="@dimen/margin_std_xlarge"
         />
 
 </LinearLayout>
