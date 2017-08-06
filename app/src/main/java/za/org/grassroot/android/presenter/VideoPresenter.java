@@ -11,10 +11,6 @@ import java.io.IOException;
 
 import za.org.grassroot.android.view.VideoActivityView;
 
-/**
- * Created by Pial on 10-Jul-17.
- */
-
 public class VideoPresenter implements VideoActivityView.presenter {
     private final VideoActivityView.view view;
     private File newfile;
@@ -41,6 +37,4 @@ public class VideoPresenter implements VideoActivityView.presenter {
         cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, outputFileUri);
         activity.startActivityForResult(cameraIntent, 0);
     }
-
-
 }

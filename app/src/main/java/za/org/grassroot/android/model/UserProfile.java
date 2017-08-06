@@ -6,7 +6,6 @@ import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 
 /**
- * Created by luke on 2017/07/06.
  * Class for storing details and preferences of current user
  */
 public class UserProfile extends RealmObject {

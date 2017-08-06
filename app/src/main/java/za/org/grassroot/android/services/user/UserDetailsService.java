@@ -9,8 +9,7 @@ import timber.log.Timber;
 import za.org.grassroot.android.model.UserProfile;
 
 /**
- * Created by luke on 2017/07/28.
- * todo : insert into dependency injection instead of nasty static methods
+ * TODO: insert into dependency injection instead of nasty static methods
  */
 public class UserDetailsService {
 
@@ -45,5 +44,4 @@ public class UserDetailsService {
         realm.close();
         return uid;
     }
-
 }

@@ -14,9 +14,6 @@ import timber.log.Timber;
 import za.org.grassroot.android.presenter.LoginPresenter;
 import za.org.grassroot.android.view.LoginActivity;
 
-/**
- * Created by luke on 2017/07/26.
- */
 public class AccountAuthenticator extends AbstractAccountAuthenticator {
 
     private final Context context;

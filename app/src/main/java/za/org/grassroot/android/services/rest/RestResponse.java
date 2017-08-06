@@ -2,9 +2,6 @@ package za.org.grassroot.android.services.rest;
 
 import com.google.gson.annotations.SerializedName;
 
-/**
- * Created by luke on 2017/07/16.
- */
 public class RestResponse<T> {
 
     protected String status;

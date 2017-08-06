@@ -14,10 +14,6 @@ import za.org.grassroot.android.model.enums.AuthRecoveryResult;
 import za.org.grassroot.android.model.enums.ConnectionResult;
 import za.org.grassroot.android.view.GrassrootView;
 
-/**
- * Created by luke on 2017/07/07.
- */
-
 public abstract class GrassrootActivity extends AppCompatActivity implements GrassrootView {
 
     private AccountAuthenticatorResponse authResponse = null;

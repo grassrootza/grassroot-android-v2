@@ -2,10 +2,6 @@ package za.org.grassroot.android.presenter;
 
 import za.org.grassroot.android.view.MainView;
 
-/**
- * Created by Pial on 09-Jul-17.
- */
-
 public class MainPresenter implements MainView.presenter {
     private final MainView.view view;
     public MainPresenter(MainView.view view)

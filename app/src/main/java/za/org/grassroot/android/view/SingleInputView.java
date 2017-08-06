@@ -2,10 +2,6 @@ package za.org.grassroot.android.view;
 
 import io.reactivex.Observable;
 
-/**
- * Created by luke on 2017/07/16.
- */
-
 public interface  SingleInputView extends ProgressBarContainer {
 
     Observable<CharSequence> viewCreated();
@@ -15,7 +11,6 @@ public interface  SingleInputView extends ProgressBarContainer {
 
     void toggleNextDoneButton(boolean enabled);
     void toggleBackOtherButton(boolean enabled);
-
     void setInputDefault(CharSequence defaultValue);
     void displayErrorMessage(int messageRes);
 

@@ -31,7 +31,6 @@ import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 
 public class MainActivity extends AppCompatActivity implements MainView.view{
 
-
     public static final int RequestPermissionCode = 1;
     private MainPresenter mainPresenter;
     private Button videoBtn,audioBtn,pictureBtn;

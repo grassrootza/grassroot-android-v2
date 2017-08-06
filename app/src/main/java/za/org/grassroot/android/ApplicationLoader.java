@@ -8,10 +8,6 @@ import io.realm.RealmConfiguration;
 import io.realm.exceptions.RealmMigrationNeededException;
 import timber.log.Timber;
 
-/**
- * Created by luke on 2017/07/26.
- */
-
 public class ApplicationLoader extends Application {
 
     public static volatile Context applicationContext;
