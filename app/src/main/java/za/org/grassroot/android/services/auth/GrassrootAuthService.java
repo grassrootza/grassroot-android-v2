@@ -11,7 +11,7 @@ public class GrassrootAuthService extends Service {
     @Override
     public IBinder onBind(Intent intent) {
         Timber.d("bound the auth service");
-        AccountAuthenticator authenticator = new AccountAuthenticator(this);
+        AccountAuthenticator authenticator = new AccountAuthenticator(getApplication());
         return authenticator.getIBinder();
     }
 }

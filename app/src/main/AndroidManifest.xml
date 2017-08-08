@@ -14,7 +14,7 @@
     <uses-permission android:name="android.permission.READ_SYNC_STATS" />
 
     <application
-        android:name=".ApplicationLoader"
+        android:name=".GrassrootApplication"
         android:allowBackup="true"
         android:icon="@mipmap/app_icon"
         android:label="@string/app_name"
@@ -27,43 +27,47 @@
             android:exported="false"
             android:syncable="true" />
 
-        <activity
-            android:name=".view.LoginActivity"
-            android:label="Login"
-            android:theme="@style/Theme.AppCompat.FullScreen">
+        <activity android:name=".view.activity.MainActivity"
+            android:label="@string/title_main_activity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".view.activity.MainActivity" />
+        <activity
+            android:name=".view.LoginActivity"
+            android:label="@string/title_login_activity"
+            android:theme="@style/Theme.AppCompat.FullScreen">
+        </activity>
+
         <activity android:name=".view.activity.VideoActivity" />
         <activity android:name=".view.activity.PictureActivity" />
         <activity android:name=".view.activity.AudioActivity" />
 
-        <service android:name=".services.auth.GrassrootAuthService">
+        <service
+            android:name=".services.auth.GrassrootAuthService"
+            android:exported="false">
             <intent-filter>
                 <action android:name="android.accounts.AccountAuthenticator" />
             </intent-filter>
-
             <meta-data
                 android:name="android.accounts.AccountAuthenticator"
                 android:resource="@xml/authenticator" />
         </service>
+
         <service
             android:name=".view.SyncService"
-            android:exported="true">
+            android:exported="true"
+            android:process=":sync">
             <intent-filter>
                 <action android:name="android.content.SyncAdapter" />
             </intent-filter>
-
             <meta-data
                 android:name="android.content.SyncAdapter"
                 android:resource="@xml/syncadapter" />
         </service>
 
-        <activity android:name=".view.OfflineActivity"></activity>
+        <activity android:name=".view.OfflineActivity" />
     </application>
 
 </manifest>

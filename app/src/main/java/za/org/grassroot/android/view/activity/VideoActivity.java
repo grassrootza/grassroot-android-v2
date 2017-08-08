@@ -23,10 +23,12 @@ public class VideoActivity extends AppCompatActivity implements VideoActivityVie
     private File newfile;
     private String file;
     private VideoPresenter videoPresenter;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_video);videoView= (VideoView) findViewById(R.id.video);
+        setContentView(R.layout.activity_video);
+        videoView= (VideoView) findViewById(R.id.video);
         videoPresenter=new VideoPresenter(this);
         dir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + "/Grassroot/";
         File newdir = new File(dir);
@@ -38,11 +40,11 @@ public class VideoActivity extends AppCompatActivity implements VideoActivityVie
         file = dir+timeStamp+".jpg";
         videoPresenter.onTakeVideoBtn(this,file);
     }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == 0 && resultCode == RESULT_OK)
-        {
+        if (requestCode == 0 && resultCode == RESULT_OK) {
             videoView.setVideoPath(file);
             videoView.start();
         }

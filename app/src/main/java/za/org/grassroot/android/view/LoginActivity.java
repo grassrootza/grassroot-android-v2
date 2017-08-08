@@ -8,11 +8,15 @@ import android.text.InputType;
 import android.text.TextUtils;
 import android.view.inputmethod.EditorInfo;
 
+import javax.inject.Inject;
+
 import butterknife.ButterKnife;
 import io.reactivex.Observable;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.functions.Consumer;
+import timber.log.Timber;
 import za.org.grassroot.android.BuildConfig;
+import za.org.grassroot.android.GrassrootApplication;
 import za.org.grassroot.android.R;
 import za.org.grassroot.android.model.enums.AuthRecoveryResult;
 import za.org.grassroot.android.model.enums.ConnectionResult;
@@ -23,7 +27,8 @@ import za.org.grassroot.android.view.fragment.SingleTextInputFragment;
 
 public class LoginActivity extends GrassrootActivity implements LoginView {
 
-    private LoginPresenter loginPresenter;
+    @Inject
+    LoginPresenter loginPresenter;
 
     private SingleTextInputFragment currentFragment; // just as a pointer
     private SingleTextInputFragment usernameFragment;
@@ -34,12 +39,11 @@ public class LoginActivity extends GrassrootActivity implements LoginView {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.activity_login);
+        ((GrassrootApplication) getApplication()).getAppComponent().inject(this);
         ButterKnife.bind(this);
-        if (loginPresenter == null) {
-            loginPresenter = new LoginPresenter();
-        }
+
+        Timber.d("is login presenter injected? " + (loginPresenter != null));
 
         usernameFragment = SingleTextInputFragment.newInstance(R.string.login_welcome,
                 R.string.login_enter_msisdn,

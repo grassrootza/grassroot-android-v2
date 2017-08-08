@@ -3,6 +3,7 @@ package za.org.grassroot.android.view.activity;
 import android.accounts.AccountAuthenticatorResponse;
 import android.accounts.AccountManager;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -10,9 +11,12 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
 
 import io.reactivex.Observable;
+import timber.log.Timber;
 import za.org.grassroot.android.model.enums.AuthRecoveryResult;
 import za.org.grassroot.android.model.enums.ConnectionResult;
+import za.org.grassroot.android.services.auth.GrassrootAuthUtils;
 import za.org.grassroot.android.view.GrassrootView;
+import za.org.grassroot.android.view.LoginActivity;
 
 public abstract class GrassrootActivity extends AppCompatActivity implements GrassrootView {
 
@@ -26,6 +30,15 @@ public abstract class GrassrootActivity extends AppCompatActivity implements Gra
         authResponse = getIntent().getParcelableExtra(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE);
         if (authResponse != null) {
             authResponse.onRequestContinued();
+        }
+
+        // consider moving to onResume later
+        Timber.d("inside onCreate, checking if logged in");
+        boolean isLoginActivity = this instanceof LoginActivity;
+        if (!isLoginActivity && !GrassrootAuthUtils.isLoggedIn()) {
+            Intent loginIntent = new Intent(this, LoginActivity.class);
+            startActivity(loginIntent);
+            finish();
         }
     }
 

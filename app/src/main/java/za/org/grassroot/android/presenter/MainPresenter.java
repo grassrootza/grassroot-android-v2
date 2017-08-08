@@ -3,6 +3,7 @@ package za.org.grassroot.android.presenter;
 import za.org.grassroot.android.view.MainView;
 
 public class MainPresenter implements MainView.presenter {
+
     private final MainView.view view;
     public MainPresenter(MainView.view view)
     {

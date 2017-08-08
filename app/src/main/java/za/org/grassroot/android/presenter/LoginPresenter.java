@@ -2,6 +2,9 @@ package za.org.grassroot.android.presenter;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
+import android.content.Context;
+
+import javax.inject.Inject;
 
 import io.reactivex.SingleObserver;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -10,8 +13,8 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
-import za.org.grassroot.android.ApplicationLoader;
 import za.org.grassroot.android.BuildConfig;
+import za.org.grassroot.android.GrassrootApplication;
 import za.org.grassroot.android.R;
 import za.org.grassroot.android.model.TokenResponse;
 import za.org.grassroot.android.model.UserProfile;
@@ -21,7 +24,8 @@ import za.org.grassroot.android.model.exception.LifecycleOutOfSyncException;
 import za.org.grassroot.android.model.exception.NetworkUnavailableException;
 import za.org.grassroot.android.model.util.PhoneNumberUtil;
 import za.org.grassroot.android.services.auth.AuthConstants;
-import za.org.grassroot.android.services.rest.GrassrootRestClient;
+import za.org.grassroot.android.services.auth.GrassrootAuthUtils;
+import za.org.grassroot.android.services.rest.GrassrootRestService;
 import za.org.grassroot.android.services.rest.RestResponse;
 import za.org.grassroot.android.services.rest.RestSubscriber;
 import za.org.grassroot.android.services.user.UserDetailsService;
@@ -30,14 +34,20 @@ import za.org.grassroot.android.view.LoginView;
 import za.org.grassroot.android.view.activity.MainActivity;
 
 public class LoginPresenter extends Presenter {
-
     // public static final String PARAM_AUTHTOKEN_TYPE = "auth_token_type";
     private static final int MIN_OTP_LENGTH = 5;
 
     private LoginView view;
     private String userName;
 
+    @Inject
+    GrassrootRestService grassrootRestService;
+
     private AccountManager accountManager;
+
+    public LoginPresenter(Context context) {
+        ((GrassrootApplication) context).getAppComponent().inject(this);
+    }
 
     @Override
     public void attach(GrassrootView passedView) {
@@ -124,7 +134,7 @@ public class LoginPresenter extends Presenter {
 
     private void stashUsernameAndRequestOtp(String msisdn) {
         userName = msisdn;
-        GrassrootRestClient.getService()
+        grassrootRestService
                 .requestOtp(msisdn)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -153,8 +163,8 @@ public class LoginPresenter extends Presenter {
 
     private void validateOtpEntry(CharSequence charSequence) throws NetworkUnavailableException {
         // call the authentication service and check if these are okay, and if so, store and continue
-        GrassrootRestClient.getService()
-                .validateOtp(userName, "" + charSequence, "ANDROID")
+        grassrootRestService
+                .validateOtp(userName, "" + charSequence, GrassrootAuthUtils.AUTH_CLIENT_TYPE)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new RestSubscriber<>(this, new SingleObserver<RestResponse<TokenResponse>>() {
@@ -200,7 +210,7 @@ public class LoginPresenter extends Presenter {
 
     private AccountManager getAccountManager() {
         if (accountManager == null) {
-            accountManager = AccountManager.get(ApplicationLoader.applicationContext);
+            accountManager = AccountManager.get(GrassrootApplication.applicationContext);
         }
         return accountManager;
     }

@@ -1,6 +1,9 @@
 <resources>
     <string name="app_name">Grassroot-Android-v2</string>
 
+    <string name="title_login_activity">Login</string>
+    <string name="title_main_activity">Grassroot</string>
+
     <string name="error_unknown_generic">Sorry, an error occurred</string>
     <string name="error_server_unreachable">Sorry, the Grassroot server is unreachable at present</string>
     <string name="error_phone_number">Error with phone number, please check and try again</string>

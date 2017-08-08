@@ -6,34 +6,26 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
-import java.util.List;
-
-import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.annotations.NonNull;
-import io.reactivex.functions.Consumer;
-import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 import za.org.grassroot.android.R;
-import za.org.grassroot.android.model.Group;
 import za.org.grassroot.android.presenter.MainPresenter;
 import za.org.grassroot.android.services.auth.GrassrootAuthUtils;
-import za.org.grassroot.android.services.rest.GrassrootRestClient;
-import za.org.grassroot.android.services.user.UserDetailsService;
 import za.org.grassroot.android.view.MainView;
 
 import static android.Manifest.permission.RECORD_AUDIO;
 import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 
-public class MainActivity extends AppCompatActivity implements MainView.view{
+public class MainActivity extends GrassrootActivity implements MainView.view {
 
     public static final int RequestPermissionCode = 1;
     private MainPresenter mainPresenter;
     private Button videoBtn,audioBtn,pictureBtn;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -85,20 +77,6 @@ public class MainActivity extends AppCompatActivity implements MainView.view{
         // just for testing for now
         String token = GrassrootAuthUtils.getToken();
         Timber.i("Token stored: " + token);
-        GrassrootRestClient.getService().fetchAllGroups(UserDetailsService.getUserUid())
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Consumer<List<Group>>() {
-                    @Override
-                    public void accept(@NonNull List<Group> groups) throws Exception {
-                        Timber.i("fetched groups! this many: " + groups.size());
-                    }
-                }, new Consumer<Throwable>() {
-                    @Override
-                    public void accept(@NonNull Throwable throwable) throws Exception {
-                        Timber.e(throwable);
-                    }
-                });
     }
 
     private void requestPermission(Activity act) {
@@ -154,6 +132,16 @@ public class MainActivity extends AppCompatActivity implements MainView.view{
     @Override
     public void showToastMessage(String msg) {
         Toast.makeText(this, ""+msg, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void showProgressBar() {
+        
+    }
+
+    @Override
+    public void closeProgressBar() {
+
     }
 }
 

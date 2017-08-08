@@ -44,4 +44,12 @@ public class UserDetailsService {
         realm.close();
         return uid;
     }
+
+    public static String getUserMsisdn() {
+        Realm realm = Realm.getDefaultInstance();
+        UserProfile userProfile = realm.where(UserProfile.class).equalTo("id", 0).findFirst();
+        final String msisdn = userProfile == null ? null : userProfile.getMsisdn();
+        realm.close();
+        return msisdn;
+    }
 }

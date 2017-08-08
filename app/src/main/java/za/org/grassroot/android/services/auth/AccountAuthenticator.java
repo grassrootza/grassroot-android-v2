@@ -10,17 +10,25 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 
+import javax.inject.Inject;
+
 import timber.log.Timber;
-import za.org.grassroot.android.presenter.LoginPresenter;
+import za.org.grassroot.android.GrassrootApplication;
+import za.org.grassroot.android.services.rest.GrassrootRestService;
+import za.org.grassroot.android.services.user.UserDetailsService;
 import za.org.grassroot.android.view.LoginActivity;
 
 public class AccountAuthenticator extends AbstractAccountAuthenticator {
+
+    @Inject
+    GrassrootRestService grassrootRestService;
 
     private final Context context;
 
     public AccountAuthenticator(Context context) {
         super(context);
         this.context = context;
+        ((GrassrootApplication) context).getAppComponent().inject(this);
         Timber.i("created the account authenticator");
     }
 
@@ -34,7 +42,6 @@ public class AccountAuthenticator extends AbstractAccountAuthenticator {
         Timber.d("adding an account! inside authenticator, of type: " + accountType);
         final Intent intent = new Intent(context, LoginActivity.class);
         intent.putExtra(AccountManager.KEY_ACCOUNT_TYPE, accountType);
-        // intent.putExtra(LoginPresenter.PARAM_AUTHTOKEN_TYPE, authTokenType);
         intent.putExtra(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE, accountAuthenticatorResponse);
         final Bundle bundle = new Bundle();
         bundle.putParcelable(AccountManager.KEY_INTENT, intent);
@@ -49,21 +56,29 @@ public class AccountAuthenticator extends AbstractAccountAuthenticator {
     @Override
     public Bundle getAuthToken(AccountAuthenticatorResponse accountAuthenticatorResponse, Account account, String authTokenType, Bundle bundle) throws NetworkErrorException {
         final AccountManager am = AccountManager.get(context);
-        final String storedJwt = am.peekAuthToken(account, authTokenType);
+        String authToken = am.peekAuthToken(account, authTokenType);
 
-        if (TextUtils.isEmpty(storedJwt)) {
+        // if JWT is empty, try authenticate
+        if (TextUtils.isEmpty(authToken)) {
             // try get a refreshed token ...
             Timber.i("no JWT found in account manager");
+            try {
+                authToken = grassrootRestService.refreshOtp(UserDetailsService.getUserMsisdn(),
+                        GrassrootAuthUtils.AUTH_CLIENT_TYPE).execute().body().getData().getToken();
+            } catch (Exception e) {
+                Timber.e(e, "Could not try to refresh token, passing along");
+
+            }
         }
 
         final Bundle result = new Bundle();
-        if (!TextUtils.isEmpty(storedJwt)) {
-            Timber.i("have a JWT, use it");
+        if (!TextUtils.isEmpty(authToken)) {
+            Timber.d("have a JWT, use it");
             result.putString(AccountManager.KEY_ACCOUNT_NAME, account.name);
             result.putString(AccountManager.KEY_ACCOUNT_TYPE, account.type);
-            result.putString(AccountManager.KEY_AUTHTOKEN, storedJwt);
+            result.putString(AccountManager.KEY_AUTHTOKEN, authToken);
         } else {
-            Timber.i("no JWT, so go to login");
+            Timber.d("no JWT, so go to login");
             final Intent intent = new Intent(context, LoginActivity.class);
             intent.putExtra(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE, accountAuthenticatorResponse);
             result.putParcelable(AccountManager.KEY_INTENT, intent);

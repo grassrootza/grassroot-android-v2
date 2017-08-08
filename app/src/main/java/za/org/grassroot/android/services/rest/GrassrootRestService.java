@@ -4,6 +4,7 @@ import java.util.List;
 
 import io.reactivex.Observable;
 import io.reactivex.Single;
+import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
@@ -20,6 +21,10 @@ public interface GrassrootRestService {
     Observable<RestResponse<TokenResponse>> validateOtp(@Query("phoneNumber") String msisdn,
                                                         @Query("otp") String otp,
                                                         @Query("clientType") String clientType);
+
+    @GET("/api/auth/refresh")
+    Call<RestResponse<TokenResponse>> refreshOtp(@Query("phoneNumber") String msisdn,
+                                                 @Query("clientType") String clientType);
 
     @GET("/api/auth/token/validate")
     Single<RestResponse> validateToken(@Query("token") String token);
