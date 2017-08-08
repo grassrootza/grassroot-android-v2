@@ -13,22 +13,21 @@ import android.text.TextUtils;
 import javax.inject.Inject;
 
 import timber.log.Timber;
-import za.org.grassroot.android.GrassrootApplication;
-import za.org.grassroot.android.services.rest.GrassrootRestService;
+import za.org.grassroot.android.dagger.ApplicationContext;
+import za.org.grassroot.android.services.rest.GrassrootAuthApi;
 import za.org.grassroot.android.services.user.UserDetailsService;
 import za.org.grassroot.android.view.LoginActivity;
 
 public class AccountAuthenticator extends AbstractAccountAuthenticator {
 
-    @Inject
-    GrassrootRestService grassrootRestService;
-
+    private final GrassrootAuthApi grassrootAuthApi;
     private final Context context;
 
-    public AccountAuthenticator(Context context) {
+    @Inject
+    public AccountAuthenticator(@ApplicationContext Context context, GrassrootAuthApi grassrootAuthApi) {
         super(context);
         this.context = context;
-        ((GrassrootApplication) context).getAppComponent().inject(this);
+        this.grassrootAuthApi = grassrootAuthApi;
         Timber.i("created the account authenticator");
     }
 
@@ -63,11 +62,10 @@ public class AccountAuthenticator extends AbstractAccountAuthenticator {
             // try get a refreshed token ...
             Timber.i("no JWT found in account manager");
             try {
-                authToken = grassrootRestService.refreshOtp(UserDetailsService.getUserMsisdn(),
-                        GrassrootAuthUtils.AUTH_CLIENT_TYPE).execute().body().getData().getToken();
+                authToken = grassrootAuthApi.refreshOtp(UserDetailsService.getUserMsisdn(),
+                        AuthConstants.AUTH_CLIENT_TYPE).execute().body().getData().getToken();
             } catch (Exception e) {
                 Timber.e(e, "Could not try to refresh token, passing along");
-
             }
         }
 

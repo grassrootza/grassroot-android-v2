@@ -11,10 +11,14 @@ import za.org.grassroot.android.model.exception.NetworkUnavailableException;
 import za.org.grassroot.android.model.exception.ServerUnreachableException;
 import za.org.grassroot.android.view.GrassrootView;
 
-public abstract class Presenter {
+/**
+ * Created by luke on 2017/08/08.
+ */
 
-    private GrassrootView view;
+public abstract class ViewPresenter implements GrassrootPresenter {
+
     CompositeDisposable subscriptions;
+    private GrassrootView view;
 
     @CallSuper
     public void attach(GrassrootView view) {
@@ -38,6 +42,7 @@ public abstract class Presenter {
         }
     }
 
+    @Override
     public void handleNetworkConnectionError(NetworkUnavailableException t) {
         Log.e("CONNECTION", t.toString());
         view.closeProgressBar();
@@ -67,4 +72,5 @@ public abstract class Presenter {
         e.printStackTrace();
         view.showErrorToast(R.string.error_unknown_generic);
     }
+
 }

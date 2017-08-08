@@ -1,17 +1,14 @@
 package za.org.grassroot.android.services.auth;
 
-import android.app.Service;
-import android.content.Intent;
-import android.os.IBinder;
+/**
+ * Created by luke on 2017/08/08.
+ */
 
-import timber.log.Timber;
+public interface GrassrootAuthService {
 
-public class GrassrootAuthService extends Service {
+    String getToken();
+    void logoutCleanSweap();
+    void logoutRetainData();
 
-    @Override
-    public IBinder onBind(Intent intent) {
-        Timber.d("bound the auth service");
-        AccountAuthenticator authenticator = new AccountAuthenticator(getApplication());
-        return authenticator.getIBinder();
-    }
+
 }

@@ -14,7 +14,6 @@ import io.reactivex.annotations.NonNull;
 import timber.log.Timber;
 import za.org.grassroot.android.R;
 import za.org.grassroot.android.presenter.MainPresenter;
-import za.org.grassroot.android.services.auth.GrassrootAuthUtils;
 import za.org.grassroot.android.view.MainView;
 
 import static android.Manifest.permission.RECORD_AUDIO;
@@ -75,8 +74,8 @@ public class MainActivity extends GrassrootActivity implements MainView.view {
         });
 
         // just for testing for now
-        String token = GrassrootAuthUtils.getToken();
-        Timber.i("Token stored: " + token);
+        /*String token = authPresenter.getToken();
+        Timber.i("Token stored: " + token);*/
     }
 
     private void requestPermission(Activity act) {

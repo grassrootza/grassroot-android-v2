@@ -2,7 +2,6 @@ package za.org.grassroot.android.presenter;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
-import android.content.Context;
 
 import javax.inject.Inject;
 
@@ -14,7 +13,6 @@ import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 import za.org.grassroot.android.BuildConfig;
-import za.org.grassroot.android.GrassrootApplication;
 import za.org.grassroot.android.R;
 import za.org.grassroot.android.model.TokenResponse;
 import za.org.grassroot.android.model.UserProfile;
@@ -24,8 +22,7 @@ import za.org.grassroot.android.model.exception.LifecycleOutOfSyncException;
 import za.org.grassroot.android.model.exception.NetworkUnavailableException;
 import za.org.grassroot.android.model.util.PhoneNumberUtil;
 import za.org.grassroot.android.services.auth.AuthConstants;
-import za.org.grassroot.android.services.auth.GrassrootAuthUtils;
-import za.org.grassroot.android.services.rest.GrassrootRestService;
+import za.org.grassroot.android.services.rest.GrassrootAuthApi;
 import za.org.grassroot.android.services.rest.RestResponse;
 import za.org.grassroot.android.services.rest.RestSubscriber;
 import za.org.grassroot.android.services.user.UserDetailsService;
@@ -33,20 +30,21 @@ import za.org.grassroot.android.view.GrassrootView;
 import za.org.grassroot.android.view.LoginView;
 import za.org.grassroot.android.view.activity.MainActivity;
 
-public class LoginPresenter extends Presenter {
+public class LoginPresenter extends ViewPresenter {
     // public static final String PARAM_AUTHTOKEN_TYPE = "auth_token_type";
     private static final int MIN_OTP_LENGTH = 5;
 
     private LoginView view;
     private String userName;
 
-    @Inject
-    GrassrootRestService grassrootRestService;
-
+    private GrassrootAuthApi grassrootAuthApi;
     private AccountManager accountManager;
 
-    public LoginPresenter(Context context) {
-        ((GrassrootApplication) context).getAppComponent().inject(this);
+    @Inject
+    public LoginPresenter(GrassrootAuthApi grassrootAuthApi,
+                          AccountManager accountManager) {
+        this.grassrootAuthApi = grassrootAuthApi;
+        this.accountManager = accountManager;
     }
 
     @Override
@@ -134,7 +132,7 @@ public class LoginPresenter extends Presenter {
 
     private void stashUsernameAndRequestOtp(String msisdn) {
         userName = msisdn;
-        grassrootRestService
+        grassrootAuthApi
                 .requestOtp(msisdn)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -163,8 +161,8 @@ public class LoginPresenter extends Presenter {
 
     private void validateOtpEntry(CharSequence charSequence) throws NetworkUnavailableException {
         // call the authentication service and check if these are okay, and if so, store and continue
-        grassrootRestService
-                .validateOtp(userName, "" + charSequence, GrassrootAuthUtils.AUTH_CLIENT_TYPE)
+        grassrootAuthApi
+                .validateOtp(userName, "" + charSequence, AuthConstants.AUTH_CLIENT_TYPE)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new RestSubscriber<>(this, new SingleObserver<RestResponse<TokenResponse>>() {
@@ -192,7 +190,7 @@ public class LoginPresenter extends Presenter {
         final Account account = getOrCreateAccount();
         final TokenResponse tokenAndUserDetails = response.getData();
         accountManager.setAuthToken(account, AuthConstants.AUTH_TOKENTYPE, tokenAndUserDetails.getToken());
-        Timber.v("stored auth token, number accounts = " + getAccountManager().getAccountsByType(AuthConstants.ACCOUNT_TYPE).length);
+        Timber.v("stored auth token, number accounts = " + accountManager.getAccountsByType(AuthConstants.ACCOUNT_TYPE).length);
         UserDetailsService.storeUserDetails(tokenAndUserDetails.getUserUid(),
                 tokenAndUserDetails.getMsisdn(),
                 tokenAndUserDetails.getDisplayName(),
@@ -208,22 +206,15 @@ public class LoginPresenter extends Presenter {
                 });
     }
 
-    private AccountManager getAccountManager() {
-        if (accountManager == null) {
-            accountManager = AccountManager.get(GrassrootApplication.applicationContext);
-        }
-        return accountManager;
-    }
-
     // todo : move this to service and cycle through if have multiple accounts
     private Account getOrCreateAccount() {
-        Account[] accounts = getAccountManager().getAccountsByType(AuthConstants.ACCOUNT_TYPE);
+        Account[] accounts = accountManager.getAccountsByType(AuthConstants.ACCOUNT_TYPE);
         Timber.d("number of accounts: " + accounts.length);
         if (accounts.length != 0) {
             return accounts[0];
         } else {
             Account account = new Account(AuthConstants.ACCOUNT_NAME, AuthConstants.ACCOUNT_TYPE);
-            getAccountManager().addAccountExplicitly(account, null, null);
+            accountManager.addAccountExplicitly(account, null, null);
             return account;
         }
     }

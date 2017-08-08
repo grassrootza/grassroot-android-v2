@@ -40,7 +40,7 @@ public class LoginActivity extends GrassrootActivity implements LoginView {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        ((GrassrootApplication) getApplication()).getAppComponent().inject(this);
+        // ((GrassrootApplication) getApplication()).getAppComponent().inject(this);
         ButterKnife.bind(this);
 
         Timber.d("is login presenter injected? " + (loginPresenter != null));

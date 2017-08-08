@@ -1,17 +1,18 @@
 package za.org.grassroot.android.services.rest;
 
-import java.util.List;
-
 import io.reactivex.Observable;
 import io.reactivex.Single;
 import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
-import za.org.grassroot.android.model.Group;
 import za.org.grassroot.android.model.TokenResponse;
 
-public interface GrassrootRestService {
+/**
+ * Created by luke on 2017/08/08.
+ */
+
+public interface GrassrootAuthApi {
 
     // Some authentication related methods
     @GET("/api/user/login/{msisdn}")
@@ -29,8 +30,4 @@ public interface GrassrootRestService {
     @GET("/api/auth/token/validate")
     Single<RestResponse> validateToken(@Query("token") String token);
 
-
-    // Fetching groups
-    @GET("/api/group/get/all")
-    Single<List<Group>> fetchAllGroups(@Query("userUid") String userUid);
 }

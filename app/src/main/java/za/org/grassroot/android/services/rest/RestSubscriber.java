@@ -7,17 +7,18 @@ import io.reactivex.disposables.Disposable;
 import za.org.grassroot.android.model.exception.AuthenticationInvalidException;
 import za.org.grassroot.android.model.exception.NetworkUnavailableException;
 import za.org.grassroot.android.model.exception.ServerUnreachableException;
-import za.org.grassroot.android.presenter.Presenter;
+import za.org.grassroot.android.presenter.GrassrootPresenter;
+import za.org.grassroot.android.presenter.ViewPresenter;
 
 /**
  * TODO: work out if can do this better via an operator
  */
 public class RestSubscriber<T> implements Observer<T> {
 
-    private Presenter presenter;
+    private GrassrootPresenter presenter;
     private SingleObserver<T> child;
 
-    public RestSubscriber(Presenter presenter, SingleObserver<T> child) {
+    public RestSubscriber(ViewPresenter presenter, SingleObserver<T> child) {
         this.presenter = presenter;
         this.child = child;
     }
