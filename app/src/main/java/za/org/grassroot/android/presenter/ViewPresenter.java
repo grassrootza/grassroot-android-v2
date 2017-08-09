@@ -18,7 +18,7 @@ import za.org.grassroot.android.view.GrassrootView;
 public abstract class ViewPresenter implements GrassrootPresenter {
 
     CompositeDisposable subscriptions;
-    private GrassrootView view;
+    protected GrassrootView view;
 
     @CallSuper
     public void attach(GrassrootView view) {

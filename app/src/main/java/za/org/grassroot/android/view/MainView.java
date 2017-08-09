@@ -11,6 +11,7 @@ public interface MainView {
         void onVideoBtnClick();
         void onAudioBtnClick();
         void onPictureBtnClick();
+        void onLogoutBtnClick();
         void permissionStatus(Boolean storagePermission, Boolean recordPermission);
     }
 }

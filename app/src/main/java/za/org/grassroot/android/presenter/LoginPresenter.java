@@ -25,7 +25,7 @@ import za.org.grassroot.android.services.auth.AuthConstants;
 import za.org.grassroot.android.services.rest.GrassrootAuthApi;
 import za.org.grassroot.android.services.rest.RestResponse;
 import za.org.grassroot.android.services.rest.RestSubscriber;
-import za.org.grassroot.android.services.user.UserDetailsService;
+import za.org.grassroot.android.services.auth.UserDetailsService;
 import za.org.grassroot.android.view.GrassrootView;
 import za.org.grassroot.android.view.LoginView;
 import za.org.grassroot.android.view.activity.MainActivity;
@@ -39,12 +39,15 @@ public class LoginPresenter extends ViewPresenter {
 
     private GrassrootAuthApi grassrootAuthApi;
     private AccountManager accountManager;
+    private UserDetailsService userDetailsService;
 
     @Inject
     public LoginPresenter(GrassrootAuthApi grassrootAuthApi,
-                          AccountManager accountManager) {
+                          AccountManager accountManager,
+                          UserDetailsService userDetailsService) {
         this.grassrootAuthApi = grassrootAuthApi;
         this.accountManager = accountManager;
+        this.userDetailsService = userDetailsService;
     }
 
     @Override
@@ -191,7 +194,7 @@ public class LoginPresenter extends ViewPresenter {
         final TokenResponse tokenAndUserDetails = response.getData();
         accountManager.setAuthToken(account, AuthConstants.AUTH_TOKENTYPE, tokenAndUserDetails.getToken());
         Timber.v("stored auth token, number accounts = " + accountManager.getAccountsByType(AuthConstants.ACCOUNT_TYPE).length);
-        UserDetailsService.storeUserDetails(tokenAndUserDetails.getUserUid(),
+        userDetailsService.storeUserDetails(tokenAndUserDetails.getUserUid(),
                 tokenAndUserDetails.getMsisdn(),
                 tokenAndUserDetails.getDisplayName(),
                 tokenAndUserDetails.getSystemRole())

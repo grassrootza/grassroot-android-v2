@@ -11,7 +11,6 @@ import za.org.grassroot.android.dagger.AppComponent;
 import za.org.grassroot.android.dagger.AppModule;
 import za.org.grassroot.android.dagger.DaggerAppComponent;
 import za.org.grassroot.android.dagger.user.ApiModule;
-import za.org.grassroot.android.dagger.user.AuthModule;
 import za.org.grassroot.android.dagger.user.UserComponent;
 
 public class GrassrootApplication extends Application {
@@ -27,7 +26,7 @@ public class GrassrootApplication extends Application {
     }
 
     public UserComponent createUserComponent() {
-        userComponent = appComponent.plus(new AuthModule(), new ApiModule());
+        userComponent = appComponent.plus(new ApiModule());
         return userComponent;
     }
 

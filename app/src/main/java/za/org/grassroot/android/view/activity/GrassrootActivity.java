@@ -87,6 +87,15 @@ public abstract class GrassrootActivity extends AppCompatActivity implements Gra
         Toast.makeText(this, errorTextRes, Toast.LENGTH_SHORT).show();
     }
 
+    @Override
+    public void launchActivity(Class<?> cls, Bundle args) {
+        Intent i = new Intent(this, cls);
+        if (args != null) {
+            i.putExtras(args);
+        }
+        startActivity(i);
+    }
+
     /**
      * Set the result that is to be sent as the result of the request that caused this
      * Activity to be launched. If result is null or this method is never called then

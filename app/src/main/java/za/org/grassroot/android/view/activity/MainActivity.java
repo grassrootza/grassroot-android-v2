@@ -10,10 +10,15 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
+import javax.inject.Inject;
+
 import io.reactivex.annotations.NonNull;
-import timber.log.Timber;
+import za.org.grassroot.android.GrassrootApplication;
 import za.org.grassroot.android.R;
+import za.org.grassroot.android.dagger.activity.ActivityModule;
+import za.org.grassroot.android.dagger.user.ApiModule;
 import za.org.grassroot.android.presenter.MainPresenter;
+import za.org.grassroot.android.services.auth.UserDetailsService;
 import za.org.grassroot.android.view.MainView;
 
 import static android.Manifest.permission.RECORD_AUDIO;
@@ -21,19 +26,32 @@ import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 
 public class MainActivity extends GrassrootActivity implements MainView.view {
 
+    @Inject
+    UserDetailsService userDetailsService;
+
+    @Inject
+    MainPresenter mainPresenter;
+
     public static final int RequestPermissionCode = 1;
-    private MainPresenter mainPresenter;
-    private Button videoBtn,audioBtn,pictureBtn;
+    private Button videoBtn,audioBtn,pictureBtn, logoutBtn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        ((GrassrootApplication) getApplication())
+                .getAppComponent()
+                .plus(new ApiModule())
+                .plus(new ActivityModule())
+                .inject(this);
+
         videoBtn= (Button) findViewById(R.id.videoBtn);
         audioBtn= (Button) findViewById(R.id.audioBtn);
         pictureBtn= (Button) findViewById(R.id.pictureBtn);
-        mainPresenter=new MainPresenter(this);
+        logoutBtn = (Button) findViewById(R.id.logoutBtn);
 
+        mainPresenter.attach(this);
+        mainPresenter.attachMainView(this);
 
         videoBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -72,10 +90,12 @@ public class MainActivity extends GrassrootActivity implements MainView.view {
                 }
             }
         });
-
-        // just for testing for now
-        /*String token = authPresenter.getToken();
-        Timber.i("Token stored: " + token);*/
+        logoutBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mainPresenter.logoutRetainingData();
+            }
+        });
     }
 
     private void requestPermission(Activity act) {

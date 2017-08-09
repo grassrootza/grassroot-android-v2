@@ -4,8 +4,9 @@ import android.accounts.AccountManager;
 
 import dagger.Module;
 import dagger.Provides;
-import timber.log.Timber;
 import za.org.grassroot.android.presenter.LoginPresenter;
+import za.org.grassroot.android.presenter.MainPresenter;
+import za.org.grassroot.android.services.auth.UserDetailsService;
 import za.org.grassroot.android.services.rest.GrassrootAuthApi;
 
 /**
@@ -16,9 +17,16 @@ public class ActivityModule {
 
     @Provides
     @PerActivity
-    LoginPresenter provideLoginPresenter(GrassrootAuthApi grassrootAuthApi, AccountManager accountManager) {
-        Timber.v("called provide login presenter");
-        return new LoginPresenter(grassrootAuthApi, accountManager); // for now, switch to implementation pattern soon
+    LoginPresenter provideLoginPresenter(GrassrootAuthApi grassrootAuthApi,
+                                         AccountManager accountManager,
+                                         UserDetailsService userDetailsService) {
+        return new LoginPresenter(grassrootAuthApi, accountManager, userDetailsService);
+    }
+
+    @Provides
+    @PerActivity
+    MainPresenter provideMainPresenter(UserDetailsService userDetailsService) {
+        return new MainPresenter(userDetailsService);
     }
 
 }

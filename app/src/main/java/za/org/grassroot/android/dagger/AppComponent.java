@@ -6,8 +6,8 @@ import dagger.Component;
 import za.org.grassroot.android.dagger.login.LoginSignUpComponent;
 import za.org.grassroot.android.dagger.login.NoAuthApiModule;
 import za.org.grassroot.android.dagger.user.ApiModule;
-import za.org.grassroot.android.dagger.user.AuthModule;
 import za.org.grassroot.android.dagger.user.UserComponent;
+import za.org.grassroot.android.presenter.LoggedInViewPresenter;
 import za.org.grassroot.android.view.activity.GrassrootActivity;
 
 /**
@@ -18,7 +18,9 @@ import za.org.grassroot.android.view.activity.GrassrootActivity;
 public interface AppComponent {
 
     void inject(GrassrootActivity target);
+    void inject(LoggedInViewPresenter target);
+
     LoginSignUpComponent plus(NoAuthApiModule noAuthApiModule);
-    UserComponent plus(AuthModule authModule, ApiModule apiModule);
+    UserComponent plus(ApiModule apiModule);
 
 }

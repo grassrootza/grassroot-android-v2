@@ -25,5 +25,12 @@
         android:text="take Picture"
         android:id="@+id/pictureBtn"
         />
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Logout"
+        android:id="@+id/logoutBtn"
+        />
+
 
 </LinearLayout>

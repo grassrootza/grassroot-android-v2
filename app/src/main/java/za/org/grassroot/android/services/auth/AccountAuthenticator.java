@@ -15,7 +15,6 @@ import javax.inject.Inject;
 import timber.log.Timber;
 import za.org.grassroot.android.dagger.ApplicationContext;
 import za.org.grassroot.android.services.rest.GrassrootAuthApi;
-import za.org.grassroot.android.services.user.UserDetailsService;
 import za.org.grassroot.android.view.LoginActivity;
 
 public class AccountAuthenticator extends AbstractAccountAuthenticator {
@@ -24,7 +23,8 @@ public class AccountAuthenticator extends AbstractAccountAuthenticator {
     private final Context context;
 
     @Inject
-    public AccountAuthenticator(@ApplicationContext Context context, GrassrootAuthApi grassrootAuthApi) {
+    public AccountAuthenticator(@ApplicationContext Context context,
+                                GrassrootAuthApi grassrootAuthApi) {
         super(context);
         this.context = context;
         this.grassrootAuthApi = grassrootAuthApi;
@@ -56,18 +56,6 @@ public class AccountAuthenticator extends AbstractAccountAuthenticator {
     public Bundle getAuthToken(AccountAuthenticatorResponse accountAuthenticatorResponse, Account account, String authTokenType, Bundle bundle) throws NetworkErrorException {
         final AccountManager am = AccountManager.get(context);
         String authToken = am.peekAuthToken(account, authTokenType);
-
-        // if JWT is empty, try authenticate
-        if (TextUtils.isEmpty(authToken)) {
-            // try get a refreshed token ...
-            Timber.i("no JWT found in account manager");
-            try {
-                authToken = grassrootAuthApi.refreshOtp(UserDetailsService.getUserMsisdn(),
-                        AuthConstants.AUTH_CLIENT_TYPE).execute().body().getData().getToken();
-            } catch (Exception e) {
-                Timber.e(e, "Could not try to refresh token, passing along");
-            }
-        }
 
         final Bundle result = new Bundle();
         if (!TextUtils.isEmpty(authToken)) {

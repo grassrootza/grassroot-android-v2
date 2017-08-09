@@ -18,6 +18,7 @@ import timber.log.Timber;
 import za.org.grassroot.android.BuildConfig;
 import za.org.grassroot.android.GrassrootApplication;
 import za.org.grassroot.android.R;
+import za.org.grassroot.android.dagger.login.NoAuthApiModule;
 import za.org.grassroot.android.model.enums.AuthRecoveryResult;
 import za.org.grassroot.android.model.enums.ConnectionResult;
 import za.org.grassroot.android.presenter.LoginPresenter;
@@ -40,7 +41,10 @@ public class LoginActivity extends GrassrootActivity implements LoginView {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        // ((GrassrootApplication) getApplication()).getAppComponent().inject(this);
+        ((GrassrootApplication) getApplication())
+                .getAppComponent()
+                .plus(new NoAuthApiModule())
+                .inject(this);
         ButterKnife.bind(this);
 
         Timber.d("is login presenter injected? " + (loginPresenter != null));

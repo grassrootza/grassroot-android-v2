@@ -8,8 +8,8 @@ import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
-import retrofit2.Converter;
-import retrofit2.converter.gson.GsonConverterFactory;
+import za.org.grassroot.android.services.auth.UserDetailsService;
+import za.org.grassroot.android.services.auth.UserDetailsServiceImpl;
 
 /**
  * Created by luke on 2017/08/08.
@@ -33,6 +33,12 @@ public class AppModule {
     @Singleton
     public AccountManager providesAccountManager(@ApplicationContext Context context) {
         return AccountManager.get(context);
+    }
+
+    @Provides
+    @Singleton
+    UserDetailsService provideUserDetailsService(AccountManager accountManager) {
+        return new UserDetailsServiceImpl(accountManager);
     }
 
 }

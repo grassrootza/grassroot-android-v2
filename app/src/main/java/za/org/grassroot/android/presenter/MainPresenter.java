@@ -1,17 +1,32 @@
 package za.org.grassroot.android.presenter;
 
+import javax.inject.Inject;
+
+import za.org.grassroot.android.services.auth.UserDetailsService;
 import za.org.grassroot.android.view.MainView;
 
-public class MainPresenter implements MainView.presenter {
+public class MainPresenter extends LoggedInViewPresenter implements MainView.presenter {
 
-    private final MainView.view view;
-    public MainPresenter(MainView.view view)
-    {
-        this.view=view;
+    private MainView.view view;
+
+    @Inject
+    public MainPresenter(UserDetailsService userDetailsService) {
+        super(userDetailsService);
     }
-    public void makeToast(String meg)
-    {
-        view.showToastMessage(meg);
+
+    public void attachMainView(MainView.view view) {
+        this.view = view;
+    }
+
+
+    @Override
+    protected void onViewAttached() {
+
+    }
+
+    @Override
+    public void onLogoutBtnClick() {
+        logoutRetainingData();
     }
 
     @Override
