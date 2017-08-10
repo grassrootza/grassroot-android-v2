@@ -6,6 +6,8 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.os.Bundle;
 
+import za.org.grassroot.android.view.legacy.ArticleContract;
+
 public final class AccountGeneral {
     // This is the type of account we are using. i.e. we can specify our app or apps
     // to have different types, such as 'read-only', 'sync-only', & 'admin'.

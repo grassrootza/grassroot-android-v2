@@ -18,7 +18,7 @@ import za.org.grassroot.android.R;
 import za.org.grassroot.android.dagger.activity.ActivityModule;
 import za.org.grassroot.android.dagger.user.ApiModule;
 import za.org.grassroot.android.presenter.MainPresenter;
-import za.org.grassroot.android.services.auth.UserDetailsService;
+import za.org.grassroot.android.services.UserDetailsService;
 import za.org.grassroot.android.view.MainView;
 
 import static android.Manifest.permission.RECORD_AUDIO;
@@ -161,6 +161,18 @@ public class MainActivity extends GrassrootActivity implements MainView.view {
     @Override
     public void closeProgressBar() {
 
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        cleanUpActivity();
+    }
+
+    @Override
+    public void cleanUpActivity() {
+        mainPresenter.detach(this);
+        mainPresenter.cleanUpForActivity();
     }
 }
 

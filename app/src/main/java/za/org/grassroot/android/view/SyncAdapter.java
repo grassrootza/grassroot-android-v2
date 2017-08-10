@@ -28,6 +28,9 @@ import io.realm.RealmResults;
 import retrofit2.Call;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
+import za.org.grassroot.android.view.legacy.Api;
+import za.org.grassroot.android.view.legacy.Article;
+import za.org.grassroot.android.view.legacy.ArticleContract;
 
 public class SyncAdapter extends AbstractThreadedSyncAdapter {
     private static final String TAG = "SYNC_ADAPTER";

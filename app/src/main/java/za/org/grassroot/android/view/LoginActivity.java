@@ -90,7 +90,7 @@ public class LoginActivity extends GrassrootActivity implements LoginView {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        loginPresenter.detach(this);
+        cleanUpActivity();
     }
 
     private void setToUsernameEntry() {
@@ -172,6 +172,12 @@ public class LoginActivity extends GrassrootActivity implements LoginView {
     @Override
     public Observable<AuthRecoveryResult> showAuthenticationRecoveryDialog() {
         return null;
+    }
+
+    @Override
+    public void cleanUpActivity() {
+        loginPresenter.detach(this);
+        loginPresenter.cleanUpForActivity();
     }
 
     @Override

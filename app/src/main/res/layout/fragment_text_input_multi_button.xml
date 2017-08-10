@@ -1,0 +1,82 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:paddingLeft="@dimen/padding_std_large"
+    android:paddingRight="@dimen/padding_std_large"
+    android:gravity="center_vertical"
+    android:background="@android:color/white"
+    android:layout_centerInParent="true"
+    tools:context="za.org.grassroot.android.view.fragment.SingleTextInputFragment">
+
+    <TextView
+        android:id="@+id/header_text"
+        style="@style/LargeHeader"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        tools:text="@string/login_welcome" />
+
+    <TextView
+        android:id="@+id/explanation_text"
+        style="@style/LargeBodyText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/margin_std_medium"
+        android:layout_marginLeft="@dimen/margin_std_large"
+        android:layout_marginRight="@dimen/margin_std_large"
+        android:paddingLeft="@dimen/padding_std_medium"
+        android:paddingRight="@dimen/padding_std_medium"
+        tools:text="This is an explanation of what people should enter" />
+
+    <EditText
+        android:id="@+id/text_input_field"
+        style="@style/OneLineLargeTextInput"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/margin_std_large"
+        android:layout_marginRight="@dimen/margin_std_large"
+        android:imeOptions="actionDone"
+        android:hint="@string/login_enter_msisdn"/>
+
+    <LinearLayout
+        android:id="@+id/subtitle_buttons_row"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/sub_button_1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.33"
+            tools:text="Option 1"/>
+
+        <Button
+            android:id="@+id/sub_button_2"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.34"
+            tools:text="Option 2"/>
+
+        <Button
+            android:id="@+id/sub_button_3"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.33"
+            tools:text="Option 3"/>
+
+    </LinearLayout>
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        style="@style/ProgressBarMedium"
+        android:visibility="gone"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="@dimen/margin_std_xlarge"
+        />
+
+</LinearLayout>

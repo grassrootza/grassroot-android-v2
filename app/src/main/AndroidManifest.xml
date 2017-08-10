@@ -21,11 +21,6 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <provider
-            android:name=".view.ArticleProvider"
-            android:authorities="za.org.grassroot.android.offlinestorage"
-            android:exported="false"
-            android:syncable="true" />
 
         <activity android:name=".view.activity.MainActivity"
             android:label="@string/title_main_activity">

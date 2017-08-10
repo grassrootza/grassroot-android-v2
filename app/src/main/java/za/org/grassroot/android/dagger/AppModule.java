@@ -8,8 +8,11 @@ import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
-import za.org.grassroot.android.services.auth.UserDetailsService;
-import za.org.grassroot.android.services.auth.UserDetailsServiceImpl;
+import io.realm.Realm;
+import za.org.grassroot.android.services.RealmService;
+import za.org.grassroot.android.services.RealmServiceImpl;
+import za.org.grassroot.android.services.UserDetailsService;
+import za.org.grassroot.android.services.UserDetailsServiceImpl;
 
 /**
  * Created by luke on 2017/08/08.
@@ -37,8 +40,20 @@ public class AppModule {
 
     @Provides
     @Singleton
-    UserDetailsService provideUserDetailsService(AccountManager accountManager) {
-        return new UserDetailsServiceImpl(accountManager);
+    Realm provideRealm() {
+        return Realm.getDefaultInstance();
+    }
+
+    @Provides
+    @Singleton
+    RealmService provideRealmService(final Realm realm) {
+        return new RealmServiceImpl(realm);
+    }
+
+    @Provides
+    @Singleton
+    UserDetailsService provideUserDetailsService(AccountManager accountManager, RealmService realmService) {
+        return new UserDetailsServiceImpl(accountManager, realmService);
     }
 
 }

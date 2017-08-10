@@ -1,8 +1,5 @@
 package za.org.grassroot.android.presenter;
 
-import android.accounts.Account;
-import android.accounts.AccountManager;
-
 import javax.inject.Inject;
 
 import io.reactivex.SingleObserver;
@@ -22,10 +19,10 @@ import za.org.grassroot.android.model.exception.LifecycleOutOfSyncException;
 import za.org.grassroot.android.model.exception.NetworkUnavailableException;
 import za.org.grassroot.android.model.util.PhoneNumberUtil;
 import za.org.grassroot.android.services.auth.AuthConstants;
+import za.org.grassroot.android.services.UserDetailsService;
 import za.org.grassroot.android.services.rest.GrassrootAuthApi;
 import za.org.grassroot.android.services.rest.RestResponse;
 import za.org.grassroot.android.services.rest.RestSubscriber;
-import za.org.grassroot.android.services.auth.UserDetailsService;
 import za.org.grassroot.android.view.GrassrootView;
 import za.org.grassroot.android.view.LoginView;
 import za.org.grassroot.android.view.activity.MainActivity;
@@ -38,15 +35,12 @@ public class LoginPresenter extends ViewPresenter {
     private String userName;
 
     private GrassrootAuthApi grassrootAuthApi;
-    private AccountManager accountManager;
     private UserDetailsService userDetailsService;
 
     @Inject
     public LoginPresenter(GrassrootAuthApi grassrootAuthApi,
-                          AccountManager accountManager,
                           UserDetailsService userDetailsService) {
         this.grassrootAuthApi = grassrootAuthApi;
-        this.accountManager = accountManager;
         this.userDetailsService = userDetailsService;
     }
 
@@ -75,6 +69,11 @@ public class LoginPresenter extends ViewPresenter {
         this.view = null;
         super.detach(view);
         onViewDetached();
+    }
+
+    @Override
+    public void cleanUpForActivity() {
+        userDetailsService.cleanUpForActivity();
     }
 
     @Override
@@ -130,7 +129,6 @@ public class LoginPresenter extends ViewPresenter {
     @Override
     protected void onViewDetached() {
         super.onViewDetached();
-        accountManager = null;
     }
 
     private void stashUsernameAndRequestOtp(String msisdn) {
@@ -190,14 +188,12 @@ public class LoginPresenter extends ViewPresenter {
     }
 
     private void storeSuccessfulAuthAndProceed(RestResponse<TokenResponse> response) {
-        final Account account = getOrCreateAccount();
         final TokenResponse tokenAndUserDetails = response.getData();
-        accountManager.setAuthToken(account, AuthConstants.AUTH_TOKENTYPE, tokenAndUserDetails.getToken());
-        Timber.v("stored auth token, number accounts = " + accountManager.getAccountsByType(AuthConstants.ACCOUNT_TYPE).length);
         userDetailsService.storeUserDetails(tokenAndUserDetails.getUserUid(),
                 tokenAndUserDetails.getMsisdn(),
                 tokenAndUserDetails.getDisplayName(),
-                tokenAndUserDetails.getSystemRole())
+                tokenAndUserDetails.getSystemRole(),
+                tokenAndUserDetails.getToken())
                 .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Consumer<UserProfile>() {
                     @Override
@@ -207,18 +203,5 @@ public class LoginPresenter extends ViewPresenter {
                         view.loginSuccessContinue(tokenAndUserDetails.getToken(), MainActivity.class);
                     }
                 });
-    }
-
-    // todo : move this to service and cycle through if have multiple accounts
-    private Account getOrCreateAccount() {
-        Account[] accounts = accountManager.getAccountsByType(AuthConstants.ACCOUNT_TYPE);
-        Timber.d("number of accounts: " + accounts.length);
-        if (accounts.length != 0) {
-            return accounts[0];
-        } else {
-            Account account = new Account(AuthConstants.ACCOUNT_NAME, AuthConstants.ACCOUNT_TYPE);
-            accountManager.addAccountExplicitly(account, null, null);
-            return account;
-        }
     }
 }

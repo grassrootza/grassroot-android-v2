@@ -1,5 +1,5 @@
 
-package za.org.grassroot.android.view;
+package za.org.grassroot.android.view.legacy;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;

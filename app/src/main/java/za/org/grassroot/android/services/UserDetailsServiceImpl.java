@@ -1,4 +1,4 @@
-package za.org.grassroot.android.services.auth;
+package za.org.grassroot.android.services;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
@@ -10,37 +10,40 @@ import io.reactivex.SingleEmitter;
 import io.reactivex.SingleOnSubscribe;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.functions.Function;
-import io.realm.Realm;
+import timber.log.Timber;
 import za.org.grassroot.android.model.UserProfile;
+import za.org.grassroot.android.services.auth.AuthConstants;
 
 public class UserDetailsServiceImpl implements UserDetailsService {
 
-    private AccountManager accountManager;
+    private final AccountManager accountManager;
+    private final RealmService realmService;
 
     @Inject
-    public UserDetailsServiceImpl(AccountManager accountManager) {
+    public UserDetailsServiceImpl(AccountManager accountManager,
+                                  RealmService realmService) {
         this.accountManager = accountManager;
+        this.realmService = realmService;
+    }
+
+    @Override
+    public void cleanUpForActivity() {
+        realmService.closeRealm();
     }
 
     public Single<UserProfile> storeUserDetails(final String userUid,
                                                 final String userPhone,
                                                 final String userDisplayName,
-                                                final String userSystemRole) {
+                                                final String userSystemRole,
+                                                final String userToken) {
         return Single.create(new SingleOnSubscribe<UserProfile>() {
             @Override
             public void subscribe(@NonNull SingleEmitter<UserProfile> e) throws Exception {
-                Realm realm = Realm.getDefaultInstance();
-                UserProfile userProfile;
-                if (realm.where(UserProfile.class).count() == 0) {
-                    userProfile = new UserProfile();
-                } else {
-                    userProfile = realm.where(UserProfile.class).equalTo("id", 0).findFirst();
-                }
-                realm.beginTransaction();
-                userProfile.updateFields(userUid, userPhone, userDisplayName, userSystemRole);
-                realm.commitTransaction();
+                final Account account = getOrCreateAccount();
+                accountManager.setAuthToken(account, AuthConstants.AUTH_TOKENTYPE, userToken);
+                Timber.v("stored auth token, number accounts = " + accountManager.getAccountsByType(AuthConstants.ACCOUNT_TYPE).length);
+                UserProfile userProfile = realmService.updateOrCreateUserProfile(userUid, userPhone, userDisplayName, userSystemRole);
                 e.onSuccess(userProfile);
-                realm.close();
             }
         });
     }
@@ -58,19 +61,8 @@ public class UserDetailsServiceImpl implements UserDetailsService {
                             accountManager.peekAuthToken(account, AuthConstants.AUTH_TOKENTYPE));
                     accountManager.setPassword(account, null);
                 }
-                // then, wipe the UID etc
-                Realm realm = Realm.getDefaultInstance();
-                final UserProfile userProfile = realm.where(UserProfile.class).equalTo("id", 0).findFirst();
-                if (userProfile != null) {
-                    realm.executeTransaction(new Realm.Transaction() {
-                        @Override
-                        public void execute(Realm realm) {
-                            userProfile.deleteFromRealm();
-                        }
-                    });
-                }
+                realmService.removeUserProfile(); // then, wipe the UID etc
                 e.onSuccess(true);
-                realm.close();
             }
         });
     }
@@ -82,9 +74,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
                     @Override
                     public Boolean apply(@NonNull Boolean aBoolean) throws Exception {
                         // need to think a bit more about this opening & closing of realms
-                        Realm realm = Realm.getDefaultInstance();
-                        realm.deleteAll();
-                        realm.close();
+                        realmService.wipeRealm();
                         return true;
                     }
                 });
@@ -95,6 +85,18 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         return account == null ? null : accountManager.peekAuthToken(account, AuthConstants.AUTH_TOKENTYPE);
     }
 
+    private Account getOrCreateAccount() {
+        Account[] accounts = accountManager.getAccountsByType(AuthConstants.ACCOUNT_TYPE);
+        Timber.d("number of accounts: " + accounts.length);
+        if (accounts.length != 0) {
+            return accounts[0];
+        } else {
+            Account account = new Account(AuthConstants.ACCOUNT_NAME, AuthConstants.ACCOUNT_TYPE);
+            accountManager.addAccountExplicitly(account, null, null);
+            return account;
+        }
+    }
+
     private Account getAccount() {
         Account[] accounts = accountManager.getAccountsByType(AuthConstants.ACCOUNT_TYPE);
         return accounts.length == 0 ? null : accounts[0];
@@ -103,19 +105,13 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
     @Override
     public String getCurrentUserUid() {
-        Realm realm = Realm.getDefaultInstance();
-        UserProfile userProfile = realm.where(UserProfile.class).equalTo("id", 0).findFirst();
-        final String uid = userProfile == null ? null : userProfile.getUid();
-        realm.close();
-        return uid;
+        UserProfile userProfile = realmService.loadUserProfile();
+        return userProfile == null ? null : userProfile.getUid();
     }
 
     @Override
     public String getCurrentUserMsisdn() {
-        Realm realm = Realm.getDefaultInstance();
-        UserProfile userProfile = realm.where(UserProfile.class).equalTo("id", 0).findFirst();
-        final String msisdn = userProfile == null ? null : userProfile.getMsisdn();
-        realm.close();
-        return msisdn;
+        UserProfile userProfile = realmService.loadUserProfile();
+        return userProfile == null ? null : userProfile.getMsisdn();
     }
 }

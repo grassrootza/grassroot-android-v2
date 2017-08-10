@@ -4,4 +4,5 @@ public interface ProgressBarContainer {
 
     void showProgressBar();
     void closeProgressBar();
+
 }

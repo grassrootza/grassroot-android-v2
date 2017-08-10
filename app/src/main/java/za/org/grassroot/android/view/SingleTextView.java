@@ -2,15 +2,14 @@ package za.org.grassroot.android.view;
 
 import io.reactivex.Observable;
 
-public interface  SingleInputView extends ProgressBarContainer {
+/**
+ * Created by luke on 2017/08/10.
+ */
+public interface SingleTextView extends ProgressBarContainer {
 
     Observable<CharSequence> viewCreated();
     Observable<CharSequence> textInputChanged();
-    Observable<CharSequence> textInputNextDone();
-    Observable<CharSequence> textInputBackOther();
 
-    void toggleNextDoneButton(boolean enabled);
-    void toggleBackOtherButton(boolean enabled);
     void setInputDefault(CharSequence defaultValue);
     void displayErrorMessage(int messageRes);
 
@@ -18,5 +17,4 @@ public interface  SingleInputView extends ProgressBarContainer {
     void setImeOptions(int imeOptions);
 
     void focusOnInput();
-
 }

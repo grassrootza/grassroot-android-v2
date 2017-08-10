@@ -1,4 +1,4 @@
-package za.org.grassroot.android.view;
+package za.org.grassroot.android.view.legacy;
 
 import java.util.List;
 

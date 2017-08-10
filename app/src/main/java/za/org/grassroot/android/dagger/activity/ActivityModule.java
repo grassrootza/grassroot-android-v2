@@ -6,7 +6,7 @@ import dagger.Module;
 import dagger.Provides;
 import za.org.grassroot.android.presenter.LoginPresenter;
 import za.org.grassroot.android.presenter.MainPresenter;
-import za.org.grassroot.android.services.auth.UserDetailsService;
+import za.org.grassroot.android.services.UserDetailsService;
 import za.org.grassroot.android.services.rest.GrassrootAuthApi;
 
 /**
@@ -20,7 +20,7 @@ public class ActivityModule {
     LoginPresenter provideLoginPresenter(GrassrootAuthApi grassrootAuthApi,
                                          AccountManager accountManager,
                                          UserDetailsService userDetailsService) {
-        return new LoginPresenter(grassrootAuthApi, accountManager, userDetailsService);
+        return new LoginPresenter(grassrootAuthApi, userDetailsService);
     }
 
     @Provides

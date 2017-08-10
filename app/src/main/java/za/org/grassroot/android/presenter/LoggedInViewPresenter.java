@@ -4,7 +4,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
-import za.org.grassroot.android.services.auth.UserDetailsService;
+import za.org.grassroot.android.services.UserDetailsService;
 import za.org.grassroot.android.view.LoginActivity;
 
 /**

@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.util.Log;
 
 import za.org.grassroot.android.R;
+import za.org.grassroot.android.view.legacy.ArticleContract;
 
 public class OfflineActivity extends AppCompatActivity {
 
