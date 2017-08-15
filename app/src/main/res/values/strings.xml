@@ -20,7 +20,17 @@
 
     <string name="button_login">Login</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <!-- Initial set of main activity strings -->
+    <!-- <string name="main_explanation">Hi! What do you want to do? Just start typing, or explore
+        the buttons below</string> -->
+    <string name="main_explanation">LiveWire! To issue an alert type what\'s happening, or take
+        some media below</string>
+    <string name="take_video">Video</string>
+    <string name="take_photo">Photo</string>
+    <string name="take_audio">Audio</string>
+
+    <!-- Last, some generic errors -->
+    <string name="error_permission_denied">Permission denied</string>
+    <string name="error_file_creation">Error starting camera, check file space</string>
 
 </resources>

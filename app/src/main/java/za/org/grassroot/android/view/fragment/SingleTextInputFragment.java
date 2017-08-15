@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.TextView;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -25,6 +26,7 @@ public class SingleTextInputFragment extends TextInputFragment implements Single
     private int backBtnRes;
     private int nextBtnRes;
 
+    @BindView(R.id.explanation_text) TextView explanation;
     @BindView(R.id.button_back) Button backButton;
     @BindView(R.id.button_next) Button nextButton;
 

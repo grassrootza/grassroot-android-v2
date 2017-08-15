@@ -35,8 +35,6 @@
             android:theme="@style/Theme.AppCompat.FullScreen">
         </activity>
 
-        <activity android:name=".view.activity.VideoActivity" />
-        <activity android:name=".view.activity.PictureActivity" />
         <activity android:name=".view.activity.AudioActivity" />
 
         <service
@@ -61,6 +59,17 @@
                 android:name="android.content.SyncAdapter"
                 android:resource="@xml/syncadapter" />
         </service>
+
+        <provider
+            android:name="android.support.v4.content.FileProvider"
+            android:authorities="za.org.grassroot.android.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths">
+            </meta-data>
+        </provider>
 
         <activity android:name=".view.OfflineActivity" />
     </application>

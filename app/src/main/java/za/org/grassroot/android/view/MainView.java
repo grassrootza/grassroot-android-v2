@@ -1,17 +1,10 @@
 package za.org.grassroot.android.view;
 
-public interface MainView {
-    interface view{
-        void gotoVideoActivity();
-        void gotoAudioActivity();
-        void gotoPictureActivity();
-        void showToastMessage(String msg);
-    }
-    interface presenter{
-        void onVideoBtnClick();
-        void onAudioBtnClick();
-        void onPictureBtnClick();
-        void onLogoutBtnClick();
-        void permissionStatus(Boolean storagePermission, Boolean recordPermission);
-    }
+import io.reactivex.Observable;
+import za.org.grassroot.android.model.dto.BtnGrouping;
+import za.org.grassroot.android.model.dto.BtnReturnBundle;
+
+public interface MainView extends LoggedInView {
+    void setBtnGrouping(BtnGrouping btnGrouping);
+    Observable<BtnReturnBundle> subBarButtonClicked();
 }

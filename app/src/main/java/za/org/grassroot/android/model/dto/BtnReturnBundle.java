@@ -21,4 +21,12 @@ public class BtnReturnBundle {
     public int getButtonActionCode() {
         return buttonActionCode;
     }
+
+    @Override
+    public String toString() {
+        return "BtnReturnBundle{" +
+                "charSequenceInTextInput=" + charSequenceInTextInput +
+                ", buttonActionCode=" + buttonActionCode +
+                '}';
+    }
 }

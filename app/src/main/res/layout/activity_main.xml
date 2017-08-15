@@ -1,36 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:background="@android:color/white"
+    android:id="@+id/main_frag_holder"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    tools:context="za.org.grassroot.android.view.activity.MainActivity">
+    android:animateLayoutChanges="true">
 
-    <Button
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Take Video"
-        android:id="@+id/videoBtn"
-        />
-    <Button
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="take Audio"
-        android:id="@+id/audioBtn"
-        />
-    <Button
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="take Picture"
-        android:id="@+id/pictureBtn"
-        />
-    <Button
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Logout"
-        android:id="@+id/logoutBtn"
-        />
-
-
-</LinearLayout>
+</FrameLayout>

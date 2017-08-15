@@ -6,6 +6,7 @@ import android.accounts.AccountManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Debug;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.view.View;
@@ -14,6 +15,7 @@ import android.widget.Toast;
 
 import javax.inject.Inject;
 
+import dagger.Lazy;
 import io.reactivex.Observable;
 import timber.log.Timber;
 import za.org.grassroot.android.GrassrootApplication;
@@ -26,6 +28,7 @@ import za.org.grassroot.android.view.LoginActivity;
 public abstract class GrassrootActivity extends AppCompatActivity implements GrassrootView {
 
     @Inject
+    Lazy<AccountManager> accountManagerProvider;
     AccountManager accountManager;
 
     private AccountAuthenticatorResponse authResponse = null;
@@ -34,6 +37,7 @@ public abstract class GrassrootActivity extends AppCompatActivity implements Gra
     @Override
     protected void onCreate(Bundle icicle) {
         super.onCreate(icicle);
+        Debug.startMethodTracing("base_activity");
         ((GrassrootApplication) getApplication())
                 .getAppComponent()
                 .inject(this);
@@ -50,12 +54,16 @@ public abstract class GrassrootActivity extends AppCompatActivity implements Gra
             startActivity(loginIntent);
             finish();
         }
+        Debug.stopMethodTracing();
     }
 
     private boolean needsToLoginOrRegister() {
         if (this instanceof LoginActivity) {
             return false;
         } else {
+            if (accountManager == null) {
+                accountManager = accountManagerProvider.get();
+            }
             Account[] accounts = accountManager.getAccountsByType(AuthConstants.ACCOUNT_TYPE);
             return accounts.length == 0 ||
                     TextUtils.isEmpty(accountManager.peekAuthToken(accounts[0], AuthConstants.AUTH_TOKENTYPE));

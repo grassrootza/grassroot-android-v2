@@ -1,6 +1,7 @@
 package za.org.grassroot.android;
 
 import android.app.Application;
+import android.os.Debug;
 
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
@@ -16,6 +17,9 @@ public class GrassrootApplication extends Application {
     private AppComponent appComponent;
     private UserComponent userComponent;
 
+    // since we sometimes want to enforce Realm not deleting itself during development
+    private static final boolean skipMigrationTest = true;
+
     protected AppComponent initDagger(GrassrootApplication application) {
         return DaggerAppComponent.builder()
                 .appModule(new AppModule(application))
@@ -25,9 +29,11 @@ public class GrassrootApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+        Debug.startMethodTracing("app_loader");
         appComponent = initDagger(this);
         initTimber();
         initRealmConfiguration();
+        Debug.stopMethodTracing();
     }
 
     private void initTimber() {
@@ -37,12 +43,13 @@ public class GrassrootApplication extends Application {
     }
 
     private void initRealmConfiguration() {
+        Timber.i("Starting Realm configuration");
         Realm.init(this);
         RealmConfiguration realmConfiguration = new RealmConfiguration.Builder()
                 .build();
         Realm.setDefaultConfiguration(realmConfiguration);
 
-        if (!BuildConfig.DEBUG) {
+        if (!BuildConfig.DEBUG || skipMigrationTest) {
             safeCheckRealmMigration(realmConfiguration);
         }
     }

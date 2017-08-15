@@ -3,10 +3,6 @@ package za.org.grassroot.android.model.dto;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-
 /**
  * Created by luke on 2017/08/10.
  * for now, UX determines only two submenus -- in future may want to change, but don't want to overload now
@@ -14,20 +10,26 @@ import java.util.List;
 
 public class BtnGrouping implements Parcelable {
 
-    BtnParameters[] mainButtons;
-    BtnParameters[] firstSubMenu;
-    BtnParameters[] secondSubMenu;
+    public static final String BUTTON_GROUP_DETAILS = "BUTTON_GROUP_DETAILS";
 
-    public BtnGrouping(BtnParameters[] mainButtons, BtnParameters[] firstSubMenu, BtnParameters[] secondSubMenu) {
-        this.mainButtons = mainButtons;
-        this.firstSubMenu = firstSubMenu;
-        this.secondSubMenu = secondSubMenu;
+    private final BtnParameters[] mainButtons;
+    private final BtnParameters[] firstSubMenu;
+    private final BtnParameters[] secondSubMenu;
+
+    private BtnGrouping(Builder builder) {
+        mainButtons = builder.mainButtons;
+        firstSubMenu = builder.firstSubMenu;
+        secondSubMenu = builder.secondSubMenu;
     }
 
     protected BtnGrouping(Parcel in) {
         mainButtons = in.createTypedArray(BtnParameters.CREATOR);
         firstSubMenu = in.createTypedArray(BtnParameters.CREATOR);
         secondSubMenu = in.createTypedArray(BtnParameters.CREATOR);
+    }
+
+    public static Builder builder() {
+        return new Builder();
     }
 
     @Override
@@ -67,4 +69,31 @@ public class BtnGrouping implements Parcelable {
     }
 
 
+    public static final class Builder {
+        private BtnParameters[] mainButtons;
+        private BtnParameters[] firstSubMenu;
+        private BtnParameters[] secondSubMenu;
+
+        private Builder() {
+        }
+
+        public Builder mainButtons(BtnParameters[] val) {
+            mainButtons = val;
+            return this;
+        }
+
+        public Builder firstSubMenu(BtnParameters[] val) {
+            firstSubMenu = val;
+            return this;
+        }
+
+        public Builder secondSubMenu(BtnParameters[] val) {
+            secondSubMenu = val;
+            return this;
+        }
+
+        public BtnGrouping build() {
+            return new BtnGrouping(this);
+        }
+    }
 }

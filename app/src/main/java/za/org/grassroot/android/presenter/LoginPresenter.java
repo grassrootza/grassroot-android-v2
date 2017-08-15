@@ -27,7 +27,7 @@ import za.org.grassroot.android.view.GrassrootView;
 import za.org.grassroot.android.view.LoginView;
 import za.org.grassroot.android.view.activity.MainActivity;
 
-public class LoginPresenter extends ViewPresenter {
+public class LoginPresenter extends ViewPresenterImpl {
     // public static final String PARAM_AUTHTOKEN_TYPE = "auth_token_type";
     private static final int MIN_OTP_LENGTH = 5;
 

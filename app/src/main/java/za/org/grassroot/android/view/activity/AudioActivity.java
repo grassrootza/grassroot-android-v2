@@ -3,9 +3,9 @@ package za.org.grassroot.android.view.activity;
 import android.content.Intent;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
+import android.os.Bundle;
 import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
@@ -54,7 +54,6 @@ public class AudioActivity extends AppCompatActivity implements AudioView.view {
                 audioPresenter.onButtonStart(mediaRecorder, AudioSavePathInDevice);
                 buttonStart.setEnabled(false);
                 buttonStop.setEnabled(true);
-
             }
         });
 

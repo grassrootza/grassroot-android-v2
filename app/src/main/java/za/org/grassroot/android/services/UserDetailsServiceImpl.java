@@ -28,7 +28,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
     @Override
     public void cleanUpForActivity() {
-        realmService.closeRealm();
+        realmService.closeUiRealm();
     }
 
     public Single<UserProfile> storeUserDetails(final String userUid,

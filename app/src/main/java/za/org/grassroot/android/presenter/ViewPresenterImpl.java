@@ -15,7 +15,7 @@ import za.org.grassroot.android.view.GrassrootView;
  * Created by luke on 2017/08/08.
  */
 
-public abstract class ViewPresenter implements GrassrootPresenter {
+public abstract class ViewPresenterImpl implements ViewPresenter {
 
     CompositeDisposable subscriptions;
     protected GrassrootView view;

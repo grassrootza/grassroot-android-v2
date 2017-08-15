@@ -8,11 +8,14 @@
     <dimen name="margin_std_small">4dp</dimen>
 
     <!-- padding -->
+    <dimen name="padding_std_xlarge">20dp</dimen>
     <dimen name="padding_std_large">16dp</dimen>
     <dimen name="padding_std_medium">8dp</dimen>
 
     <!-- text -->
     <dimen name="txt_header_1">24sp</dimen>
+    <dimen name="txt_header_2">20sp</dimen>
+    <dimen name="txt_header_3">18sp</dimen>
     <dimen name="txt_body_large">15sp</dimen>
 
     <!-- progress bar -->

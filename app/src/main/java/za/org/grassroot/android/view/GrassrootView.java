@@ -8,7 +8,6 @@ import za.org.grassroot.android.model.enums.ConnectionResult;
 
 public interface GrassrootView extends ProgressBarContainer {
 
-    // emits true when connection restored, or false if
     Observable<ConnectionResult> showConnectionFailedDialog();
     Observable<AuthRecoveryResult> showAuthenticationRecoveryDialog();
 
@@ -19,5 +18,6 @@ public interface GrassrootView extends ProgressBarContainer {
     void closeKeyboard();
 
     void launchActivity(Class<?> cls, Bundle args);
+
     void cleanUpActivity();
 }

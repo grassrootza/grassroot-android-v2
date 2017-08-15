@@ -2,6 +2,7 @@ package za.org.grassroot.android;
 
 /**
  * Created by luke on 2017/08/08.
+ * todo : move to DI
  */
 
 public class Constants {

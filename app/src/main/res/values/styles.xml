@@ -23,6 +23,12 @@
         <item name="android:textStyle">bold</item>
     </style>
 
+    <style name="MediumHeader">
+        <item name="android:textSize">@dimen/txt_header_3</item>
+        <item name="android:textColor">@color/colorPrimary</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
     <style name="LargeBodyText">
         <item name="android:textSize">@dimen/txt_body_large</item>
         <item name="android:textColor">@android:color/primary_text_light</item>
