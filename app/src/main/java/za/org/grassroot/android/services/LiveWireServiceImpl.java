@@ -2,24 +2,31 @@ package za.org.grassroot.android.services;
 
 import javax.inject.Inject;
 
+import io.reactivex.Observable;
 import io.reactivex.Single;
 import io.reactivex.SingleEmitter;
 import io.reactivex.SingleOnSubscribe;
 import io.reactivex.annotations.NonNull;
+import io.reactivex.functions.Function;
+import timber.log.Timber;
 import za.org.grassroot.android.model.LiveWireAlert;
 import za.org.grassroot.android.model.MediaFile;
+import za.org.grassroot.android.model.UploadResult;
+import za.org.grassroot.android.model.exception.LiveWireAlertNotCompleteException;
 
 /**
  * Created by luke on 2017/08/15.
  */
 
-class LiveWireServiceImpl implements LiveWireService {
+public class LiveWireServiceImpl implements LiveWireService {
 
     private final RealmService realmService;
+    private final NetworkService networkService;
 
     @Inject
-    public LiveWireServiceImpl(RealmService realmService) {
+    public LiveWireServiceImpl(RealmService realmService, NetworkService networkService) {
         this.realmService = realmService;
+        this.networkService = networkService;
     }
 
     @Override
@@ -56,9 +63,9 @@ class LiveWireServiceImpl implements LiveWireService {
             @Override
             public void subscribe(@NonNull SingleEmitter<Boolean> e) throws Exception {
                 MediaFile mediaFile = realmService.loadObjectByUid(MediaFile.class, mediaFileUid, false);
-                LiveWireAlert alert = realmService.loadObjectByUid(LiveWireAlert.class, alertUid, false);
+                LiveWireAlert alert = loadAlertToEdit(alertUid);
                 alert.setMediaFile(mediaFile);
-                e.onSuccess(true);
+                tidyUp(e);
             }
         });
     }
@@ -68,30 +75,88 @@ class LiveWireServiceImpl implements LiveWireService {
         return Single.create(new SingleOnSubscribe<Boolean>() {
             @Override
             public void subscribe(@NonNull SingleEmitter<Boolean> e) throws Exception {
-                LiveWireAlert alert = realmService.loadObjectByUid(LiveWireAlert.class, alertUid, false);
+                LiveWireAlert alert = loadAlertToEdit(alertUid);
                 alert.setHeadline(headline);
-                e.onSuccess(true);
+                tidyUp(e);
             }
         });
     }
 
     @Override
-    public Single<Boolean> updateAlertDescription(String alertUid, String description) {
-        return null;
+    public Single<Boolean> updateAlertDescription(final String alertUid, final String description) {
+        return Single.create(new SingleOnSubscribe<Boolean>() {
+            @Override
+            public void subscribe(@NonNull SingleEmitter<Boolean> e) throws Exception {
+                LiveWireAlert alert = realmService.loadObjectByUid(LiveWireAlert.class, alertUid, false);
+                alert.setDescription(description);
+                tidyUp(e);
+            }
+        });
     }
 
     @Override
-    public Single<Boolean> updateAlertGroupUid(String alertUid, String groupUid) {
-        return null;
+    public Single<Boolean> setGenericAlert(final String alertUid, final String groupUid) {
+        return Single.create(new SingleOnSubscribe<Boolean>() {
+            @Override
+            public void subscribe(@NonNull SingleEmitter<Boolean> e) throws Exception {
+                LiveWireAlert alert = loadAlertToEdit(alertUid);
+                alert.setAlertType(LiveWireAlert.TYPE_GENERIC);
+                alert.setGroupUid(groupUid);
+                tidyUp(e);
+            }
+        });
     }
 
     @Override
-    public Single<Boolean> updateAlertTaskUid(String alertUid, String taskUid, String taskType) {
-        return null;
+    public Single<Boolean> setMeetingAlert(final String alertUid, final String meetingUid) {
+        return Single.create(new SingleOnSubscribe<Boolean>() {
+            @Override
+            public void subscribe(@NonNull SingleEmitter<Boolean> e) throws Exception {
+                LiveWireAlert alert = loadAlertToEdit(alertUid);
+                alert.setAlertType(LiveWireAlert.TYPE_MEETING);
+                alert.setTaskUid(meetingUid);
+                tidyUp(e);
+            }
+        });
     }
 
     @Override
-    public Single<Boolean> markAlertReadyForReview(String alertUid) {
-        return null;
+    public Single<Boolean> markAlertReadyForDispatch(final String alertUid) {
+        return Single.create(new SingleOnSubscribe<Boolean>() {
+            @Override
+            public void subscribe(@NonNull SingleEmitter<Boolean> e) throws Exception {
+                LiveWireAlert alert = loadAlertToEdit(alertUid);
+                if (alert.areMinimumFieldsComplete()) {
+                    alert.setComplete(true);
+                    tidyUp(e);
+                } else {
+                    e.onError(new LiveWireAlertNotCompleteException());
+                    realmService.closeRealmOnThread();
+                }
+            }
+        });
+    }
+
+    @Override
+    public Observable<String> triggerAlertDispatch(String alertUid) {
+        LiveWireAlert alert = realmService.loadObjectByUid(LiveWireAlert.class, alertUid, true);
+        return networkService.uploadEntity(alert, false)
+                .map(new Function<UploadResult, String>() {
+                    @Override
+                    public String apply(@NonNull UploadResult uploadResult) throws Exception {
+                        // and process it properly here
+                        Timber.d("upload result: " + uploadResult);
+                        return uploadResult.getServerUid();
+                    }
+                });
+    }
+
+    private LiveWireAlert loadAlertToEdit(final String alertUid) {
+        return realmService.loadObjectByUid(LiveWireAlert.class, alertUid, false);
+    }
+
+    private void tidyUp(SingleEmitter<Boolean> e) {
+        e.onSuccess(true);
+        realmService.closeRealmOnThread();
     }
 }

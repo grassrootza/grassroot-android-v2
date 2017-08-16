@@ -1,5 +1,6 @@
 package za.org.grassroot.android.services;
 
+import io.reactivex.Observable;
 import io.reactivex.Single;
 
 /**
@@ -23,10 +24,13 @@ public interface LiveWireService {
 
     Single<Boolean> updateAlertDescription(String alertUid, String description);
 
-    Single<Boolean> updateAlertGroupUid(String alertUid, String groupUid);
+    Single<Boolean> setGenericAlert(String alertUid, String groupUid);
 
-    Single<Boolean> updateAlertTaskUid(String alertUid, String taskUid, String taskType);
+    Single<Boolean> setMeetingAlert(String alertUid, String meetingUid);
 
-    Single<Boolean> markAlertReadyForReview(String alertUid);
+    Single<Boolean> markAlertReadyForDispatch(String alertUid);
+
+    // returns one by if there are media files that have to be uploaded first
+    Observable<String> triggerAlertDispatch(String alertUid);
 
 }

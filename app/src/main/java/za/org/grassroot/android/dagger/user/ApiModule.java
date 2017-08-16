@@ -7,13 +7,14 @@ import javax.inject.Named;
 import dagger.Module;
 import dagger.Provides;
 import okhttp3.OkHttpClient;
-import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Converter;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import za.org.grassroot.android.Constants;
+import za.org.grassroot.android.services.NetworkService;
+import za.org.grassroot.android.services.NetworkServiceImpl;
+import za.org.grassroot.android.services.UserDetailsService;
 import za.org.grassroot.android.services.rest.AddTokenInterceptor;
-import za.org.grassroot.android.services.rest.CommonErrorHandlerInterceptor;
 import za.org.grassroot.android.services.rest.GrassrootUserApi;
 
 /**
@@ -54,6 +55,12 @@ public class ApiModule {
     @UserScope
     GrassrootUserApi provideGrassrootRestService(Retrofit retrofit) {
         return retrofit.create(GrassrootUserApi.class);
+    }
+
+    @Provides
+    @UserScope
+    NetworkService provideNetworkService(UserDetailsService userDetailsService, GrassrootUserApi grassrootUserApi) {
+        return new NetworkServiceImpl(userDetailsService, grassrootUserApi);
     }
 
 }

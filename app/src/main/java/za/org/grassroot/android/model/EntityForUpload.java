@@ -3,12 +3,16 @@ package za.org.grassroot.android.model;
 import java.util.ArrayList;
 
 import io.reactivex.annotations.Nullable;
+import za.org.grassroot.android.model.enums.UploadableEntityType;
 
 /**
  * Created by luke on 2017/08/15.
  * Interface to handle queueing and uploading
  */
 public interface EntityForUpload {
+
+    UploadableEntityType getType();
+    String getUid();
 
     void initUploading();
     void haltUploading(boolean uploadSucceded);

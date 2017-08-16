@@ -5,6 +5,7 @@ import java.util.UUID;
 
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
+import za.org.grassroot.android.model.enums.UploadableEntityType;
 
 /**
  * Created by luke on 2017/08/15.
@@ -15,6 +16,7 @@ public class MediaFile extends RealmObject implements EntityForUpload {
 
     @PrimaryKey
     private String uid;
+    private String serverUid;
 
     // Realm cannot store URI, hence using String
     private String localPath;
@@ -24,11 +26,13 @@ public class MediaFile extends RealmObject implements EntityForUpload {
     private boolean compressOnSend = false;
     private boolean sendingUpstream = false;
     private boolean sentUpstream = false;
-    private String upstreamUrl;
+
+    private String upstreamBucket; // will be set by server, and allows us to retrieve later, if we need (key will always be userUid + localUid)
 
     public MediaFile() {
         this.uid = UUID.randomUUID().toString();
     }
+
 
     public MediaFile(String localUri, String mimeType) {
         this();
@@ -38,6 +42,14 @@ public class MediaFile extends RealmObject implements EntityForUpload {
 
     public String getUid() {
         return uid;
+    }
+
+    public String getServerUid() {
+        return serverUid;
+    }
+
+    public void setServerUid(String serverUid) {
+        this.serverUid = serverUid;
     }
 
     public String getLocalPath() {
@@ -72,16 +84,21 @@ public class MediaFile extends RealmObject implements EntityForUpload {
         this.sentUpstream = sentUpstream;
     }
 
-    public String getUpstreamUrl() {
-        return upstreamUrl;
+    public String getUpstreamBucket() {
+        return upstreamBucket;
     }
 
-    public void setUpstreamUrl(String upstreamUrl) {
-        this.upstreamUrl = upstreamUrl;
+    public void setUpstreamBucket(String upstreamBucket) {
+        this.upstreamBucket = upstreamBucket;
     }
 
     public void setReadyToUpload(boolean readyToUpload) {
         this.readyToUpload = readyToUpload;
+    }
+
+    @Override
+    public UploadableEntityType getType() {
+        return UploadableEntityType.MEDIA_FILE;
     }
 
     @Override
