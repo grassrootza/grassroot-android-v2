@@ -33,4 +33,12 @@
     <string name="error_permission_denied">Permission denied</string>
     <string name="error_file_creation">Error starting camera, check file space</string>
 
+    <!-- Generic strings for a menu, of sorts -->
+    <string name="main_sync">Sync</string>
+    <string name="main_logout">Logout</string>
+
+    <!-- Strings for account preference screen -->
+    <string name="sync_on_title">Sync</string>
+    <string name="sync_on_desc">Refresh automatically, unless Android is Android</string>
+
 </resources>

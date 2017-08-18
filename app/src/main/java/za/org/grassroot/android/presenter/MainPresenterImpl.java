@@ -64,7 +64,7 @@ public class MainPresenterImpl extends LoggedInViewPresenterImpl implements Main
         try {
             super.attach(view);
             this.view = view;
-            onViewAttached();
+            realmService.openUiRealm();
         } catch (ClassCastException e) {
             handleGenericKnownException(new InvalidViewForPresenterException());
             super.detach(view);
@@ -72,13 +72,35 @@ public class MainPresenterImpl extends LoggedInViewPresenterImpl implements Main
     }
 
     @Override
-    protected void onViewAttached() {
-        subscriptions.add(view.subBarButtonClicked()
+    public void onViewCreated() {
+        subscriptions.add(view.threeButtonRowButtonClicked()
                 .subscribe(new Consumer<BtnReturnBundle>() {
             @Override
             public void accept(@NonNull BtnReturnBundle btnReturnBundle) throws Exception {
                 Timber.d("btnReturnBundle: " + btnReturnBundle);
                 handleSubButtonClick(btnReturnBundle);
+            }
+        }));
+    }
+
+    @Override
+    public void menuReady() {
+        subscriptions.add(view.logoutClicked().subscribe(new Consumer<Boolean>() {
+            @Override
+            public void accept(@NonNull Boolean valid) throws Exception {
+                if (valid) {
+                    logoutRetainingData();
+                }
+            }
+        }));
+
+        subscriptions.add(view.syncTriggered().subscribe(new Consumer<Boolean>() {
+            @Override
+            public void accept(@NonNull Boolean valid) throws Exception {
+                if (valid) {
+                    Timber.i("sync triggered in main presenter");
+                    triggerAccountSync();
+                }
             }
         }));
     }
@@ -137,6 +159,7 @@ public class MainPresenterImpl extends LoggedInViewPresenterImpl implements Main
         }
     }
 
+    // todo: switch this to using media service, abstract away / separate realm, quickly
     private void takePhoto() {
         mediaService.createFileForMedia("image/jpeg")
                 .subscribeOn(Schedulers.io())
@@ -226,6 +249,7 @@ public class MainPresenterImpl extends LoggedInViewPresenterImpl implements Main
 
     @Override
     public void cleanUpForActivity() {
-        Timber.e("Need to fix up in here");
+        Timber.i("Cleaning up activity, including closing Realm instance");
+        userDetailsService.cleanUpForActivity();
     }
 }

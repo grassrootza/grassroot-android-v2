@@ -1,23 +1,31 @@
 package za.org.grassroot.android.services.rest;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
-import io.reactivex.Single;
+import io.reactivex.Observable;
 import okhttp3.MultipartBody;
 import retrofit2.Call;
+import retrofit2.http.Body;
 import retrofit2.http.GET;
 import retrofit2.http.Multipart;
 import retrofit2.http.POST;
 import retrofit2.http.Part;
+import retrofit2.http.Path;
 import retrofit2.http.Query;
 import za.org.grassroot.android.model.Group;
 
 public interface GrassrootUserApi {
 
     // Fetching groups
-    @GET("/api/group/get/all")
-    Single<List<Group>> fetchAllGroups(@Query("userUid") String userUid);
+    @POST("/api/mobile/group/fetch/updated/{userUid}")
+    Observable<RestResponse<List<Group>>> fetchUserGroups(@Path("userUid") String userUid,
+                                                          @Body Map<String, Long> existingUids);
+
+    @GET("/api/mobile/group/fetch/info/{userUid}")
+    Observable<RestResponse<List<Group>>> fetchGroupsInfo(@Path("userUid") String userUid,
+                                                          @Query("groupUids") List<String> groupUids);
 
     // Send a media file to the server for storage
     @Multipart

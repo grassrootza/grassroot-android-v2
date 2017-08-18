@@ -6,6 +6,7 @@ import za.org.grassroot.android.view.MainView;
 public interface MainPresenter extends LoggedInViewPresenter {
 
     void attach(MainView view);
+    void menuReady();
     BtnGrouping obtainDefaultSubButtons();
 
 }

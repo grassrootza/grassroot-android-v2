@@ -1,5 +1,6 @@
 package za.org.grassroot.android.view;
 
+import android.app.Activity;
 import android.os.Bundle;
 
 import io.reactivex.Observable;
@@ -7,6 +8,8 @@ import za.org.grassroot.android.model.enums.AuthRecoveryResult;
 import za.org.grassroot.android.model.enums.ConnectionResult;
 
 public interface GrassrootView extends ProgressBarContainer {
+
+    Activity getActivity();
 
     Observable<ConnectionResult> showConnectionFailedDialog();
     Observable<AuthRecoveryResult> showAuthenticationRecoveryDialog();
@@ -18,6 +21,5 @@ public interface GrassrootView extends ProgressBarContainer {
     void closeKeyboard();
 
     void launchActivity(Class<?> cls, Bundle args);
-
     void cleanUpActivity();
 }

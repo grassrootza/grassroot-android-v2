@@ -38,7 +38,7 @@
         <activity android:name=".view.activity.AudioActivity" />
 
         <service
-            android:name=".services.auth.GrassrootAuthServiceImpl"
+            android:name=".services.account.GrassrootAuthService"
             android:exported="false">
             <intent-filter>
                 <action android:name="android.accounts.AccountAuthenticator" />
@@ -49,7 +49,7 @@
         </service>
 
         <service
-            android:name=".view.SyncService"
+            android:name=".services.account.SyncService"
             android:exported="true"
             android:process=":sync">
             <intent-filter>
@@ -59,6 +59,12 @@
                 android:name="android.content.SyncAdapter"
                 android:resource="@xml/syncadapter" />
         </service>
+
+        <provider
+            android:authorities="za.org.grassroot.android.syncprovider"
+            android:name="za.org.grassroot.android.services.account.StubProvider"
+            android:exported="false"
+            android:syncable="true" />
 
         <provider
             android:name="android.support.v4.content.FileProvider"
@@ -71,7 +77,6 @@
             </meta-data>
         </provider>
 
-        <activity android:name=".view.OfflineActivity" />
     </application>
 
 </manifest>

@@ -10,5 +10,6 @@ public interface ViewPresenter extends GrassrootPresenter {
 
     void attach(GrassrootView view);
     void detach(GrassrootView view);
+    void onViewCreated();
 
 }

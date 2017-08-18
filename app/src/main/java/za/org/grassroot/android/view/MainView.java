@@ -6,5 +6,5 @@ import za.org.grassroot.android.model.dto.BtnReturnBundle;
 
 public interface MainView extends LoggedInView {
     void setBtnGrouping(BtnGrouping btnGrouping);
-    Observable<BtnReturnBundle> subBarButtonClicked();
+    Observable<BtnReturnBundle> threeButtonRowButtonClicked();
 }

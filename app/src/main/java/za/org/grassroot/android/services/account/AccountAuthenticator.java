@@ -1,4 +1,4 @@
-package za.org.grassroot.android.services.auth;
+package za.org.grassroot.android.services.account;
 
 import android.accounts.AbstractAccountAuthenticator;
 import android.accounts.Account;
@@ -10,25 +10,17 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 
-import javax.inject.Inject;
-
 import timber.log.Timber;
-import za.org.grassroot.android.dagger.ApplicationContext;
-import za.org.grassroot.android.services.rest.GrassrootAuthApi;
 import za.org.grassroot.android.view.LoginActivity;
 
 public class AccountAuthenticator extends AbstractAccountAuthenticator {
 
-    private final GrassrootAuthApi grassrootAuthApi;
     private final Context context;
 
-    @Inject
-    public AccountAuthenticator(@ApplicationContext Context context,
-                                GrassrootAuthApi grassrootAuthApi) {
+    public AccountAuthenticator(Context context) {
         super(context);
         this.context = context;
-        this.grassrootAuthApi = grassrootAuthApi;
-        Timber.i("created the account authenticator");
+        Timber.e("created the account authenticator");
     }
 
     @Override
@@ -37,8 +29,9 @@ public class AccountAuthenticator extends AbstractAccountAuthenticator {
     }
 
     @Override
-    public Bundle addAccount(AccountAuthenticatorResponse accountAuthenticatorResponse, String accountType, String authTokenType, String[] features, Bundle options) throws NetworkErrorException {
-        Timber.d("adding an account! inside authenticator, of type: " + accountType);
+    public Bundle addAccount(AccountAuthenticatorResponse accountAuthenticatorResponse, String accountType,
+                             String authTokenType, String[] features, Bundle options) throws NetworkErrorException {
+        Timber.e("adding an account! inside authenticator, of type: " + accountType);
         final Intent intent = new Intent(context, LoginActivity.class);
         intent.putExtra(AccountManager.KEY_ACCOUNT_TYPE, accountType);
         intent.putExtra(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE, accountAuthenticatorResponse);
@@ -85,5 +78,12 @@ public class AccountAuthenticator extends AbstractAccountAuthenticator {
     @Override
     public Bundle hasFeatures(AccountAuthenticatorResponse accountAuthenticatorResponse, Account account, String[] strings) throws NetworkErrorException {
         return null;
+    }
+
+    @Override
+    public Bundle getAccountRemovalAllowed(AccountAuthenticatorResponse response, Account account) {
+        Bundle result = new Bundle();
+        result.putBoolean(AccountManager.KEY_BOOLEAN_RESULT, true);
+        return result;
     }
 }

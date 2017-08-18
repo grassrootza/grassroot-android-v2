@@ -11,5 +11,6 @@ public interface LoggedInViewPresenter extends ViewPresenter {
     void handleActivityResult(int requestCode, Intent data);
     void handleActivityResultError(int requestCode, int resultCode, Intent data);
     void logoutRetainingData();
+    void triggerAccountSync();
 
 }

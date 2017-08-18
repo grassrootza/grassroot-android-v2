@@ -18,8 +18,8 @@ import za.org.grassroot.android.model.exception.InvalidViewForPresenterException
 import za.org.grassroot.android.model.exception.LifecycleOutOfSyncException;
 import za.org.grassroot.android.model.exception.NetworkUnavailableException;
 import za.org.grassroot.android.model.util.PhoneNumberUtil;
-import za.org.grassroot.android.services.auth.AuthConstants;
 import za.org.grassroot.android.services.UserDetailsService;
+import za.org.grassroot.android.services.account.AuthConstants;
 import za.org.grassroot.android.services.rest.GrassrootAuthApi;
 import za.org.grassroot.android.services.rest.RestResponse;
 import za.org.grassroot.android.services.rest.RestSubscriber;
@@ -49,7 +49,6 @@ public class LoginPresenter extends ViewPresenterImpl {
         try {
             super.attach(passedView);
             view = (LoginView) passedView;
-            onViewAttached();
         } catch (ClassCastException e) {
             handleGenericKnownException(new InvalidViewForPresenterException());
             super.detach(view);
@@ -77,7 +76,7 @@ public class LoginPresenter extends ViewPresenterImpl {
     }
 
     @Override
-    protected void onViewAttached() {
+    public void onViewCreated() {
         try {
             subscriptions.add(view.usernameChanged().subscribe(new Consumer<CharSequence>() {
                 @Override

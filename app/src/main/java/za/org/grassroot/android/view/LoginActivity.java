@@ -22,7 +22,7 @@ import za.org.grassroot.android.dagger.login.NoAuthApiModule;
 import za.org.grassroot.android.model.enums.AuthRecoveryResult;
 import za.org.grassroot.android.model.enums.ConnectionResult;
 import za.org.grassroot.android.presenter.LoginPresenter;
-import za.org.grassroot.android.services.auth.AuthConstants;
+import za.org.grassroot.android.services.account.AuthConstants;
 import za.org.grassroot.android.view.activity.GrassrootActivity;
 import za.org.grassroot.android.view.fragment.SingleTextInputFragment;
 
@@ -48,6 +48,7 @@ public class LoginActivity extends GrassrootActivity implements LoginView {
         ButterKnife.bind(this);
 
         Timber.d("is login presenter injected? " + (loginPresenter != null));
+        loginPresenter.attach(LoginActivity.this);
 
         usernameFragment = SingleTextInputFragment.newInstance(R.string.login_welcome,
                 R.string.login_enter_msisdn,
@@ -56,7 +57,7 @@ public class LoginActivity extends GrassrootActivity implements LoginView {
         usernameFragment.viewCreated().subscribe(new Consumer<CharSequence>() {
             @Override
             public void accept(@NonNull CharSequence sequence) throws Exception {
-                loginPresenter.attach(LoginActivity.this);
+                loginPresenter.onViewCreated();
                 usernameFragment.toggleNextDoneButton(false);
                 usernameFragment.setInputType(InputType.TYPE_CLASS_PHONE);
                 usernameFragment.setImeOptions(EditorInfo.IME_ACTION_NEXT);

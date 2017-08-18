@@ -1,8 +1,8 @@
-<account-authenticator xmlns:android="http://schemas.android.com/apk/res/android"
+<account-authenticator
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:accountType="za.org.grassroot.android"
     android:icon="@mipmap/ic_launcher"
     android:smallIcon="@mipmap/ic_launcher"
     android:label="@string/app_name"
-    android:accountPreferences="@xml/syncsettings"
+    android:accountPreferences="@xml/account_prefs"
     />
-    <!-- android:accountPreferences="@xml/prefs" /> -->

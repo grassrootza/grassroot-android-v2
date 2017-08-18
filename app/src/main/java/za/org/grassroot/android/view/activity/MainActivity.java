@@ -2,6 +2,9 @@ package za.org.grassroot.android.view.activity;
 
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 
 import javax.inject.Inject;
 
@@ -16,6 +19,7 @@ import za.org.grassroot.android.dagger.user.ApiModule;
 import za.org.grassroot.android.model.dto.BtnGrouping;
 import za.org.grassroot.android.model.dto.BtnReturnBundle;
 import za.org.grassroot.android.presenter.MainPresenter;
+import za.org.grassroot.android.rxbinding.RxViewUtils;
 import za.org.grassroot.android.services.UserDetailsService;
 import za.org.grassroot.android.view.MainView;
 import za.org.grassroot.android.view.fragment.SingleTextMultiButtonFragment;
@@ -31,6 +35,9 @@ public class MainActivity extends LoggedInActivity implements MainView {
     BtnGrouping btnGrouping;
     SingleTextMultiButtonFragment mainFragment;
 
+    MenuItem logoutItem;
+    MenuItem syncItem;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -41,6 +48,7 @@ public class MainActivity extends LoggedInActivity implements MainView {
                 .plus(new ActivityModule())
                 .inject(this);
         setActivePresenter(mainPresenter);
+        mainPresenter.attach(MainActivity.this);
 
         Bundle extras = getIntent().getExtras();
         btnGrouping = (extras == null) ? null : (BtnGrouping) extras.getParcelable(BtnGrouping.BUTTON_GROUP_DETAILS);
@@ -51,18 +59,31 @@ public class MainActivity extends LoggedInActivity implements MainView {
         mainFragment = SingleTextMultiButtonFragment.newInstance(
                 R.string.main_explanation,
                 false, -1, btnGrouping);
-        Timber.e("Created main fragment, subscribing to view created");
+        Timber.d("Created main fragment, subscribing to view created");
+
         mainFragment.viewCreated().subscribe(new Consumer<CharSequence>() {
             @Override
             public void accept(@NonNull CharSequence sequence) throws Exception {
-                Timber.e("Fragment view created, telling presenter to attach view");
-                mainPresenter.attach(MainActivity.this);
+                Timber.d("Fragment view created, telling presenter to attach view");
+                mainPresenter.onViewCreated();
             }
         });
 
         getSupportFragmentManager().beginTransaction()
                 .add(R.id.main_frag_holder, mainFragment)
                 .commit();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_home_screen, menu);
+        logoutItem = menu.findItem(R.id.menu_logout);
+        syncItem = menu.findItem(R.id.menu_sync);
+        if (logoutItem != null && syncItem != null) {
+            mainPresenter.menuReady();
+        }
+        return true;
     }
 
     // todo: pass it back to presenter
@@ -106,9 +127,19 @@ public class MainActivity extends LoggedInActivity implements MainView {
     }
 
     @Override
-    public Observable<BtnReturnBundle> subBarButtonClicked() {
+    public Observable<BtnReturnBundle> threeButtonRowButtonClicked() {
         Timber.v("returning sub bar button clicked observables");
         return mainFragment.subtitleButtonClicked();
+    }
+
+    @Override
+    public Observable<Boolean> logoutClicked() {
+        return RxViewUtils.nullSafeMenuClick(logoutItem);
+    }
+
+    @Override
+    public Observable<Boolean> syncTriggered() {
+        return RxViewUtils.nullSafeMenuClick(syncItem);
     }
 }
 

@@ -5,7 +5,8 @@ import java.util.UUID;
 
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
-import za.org.grassroot.android.model.enums.UploadableEntityType;
+import za.org.grassroot.android.model.enums.NetworkEntityType;
+import za.org.grassroot.android.model.network.EntityForUpload;
 
 /**
  * Created by luke on 2017/08/15.
@@ -97,8 +98,8 @@ public class MediaFile extends RealmObject implements EntityForUpload {
     }
 
     @Override
-    public UploadableEntityType getType() {
-        return UploadableEntityType.MEDIA_FILE;
+    public NetworkEntityType getType() {
+        return NetworkEntityType.MEDIA_FILE;
     }
 
     @Override

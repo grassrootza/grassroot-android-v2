@@ -1,14 +1,21 @@
 package za.org.grassroot.android.dagger;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
+
 import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
+import io.realm.RealmList;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Converter;
 import retrofit2.converter.gson.GsonConverterFactory;
 import za.org.grassroot.android.BuildConfig;
+import za.org.grassroot.android.model.helper.RealmString;
+import za.org.grassroot.android.model.helper.StringRealmListConverter;
 import za.org.grassroot.android.services.rest.CommonErrorHandlerInterceptor;
 
 /**
@@ -20,7 +27,12 @@ public class NetworkModule {
     @Provides
     @Singleton
     Converter.Factory provideGsonConverter() {
-        return GsonConverterFactory.create();
+        Gson gson = new GsonBuilder()
+                .registerTypeAdapter(new TypeToken<RealmList<RealmString>>() {}.getType(),
+                        new StringRealmListConverter())
+                .create();
+        return GsonConverterFactory
+                .create(gson);
     }
 
     @Provides

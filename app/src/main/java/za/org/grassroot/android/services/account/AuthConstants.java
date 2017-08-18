@@ -1,4 +1,4 @@
-package za.org.grassroot.android.services.auth;
+package za.org.grassroot.android.services.account;
 
 public interface AuthConstants {
     String ACCOUNT_TYPE = "za.org.grassroot.android";

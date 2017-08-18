@@ -11,7 +11,7 @@ import okhttp3.Interceptor;
 import okhttp3.Request;
 import okhttp3.Response;
 import timber.log.Timber;
-import za.org.grassroot.android.services.auth.AuthConstants;
+import za.org.grassroot.android.services.account.AuthConstants;
 
 public final class AddTokenInterceptor implements Interceptor {
 

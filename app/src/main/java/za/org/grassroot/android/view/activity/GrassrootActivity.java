@@ -3,6 +3,7 @@ package za.org.grassroot.android.view.activity;
 import android.accounts.Account;
 import android.accounts.AccountAuthenticatorResponse;
 import android.accounts.AccountManager;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -21,7 +22,7 @@ import timber.log.Timber;
 import za.org.grassroot.android.GrassrootApplication;
 import za.org.grassroot.android.model.enums.AuthRecoveryResult;
 import za.org.grassroot.android.model.enums.ConnectionResult;
-import za.org.grassroot.android.services.auth.AuthConstants;
+import za.org.grassroot.android.services.account.AuthConstants;
 import za.org.grassroot.android.view.GrassrootView;
 import za.org.grassroot.android.view.LoginActivity;
 
@@ -68,6 +69,11 @@ public abstract class GrassrootActivity extends AppCompatActivity implements Gra
             return accounts.length == 0 ||
                     TextUtils.isEmpty(accountManager.peekAuthToken(accounts[0], AuthConstants.AUTH_TOKENTYPE));
         }
+    }
+
+    @Override
+    public Activity getActivity() {
+        return this;
     }
 
     @Override

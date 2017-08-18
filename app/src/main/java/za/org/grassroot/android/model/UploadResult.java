@@ -1,6 +1,7 @@
 package za.org.grassroot.android.model;
 
-import za.org.grassroot.android.model.enums.UploadableEntityType;
+import za.org.grassroot.android.model.enums.NetworkEntityType;
+import za.org.grassroot.android.model.network.EntityForUpload;
 
 /**
  * Created by luke on 2017/08/16.
@@ -9,13 +10,13 @@ import za.org.grassroot.android.model.enums.UploadableEntityType;
 
 public class UploadResult {
 
-    private final UploadableEntityType entityType;
+    private final NetworkEntityType entityType;
     private final String localUid;
     private final String serverUid;
     private final EntityForUpload returnedEntity;
     private final Throwable uploadException;
 
-    public UploadResult(final UploadableEntityType entityType, final String localUid, final String serverUid) {
+    public UploadResult(final NetworkEntityType entityType, final String localUid, final String serverUid) {
         this.entityType = entityType;
         this.localUid = localUid;
         this.serverUid = serverUid;
@@ -23,7 +24,7 @@ public class UploadResult {
         this.uploadException = null;
     }
 
-    public UploadResult(final UploadableEntityType entityType, EntityForUpload returnedEntity) {
+    public UploadResult(final NetworkEntityType entityType, EntityForUpload returnedEntity) {
         this.entityType = entityType;
         this.returnedEntity = returnedEntity;
         this.localUid = null;
@@ -31,7 +32,7 @@ public class UploadResult {
         this.uploadException = null;
     }
 
-    public UploadResult(final UploadableEntityType entityType, final Throwable uploadException) {
+    public UploadResult(final NetworkEntityType entityType, final Throwable uploadException) {
         this.entityType = entityType;
         this.uploadException = uploadException;
         this.returnedEntity = null;

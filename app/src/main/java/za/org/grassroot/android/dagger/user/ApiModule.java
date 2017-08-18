@@ -13,6 +13,7 @@ import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import za.org.grassroot.android.Constants;
 import za.org.grassroot.android.services.NetworkService;
 import za.org.grassroot.android.services.NetworkServiceImpl;
+import za.org.grassroot.android.services.RealmService;
 import za.org.grassroot.android.services.UserDetailsService;
 import za.org.grassroot.android.services.rest.AddTokenInterceptor;
 import za.org.grassroot.android.services.rest.GrassrootUserApi;
@@ -59,8 +60,10 @@ public class ApiModule {
 
     @Provides
     @UserScope
-    NetworkService provideNetworkService(UserDetailsService userDetailsService, GrassrootUserApi grassrootUserApi) {
-        return new NetworkServiceImpl(userDetailsService, grassrootUserApi);
+    NetworkService provideNetworkService(UserDetailsService userDetailsService,
+                                         GrassrootUserApi grassrootUserApi,
+                                         RealmService realmService) {
+        return new NetworkServiceImpl(userDetailsService, grassrootUserApi, realmService);
     }
 
 }

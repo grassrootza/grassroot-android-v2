@@ -7,7 +7,8 @@ import java.util.UUID;
 
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
-import za.org.grassroot.android.model.enums.UploadableEntityType;
+import za.org.grassroot.android.model.enums.NetworkEntityType;
+import za.org.grassroot.android.model.network.EntityForUpload;
 
 /**
  * Created by luke on 2017/08/15.
@@ -57,8 +58,8 @@ public class LiveWireAlert extends RealmObject implements EntityForUpload {
     }
 
     @Override
-    public UploadableEntityType getType() {
-        return UploadableEntityType.LIVEWIRE_ALERT;
+    public NetworkEntityType getType() {
+        return NetworkEntityType.LIVEWIRE_ALERT;
     }
 
     @Override

@@ -1,6 +1,7 @@
 package za.org.grassroot.android.dagger.login;
 
 import dagger.Subcomponent;
+import za.org.grassroot.android.services.account.GrassrootAuthService;
 import za.org.grassroot.android.view.LoginActivity;
 
 /**
@@ -10,6 +11,7 @@ import za.org.grassroot.android.view.LoginActivity;
 @Subcomponent(modules = {NoAuthApiModule.class})
 public interface LoginSignUpComponent {
 
+    void inject(GrassrootAuthService grassrootAuthService);
     void inject(LoginActivity target);
 
 }

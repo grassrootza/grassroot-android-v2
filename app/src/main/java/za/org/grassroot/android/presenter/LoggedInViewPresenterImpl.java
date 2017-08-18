@@ -25,7 +25,7 @@ public abstract class LoggedInViewPresenterImpl extends ViewPresenterImpl implem
     public abstract void handleActivityResultError(int requestCode, int resultCode, Intent data);
 
     public void logoutRetainingData() {
-        userDetailsService.logoutRetainingData()
+        userDetailsService.logoutRetainingData(true)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Consumer<Boolean>() {
@@ -36,6 +36,11 @@ public abstract class LoggedInViewPresenterImpl extends ViewPresenterImpl implem
                         }
                     }
                 });
+    }
+
+    @Override
+    public void triggerAccountSync() {
+        userDetailsService.requestSync();
     }
 
 }

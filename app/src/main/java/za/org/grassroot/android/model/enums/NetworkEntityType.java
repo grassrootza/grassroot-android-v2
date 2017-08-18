@@ -6,8 +6,9 @@ package za.org.grassroot.android.model.enums;
  * the correct upload call and entity type
  */
 
-public enum UploadableEntityType {
+public enum NetworkEntityType {
 
+    GROUP,
     LIVEWIRE_ALERT,
     MEDIA_FILE
 

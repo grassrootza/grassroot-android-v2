@@ -14,7 +14,7 @@ import io.reactivex.annotations.NonNull;
 import io.reactivex.functions.Function;
 import za.org.grassroot.android.R;
 import za.org.grassroot.android.rxbinding.RxTextView;
-import za.org.grassroot.android.rxbinding.RxTextViewUtils;
+import za.org.grassroot.android.rxbinding.RxViewUtils;
 import za.org.grassroot.android.rxbinding.RxView;
 import za.org.grassroot.android.view.SingleInputNextOtherView;
 
@@ -73,7 +73,7 @@ public class SingleTextInputFragment extends TextInputFragment implements Single
     @Override
     public Observable<CharSequence> textInputNextDone() {
         Observable<CharSequence> editTextNext = RxTextView
-                .editorActions(inputText, RxTextViewUtils.imeNextDonePredicate())
+                .editorActions(inputText, RxViewUtils.imeNextDonePredicate())
                 .map(new Function<Integer, CharSequence>() {
                     @Override
                     public CharSequence apply(@NonNull Integer integer) throws Exception {

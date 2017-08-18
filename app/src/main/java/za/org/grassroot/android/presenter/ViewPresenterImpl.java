@@ -31,8 +31,6 @@ public abstract class ViewPresenterImpl implements ViewPresenter {
         this.view = null;
     }
 
-    protected abstract void onViewAttached();
-
     @CallSuper
     protected void onViewDetached() {
         try {

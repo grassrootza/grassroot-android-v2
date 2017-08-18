@@ -1,5 +1,7 @@
 package za.org.grassroot.android.services;
 
+import java.util.Map;
+
 import io.realm.RealmObject;
 import za.org.grassroot.android.model.UserProfile;
 
@@ -9,6 +11,7 @@ import za.org.grassroot.android.model.UserProfile;
 
 public interface RealmService {
 
+    void openUiRealm();
     void closeUiRealm();
     void closeRealmOnThread();
     void wipeRealm();
@@ -16,6 +19,7 @@ public interface RealmService {
     // read methods
     <E extends RealmObject> E loadObjectByUid(Class<E> clazz, String uid, boolean closeRealm);
     UserProfile loadUserProfile();
+    <E extends RealmObject> Map<String, Long> loadExistingObjectsWithLastChangeTime(Class<E> clazz);
 
     // write and read methods (can only be called within an observable on background thread)
 
