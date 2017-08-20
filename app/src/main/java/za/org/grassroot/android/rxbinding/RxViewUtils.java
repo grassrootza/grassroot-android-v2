@@ -2,6 +2,7 @@ package za.org.grassroot.android.rxbinding;
 
 import android.view.MenuItem;
 import android.view.inputmethod.EditorInfo;
+import android.widget.TextView;
 
 import io.reactivex.Observable;
 import io.reactivex.annotations.NonNull;
@@ -34,6 +35,18 @@ public final class RxViewUtils {
                             @Override
                             public Boolean apply(@NonNull Object o) throws Exception {
                                 return true;
+                            }
+                        });
+    }
+
+    public static Observable<CharSequence> nullSafeTextViewNextDone(final TextView textView) {
+        return textView == null ? Observable.<CharSequence>empty() :
+                RxTextView
+                        .editorActions(textView, imeNextDonePredicate())
+                        .map(new Function<Integer, CharSequence>() {
+                            @Override
+                            public CharSequence apply(@NonNull Integer integer) throws Exception {
+                                return textView.getText();
                             }
                         });
     }

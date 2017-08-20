@@ -1,6 +1,9 @@
 package za.org.grassroot.android.services;
 
+import java.util.List;
+
 import io.reactivex.Observable;
+import za.org.grassroot.android.model.Group;
 import za.org.grassroot.android.model.UploadResult;
 import za.org.grassroot.android.model.enums.NetworkEntityType;
 import za.org.grassroot.android.model.network.EntityForDownload;
@@ -21,12 +24,7 @@ public interface NetworkService {
      * @param <E> The dynamic type
      * @return An observable that emits each changed or new entity
      */
-    <E extends EntityForDownload> Observable<E> downloadAllChangedOrNewEntities(NetworkEntityType entityType, boolean forceFullRefresh);
-
-    /*<E extends EntityForDownload> void downloadChangedOrNewEntitiesInSet(Set<String> uids,
-                                                                         NetworkEntityType entityType,
-                                                                         boolean forceFullRefresh);*/
-
-    // <E extends RealmObject> Single<E> downloadEntity(Class<E> clazz, String uid);
+    <E extends EntityForDownload> Observable<List<E>> downloadAllChangedOrNewEntities(NetworkEntityType entityType, boolean forceFullRefresh);
+    Observable<List<Group>> downloadAllChangedOrNewGroups();
 
 }

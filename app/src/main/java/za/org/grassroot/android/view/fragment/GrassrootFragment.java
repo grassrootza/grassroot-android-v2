@@ -17,6 +17,10 @@ import za.org.grassroot.android.R;
 
 public class GrassrootFragment extends Fragment {
 
+    protected static final int ACTION_FRAGMENT_ATTACHED = 1;
+    protected static final int ACTION_FRAGMENT_CREATED = 2;
+    protected static final int ACTION_FRAGMENT_VIEW_CREATED = 3;
+
     protected Unbinder unbinder;
     protected PublishSubject<Integer> lifecyclePublisher = PublishSubject.create();
 

@@ -29,7 +29,10 @@
     <string name="take_photo">Photo</string>
     <string name="take_audio">Audio</string>
 
-    <!-- Last, some generic errors -->
+    <!-- Adding some strings for item selection -->
+    <string name="group_select_title">What group\'s this for?</string>
+
+    <!-- Last, some generic errors, strings and such -->
     <string name="error_permission_denied">Permission denied</string>
     <string name="error_file_creation">Error starting camera, check file space</string>
 
@@ -39,6 +42,6 @@
 
     <!-- Strings for account preference screen -->
     <string name="sync_on_title">Sync</string>
-    <string name="sync_on_desc">Refresh automatically, unless Android is Android</string>
+    <string name="sync_on_desc">Refresh automatically</string>
 
 </resources>

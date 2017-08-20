@@ -11,17 +11,22 @@ import javax.inject.Inject;
 import io.reactivex.Observable;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.functions.Consumer;
+import io.reactivex.functions.Function;
+import io.realm.OrderedRealmCollection;
+import io.realm.RealmObject;
 import timber.log.Timber;
 import za.org.grassroot.android.GrassrootApplication;
 import za.org.grassroot.android.R;
 import za.org.grassroot.android.dagger.activity.ActivityModule;
 import za.org.grassroot.android.dagger.user.ApiModule;
+import za.org.grassroot.android.model.SelectableItem;
 import za.org.grassroot.android.model.dto.BtnGrouping;
 import za.org.grassroot.android.model.dto.BtnReturnBundle;
 import za.org.grassroot.android.presenter.MainPresenter;
 import za.org.grassroot.android.rxbinding.RxViewUtils;
 import za.org.grassroot.android.services.UserDetailsService;
 import za.org.grassroot.android.view.MainView;
+import za.org.grassroot.android.view.fragment.ItemSelectionFragment;
 import za.org.grassroot.android.view.fragment.SingleTextMultiButtonFragment;
 
 public class MainActivity extends LoggedInActivity implements MainView {
@@ -86,6 +91,30 @@ public class MainActivity extends LoggedInActivity implements MainView {
         return true;
     }
 
+    @Override
+    public <T extends RealmObject & SelectableItem> Observable<String> requestSelection(int headerRes,
+                                                                                        final OrderedRealmCollection<T> items) {
+        final ItemSelectionFragment<T> selectionFragment = ItemSelectionFragment.newInstance(headerRes);
+        Observable<String> observable = selectionFragment
+                .viewAttached()
+                .concatMap(new Function<Boolean, Observable<String>>() {
+                    @Override
+                    public Observable<String> apply(@NonNull Boolean aBoolean) throws Exception {
+                        return selectionFragment.addData(items);
+                    }
+                });
+
+        Timber.d("created observable, about to commit fragment");
+        closeKeyboard();
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.main_frag_holder, selectionFragment)
+                .addToBackStack("SELECTION")
+                .commit();
+
+        Timber.d("fragment committed, returning observable");
+        return observable;
+    }
+
     // todo: pass it back to presenter
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
@@ -101,7 +130,7 @@ public class MainActivity extends LoggedInActivity implements MainView {
 
     @Override
     public void showProgressBar() {
-        
+
     }
 
     @Override
@@ -119,6 +148,11 @@ public class MainActivity extends LoggedInActivity implements MainView {
     public void cleanUpActivity() {
         mainPresenter.detach(this);
         mainPresenter.cleanUpForActivity();
+    }
+
+    @Override
+    public Observable<CharSequence> mainTextNext() {
+        return mainFragment.mainTextNext();
     }
 
     @Override

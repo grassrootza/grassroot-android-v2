@@ -9,6 +9,9 @@ import za.org.grassroot.android.model.dto.BtnReturnBundle;
 
 public interface SingleTextMultiButtonView extends SingleTextView {
 
+    // when user hits next on main text input
+    Observable<CharSequence> mainTextNext();
+
     // when user clicks either the big icon (eg for photo or actions)
     Observable<CharSequence> bigButtonClicked();
 

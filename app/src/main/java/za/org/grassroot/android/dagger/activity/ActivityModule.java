@@ -8,6 +8,7 @@ import za.org.grassroot.android.dagger.ApplicationContext;
 import za.org.grassroot.android.presenter.LoginPresenter;
 import za.org.grassroot.android.presenter.MainPresenter;
 import za.org.grassroot.android.presenter.MainPresenterImpl;
+import za.org.grassroot.android.services.LiveWireService;
 import za.org.grassroot.android.services.MediaService;
 import za.org.grassroot.android.services.RealmService;
 import za.org.grassroot.android.services.UserDetailsService;
@@ -31,8 +32,9 @@ public class ActivityModule {
     MainPresenter provideMainPresenter(@ApplicationContext Context applicationContext,
                                        UserDetailsService userDetailsService,
                                        RealmService realmService,
-                                       MediaService mediaService) {
-        return new MainPresenterImpl(applicationContext, userDetailsService, realmService, mediaService);
+                                       MediaService mediaService,
+                                       LiveWireService liveWireService) {
+        return new MainPresenterImpl(applicationContext, userDetailsService, realmService, mediaService, liveWireService);
     }
 
 }

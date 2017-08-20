@@ -25,7 +25,7 @@ public abstract class LoggedInViewPresenterImpl extends ViewPresenterImpl implem
     public abstract void handleActivityResultError(int requestCode, int resultCode, Intent data);
 
     public void logoutRetainingData() {
-        userDetailsService.logoutRetainingData(true)
+        userDetailsService.logout(false, false)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Consumer<Boolean>() {

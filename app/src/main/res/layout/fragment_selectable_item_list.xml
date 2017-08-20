@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@android:color/white">
+
+    <TextView
+        style="@style/MediumHeader"
+        android:id="@+id/list_header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/margin_std_large"
+        android:layout_marginRight="@dimen/margin_std_large"
+        android:paddingTop="@dimen/padding_std_large"
+        tools:text="Select an item"/>
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/list_recycler_view"
+        android:layout_height="0dp"
+        android:layout_width="match_parent"
+        android:layout_weight="1"
+        android:layout_marginTop="@dimen/margin_std_large"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:padding="0dp"
+        tools:context="za.org.grassroot.android.view.fragment.ItemSelectionFragment"
+        tools:listitem="@layout/selectable_item_row" />
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        style="@style/ProgressBarMedium"
+        android:visibility="gone"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="@dimen/margin_std_xlarge"
+        />
+
+</LinearLayout>

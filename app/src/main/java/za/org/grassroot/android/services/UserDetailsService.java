@@ -17,8 +17,7 @@ public interface UserDetailsService extends GrassrootService {
                                          final String userSystemRole,
                                          final String userToken);
 
-    Single<Boolean> logoutRetainingData(boolean deleteAndroidAccount);
-    Single<Boolean> logoutWipingData();
+    Single<Boolean> logout(boolean deleteAndroidAccount, boolean wipeRealm);
 
     String getCurrentToken();
     String getCurrentUserUid();

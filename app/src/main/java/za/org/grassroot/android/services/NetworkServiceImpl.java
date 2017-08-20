@@ -13,7 +13,6 @@ import io.reactivex.ObservableOnSubscribe;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
-import io.reactivex.schedulers.Schedulers;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
@@ -73,54 +72,28 @@ public class NetworkServiceImpl implements NetworkService {
 
     // as with below (upload method), know there must be a more RX 'pure' pattern to do this than passing
     // along the emitter, but I'm struggling to work out what, and defaulting to get work -> get clean
+    @SuppressWarnings("unchecked")
     @Override
-    public <E extends EntityForDownload> Observable<E> downloadAllChangedOrNewEntities(final NetworkEntityType entityType, boolean forceFullRefresh) {
+    public <E extends EntityForDownload> Observable<List<E>> downloadAllChangedOrNewEntities(final NetworkEntityType entityType, boolean forceFullRefresh) {
         setUserUid();
         Timber.e("user UID = ? " + currentUserUid);
         switch (entityType) {
             case GROUP:
-                return (Observable<E>) refreshGroups();
+                return downloadAllChangedOrNewGroups()
+                        .flatMap(new Function<List<Group>, Observable<List<E>>>() {
+                            @Override
+                            public Observable<List<E>> apply(@NonNull List<Group> groups) throws Exception {
+                                return Observable.just((List<E>) groups);
+                            }
+                        });
             default:
                 throw new IllegalArgumentException("Error! Trying to download an unimplemented type");
         }
     }
 
-        /*return Observable.create(new ObservableOnSubscribe<E>() {
-            @Override
-            public void subscribe(@NonNull ObservableEmitter<E> e) throws Exception {
-                currentUserUid = userDetailsService.getCurrentUserUid();
-                Timber.e("currentUserUid = " + currentUserUid);
-                switch (entityType) {
-                    case GROUP:
-                        refreshUserGroups(e);
-                        break;
-                    case LIVEWIRE_ALERT:
-                    case MEDIA_FILE:
-                    default:
-                        Timber.d("No need / use case for downloading type : " + entityType);
-                        e.onComplete();
-                        break;
-                }
-            }
-        });*/
-
-    private void refreshUserGroups(ObservableEmitter emitter) {
-        grassrootUserApi.fetchUserGroups(currentUserUid, realmService.loadExistingObjectsWithLastChangeTime(Group.class))
-                .subscribeOn(Schedulers.io())
-                .subscribe(new Consumer<RestResponse<List<Group>>>() {
-                    @Override
-                    public void accept(@NonNull RestResponse<List<Group>> listRestResponse) throws Exception {
-                        Timber.d("response! number groups: " + listRestResponse.getData().size());
-                    }
-                }, new Consumer<Throwable>() {
-                    @Override
-                    public void accept(@NonNull Throwable throwable) throws Exception {
-                        Timber.e(throwable);
-                    }
-                });
-    }
-
-    private Observable<Group> refreshGroups() {
+    // todo: if first one is empty then don't call others (work out how to split in RxJava)
+    @Override
+    public Observable<List<Group>> downloadAllChangedOrNewGroups() {
         return grassrootUserApi
                 .fetchUserGroups(currentUserUid, realmService.loadExistingObjectsWithLastChangeTime(Group.class))
                 .doOnError(new Consumer<Throwable>() {
@@ -129,7 +102,7 @@ public class NetworkServiceImpl implements NetworkService {
                         Timber.e(throwable);
                     }
                 })
-                .flatMap(new Function<RestResponse<List<Group>>, Observable<RestResponse<List<Group>>>>() {
+                .concatMap(new Function<RestResponse<List<Group>>, Observable<RestResponse<List<Group>>>>() {
                     @Override
                     public Observable<RestResponse<List<Group>>> apply(@NonNull RestResponse<List<Group>> listRestResponse) throws Exception {
                         List<Group> changedGroups = listRestResponse.getData();
@@ -140,22 +113,20 @@ public class NetworkServiceImpl implements NetworkService {
                         return grassrootUserApi.fetchGroupsInfo(currentUserUid, changedUids);
                     }
                 })
-                .flatMap(new Function<RestResponse<List<Group>>, Observable<Group>>() {
+                .doOnError(new Consumer<Throwable>() {
                     @Override
-                    public Observable<Group> apply(@NonNull RestResponse<List<Group>> listRestResponse) throws Exception {
+                    public void accept(@NonNull Throwable throwable) throws Exception {
+                        Timber.e(throwable);
+                    }
+                })
+                .flatMap(new Function<RestResponse<List<Group>>, Observable<List<Group>>>() {
+                    @Override
+                    public Observable<List<Group>> apply(@NonNull RestResponse<List<Group>> listRestResponse) throws Exception {
                         Timber.d("alright, here are the full groups back: " + listRestResponse.getData());
-                        return Observable.fromIterable(listRestResponse.getData());
+                        return Observable.just(listRestResponse.getData());
                     }
                 });
     }
-
-
-    /*@Override
-    public <E extends EntityForDownload> void downloadChangedOrNewEntitiesInSet(Set<String> uids, NetworkEntityType entityType, boolean forceFullRefresh) {
-
-    }*/
-
-
 
     private void routeUploadRequest(final EntityForUpload entity, boolean forceReUpload, ObservableEmitter<UploadResult> emitter) {
         if (entity.isUploading()) {

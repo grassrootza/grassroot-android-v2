@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 
@@ -18,7 +19,9 @@ import za.org.grassroot.android.R;
 import za.org.grassroot.android.model.dto.BtnGrouping;
 import za.org.grassroot.android.model.dto.BtnParameters;
 import za.org.grassroot.android.model.dto.BtnReturnBundle;
+import za.org.grassroot.android.rxbinding.RxTextView;
 import za.org.grassroot.android.rxbinding.RxView;
+import za.org.grassroot.android.rxbinding.RxViewUtils;
 import za.org.grassroot.android.view.SingleTextMultiButtonView;
 
 /**
@@ -32,6 +35,7 @@ public class SingleTextMultiButtonFragment extends TextInputFragment implements 
     private BtnGrouping btnGrouping;
     private boolean showExplanation;
 
+    @BindView(R.id.text_input_field) TextView mainTextView;
     @BindView(R.id.subtitle_buttons_row) ViewGroup subtitleButtons;
 
     @BindView(R.id.sub_button_1) Button subButton1;
@@ -118,10 +122,16 @@ public class SingleTextMultiButtonFragment extends TextInputFragment implements 
     }
 
     @Override
+    public Observable<CharSequence> mainTextNext() {
+        return RxViewUtils.nullSafeTextViewNextDone(mainTextView);
+    }
+
+    @Override
     public Observable<CharSequence> bigButtonClicked() {
         return null;
     }
 
+    // todo: check behaviour on back pressed -- looks like observables are being duplicated
     @Override
     public Observable<BtnReturnBundle> subtitleButtonClicked() {
         Timber.d("returning merge ... how many observables? " + subButtonReturns.size());

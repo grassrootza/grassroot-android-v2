@@ -20,7 +20,7 @@ public interface LiveWireService {
 
     Single<Boolean> updateAlertMedia(String alertUid, String mediaFileUid);
 
-    Single<Boolean> updateAlertHeadline(String alertUid, String headline);
+    Single<String> updateAlertHeadline(String alertUid, String headline);
 
     Single<Boolean> updateAlertDescription(String alertUid, String description);
 

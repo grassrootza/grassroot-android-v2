@@ -4,26 +4,33 @@ import android.accounts.Account;
 import android.content.AbstractThreadedSyncAdapter;
 import android.content.ContentProviderClient;
 import android.content.Context;
+import android.content.OperationApplicationException;
 import android.content.SyncResult;
 import android.os.Bundle;
+import android.os.RemoteException;
 import android.support.annotation.RequiresApi;
+
+import org.json.JSONException;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.inject.Inject;
 
 import io.reactivex.annotations.NonNull;
 import io.reactivex.functions.Consumer;
 import io.realm.RealmObject;
+import io.realm.internal.IOException;
 import timber.log.Timber;
 import za.org.grassroot.android.GrassrootApplication;
 import za.org.grassroot.android.dagger.user.ApiModule;
 import za.org.grassroot.android.model.enums.NetworkEntityType;
+import za.org.grassroot.android.model.exception.ServerUnreachableException;
 import za.org.grassroot.android.model.network.EntityForDownload;
 import za.org.grassroot.android.services.NetworkService;
 import za.org.grassroot.android.services.RealmService;
 
 public class SyncAdapter extends AbstractThreadedSyncAdapter {
-
-    private SyncResult syncResult;
 
     private NetworkService networkService;
     private RealmService realmService;
@@ -40,7 +47,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
     }
 
     private void initDagger() {
-        Timber.e("created sync adapter ...");
+        Timber.d("created sync adapter ...");
         ((GrassrootApplication) (getContext().getApplicationContext()))
                 .getAppComponent()
                 .plus(new ApiModule())
@@ -67,29 +74,40 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
      * @param syncResult Object to write stats to
      */
     @Override
-    public void onPerformSync(Account account, Bundle extras, String authority, ContentProviderClient provider, SyncResult syncResult) {
+    public void onPerformSync(Account account, Bundle extras, String authority, ContentProviderClient provider, final SyncResult syncResult) {
         Timber.d("Starting synchronization...");
         networkService.downloadAllChangedOrNewEntities(NetworkEntityType.GROUP, false)
-            .subscribe(new Consumer<EntityForDownload>() {
+            .subscribe(new Consumer<List<EntityForDownload>>() {
                 @Override
-                public void accept(@NonNull EntityForDownload entityForDownload) throws Exception {
-                    Timber.v("got a group");
-                    realmService.storeRealmObject((RealmObject) entityForDownload, false);
+                public void accept(@NonNull List<EntityForDownload> entityForDownloads) throws Exception {
+                    realmService.copyOrUpdateListOfEntities(convert(entityForDownloads));
+                }
+            }, new Consumer<Throwable>() {
+                @Override
+                public void accept(@NonNull Throwable throwable) throws Exception {
+                    if (throwable instanceof IOException || throwable instanceof ServerUnreachableException) {
+                        Timber.e(throwable, "Error synchronizing!");
+                        syncResult.stats.numIoExceptions++;
+                    } else if (throwable instanceof JSONException) {
+                        Timber.e(throwable, "Error synchronizing!");
+                        syncResult.stats.numParseExceptions++;
+                    } else if (throwable instanceof RemoteException ||
+                            throwable instanceof OperationApplicationException) {
+                        Timber.e(throwable, "Error synchronizing!");
+                        syncResult.stats.numAuthExceptions++;
+                    }
                 }
             });
+    }
 
-        /*try {
-        } catch (IOException ex) {
-            Timber.e(ex, "Error synchronizing!");
-            syncResult.stats.numIoExceptions++;
-        } catch (JSONException ex) {
-            Timber.e(ex, "Error synchronizing!");
-            syncResult.stats.numParseExceptions++;
-        } catch (RemoteException |OperationApplicationException ex) {
-            Timber.e(ex, "Error synchronizing!");
-            syncResult.stats.numAuthExceptions++;
+    // multiple bounds are not playing nice with the observable, so using this slight hack
+    // todo: figure out and fix multiple bounds on method above
+    private static List<RealmObject> convert(List<EntityForDownload> entityForDownloads) {
+        List<RealmObject> list = new ArrayList<>();
+        final int size = entityForDownloads.size();
+        for (int i = 0; i < size; i++) {
+            list.add(entityForDownloads.get(i).getRealmObject());
         }
-
-        Timber.d("Finished synchronization!");*/
+        return list;
     }
 }

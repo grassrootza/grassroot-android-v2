@@ -14,8 +14,8 @@ import io.reactivex.annotations.NonNull;
 import io.reactivex.functions.Function;
 import za.org.grassroot.android.R;
 import za.org.grassroot.android.rxbinding.RxTextView;
-import za.org.grassroot.android.rxbinding.RxViewUtils;
 import za.org.grassroot.android.rxbinding.RxView;
+import za.org.grassroot.android.rxbinding.RxViewUtils;
 import za.org.grassroot.android.view.SingleInputNextOtherView;
 
 public class SingleTextInputFragment extends TextInputFragment implements SingleInputNextOtherView {

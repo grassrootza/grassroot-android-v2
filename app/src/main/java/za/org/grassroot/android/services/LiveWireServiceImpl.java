@@ -71,13 +71,13 @@ public class LiveWireServiceImpl implements LiveWireService {
     }
 
     @Override
-    public Single<Boolean> updateAlertHeadline(final String alertUid, final String headline) {
-        return Single.create(new SingleOnSubscribe<Boolean>() {
+    public Single<String> updateAlertHeadline(final String alertUid, final String headline) {
+        return Single.create(new SingleOnSubscribe<String>() {
             @Override
-            public void subscribe(@NonNull SingleEmitter<Boolean> e) throws Exception {
+            public void subscribe(@NonNull SingleEmitter<String> e) throws Exception {
                 LiveWireAlert alert = loadAlertToEdit(alertUid);
                 alert.setHeadline(headline);
-                tidyUp(e);
+                tidyUp(alert.getUid(), e);
             }
         });
     }
@@ -159,4 +159,10 @@ public class LiveWireServiceImpl implements LiveWireService {
         e.onSuccess(true);
         realmService.closeRealmOnThread();
     }
+
+    private void tidyUp(String uid, SingleEmitter<String> e) {
+        e.onSuccess(uid);
+        realmService.closeRealmOnThread();
+    }
+
 }

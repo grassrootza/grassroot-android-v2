@@ -10,7 +10,7 @@ import za.org.grassroot.android.model.enums.NetworkEntityType;
 import za.org.grassroot.android.model.helper.RealmString;
 import za.org.grassroot.android.model.network.EntityForDownload;
 
-public class Group extends RealmObject implements EntityForDownload {
+public class Group extends RealmObject implements EntityForDownload, SelectableItem {
 
     /*
     Central, highly important entity, so a few notes:
@@ -74,6 +74,12 @@ public class Group extends RealmObject implements EntityForDownload {
         return name;
     }
 
+    @Override
+    public String getDescription() {
+        // todo: make this return something meaningful
+        return userRole + ", " + memberCount + " members";
+    }
+
     public void setName(String name) {
         this.name = name;
     }
@@ -116,15 +122,21 @@ public class Group extends RealmObject implements EntityForDownload {
 
     @Override
     public long getLastTimeChangedServer() {
-        return 0;
+        return lastTimeChangedServer;
+    }
+
+    @Override
+    public RealmObject getRealmObject() {
+        return this;
     }
 
     @Override
     public String toString() {
         return "Group{" +
-                "name='" + name + '\'' +
-                ", memberCount=" + memberCount +
-                ", userRole='" + userRole + '\'' +
+                "uid='" + uid + '\'' +
+                // ", name='" + name + '\'' +
+                // ", memberCount=" + memberCount +
+                // ", userRole='" + userRole + '\'' +
                 ", lastTimeChangedServer=" + lastTimeChangedServer +
                 '}';
     }

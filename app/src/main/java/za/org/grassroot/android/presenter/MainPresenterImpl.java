@@ -6,9 +6,11 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.support.v4.content.ContextCompat;
+import android.text.TextUtils;
 
 import javax.inject.Inject;
 
+import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.functions.Consumer;
@@ -16,11 +18,13 @@ import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 import za.org.grassroot.android.R;
 import za.org.grassroot.android.dagger.ApplicationContext;
+import za.org.grassroot.android.model.Group;
 import za.org.grassroot.android.model.MediaFile;
 import za.org.grassroot.android.model.dto.BtnGrouping;
 import za.org.grassroot.android.model.dto.BtnParameters;
 import za.org.grassroot.android.model.dto.BtnReturnBundle;
 import za.org.grassroot.android.model.exception.InvalidViewForPresenterException;
+import za.org.grassroot.android.services.LiveWireService;
 import za.org.grassroot.android.services.MediaService;
 import za.org.grassroot.android.services.RealmService;
 import za.org.grassroot.android.services.UserDetailsService;
@@ -44,19 +48,24 @@ public class MainPresenterImpl extends LoggedInViewPresenterImpl implements Main
     private final Context applicationContext;
     private final RealmService realmService;
     private final MediaService mediaService;
+    private final LiveWireService liveWireService;
 
     private MainView view;
     private String currentMediaFileUid; // during launching of intent
+
+    private String currentLiveWireAlertUid;
 
     @Inject
     public MainPresenterImpl(@ApplicationContext Context applicationContext,
                              UserDetailsService userDetailsService,
                              RealmService realmService,
-                             MediaService mediaService) {
+                             MediaService mediaService,
+                             LiveWireService liveWireService) {
         super(userDetailsService);
         this.applicationContext = applicationContext;
         this.realmService = realmService;
         this.mediaService = mediaService;
+        this.liveWireService = liveWireService;
     }
 
     @Override
@@ -81,6 +90,62 @@ public class MainPresenterImpl extends LoggedInViewPresenterImpl implements Main
                 handleSubButtonClick(btnReturnBundle);
             }
         }));
+
+        subscriptions.add(view.mainTextNext()
+                .subscribe(new Consumer<CharSequence>() {
+                    @Override
+                    public void accept(@NonNull CharSequence sequence) throws Exception {
+                        Timber.i("typed! : " + sequence);
+                        createOrUpdateLiveWireAlert(currentLiveWireAlertUid, String.valueOf(sequence));
+                    }
+                }));
+
+    }
+
+    private void createOrUpdateLiveWireAlert(String alertUid, String headline) {
+        Single<String> serviceCall = TextUtils.isEmpty(currentLiveWireAlertUid) ?
+                liveWireService.initiateAlertWithHeadline(String.valueOf(headline)) :
+                liveWireService.updateAlertHeadline(currentLiveWireAlertUid, headline);
+        serviceCall.subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Consumer<String>() {
+                    @Override
+                    public void accept(@NonNull String s) throws Exception {
+                        Timber.d("initiated a LiveWire alert!");
+                        currentLiveWireAlertUid = s;
+                        loadGroupSelection();
+                    }
+                });
+    }
+
+    private void loadGroupSelection() {
+        Timber.i("loading group selection ...");
+        view.requestSelection(
+                R.string.group_select_title,
+                realmService.loadObjectsForSelection(Group.class))
+                .subscribe(new Consumer<String>() {
+                    @Override
+                    public void accept(@NonNull String s) throws Exception {
+                        Timber.i("selected! : " + s);
+                        if (!TextUtils.isEmpty(currentLiveWireAlertUid)) {
+                            setGroupForAlert(currentLiveWireAlertUid, s);
+                        } else {
+                            Timber.e("error! selection called without valid LiveWire alert in waiting");
+                        }
+                    }
+                });
+    }
+
+    private void setGroupForAlert(String alertUid, String groupUid) {
+        liveWireService.setGenericAlert(alertUid, groupUid)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Consumer<Boolean>() {
+                    @Override
+                    public void accept(@NonNull Boolean aBoolean) throws Exception {
+                        Timber.i("done! alert updated, now confirm / ask for video ...");
+                    }
+                });
     }
 
     @Override

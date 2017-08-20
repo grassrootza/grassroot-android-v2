@@ -11,7 +11,6 @@ import io.reactivex.Single;
 import io.reactivex.SingleEmitter;
 import io.reactivex.SingleOnSubscribe;
 import io.reactivex.annotations.NonNull;
-import io.reactivex.functions.Function;
 import timber.log.Timber;
 import za.org.grassroot.android.model.UserProfile;
 import za.org.grassroot.android.services.account.AuthConstants;
@@ -54,7 +53,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
     // todo: add exception handling, also calls to server, GCM, etc
     @Override
-    public Single<Boolean> logoutRetainingData(final boolean deleteAndroidAccount) {
+    public Single<Boolean> logout(final boolean deleteAndroidAccount, final boolean wipeRealm) {
         return Single.create(new SingleOnSubscribe<Boolean>() {
             @Override
             public void subscribe(@NonNull SingleEmitter<Boolean> e) throws Exception {
@@ -70,22 +69,12 @@ public class UserDetailsServiceImpl implements UserDetailsService {
                     }
                 }
                 realmService.removeUserProfile(); // then, wipe the UID etc
+                if (wipeRealm) {
+                    realmService.wipeRealm();
+                }
                 e.onSuccess(true);
             }
         });
-    }
-
-    @Override
-    public Single<Boolean> logoutWipingData() {
-        return logoutRetainingData(true)
-                .map(new Function<Boolean, Boolean>() {
-                    @Override
-                    public Boolean apply(@NonNull Boolean aBoolean) throws Exception {
-                        // need to think a bit more about this opening & closing of realms
-                        realmService.wipeRealm();
-                        return true;
-                    }
-                });
     }
 
     public String getCurrentToken() {
@@ -94,16 +83,16 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     }
 
     private Account getOrCreateAccount() {
-        Timber.e("getting or creating account for Grassroot ...");
+        Timber.d("getting or creating account for Grassroot ...");
         Account[] accounts = accountManager.getAccountsByType(AuthConstants.ACCOUNT_TYPE);
-        Timber.e("number of accounts: " + accounts.length);
+        Timber.d("number of accounts: " + accounts.length);
         if (accounts.length != 0) {
             return accounts[0];
         } else {
             Account account = new Account(AuthConstants.ACCOUNT_NAME, AuthConstants.ACCOUNT_TYPE);
-            Timber.e("adding account explicitly");
+            Timber.d("adding account explicitly");
             accountManager.addAccountExplicitly(account, null, null);
-            Timber.e("setting account as syncable");
+            Timber.d("setting account as syncable");
             setAccountAsSyncable(account);
             return account;
         }

@@ -3,13 +3,16 @@ package za.org.grassroot.android.services;
 import android.os.Looper;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import io.realm.Realm;
 import io.realm.RealmObject;
 import io.realm.RealmResults;
 import timber.log.Timber;
+import za.org.grassroot.android.model.SelectableItem;
 import za.org.grassroot.android.model.UserProfile;
+import za.org.grassroot.android.model.exception.RealmReadOffMainThreadException;
 import za.org.grassroot.android.model.exception.RealmWriteOnMainThreadException;
 import za.org.grassroot.android.model.network.EntityForDownload;
 
@@ -99,12 +102,29 @@ public class RealmServiceImpl implements RealmService {
     }
 
     @Override
-    public <E extends RealmObject> E storeRealmObject(E object, boolean closeRealm) {
-        validateOffMainThread();
-        return copyObjectToRealmAndReturnUid(Realm.getDefaultInstance(), object, true);
+    public <E extends RealmObject & SelectableItem> RealmResults<E> loadObjectsForSelection(Class<E> clazz) {
+        validateOnMainThread();
+        checkUiRealmOpen();
+        return uiRealm.where(clazz).findAll();
     }
 
-    // in the rest, we open and close these ourselves
+    @Override
+    public <E extends RealmObject> E storeRealmObject(E object, boolean closeRealm) {
+        validateOffMainThread();
+        return copyObjectToRealmAndReturnUid(Realm.getDefaultInstance(), object, closeRealm);
+    }
+
+    public <E extends RealmObject> void copyOrUpdateListOfEntities(final List<E> objects) {
+        validateOffMainThread();
+        safeRealmTransaction(Realm.getDefaultInstance(), new Realm.Transaction() {
+            @Override
+            public void execute(Realm realm) {
+                realm.copyToRealmOrUpdate(objects);
+            }
+        });
+    }
+
+    // todo: watch out for returning the wrong entity--overall, clean this up / rethink it
     @Override
     public UserProfile updateOrCreateUserProfile(final String userUid, final String userPhone, final String userDisplayName, final String userSystemRole) {
         validateOffMainThread();
@@ -150,9 +170,22 @@ public class RealmServiceImpl implements RealmService {
         return Looper.myLooper() == Looper.getMainLooper();
     }
 
+    private void validateOnMainThread() {
+        if (!onMainThread()) {
+            throw new RealmReadOffMainThreadException();
+        }
+    }
+
     private void validateOffMainThread() {
         if (onMainThread()) {
             throw new RealmWriteOnMainThreadException();
+        }
+    }
+
+    private void checkUiRealmOpen() {
+        if (onMainThread() && uiRealm == null || uiRealm.isClosed()) {
+            Timber.d("on main thread and UI realm was closed...");
+            uiRealm = Realm.getDefaultInstance();
         }
     }
 
@@ -160,7 +193,9 @@ public class RealmServiceImpl implements RealmService {
         try {
             realm.executeTransaction(transaction);
         } finally {
-            realm.close();
+            if (realm != null) {
+                realm.close();
+            }
         }
     }
 
@@ -174,7 +209,7 @@ public class RealmServiceImpl implements RealmService {
         } catch (Exception e) {
             Timber.e(e);
         } finally {
-            if (closeRealm) {
+            if (closeRealm && threadR != null) {
                 if (object != null) {
                     object = threadR.copyFromRealm(object);
                 }
@@ -191,7 +226,7 @@ public class RealmServiceImpl implements RealmService {
             storedObject = threadR.copyToRealmOrUpdate(object);
             threadR.commitTransaction();
         } finally {
-            if (closeRealm) {
+            if (closeRealm && threadR != null) {
                 if (storedObject != null) {
                     storedObject = threadR.copyFromRealm(storedObject);
                 }

@@ -25,10 +25,6 @@ public class TextInputFragment extends GrassrootFragment implements SingleTextVi
     protected int headerTextRes;
     protected int explanTextRes;
 
-    protected static final int ACTION_FRAGMENT_ATTACHED = 1;
-    protected static final int ACTION_FRAGMENT_CREATED = 2;
-    protected static final int ACTION_FRAGMENT_VIEW_CREATED = 3;
-
     @BindView(R.id.header_text) TextView header;
     @BindView(R.id.explanation_text) TextView explanation;
 
@@ -48,9 +44,6 @@ public class TextInputFragment extends GrassrootFragment implements SingleTextVi
             explanTextRes = args.getInt(EXPLAN_TEXT_RES);
         }
     }
-
-
-
 
     @Override
     public Observable<CharSequence> viewCreated() {
