@@ -7,15 +7,20 @@ import android.widget.ProgressBar;
 
 import butterknife.BindView;
 import butterknife.Unbinder;
+import io.reactivex.Observable;
+import io.reactivex.annotations.NonNull;
+import io.reactivex.functions.Function;
+import io.reactivex.functions.Predicate;
 import io.reactivex.subjects.PublishSubject;
 import timber.log.Timber;
 import za.org.grassroot.android.R;
+import za.org.grassroot.android.view.FragmentView;
 
 /**
  * Created by luke on 2017/08/10.
  */
 
-public class GrassrootFragment extends Fragment {
+public class GrassrootFragment extends Fragment implements FragmentView {
 
     protected static final int ACTION_FRAGMENT_ATTACHED = 1;
     protected static final int ACTION_FRAGMENT_CREATED = 2;
@@ -23,8 +28,6 @@ public class GrassrootFragment extends Fragment {
 
     protected Unbinder unbinder;
     protected PublishSubject<Integer> lifecyclePublisher = PublishSubject.create();
-
-    @BindView(R.id.progressBar) ProgressBar progressBar;
 
     @Override
     @CallSuper
@@ -36,18 +39,15 @@ public class GrassrootFragment extends Fragment {
         }
     }
 
-    public void showProgressBar() {
-        safeToggleProgressBar(progressBar, true);
-    }
-
-    public void closeProgressBar() {
-        safeToggleProgressBar(progressBar, false);
-    }
-
-    protected void safeToggleProgressBar(ProgressBar progressBar, boolean shown) {
-        if (progressBar != null) {
-            progressBar.setVisibility(shown ? View.VISIBLE : View.GONE);
-        }
+    @Override
+    public Observable<Integer> viewCreated() {
+        return lifecyclePublisher
+                .filter(new Predicate<Integer>() {
+                    @Override
+                    public boolean test(@NonNull Integer integer) throws Exception {
+                        return integer == ACTION_FRAGMENT_VIEW_CREATED;
+                    }
+                });
     }
 
 }

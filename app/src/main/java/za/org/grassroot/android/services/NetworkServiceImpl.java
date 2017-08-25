@@ -13,6 +13,7 @@ import io.reactivex.ObservableOnSubscribe;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
+import io.reactivex.functions.Predicate;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
@@ -91,7 +92,6 @@ public class NetworkServiceImpl implements NetworkService {
         }
     }
 
-    // todo: if first one is empty then don't call others (work out how to split in RxJava)
     @Override
     public Observable<List<Group>> downloadAllChangedOrNewGroups() {
         return grassrootUserApi
@@ -102,9 +102,17 @@ public class NetworkServiceImpl implements NetworkService {
                         Timber.e(throwable);
                     }
                 })
+                .filter(new Predicate<RestResponse<List<Group>>>() {
+                    @Override
+                    public boolean test(@NonNull RestResponse<List<Group>> listRestResponse) throws Exception {
+                        Timber.e("filtering if group list empty");
+                        return listRestResponse.getData() != null && !listRestResponse.getData().isEmpty();
+                    }
+                })
                 .concatMap(new Function<RestResponse<List<Group>>, Observable<RestResponse<List<Group>>>>() {
                     @Override
                     public Observable<RestResponse<List<Group>>> apply(@NonNull RestResponse<List<Group>> listRestResponse) throws Exception {
+                        Timber.e("getting group info for remainder");
                         List<Group> changedGroups = listRestResponse.getData();
                         List<String> changedUids = new ArrayList<>();
                         for (int i = 0; i < changedGroups.size(); i++) {
@@ -142,6 +150,7 @@ public class NetworkServiceImpl implements NetworkService {
                     uploadLiveWireAlert((LiveWireAlert) entity, emitter);
                     break;
                 case MEDIA_FILE:
+                    Timber.i("having routed the upload request, calling for media file");
                     uploadMediaFile((MediaFile) entity, emitter);
                     break;
                 default:
@@ -174,7 +183,8 @@ public class NetworkServiceImpl implements NetworkService {
         executeCallWithUidResponse(mediaFile, emitter, grassrootUserApi.sendMediaFile(
                 currentUserUid,
                 mediaFile.getUid(),
-                mediaFile.getLocalPath(),
+                mediaFile.getMediaFunction(),
+                mediaFile.getMimeType(),
                 getImageFromPath(mediaFile, "file")
         ));
     }
@@ -184,24 +194,30 @@ public class NetworkServiceImpl implements NetworkService {
                                             final Call<RestResponse<String>> networkCall) {
         try {
             Response<RestResponse<String>> response = networkCall.execute();
+            Timber.i("executed network call");
             if (response.isSuccessful()) {
+
                 emitter.onNext(new UploadResult(entity.getType(), entity.getUid(), response.body().getData()));
             } else {
+                Timber.e("error with upload! : {}", response.errorBody());
                 emitter.onNext(new UploadResult(entity.getType(), new ServerErrorException()));
             }
         } catch (IOException error) {
+            Timber.e(error, "IO error!");
             emitter.onNext(new UploadResult(NetworkEntityType.LIVEWIRE_ALERT, new NetworkUnavailableException()));
         }
 
     }
 
-    public MultipartBody.Part getImageFromPath(final MediaFile mediaFile, final String paramName) {
+    private MultipartBody.Part getImageFromPath(final MediaFile mediaFile, final String paramName) {
         try {
-            final File file = new File(mediaFile.getLocalPath());
+            Timber.i("getting image from path : " + mediaFile.getAbsolutePath());
+            final File file = new File(mediaFile.getAbsolutePath());
             Timber.d("file size : " + (file.length() / 1024));
             RequestBody requestFile = RequestBody.create(MediaType.parse(mediaFile.getMimeType()), file);
             return MultipartBody.Part.createFormData(paramName, file.getName(), requestFile);
         } catch (Exception e) {
+            Timber.e(e);
             return null;
         }
     }

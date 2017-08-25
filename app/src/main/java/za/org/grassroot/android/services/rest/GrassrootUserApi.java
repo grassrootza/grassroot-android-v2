@@ -29,11 +29,12 @@ public interface GrassrootUserApi {
 
     // Send a media file to the server for storage
     @Multipart
-    @POST("/api/mobile/media")
-    Call<RestResponse<String>> sendMediaFile(@Query("userUid") String userUid,
+    @POST("/api/mobile/media/store/{userUid}")
+    Call<RestResponse<String>> sendMediaFile(@Path("userUid") String userUid,
                                  @Query("imageKey") String fileUid,
                                  @Query("mediaFunction") String function,
-                                 @Part("file") MultipartBody.Part file);
+                                 @Query("mimeType") String mimeType,
+                                 @Part MultipartBody.Part file);
 
     // Create a LiveWire alert
     @POST("/api/mobile/livewire")

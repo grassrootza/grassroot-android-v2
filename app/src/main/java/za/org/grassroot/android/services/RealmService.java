@@ -3,6 +3,7 @@ package za.org.grassroot.android.services;
 import java.util.List;
 import java.util.Map;
 
+import io.reactivex.Single;
 import io.realm.RealmObject;
 import io.realm.RealmResults;
 import za.org.grassroot.android.model.SelectableItem;
@@ -22,6 +23,7 @@ public interface RealmService {
     // read methods
     UserProfile loadUserProfile();
 
+    <E extends RealmObject> Single<E> load(Class<E> clazz, String uid);
     <E extends RealmObject> E loadObjectByUid(Class<E> clazz, String uid, boolean closeRealm);
     <E extends RealmObject> Map<String, Long> loadExistingObjectsWithLastChangeTime(Class<E> clazz);
 
@@ -29,6 +31,8 @@ public interface RealmService {
 
     // write and read methods (can only be called within an observable on background thread)
 
+
+    <E extends RealmObject> Single<E> store(E object);
     /**
      *
      * @param <E> The class of the object to store
@@ -42,5 +46,8 @@ public interface RealmService {
     UserProfile updateOrCreateUserProfile(final String userUid, final String userPhone,
                                           final String userDisplayName, final String userSystemRole);
     void removeUserProfile();
+
+    // only for debugging
+    void listAllEntitesOfType(Class clazz);
 
 }

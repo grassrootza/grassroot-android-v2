@@ -1,0 +1,52 @@
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@android:color/white"
+    android:padding="@dimen/padding_std_large"
+    tools:context="za.org.grassroot.android.view.fragment.LongTextInputFragment">
+
+    <TextView
+        android:id="@+id/header_text"
+        style="@style/MediumHeader"
+        android:layout_marginLeft="@dimen/margin_std_small"
+        android:layout_marginStart="@dimen/margin_std_small"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        tools:text="Header text" />
+
+    <!-- todo: get rid of the line at the bottom -->
+    <EditText
+        android:id="@+id/text_input_field"
+        style="@style/MultiLineLargeInput"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        tools:hint="Write some things here"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/button_skip"
+            style="@style/DefaultActionButton"
+            android:layout_weight="0.5"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            tools:text="SKIP" />
+
+        <Button
+            android:id="@+id/button_next"
+            style="@style/DefaultActionButton"
+            android:layout_weight="0.5"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            tools:text="NEXT" />
+
+    </LinearLayout>
+
+</LinearLayout>

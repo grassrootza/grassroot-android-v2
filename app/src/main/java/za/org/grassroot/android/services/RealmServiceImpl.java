@@ -6,6 +6,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import io.reactivex.Single;
+import io.reactivex.SingleEmitter;
+import io.reactivex.SingleOnSubscribe;
+import io.reactivex.annotations.NonNull;
 import io.realm.Realm;
 import io.realm.RealmObject;
 import io.realm.RealmResults;
@@ -56,6 +60,23 @@ public class RealmServiceImpl implements RealmService {
         uiRealm.close();
     }
 
+    private Realm getRealm() {
+        if (!onMainThread()) {
+            return Realm.getDefaultInstance();
+        } else {
+            if (uiRealm.isClosed()) {
+                uiRealm = Realm.getDefaultInstance();
+            }
+            return uiRealm;
+        }
+    }
+
+    private void closeRealm(Realm realm) {
+        if (!onMainThread()) {
+            realm.close();
+        }
+    }
+
     @Override
     public <E extends RealmObject> E loadObjectByUid(Class<E> clazz, String uid, boolean closeRealm) {
         if (onMainThread()) {
@@ -65,11 +86,12 @@ public class RealmServiceImpl implements RealmService {
             return uiRealm.where(clazz).equalTo("uid", uid).findFirst();
         } else {
             Realm threadR = Realm.getDefaultInstance();
-            E object = threadR.copyFromRealm(threadR.where(clazz).equalTo("uid", uid).findFirst());
+            E managedObject = threadR.where(clazz).equalTo("uid", uid).findFirst();
+            E returnObject = managedObject != null ? threadR.copyFromRealm(managedObject) : null;
             if (closeRealm) {
                 threadR.close();
             }
-            return object;
+            return returnObject;
         }
     }
 
@@ -77,6 +99,23 @@ public class RealmServiceImpl implements RealmService {
     public UserProfile loadUserProfile() {
         Realm tRealm = onMainThread() ? uiRealm : Realm.getDefaultInstance();
         return tRealm.where(UserProfile.class).equalTo("id", 0).findFirst();
+    }
+
+    @Override
+    public <E extends RealmObject> Single<E> load(final Class<E> clazz, final String uid) {
+        return Single.create(new SingleOnSubscribe<E>() {
+            @Override
+            public void subscribe(@NonNull SingleEmitter<E> e) throws Exception {
+                Realm tRealm = getRealm();
+                try {
+                    E managedObject = tRealm.where(clazz).equalTo("uid", uid).findFirst();
+                    e.onSuccess(onMainThread() ? managedObject :
+                        managedObject == null ? null : tRealm.copyFromRealm(managedObject));
+                } finally {
+                    closeRealm(tRealm);
+                }
+            }
+        });
     }
 
     @Override
@@ -109,9 +148,20 @@ public class RealmServiceImpl implements RealmService {
     }
 
     @Override
+    public <E extends RealmObject> Single<E> store(final E object) {
+        return Single.create(new SingleOnSubscribe<E>() {
+            @Override
+            public void subscribe(@NonNull SingleEmitter<E> e) throws Exception {
+                e.onSuccess(copyObjectToRealmAndReturn(Realm.getDefaultInstance(),
+                        object, true));
+            }
+        });
+    }
+
+    @Override
     public <E extends RealmObject> E storeRealmObject(E object, boolean closeRealm) {
         validateOffMainThread();
-        return copyObjectToRealmAndReturnUid(Realm.getDefaultInstance(), object, closeRealm);
+        return copyObjectToRealmAndReturn(Realm.getDefaultInstance(), object, closeRealm);
     }
 
     public <E extends RealmObject> void copyOrUpdateListOfEntities(final List<E> objects) {
@@ -130,26 +180,34 @@ public class RealmServiceImpl implements RealmService {
         validateOffMainThread();
         Realm realm = Realm.getDefaultInstance();
         if (realm.where(UserProfile.class).count() == 0) {
-            final UserProfile newUserProfile = new UserProfile(userUid, userPhone, userDisplayName, userSystemRole);
-            safeRealmTransaction(realm, new Realm.Transaction() {
-                @Override
-                public void execute(Realm realm) {
-                    realm.copyToRealm(newUserProfile);
-                }
-            });
-            return newUserProfile;
+            return createNewProfile(realm, userUid, userPhone, userDisplayName, userSystemRole);
         } else {
             final UserProfile existingUserProfile = realm.where(UserProfile.class).equalTo("id", 0).findFirst();
-            safeRealmTransaction(realm, new Realm.Transaction() {
-                @Override
-                public void execute(Realm realm) {
-                    existingUserProfile.updateFields(userUid, userPhone, userDisplayName, userSystemRole);
-                }
-            });
-            return existingUserProfile;
+            try {
+                safeRealmTransaction(realm, new Realm.Transaction() {
+                    @Override
+                    public void execute(Realm realm) {
+                        existingUserProfile.updateFields(userUid, userPhone, userDisplayName, userSystemRole);
+                    }
+                });
+                return existingUserProfile;
+            } catch (IllegalStateException e) {
+                // because, Realm; because, Android
+                return createNewProfile(realm, userUid, userPhone, userDisplayName, userSystemRole);
+            }
         }
     }
 
+    private UserProfile createNewProfile(Realm realm, final String userUid, final String userPhone, final String userDisplayName, final String userSystemRole) {
+        final UserProfile newUserProfile = new UserProfile(userUid, userPhone, userDisplayName, userSystemRole);
+        safeRealmTransaction(realm, new Realm.Transaction() {
+            @Override
+            public void execute(Realm realm) {
+                realm.copyToRealm(newUserProfile);
+            }
+        });
+        return newUserProfile;
+    }
 
     @Override
     public void removeUserProfile() {
@@ -219,7 +277,7 @@ public class RealmServiceImpl implements RealmService {
         return object;
     }
 
-    private <E extends RealmObject> E copyObjectToRealmAndReturnUid(Realm threadR, E object, boolean closeRealm) {
+    private <E extends RealmObject> E copyObjectToRealmAndReturn(Realm threadR, E object, boolean closeRealm) {
         E storedObject = null;
         try {
             threadR.beginTransaction();
@@ -233,6 +291,17 @@ public class RealmServiceImpl implements RealmService {
                 threadR.close();
             }
         }
+        Timber.e("is stored object null? " + (storedObject == null));
         return storedObject;
+    }
+
+    // for debugging, because Android, because Realm -- you would think telling it to store something would guaranteed store something, but no
+    public void listAllEntitesOfType(Class clazz) {
+        Realm realm = Realm.getDefaultInstance();
+        RealmResults results = realm.where(clazz).findAll();
+        for (int i = 0; i < results.size(); i++) {
+            Timber.d("entity: " + results.get(i));
+        }
+        realm.close();
     }
 }

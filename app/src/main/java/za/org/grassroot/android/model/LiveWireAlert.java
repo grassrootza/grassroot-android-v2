@@ -228,4 +228,12 @@ public class LiveWireAlert extends RealmObject implements EntityForUpload {
             throw new IllegalArgumentException("Error! Alert type must be one of standard types");
         }
     }
+
+    @Override
+    public String toString() {
+        return "LiveWireAlert{" +
+                "uid='" + uid + '\'' +
+                ", headline='" + headline + '\'' +
+                '}';
+    }
 }

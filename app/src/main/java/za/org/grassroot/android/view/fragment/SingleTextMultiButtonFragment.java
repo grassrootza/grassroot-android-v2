@@ -41,6 +41,7 @@ public class SingleTextMultiButtonFragment extends TextInputFragment implements 
     @BindView(R.id.sub_button_1) Button subButton1;
     @BindView(R.id.sub_button_2) Button subButton2;
     @BindView(R.id.sub_button_3) Button subButton3;
+
     private Button[] subButtons;
     private ArrayList<Observable<BtnReturnBundle>> subButtonReturns;
 
@@ -76,10 +77,12 @@ public class SingleTextMultiButtonFragment extends TextInputFragment implements 
         unbinder = ButterKnife.bind(this, v);
         header.setText(headerTextRes);
 
-        if (showExplanation) {
-            explanation.setText(explanTextRes);
-        } else {
-            explanation.setVisibility(View.GONE);
+        if (explanation != null) {
+            if (showExplanation) {
+                explanation.setText(explanTextRes);
+            } else {
+                explanation.setVisibility(View.GONE);
+            }
         }
 
         if (btnGrouping != null) {

@@ -1,6 +1,7 @@
 package za.org.grassroot.android.view.fragment;
 
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -26,7 +27,7 @@ public class TextInputFragment extends GrassrootFragment implements SingleTextVi
     protected int explanTextRes;
 
     @BindView(R.id.header_text) TextView header;
-    @BindView(R.id.explanation_text) TextView explanation;
+    @BindView(R.id.explanation_text) @Nullable TextView explanation; // some variants don't have one
 
     @BindView(R.id.text_input_field) EditText inputText;
 
@@ -43,23 +44,6 @@ public class TextInputFragment extends GrassrootFragment implements SingleTextVi
             headerTextRes = args.getInt(HEADER_TEXT_RES);
             explanTextRes = args.getInt(EXPLAN_TEXT_RES);
         }
-    }
-
-    @Override
-    public Observable<CharSequence> viewCreated() {
-        return lifecyclePublisher
-                .filter(new Predicate<Integer>() {
-                    @Override
-                    public boolean test(@NonNull Integer integer) throws Exception {
-                        return integer == ACTION_FRAGMENT_VIEW_CREATED;
-                    }
-                })
-                .map(new Function<Integer, CharSequence>() {
-                    @Override
-                    public CharSequence apply(@NonNull Integer integer) throws Exception {
-                        return inputText.getText();
-                    }
-                });
     }
 
     @Override

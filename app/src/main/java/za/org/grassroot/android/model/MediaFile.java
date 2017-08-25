@@ -15,12 +15,16 @@ import za.org.grassroot.android.model.network.EntityForUpload;
 
 public class MediaFile extends RealmObject implements EntityForUpload {
 
+    public static final String FUNCTION_LIVEWIRE = "LIVEWIRE_MEDIA";
+
     @PrimaryKey
     private String uid;
     private String serverUid;
 
     // Realm cannot store URI, hence using String
-    private String localPath;
+    // And Android's FileProvider mechanism may be its most broken thing, so also storing own file
+    private String absolutePath;
+    private String contentProviderPath;
     private String mimeType;
 
     private boolean readyToUpload = false;
@@ -28,6 +32,7 @@ public class MediaFile extends RealmObject implements EntityForUpload {
     private boolean sendingUpstream = false;
     private boolean sentUpstream = false;
 
+    private String mediaFunction;
     private String upstreamBucket; // will be set by server, and allows us to retrieve later, if we need (key will always be userUid + localUid)
 
     public MediaFile() {
@@ -35,10 +40,12 @@ public class MediaFile extends RealmObject implements EntityForUpload {
     }
 
 
-    public MediaFile(String localUri, String mimeType) {
+    public MediaFile(String localUri, String absolutePath, String mimeType, String mediaFunction) {
         this();
-        this.localPath = localUri;
+        this.contentProviderPath = localUri;
+        this.absolutePath = absolutePath;
         this.mimeType = mimeType;
+        this.mediaFunction = mediaFunction;
     }
 
     public String getUid() {
@@ -53,12 +60,20 @@ public class MediaFile extends RealmObject implements EntityForUpload {
         this.serverUid = serverUid;
     }
 
-    public String getLocalPath() {
-        return localPath;
+    public String getContentProviderPath() {
+        return contentProviderPath;
     }
 
-    public void setLocalPath(String localPath) {
-        this.localPath = localPath;
+    public void setContentProviderPath(String contentProviderPath) {
+        this.contentProviderPath = contentProviderPath;
+    }
+
+    public String getAbsolutePath() {
+        return absolutePath;
+    }
+
+    public void setAbsolutePath(String absolutePath) {
+        this.absolutePath = absolutePath;
     }
 
     public String getMimeType() {
@@ -95,6 +110,14 @@ public class MediaFile extends RealmObject implements EntityForUpload {
 
     public void setReadyToUpload(boolean readyToUpload) {
         this.readyToUpload = readyToUpload;
+    }
+
+    public String getMediaFunction() {
+        return mediaFunction;
+    }
+
+    public void setMediaFunction(String mediaFunction) {
+        this.mediaFunction = mediaFunction;
     }
 
     @Override

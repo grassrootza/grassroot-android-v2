@@ -8,18 +8,22 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Debug;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import javax.inject.Inject;
 
+import butterknife.BindView;
 import dagger.Lazy;
 import io.reactivex.Observable;
 import timber.log.Timber;
 import za.org.grassroot.android.GrassrootApplication;
+import za.org.grassroot.android.R;
 import za.org.grassroot.android.model.enums.AuthRecoveryResult;
 import za.org.grassroot.android.model.enums.ConnectionResult;
 import za.org.grassroot.android.services.account.AuthConstants;
@@ -34,6 +38,8 @@ public abstract class GrassrootActivity extends AppCompatActivity implements Gra
 
     private AccountAuthenticatorResponse authResponse = null;
     private Bundle authResultBundle = null;
+
+    @BindView(R.id.progressBar) @Nullable ProgressBar progressBar;
 
     @Override
     protected void onCreate(Bundle icicle) {
@@ -144,6 +150,20 @@ public abstract class GrassrootActivity extends AppCompatActivity implements Gra
         if (view != null) {
             InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
             imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+        }
+    }
+
+    public void showProgressBar() {
+        safeToggleProgressBar(progressBar, true);
+    }
+
+    public void closeProgressBar() {
+        safeToggleProgressBar(progressBar, false);
+    }
+
+    protected void safeToggleProgressBar(ProgressBar progressBar, boolean shown) {
+        if (progressBar != null) {
+            progressBar.setVisibility(shown ? View.VISIBLE : View.GONE);
         }
     }
 

@@ -20,6 +20,7 @@ import io.reactivex.Single;
 import io.reactivex.SingleEmitter;
 import io.reactivex.SingleOnSubscribe;
 import io.reactivex.annotations.NonNull;
+import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 import za.org.grassroot.android.dagger.ApplicationContext;
 import za.org.grassroot.android.model.MediaFile;
@@ -36,15 +37,19 @@ public class MediaServiceImpl implements MediaService {
 
     private final Context applicationContext;
     private final RealmService realmService;
+    private final NetworkService networkService;
 
     @Inject
-    public MediaServiceImpl(@ApplicationContext Context applicationContext, RealmService realmService) {
+    public MediaServiceImpl(@ApplicationContext Context applicationContext,
+                            RealmService realmService,
+                            NetworkService networkService) {
         this.applicationContext = applicationContext;
         this.realmService = realmService;
+        this.networkService = networkService;
     }
 
     @Override
-    public Single<String> createFileForMedia(final String mimeType) {
+    public Single<String> createFileForMedia(final String mimeType, final String mediaFunction) {
         return Single.create(new SingleOnSubscribe<String>() {
             @Override
             public void subscribe(@NonNull SingleEmitter<String> e) throws Exception {
@@ -54,9 +59,13 @@ public class MediaServiceImpl implements MediaService {
                             "za.org.grassroot.android.fileprovider",
                             imageFile);
                     Timber.d("taking image, URI = " + imageUri);
-                    e.onSuccess(realmService.storeRealmObject(
-                            new MediaFile(imageUri.toString(), mimeType), false).getUid());
+                    // could do this more elegantly, but, Android, Realm, threads
+                    MediaFile createdFile = realmService.storeRealmObject(
+                            new MediaFile(imageUri.toString(), imageFile.getAbsolutePath(), mimeType, mediaFunction), false);
+                    Timber.d("created media file = " + createdFile);
+                    final String createdUid = createdFile.getUid();
                     realmService.closeRealmOnThread();
+                    e.onSuccess(createdUid);
                 } catch (Throwable t) {
                     Timber.e(t);
                     throw new FailedToCreateMediaFileException();
@@ -80,21 +89,27 @@ public class MediaServiceImpl implements MediaService {
     }
 
     @Override
-    public Single<String> setMediaFileCaptured(final String mediaFileUid) {
+    public Single<String> captureMediaFile(final String mediaFileUid, final boolean uploadNow) {
         return Single.create(new SingleOnSubscribe<String>() {
             @Override
             public void subscribe(@NonNull SingleEmitter<String> e) throws Exception {
                 MediaFile mediaFile = realmService.loadObjectByUid(MediaFile.class, mediaFileUid, false);
                 mediaFile.setReadyToUpload(true);
                 e.onSuccess("DONE");
-                triggerMediaScan(mediaFile.getLocalPath());
+                if (uploadNow) {
+                    Timber.i("okay, trying to upload media file");
+                    networkService.uploadEntity(mediaFile, true)
+                            .subscribeOn(Schedulers.io())
+                            .subscribe();
+                }
+                triggerMediaScan(mediaFile.getContentProviderPath());
                 realmService.closeRealmOnThread();
             }
         });
     }
 
     // todo: this doesn't work but Android has, being Android, managed to regress badly
-    // the new FileProvider mechanism is catastrophic, and makes it a real pain to expose
+    // the FileProvider mechanism is catastrophic, and makes it a real pain to expose
     // images to the gallery. Images are recorded but do not show up. Ah well.
     private void triggerMediaScan(final String filePath) {
         Timber.d("triggering media scan for file path: " + filePath);

@@ -13,6 +13,7 @@ import za.org.grassroot.android.view.GrassrootView;
 
 /**
  * Created by luke on 2017/08/08.
+ * todo: make sure the detached calls are happening so the subscriptions are being disposed
  */
 
 public abstract class ViewPresenterImpl implements ViewPresenter {

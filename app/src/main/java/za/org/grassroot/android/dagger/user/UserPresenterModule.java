@@ -20,8 +20,9 @@ public class UserPresenterModule {
 
     @Provides
     @UserScope
-    MediaService provideMediaService(@ApplicationContext Context applicationContext, RealmService realmService) {
-        return new MediaServiceImpl(applicationContext, realmService);
+    MediaService provideMediaService(@ApplicationContext Context applicationContext, RealmService realmService,
+                                     NetworkService networkService) {
+        return new MediaServiceImpl(applicationContext, realmService, networkService);
     }
 
     @Provides

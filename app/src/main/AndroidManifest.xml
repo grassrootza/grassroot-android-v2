@@ -23,7 +23,8 @@
         android:theme="@style/AppTheme">
 
         <activity android:name=".view.activity.MainActivity"
-            android:label="@string/title_main_activity">
+            android:label="@string/title_main_activity"
+            android:windowSoftInputMode="adjustResize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />

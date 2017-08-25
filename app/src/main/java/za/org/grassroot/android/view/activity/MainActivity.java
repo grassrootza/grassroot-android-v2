@@ -9,6 +9,7 @@ import android.view.MenuItem;
 import javax.inject.Inject;
 
 import io.reactivex.Observable;
+import io.reactivex.ObservableSource;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
@@ -27,6 +28,9 @@ import za.org.grassroot.android.rxbinding.RxViewUtils;
 import za.org.grassroot.android.services.UserDetailsService;
 import za.org.grassroot.android.view.MainView;
 import za.org.grassroot.android.view.fragment.ItemSelectionFragment;
+import za.org.grassroot.android.view.fragment.LargeMsgWithButtonsFragment;
+import za.org.grassroot.android.view.fragment.LongTextInputFragment;
+import za.org.grassroot.android.view.fragment.SingleTextInputFragment;
 import za.org.grassroot.android.view.fragment.SingleTextMultiButtonFragment;
 
 public class MainActivity extends LoggedInActivity implements MainView {
@@ -66,9 +70,9 @@ public class MainActivity extends LoggedInActivity implements MainView {
                 false, -1, btnGrouping);
         Timber.d("Created main fragment, subscribing to view created");
 
-        mainFragment.viewCreated().subscribe(new Consumer<CharSequence>() {
+        mainFragment.viewCreated().subscribe(new Consumer<Integer>() {
             @Override
-            public void accept(@NonNull CharSequence sequence) throws Exception {
+            public void accept(@NonNull Integer integer) throws Exception {
                 Timber.d("Fragment view created, telling presenter to attach view");
                 mainPresenter.onViewCreated();
             }
@@ -89,6 +93,53 @@ public class MainActivity extends LoggedInActivity implements MainView {
             mainPresenter.menuReady();
         }
         return true;
+    }
+
+    // todo : handle / pass back the 'cancel' (might need a simple DTO)
+    @Override
+    public Observable<CharSequence> requestTextInputNextCancel(int headerString, int explanationRes) {
+        final SingleTextInputFragment fragment = SingleTextInputFragment.newInstance(headerString, explanationRes,
+                R.string.button_next, android.R.string.cancel);
+        Observable<CharSequence> observable = fragment
+                .viewCreated()
+                .concatMap(new Function<Integer, Observable<CharSequence>>() {
+                    @Override
+                    public Observable<CharSequence> apply(@NonNull Integer integer) throws Exception {
+                        return fragment.textInputNextDone();
+                    }
+                });
+
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.main_frag_holder, fragment)
+                .addToBackStack("TEXT_ENTRY")
+                .commit();
+
+        return observable;
+    }
+
+    @Override
+    public Observable<CharSequence> requestLongDescriptionInput(int headerString, int inputHint) {
+        final LongTextInputFragment longTextFragment = LongTextInputFragment.newInstance(headerString, inputHint,
+                R.string.button_skip, R.string.button_next);
+
+        Observable<CharSequence> observable = longTextFragment
+                .viewCreated()
+                .concatMap(new Function<Integer, ObservableSource<? extends CharSequence>>() {
+                    @Override
+                    public ObservableSource<? extends CharSequence> apply(@NonNull Integer integer) throws Exception {
+                        longTextFragment.focusOnInput();
+                        return longTextFragment.textInputNextDone();
+                    }
+                });
+
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.main_frag_holder, longTextFragment)
+                .addToBackStack("LONG_DESCRIPTION")
+                .commit();
+
+        return observable;
     }
 
     @Override
@@ -112,6 +163,30 @@ public class MainActivity extends LoggedInActivity implements MainView {
                 .commit();
 
         Timber.d("fragment committed, returning observable");
+        return observable;
+    }
+
+    @Override
+    public Observable<BtnReturnBundle> requestConfirmation(int headerRes, String message, BtnGrouping btnGrouping) {
+        final LargeMsgWithButtonsFragment fragment = LargeMsgWithButtonsFragment.newInstance(headerRes,
+                message, true, btnGrouping);
+
+        Observable<BtnReturnBundle> observable = fragment.viewCreated()
+                .concatMap(new Function<Integer, ObservableSource<? extends BtnReturnBundle>>() {
+                    @Override
+                    public ObservableSource<? extends BtnReturnBundle> apply(@NonNull Integer integer) throws Exception {
+                        return fragment.buttonClicked();
+                    }
+                });
+
+        closeProgressBar();
+        closeKeyboard();
+
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.main_frag_holder, fragment)
+                .addToBackStack("CONFIRMATION")
+                .commit();
+
         return observable;
     }
 

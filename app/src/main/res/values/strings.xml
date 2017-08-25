@@ -9,6 +9,9 @@
     <string name="error_phone_number">Error with phone number, please check and try again</string>
 
     <string name="button_next">Next</string>
+    <string name="button_skip">Skip</string>
+    <string name="button_confirm">Confirm</string>
+    <string name="button_modify">Modify</string>
 
     <!-- Login activity strings -->
     <string name="login_welcome">Welcome to Grassroot</string>
@@ -29,6 +32,15 @@
     <string name="take_photo">Photo</string>
     <string name="take_audio">Audio</string>
 
+    <string name="lwire_headline_title">Headline</string>
+    <string name="lwire_headline_explan">Okay, next please type in a headline for the alert</string>
+    <string name="lwire_description_header">Longer description</string>
+    <string name="lwire_description_hint">Please enter any longer description of the alert, e.g.,
+    any article text (please keep it short and simple)</string>
+
+    <string name="lwire_confirm_header">Confirmed?</string>
+    <string name="lwire_confirm_body">Put a bunch of descriptive text in here</string>
+
     <!-- Adding some strings for item selection -->
     <string name="group_select_title">What group\'s this for?</string>
 
@@ -43,5 +55,8 @@
     <!-- Strings for account preference screen -->
     <string name="sync_on_title">Sync</string>
     <string name="sync_on_desc">Refresh automatically</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 </resources>

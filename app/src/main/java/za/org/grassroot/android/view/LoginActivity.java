@@ -54,9 +54,9 @@ public class LoginActivity extends GrassrootActivity implements LoginView {
                 R.string.login_enter_msisdn,
                 R.string.login_button_register,
                 R.string.button_next);
-        usernameFragment.viewCreated().subscribe(new Consumer<CharSequence>() {
+        usernameFragment.viewCreated().subscribe(new Consumer<Integer>() {
             @Override
-            public void accept(@NonNull CharSequence sequence) throws Exception {
+            public void accept(@NonNull Integer integer) throws Exception {
                 loginPresenter.onViewCreated();
                 usernameFragment.toggleNextDoneButton(false);
                 usernameFragment.setInputType(InputType.TYPE_CLASS_PHONE);
@@ -69,9 +69,9 @@ public class LoginActivity extends GrassrootActivity implements LoginView {
                 R.string.login_enter_otp_string,
                 R.string.login_button_register,
                 R.string.button_login);
-        otpFragment.viewCreated().subscribe(new Consumer<CharSequence>() {
+        otpFragment.viewCreated().subscribe(new Consumer<Integer>() {
             @Override
-            public void accept(@NonNull CharSequence sequence) throws Exception {
+            public void accept(@NonNull Integer integer) throws Exception {
                 loginPresenter.attachOtp(LoginActivity.this);
                 otpFragment.toggleNextDoneButton(false);
                 otpFragment.toggleBackOtherButton(false);
@@ -181,13 +181,4 @@ public class LoginActivity extends GrassrootActivity implements LoginView {
         loginPresenter.cleanUpForActivity();
     }
 
-    @Override
-    public void showProgressBar() {
-        currentFragment.showProgressBar();
-    }
-
-    @Override
-    public void closeProgressBar() {
-        currentFragment.closeProgressBar();
-    }
 }

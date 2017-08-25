@@ -12,6 +12,7 @@ import butterknife.ButterKnife;
 import io.reactivex.Observable;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.functions.Function;
+import io.reactivex.functions.Predicate;
 import za.org.grassroot.android.R;
 import za.org.grassroot.android.rxbinding.RxTextView;
 import za.org.grassroot.android.rxbinding.RxView;
@@ -74,6 +75,12 @@ public class SingleTextInputFragment extends TextInputFragment implements Single
     public Observable<CharSequence> textInputNextDone() {
         Observable<CharSequence> editTextNext = RxTextView
                 .editorActions(inputText, RxViewUtils.imeNextDonePredicate())
+                .filter(new Predicate<Integer>() {
+                    @Override
+                    public boolean test(@NonNull Integer integer) throws Exception {
+                        return inputText != null; // because Android
+                    }
+                })
                 .map(new Function<Integer, CharSequence>() {
                     @Override
                     public CharSequence apply(@NonNull Integer integer) throws Exception {

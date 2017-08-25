@@ -2,6 +2,7 @@ package za.org.grassroot.android.services;
 
 import io.reactivex.Observable;
 import io.reactivex.Single;
+import za.org.grassroot.android.model.LiveWireAlert;
 
 /**
  * Created by luke on 2017/08/15.
@@ -14,6 +15,8 @@ public interface LiveWireService {
      *
      * @return The UID of the alert entity
      */
+    Single<LiveWireAlert> load(String alertUid);
+
     Single<String> initiateAlertWithMedia(String mediaFileUid);
 
     Single<String> initiateAlertWithHeadline(String headline);
