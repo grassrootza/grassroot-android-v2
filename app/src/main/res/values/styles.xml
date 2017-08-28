@@ -55,10 +55,12 @@
     <style name="MultiLineLargeInput">
         <item name="android:textColor">@android:color/primary_text_light</item>
         <item name="android:gravity">top|start</item>
-        <item name="android:inputType">textLongMessage</item>
+        <item name="android:inputType">textCapSentences|textMultiLine</item>
         <item name="android:ellipsize">start</item>
         <item name="android:textColorHint">@color/colorPrimary</item>
         <item name="android:imeOptions">actionDone</item>
+        <item name="android:singleLine">false</item>
+        <item name="android:scrollHorizontally">false</item>
     </style>
 
     <!-- Styling buttons -->

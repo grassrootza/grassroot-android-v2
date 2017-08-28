@@ -37,8 +37,8 @@ public interface GrassrootUserApi {
                                  @Part MultipartBody.Part file);
 
     // Create a LiveWire alert
-    @POST("/api/mobile/livewire")
-    Call<RestResponse<String>> createLiveWireAlert(@Query("userUid") String userUid,
+    @POST("/api/mobile/livewire/create/{userUid}")
+    Call<RestResponse<String>> createLiveWireAlert(@Path("userUid") String userUid,
                                      @Query("headline") String headline,
                                      @Query("description") String description,
                                      @Query("type") String type,

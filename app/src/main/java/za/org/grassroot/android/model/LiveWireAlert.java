@@ -229,6 +229,10 @@ public class LiveWireAlert extends RealmObject implements EntityForUpload {
         }
     }
 
+    public boolean hasMedia() {
+        return mediaFile != null;
+    }
+
     @Override
     public String toString() {
         return "LiveWireAlert{" +

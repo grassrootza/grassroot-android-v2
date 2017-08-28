@@ -19,7 +19,6 @@ import za.org.grassroot.android.R;
 import za.org.grassroot.android.model.dto.BtnGrouping;
 import za.org.grassroot.android.model.dto.BtnParameters;
 import za.org.grassroot.android.model.dto.BtnReturnBundle;
-import za.org.grassroot.android.rxbinding.RxTextView;
 import za.org.grassroot.android.rxbinding.RxView;
 import za.org.grassroot.android.rxbinding.RxViewUtils;
 import za.org.grassroot.android.view.SingleTextMultiButtonView;
@@ -137,8 +136,13 @@ public class SingleTextMultiButtonFragment extends TextInputFragment implements 
     // todo: check behaviour on back pressed -- looks like observables are being duplicated
     @Override
     public Observable<BtnReturnBundle> subtitleButtonClicked() {
-        Timber.d("returning merge ... how many observables? " + subButtonReturns.size());
-        return Observable.merge(subButtonReturns); // maybe
+        if (subButtonReturns != null) {
+            Timber.d("returning merge ... how many observables? " + subButtonReturns.size());
+            return Observable.merge(subButtonReturns); // maybe
+        } else {
+            Timber.e("well, should not have this ...");
+            return Observable.empty();
+        }
     }
 
     @Override

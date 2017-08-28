@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import io.reactivex.Single;
+import io.realm.Realm;
 import io.realm.RealmObject;
 import io.realm.RealmResults;
 import za.org.grassroot.android.model.SelectableItem;
@@ -42,6 +43,7 @@ public interface RealmService {
      */
     <E extends RealmObject> E storeRealmObject(E object, boolean closeRealm);
     <E extends RealmObject> void copyOrUpdateListOfEntities(List<E> objects);
+    <E extends RealmObject> void executeTransaction(Realm.Transaction transaction);
 
     UserProfile updateOrCreateUserProfile(final String userUid, final String userPhone,
                                           final String userDisplayName, final String userSystemRole);

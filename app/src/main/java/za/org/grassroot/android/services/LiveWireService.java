@@ -34,6 +34,6 @@ public interface LiveWireService {
     Single<Boolean> markAlertReadyForDispatch(String alertUid);
 
     // returns one by if there are media files that have to be uploaded first
-    Observable<String> triggerAlertDispatch(String alertUid);
+    Observable<Boolean> triggerAlertDispatch(String alertUid);
 
 }

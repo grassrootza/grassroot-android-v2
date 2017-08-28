@@ -174,6 +174,12 @@ public class RealmServiceImpl implements RealmService {
         });
     }
 
+    @Override
+    public <E extends RealmObject> void executeTransaction(Realm.Transaction transaction) {
+        validateOffMainThread();
+        safeRealmTransaction(getRealm(), transaction);
+    }
+
     // todo: watch out for returning the wrong entity--overall, clean this up / rethink it
     @Override
     public UserProfile updateOrCreateUserProfile(final String userUid, final String userPhone, final String userDisplayName, final String userSystemRole) {
@@ -249,7 +255,10 @@ public class RealmServiceImpl implements RealmService {
 
     private void safeRealmTransaction(Realm realm, Realm.Transaction transaction) {
         try {
+            Timber.e("executing realm transaction ...");
             realm.executeTransaction(transaction);
+        } catch (Exception e) {
+            Timber.e(e, "error in Realm transaction");
         } finally {
             if (realm != null) {
                 realm.close();

@@ -49,6 +49,11 @@ public class MainPresenterImpl extends LoggedInViewPresenterImpl implements Main
     private static final int MODIFY_ACTION = 202;
     private static final int CANCEL_ACTION = 203;
 
+    private static final int STORED_FAILURE = 300;
+    private static final int STORED_WITHOUT_UPLOAD = 301;
+    private static final int STORED_UPLOAD_FAILED = 302;
+    private static final int STORED_UPLOAD_SUCCEEDED = 303;
+
     public static int REQUEST_PERMISSION_CODE = 01;
 
     private final Context applicationContext;
@@ -180,12 +185,108 @@ public class MainPresenterImpl extends LoggedInViewPresenterImpl implements Main
 
     private void askForConfirmation() {
         Timber.i("asking for confirmation ...");
-        subscriptions.add(view.requestConfirmation(
-                R.string.lwire_confirm_header, applicationContext.getString(R.string.lwire_confirm_body), getConfirmButtons())
+        realmService.load(LiveWireAlert.class, currentLiveWireAlertUid)
+                .subscribeOn(Schedulers.io())
+                .subscribe(new Consumer<LiveWireAlert>() {
+                    @Override
+                    public void accept(@NonNull LiveWireAlert liveWireAlert) throws Exception {
+                        loadConfirmation(liveWireAlert);
+                    }
+                });
+    }
+
+    private void loadConfirmation(LiveWireAlert alert) {
+        subscriptions.add(view.requestConfirmationOrAction(
+                R.string.lwire_confirm_header,
+                alertConfirmBody(alert),
+                getConfirmButtons())
                 .subscribe(new Consumer<BtnReturnBundle>() {
                     @Override
                     public void accept(@NonNull BtnReturnBundle btnReturnBundle) throws Exception {
                         Timber.d("Clicked! Do something");
+                        handleConfirmResponse(btnReturnBundle);
+                    }
+                }));
+    }
+
+    private String alertConfirmBody(LiveWireAlert alert) {
+        String description;
+        Timber.e("alert group UID: " + alert.getGroupUid());
+        final String groupName = realmService.loadObjectByUid(Group.class, alert.getGroupUid(), true).getName();
+        if (alert.hasMedia()) {
+            description = applicationContext.getString(R.string.lwire_confirm_text_media,
+                    alert.getHeadline(), groupName, alert.getMediaFile().getMimeType());
+        } else {
+            description = applicationContext.getString(R.string.lwire_confirm_text_no_media,
+                    alert.getHeadline(), groupName);
+        }
+        return description;
+    }
+
+    private void handleConfirmResponse(BtnReturnBundle btnReturnBundle) {
+        // todo : handle cancel & modify, and option for upload later
+        if (btnReturnBundle.getButtonActionCode() == CONFIRM_ACTION) {
+            markAlertComplete(true);
+        } else {
+            Timber.e("Button return: " + btnReturnBundle);
+        }
+    }
+
+    private void markAlertComplete(final boolean uploadNow) {
+        liveWireService.markAlertReadyForDispatch(currentLiveWireAlertUid)
+                .subscribeOn(Schedulers.io())
+                .subscribe(new Consumer<Boolean>() {
+                    @Override
+                    public void accept(@NonNull Boolean aBoolean) throws Exception {
+                        if (uploadNow) {
+                            triggerAlertUpload(currentLiveWireAlertUid);
+                        } else {
+                            handleStorageUploadResult(STORED_WITHOUT_UPLOAD);
+                        }
+                    }
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(@NonNull Throwable throwable) throws Exception {
+                        Timber.e(throwable, "Error completing!");
+                        handleStorageUploadResult(STORED_FAILURE);
+                    }
+                });
+
+    }
+
+    // todo : build picker and sender in background to also handle this
+    private void triggerAlertUpload(final String alertUid) {
+        liveWireService.triggerAlertDispatch(alertUid)
+                .subscribeOn(Schedulers.io())
+                .subscribe(new Consumer<Boolean>() {
+                    @Override
+                    public void accept(@NonNull Boolean aBoolean) throws Exception {
+                        handleStorageUploadResult(aBoolean ? STORED_UPLOAD_SUCCEEDED : STORED_UPLOAD_FAILED);
+                    }
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(@NonNull Throwable throwable) throws Exception {
+                        Timber.e(throwable, "Upload failed");
+                        handleStorageUploadResult(STORED_UPLOAD_FAILED);
+                    }
+                });
+    }
+
+    private void handleStorageUploadResult(int result) {
+        if (result == STORED_UPLOAD_SUCCEEDED) {
+            Timber.e("Finally, result!");
+            showConfirmationAndOut();
+        }
+    }
+
+    private void showConfirmationAndOut() {
+        subscriptions.dispose();
+        subscriptions.add(view
+                .defaultRequestTextOrButtons(R.string.done_header, R.string.lwire_alert_sent, true)
+                .subscribe(new Consumer<CharSequence>() {
+                    @Override
+                    public void accept(@NonNull CharSequence sequence) throws Exception {
+                        Timber.e("It's done! Need to close the snake");
                     }
                 }));
     }

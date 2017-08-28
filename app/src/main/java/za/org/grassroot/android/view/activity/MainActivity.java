@@ -2,6 +2,8 @@ package za.org.grassroot.android.view.activity;
 
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -81,6 +83,39 @@ public class MainActivity extends LoggedInActivity implements MainView {
         getSupportFragmentManager().beginTransaction()
                 .add(R.id.main_frag_holder, mainFragment)
                 .commit();
+    }
+
+    // todo : watch out for the use of this 'MainFragment', may cause issues (quite a few)
+    @Override
+    public Observable<CharSequence> defaultRequestTextOrButtons(int headerString, Integer explanationRes, boolean clearBackStack) {
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        // todo : double check if needed
+        if (clearBackStack) {
+            fragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+        }
+
+        SingleTextMultiButtonFragment fragment = SingleTextMultiButtonFragment.newInstance(headerString, explanationRes != null,
+                explanationRes != null ? explanationRes : -1, btnGrouping);
+
+        Observable<CharSequence> observable = mainFragment
+                .viewCreated()
+                .concatMap(new Function<Integer, ObservableSource<? extends CharSequence>>() {
+                    @Override
+                    public ObservableSource<? extends CharSequence> apply(@NonNull Integer integer) throws Exception {
+                        return mainFragment.mainTextNext();
+                    }
+                });
+
+        FragmentTransaction transaction = fragmentManager.beginTransaction();
+        if (clearBackStack) {
+            transaction.replace(R.id.main_frag_holder, fragment);
+        } else {
+            transaction.add(R.id.main_frag_holder, fragment)
+                    .addToBackStack("MAIN_FRAG");
+        }
+
+        transaction.commit();
+        return observable;
     }
 
     @Override
@@ -167,7 +202,7 @@ public class MainActivity extends LoggedInActivity implements MainView {
     }
 
     @Override
-    public Observable<BtnReturnBundle> requestConfirmation(int headerRes, String message, BtnGrouping btnGrouping) {
+    public Observable<BtnReturnBundle> requestConfirmationOrAction(int headerRes, String message, BtnGrouping btnGrouping) {
         final LargeMsgWithButtonsFragment fragment = LargeMsgWithButtonsFragment.newInstance(headerRes,
                 message, true, btnGrouping);
 

@@ -23,7 +23,8 @@
         android:layout_height="wrap_content"
         android:gravity="center"
         android:layout_marginBottom="@dimen/margin_std_xlarge"
-        tools:text="A longer line of text that goes inside here" />
+        android:padding="@dimen/padding_std_large"
+        tools:text="A longer line of text that goes inside here and is very long and a few lines" />
 
     <LinearLayout
         android:id="@+id/buttons_row"

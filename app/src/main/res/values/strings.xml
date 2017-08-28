@@ -39,7 +39,13 @@
     any article text (please keep it short and simple)</string>
 
     <string name="lwire_confirm_header">Confirmed?</string>
-    <string name="lwire_confirm_body">Put a bunch of descriptive text in here</string>
+    <string name="lwire_confirm_text_media">Issuing a LiveWire alert with headline \'%1$s\', about
+    group %2$s, with a %3$s attached. Confirmed?</string>
+    <string name="lwire_confirm_text_no_media">Issuing a LiveWire alert with headline \'%1$s\',
+    about group %2$s. No media attached. Confirmed?</string>
+
+    <string name="done_header">Done!</string>
+    <string name="lwire_alert_sent">The LiveWire alert has been sent. What next?</string>
 
     <!-- Adding some strings for item selection -->
     <string name="group_select_title">What group\'s this for?</string>
