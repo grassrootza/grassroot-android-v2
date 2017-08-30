@@ -7,6 +7,6 @@ public interface MainPresenter extends LoggedInViewPresenter {
 
     void attach(MainView view);
     void menuReady();
-    BtnGrouping obtainDefaultSubButtons();
+    BtnGrouping obtainMediaButtons();
 
 }

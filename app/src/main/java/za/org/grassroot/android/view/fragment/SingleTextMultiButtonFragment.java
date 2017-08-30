@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.reactivex.Observable;
+import io.reactivex.ObservableSource;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.functions.Function;
 import timber.log.Timber;
@@ -91,6 +92,7 @@ public class SingleTextMultiButtonFragment extends TextInputFragment implements 
             subtitleButtons.setVisibility(View.GONE);
         }
 
+        Timber.e("calling action fragment view created");
         lifecyclePublisher.onNext(ACTION_FRAGMENT_VIEW_CREATED);
         return v;
     }
@@ -124,8 +126,16 @@ public class SingleTextMultiButtonFragment extends TextInputFragment implements 
     }
 
     @Override
-    public Observable<CharSequence> mainTextNext() {
-        return RxViewUtils.nullSafeTextViewNextDone(mainTextView);
+    public Observable<BtnReturnBundle> mainTextNext() {
+        Timber.e("returning main text next");
+        return RxViewUtils.nullSafeTextViewNextDone(mainTextView)
+                .concatMap(new Function<CharSequence, ObservableSource<? extends BtnReturnBundle>>() {
+                    @Override
+                    public ObservableSource<? extends BtnReturnBundle> apply(@NonNull CharSequence sequence) throws Exception {
+                        Timber.e("main text next clicked");
+                        return Observable.just(new BtnReturnBundle(sequence, MAIN_TEXT_NEXT_ACTION));
+                    }
+                });
     }
 
     @Override

@@ -7,6 +7,8 @@
     <string name="error_unknown_generic">Sorry, an error occurred</string>
     <string name="error_server_unreachable">Sorry, the Grassroot server is unreachable at present</string>
     <string name="error_phone_number">Error with phone number, please check and try again</string>
+    <string name="error_lwire_alert_not_found">Sorry, there was an error creating the alert</string>
+    <string name="error_lwire_alert_media_error">Sorry, error saving file</string>
 
     <string name="button_next">Next</string>
     <string name="button_skip">Skip</string>
@@ -33,6 +35,8 @@
     <string name="take_audio">Audio</string>
 
     <string name="lwire_headline_title">Headline</string>
+    <string name="lwire_media_header">Add media</string>
+    <string name="lwire_media_prompt">Do you want to include a photo, video or attachment?</string>
     <string name="lwire_headline_explan">Okay, next please type in a headline for the alert</string>
     <string name="lwire_description_header">Longer description</string>
     <string name="lwire_description_hint">Please enter any longer description of the alert, e.g.,

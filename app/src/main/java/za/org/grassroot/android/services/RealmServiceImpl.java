@@ -60,9 +60,14 @@ public class RealmServiceImpl implements RealmService {
         uiRealm.close();
     }
 
+    // todo: properly hunt down & debug stale instances that mean the refresh may be required
     private Realm getRealm() {
         if (!onMainThread()) {
-            return Realm.getDefaultInstance();
+            Realm threadR = Realm.getDefaultInstance();
+            if (!threadR.isAutoRefresh()) {
+                threadR.refresh();
+            }
+            return threadR;
         } else {
             if (uiRealm.isClosed()) {
                 uiRealm = Realm.getDefaultInstance();
@@ -80,12 +85,9 @@ public class RealmServiceImpl implements RealmService {
     @Override
     public <E extends RealmObject> E loadObjectByUid(Class<E> clazz, String uid, boolean closeRealm) {
         if (onMainThread()) {
-            if (uiRealm.isClosed()) {
-                uiRealm = Realm.getDefaultInstance();
-            }
-            return uiRealm.where(clazz).equalTo("uid", uid).findFirst();
+            return getRealm().where(clazz).equalTo("uid", uid).findFirst();
         } else {
-            Realm threadR = Realm.getDefaultInstance();
+            Realm threadR = getRealm();
             E managedObject = threadR.where(clazz).equalTo("uid", uid).findFirst();
             E returnObject = managedObject != null ? threadR.copyFromRealm(managedObject) : null;
             if (closeRealm) {
@@ -97,10 +99,10 @@ public class RealmServiceImpl implements RealmService {
 
     @Override
     public UserProfile loadUserProfile() {
-        Realm tRealm = onMainThread() ? uiRealm : Realm.getDefaultInstance();
-        return tRealm.where(UserProfile.class).equalTo("id", 0).findFirst();
+        return getRealm().where(UserProfile.class).equalTo("id", 0).findFirst();
     }
 
+    // note: lots of logging because of extreme, extreme weirdness in persistence chains (though may also be hotswapping by Android Studio ... Android = ...)
     @Override
     public <E extends RealmObject> Single<E> load(final Class<E> clazz, final String uid) {
         return Single.create(new SingleOnSubscribe<E>() {
@@ -109,6 +111,8 @@ public class RealmServiceImpl implements RealmService {
                 Realm tRealm = getRealm();
                 try {
                     E managedObject = tRealm.where(clazz).equalTo("uid", uid).findFirst();
+                    Timber.i("on main thread? " + onMainThread());
+                    Timber.i("loaded object, looks like: " + managedObject);
                     e.onSuccess(onMainThread() ? managedObject :
                         managedObject == null ? null : tRealm.copyFromRealm(managedObject));
                 } finally {
@@ -175,7 +179,7 @@ public class RealmServiceImpl implements RealmService {
     }
 
     @Override
-    public <E extends RealmObject> void executeTransaction(Realm.Transaction transaction) {
+    public void executeTransaction(Realm.Transaction transaction) {
         validateOffMainThread();
         safeRealmTransaction(getRealm(), transaction);
     }
@@ -184,7 +188,7 @@ public class RealmServiceImpl implements RealmService {
     @Override
     public UserProfile updateOrCreateUserProfile(final String userUid, final String userPhone, final String userDisplayName, final String userSystemRole) {
         validateOffMainThread();
-        Realm realm = Realm.getDefaultInstance();
+        Realm realm = getRealm();
         if (realm.where(UserProfile.class).count() == 0) {
             return createNewProfile(realm, userUid, userPhone, userDisplayName, userSystemRole);
         } else {
@@ -260,8 +264,11 @@ public class RealmServiceImpl implements RealmService {
         } catch (Exception e) {
             Timber.e(e, "error in Realm transaction");
         } finally {
+            Timber.e("closing realm ...");
             if (realm != null) {
                 realm.close();
+            } else {
+                Timber.e("but not closing realm");
             }
         }
     }
@@ -309,7 +316,7 @@ public class RealmServiceImpl implements RealmService {
         Realm realm = Realm.getDefaultInstance();
         RealmResults results = realm.where(clazz).findAll();
         for (int i = 0; i < results.size(); i++) {
-            Timber.d("entity: " + results.get(i));
+            Timber.v("entity: " + results.get(i));
         }
         realm.close();
     }

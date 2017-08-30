@@ -43,7 +43,7 @@ public interface RealmService {
      */
     <E extends RealmObject> E storeRealmObject(E object, boolean closeRealm);
     <E extends RealmObject> void copyOrUpdateListOfEntities(List<E> objects);
-    <E extends RealmObject> void executeTransaction(Realm.Transaction transaction);
+    void executeTransaction(Realm.Transaction transaction);
 
     UserProfile updateOrCreateUserProfile(final String userUid, final String userPhone,
                                           final String userDisplayName, final String userSystemRole);

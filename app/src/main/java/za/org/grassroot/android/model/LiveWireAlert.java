@@ -3,6 +3,8 @@ package za.org.grassroot.android.model;
 import android.text.TextUtils;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Set;
 import java.util.UUID;
 
 import io.realm.RealmObject;
@@ -209,6 +211,10 @@ public class LiveWireAlert extends RealmObject implements EntityForUpload {
         this.released = released;
     }
 
+    public void setUnderReview(boolean underReview) {
+        this.underReview = underReview;
+    }
+
     public String getAlertType() {
         return alertType;
     }
@@ -233,11 +239,19 @@ public class LiveWireAlert extends RealmObject implements EntityForUpload {
         return mediaFile != null;
     }
 
+    public Set<String> getMediaFileKeys() {
+        return mediaFile == null ? null :
+                Collections.singleton(mediaFile.getUid());
+    }
+
     @Override
     public String toString() {
         return "LiveWireAlert{" +
                 "uid='" + uid + '\'' +
                 ", headline='" + headline + '\'' +
+                ", description='" + description + '\'' +
+                ", alertType='" + alertType + '\'' +
+                ", groupUid='" + groupUid + '\'' +
                 '}';
     }
 }

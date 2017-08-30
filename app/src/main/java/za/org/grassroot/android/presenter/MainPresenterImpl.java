@@ -8,12 +8,16 @@ import android.provider.MediaStore;
 import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
 
+import java.io.IOException;
+
 import javax.inject.Inject;
 
 import io.reactivex.Single;
+import io.reactivex.SingleSource;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.functions.Consumer;
+import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 import za.org.grassroot.android.R;
@@ -30,6 +34,7 @@ import za.org.grassroot.android.services.MediaService;
 import za.org.grassroot.android.services.RealmService;
 import za.org.grassroot.android.services.UserDetailsService;
 import za.org.grassroot.android.view.MainView;
+import za.org.grassroot.android.view.fragment.TextInputFragment;
 
 import static android.Manifest.permission.RECORD_AUDIO;
 import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
@@ -40,6 +45,7 @@ import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
  */
 
 public class MainPresenterImpl extends LoggedInViewPresenterImpl implements MainPresenter  {
+
 
     private static final int TAKE_PHOTO_ACTION = 101;
     private static final int TAKE_AUDIO_ACTION = 102;
@@ -93,43 +99,85 @@ public class MainPresenterImpl extends LoggedInViewPresenterImpl implements Main
 
     @Override
     public void onViewCreated() {
-        subscriptions.add(view.threeButtonRowButtonClicked()
-                .subscribe(new Consumer<BtnReturnBundle>() {
+        Timber.e("inside on view created");
+        setUpDefaultScreen(R.string.main_explanation, null, true);
+    }
+
+    private void setUpDefaultScreen(int headlineRes, Integer explanRes, boolean insideCreateCycle) {
+        if (insideCreateCycle) {
+            Timber.e("create cycle, starting up");
+            subscriptions.add(view.mainTextNext()
+                    .subscribe(defaultScreenConsumer()));
+        } else {
+            subscriptions.dispose();
+            Timber.e("inside setting up default screen");
+            subscriptions.add(view
+                    .defaultRequestTextOrButtons(headlineRes, explanRes, true)
+                    .subscribe(defaultScreenConsumer()));
+        }
+    }
+
+    private Consumer<BtnReturnBundle> defaultScreenConsumer() {
+        return new Consumer<BtnReturnBundle>() {
             @Override
             public void accept(@NonNull BtnReturnBundle btnReturnBundle) throws Exception {
-                Timber.d("btnReturnBundle: " + btnReturnBundle);
-                handleSubButtonClick(btnReturnBundle);
+                Timber.e("btnReturnBundle: " + btnReturnBundle);
+                if (btnReturnBundle.getButtonActionCode() == TextInputFragment.MAIN_TEXT_NEXT_ACTION) {
+                    createOrUpdateLiveWireAlertWithHeadline("" + btnReturnBundle.getCharSequenceInTextInput());
+                } else {
+                    handleMediaButtonClick(btnReturnBundle);
+                }
             }
-        }));
+        };
+    }
 
-        subscriptions.add(view.mainTextNext()
+    private void decideOnNextLiveWireStep() {
+        liveWireService.load(currentLiveWireAlertUid)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Consumer<LiveWireAlert>() {
+                    @Override
+                    public void accept(@NonNull LiveWireAlert liveWireAlert) throws Exception {
+                        Timber.i("deciding next step, alert: " + liveWireAlert);
+                        if (TextUtils.isEmpty(liveWireAlert.getHeadline())) {
+                            askForHeadline();
+                        } else if (liveWireAlert.getMediaFile() == null) {
+                            askForMediaFile();
+                        } else if (TextUtils.isEmpty(liveWireAlert.getAlertType())) {
+                            // for now, default to group
+                            loadGroupSelection();
+                        } else if (TextUtils.isEmpty(liveWireAlert.getDescription())) {
+                            askForDescription();
+                        } else {
+                            askForConfirmation();
+                        }
+                    }
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(@NonNull Throwable throwable) throws Exception {
+                        showErrorAndReturnToNull();
+                    }
+                });
+    }
+
+    private void showErrorAndReturnToNull() {
+        view.showErrorToast(R.string.error_lwire_alert_not_found);
+        currentLiveWireAlertUid = null;
+        currentMediaFileUid = null;
+    }
+
+    private void askForHeadline() {
+        subscriptions.add(view.requestTextInputNextCancel(R.string.lwire_headline_title, R.string.lwire_headline_explan)
                 .subscribe(new Consumer<CharSequence>() {
                     @Override
                     public void accept(@NonNull CharSequence sequence) throws Exception {
                         createOrUpdateLiveWireAlertWithHeadline(String.valueOf(sequence));
                     }
                 }));
-
-    }
-
-    private void decideOnNextLiveWireStep() {
-        liveWireService.load(currentLiveWireAlertUid).subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Consumer<LiveWireAlert>() {
-                    @Override
-                    public void accept(@NonNull LiveWireAlert liveWireAlert) throws Exception {
-
-                    }
-                }, new Consumer<Throwable>() {
-                    @Override
-                    public void accept(@NonNull Throwable throwable) throws Exception {
-
-                    }
-                });
     }
 
     private void createOrUpdateLiveWireAlertWithHeadline(String headline) {
-        Timber.e("current alert UID = " + currentLiveWireAlertUid);
+        Timber.d("current alert UID = " + currentLiveWireAlertUid);
         Single<String> serviceCall = TextUtils.isEmpty(currentLiveWireAlertUid) ?
                 liveWireService.initiateAlertWithHeadline(String.valueOf(headline)) :
                 liveWireService.updateAlertHeadline(currentLiveWireAlertUid, headline);
@@ -141,22 +189,110 @@ public class MainPresenterImpl extends LoggedInViewPresenterImpl implements Main
                     public void accept(@NonNull String s) throws Exception {
                         Timber.e("initiated or updated a LiveWire alert, with UID = " + s);
                         currentLiveWireAlertUid = s;
-                        // realmService.listAllEntitesOfType(LiveWireAlert.class);
-                        // decideOnNextLiveWireStep();
-                        loadGroupSelection();
+                        decideOnNextLiveWireStep();
                     }
                 });
     }
 
-    private void askForHeadline() {
-        Timber.e("loading headline requestor ...");
-        subscriptions.add(view.requestTextInputNextCancel(R.string.lwire_headline_title, R.string.lwire_headline_explan)
-                .subscribe(new Consumer<CharSequence>() {
+    // todo : replace 'audio' with 'attach'
+    private void askForMediaFile() {
+        subscriptions.add(view.requestConfirmationOrAction(
+                R.string.lwire_media_header,
+                applicationContext.getString(R.string.lwire_media_prompt),
+                obtainMediaButtons())
+                .subscribe(new Consumer<BtnReturnBundle>() {
                     @Override
-                    public void accept(@NonNull CharSequence sequence) throws Exception {
-                        createOrUpdateLiveWireAlertWithHeadline(String.valueOf(sequence));
+                    public void accept(@NonNull BtnReturnBundle btnReturnBundle) throws Exception {
+                        handleMediaButtonClick(btnReturnBundle);
                     }
                 }));
+    }
+
+    // todo : check the string result return in deciding what next
+    // todo : maybe start transition to next view even prior to turning off progress bar
+    @Override
+    public void handleActivityResult(int requestCode, Intent data) {
+        if (requestCode == TAKE_PHOTO_ACTION) {
+            view.showProgressBar();
+            mediaService.captureMediaFile(currentMediaFileUid, true)
+                    .doOnError(new Consumer<Throwable>() {
+                        @Override
+                        public void accept(@NonNull Throwable throwable) throws Exception {
+                            handleMediaError();
+                        }
+                    })
+                    .flatMap(new Function<String, SingleSource<? extends String>>() {
+                        @Override
+                        public SingleSource<? extends String> apply(@NonNull String s) throws Exception {
+                            return TextUtils.isEmpty(currentLiveWireAlertUid) ?
+                                    liveWireService.initiateAlertWithMedia(s) :
+                                    liveWireService.updateAlertMedia(currentLiveWireAlertUid, currentMediaFileUid);
+                        }
+                    })
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(new Consumer<String>() {
+                        @Override
+                        public void accept(@NonNull String s) throws Exception {
+                            view.closeProgressBar();
+                            view.showSuccessMsg(R.string.done_header);
+                            decideOnNextLiveWireStep();
+                        }
+                    }, new Consumer<Throwable>() {
+                        @Override
+                        public void accept(@NonNull Throwable throwable) throws Exception {
+                            view.closeProgressBar();
+                            Timber.e(throwable);
+                            handleMediaError();
+                        }
+                    });
+        }
+    }
+
+    @Override
+    public void handleActivityResultError(int requestCode, int resultCode, Intent data) {
+        handleMediaError();
+    }
+
+    private void handleMediaError() {
+        view.showErrorToast(R.string.error_lwire_alert_media_error);
+        decideOnNextLiveWireStep();
+    }
+
+    private void loadGroupSelection() {
+        Timber.i("loading group selection ... UID = " + currentLiveWireAlertUid);
+        subscriptions.add(view.requestSelection(
+                R.string.group_select_title,
+                realmService.loadObjectsForSelection(Group.class))
+                .subscribe(new Consumer<String>() {
+                    @Override
+                    public void accept(@NonNull String s) throws Exception {
+                        Timber.i("selected! : " + s);
+                        if (!TextUtils.isEmpty(currentLiveWireAlertUid)) {
+                            setGroupForAlert(currentLiveWireAlertUid, s);
+                        } else {
+                            Timber.e("error! selection called without valid LiveWire alert in waiting");
+                        }
+                    }
+                }));
+    }
+
+    private void setGroupForAlert(String alertUid, String groupUid) {
+        liveWireService.setGenericAlert(alertUid, groupUid)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Consumer<Boolean>() {
+                    @Override
+                    public void accept(@NonNull Boolean aBoolean) throws Exception {
+                        Timber.i("done! alert updated, now confirm / ask for video ...");
+                        if (aBoolean) {
+                            // decideOnNextLiveWireStep();
+                            askForDescription();
+                        } else {
+                            Timber.e("oh dear, something went wrong");
+                        }
+                    }
+                });
     }
 
     private void askForDescription() {
@@ -171,6 +307,7 @@ public class MainPresenterImpl extends LoggedInViewPresenterImpl implements Main
                 }));
     }
 
+    // this was generating a lot of very weird weirdness, hence excessive logging for now
     private void setDescription(String description) {
         liveWireService.updateAlertDescription(currentLiveWireAlertUid, description)
                 .subscribeOn(Schedulers.io())
@@ -178,7 +315,17 @@ public class MainPresenterImpl extends LoggedInViewPresenterImpl implements Main
                 .subscribe(new Consumer<Boolean>() {
                     @Override
                     public void accept(@NonNull Boolean aBoolean) throws Exception {
-                        askForConfirmation();
+                        Timber.i("back in main, description? alert : " +
+                                realmService.loadObjectByUid(LiveWireAlert.class, currentLiveWireAlertUid, false));
+                        realmService.load(LiveWireAlert.class, currentLiveWireAlertUid)
+                                .subscribeOn(Schedulers.io())
+                                .subscribe(new Consumer<LiveWireAlert>() {
+                                    @Override
+                                    public void accept(@NonNull LiveWireAlert liveWireAlert) throws Exception {
+                                        Timber.e("description? " + liveWireAlert.getDescription());
+                                    }
+                                });
+                        decideOnNextLiveWireStep();
                     }
                 });
     }
@@ -258,6 +405,7 @@ public class MainPresenterImpl extends LoggedInViewPresenterImpl implements Main
     private void triggerAlertUpload(final String alertUid) {
         liveWireService.triggerAlertDispatch(alertUid)
                 .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Consumer<Boolean>() {
                     @Override
                     public void accept(@NonNull Boolean aBoolean) throws Exception {
@@ -274,21 +422,9 @@ public class MainPresenterImpl extends LoggedInViewPresenterImpl implements Main
 
     private void handleStorageUploadResult(int result) {
         if (result == STORED_UPLOAD_SUCCEEDED) {
-            Timber.e("Finally, result!");
-            showConfirmationAndOut();
+            view.showSuccessMsg(R.string.done_header);
+            setUpDefaultScreen(R.string.done_header, R.string.lwire_alert_sent, true);
         }
-    }
-
-    private void showConfirmationAndOut() {
-        subscriptions.dispose();
-        subscriptions.add(view
-                .defaultRequestTextOrButtons(R.string.done_header, R.string.lwire_alert_sent, true)
-                .subscribe(new Consumer<CharSequence>() {
-                    @Override
-                    public void accept(@NonNull CharSequence sequence) throws Exception {
-                        Timber.e("It's done! Need to close the snake");
-                    }
-                }));
     }
 
     private BtnGrouping getConfirmButtons() {
@@ -315,42 +451,6 @@ public class MainPresenterImpl extends LoggedInViewPresenterImpl implements Main
                 .build();
     }
 
-    private void loadGroupSelection() {
-        Timber.i("loading group selection ... UID = " + currentLiveWireAlertUid);
-        subscriptions.add(view.requestSelection(
-                R.string.group_select_title,
-                realmService.loadObjectsForSelection(Group.class))
-                .subscribe(new Consumer<String>() {
-                    @Override
-                    public void accept(@NonNull String s) throws Exception {
-                        Timber.i("selected! : " + s);
-                        if (!TextUtils.isEmpty(currentLiveWireAlertUid)) {
-                            setGroupForAlert(currentLiveWireAlertUid, s);
-                        } else {
-                            Timber.e("error! selection called without valid LiveWire alert in waiting");
-                        }
-                    }
-                }));
-    }
-
-    private void setGroupForAlert(String alertUid, String groupUid) {
-        liveWireService.setGenericAlert(alertUid, groupUid)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Consumer<Boolean>() {
-                    @Override
-                    public void accept(@NonNull Boolean aBoolean) throws Exception {
-                        Timber.i("done! alert updated, now confirm / ask for video ...");
-                        if (aBoolean) {
-                            // decideOnNextLiveWireStep();
-                            askForDescription();
-                        } else {
-                            Timber.e("oh dear, something went wrong");
-                        }
-                    }
-                });
-    }
-
     @Override
     public void menuReady() {
         subscriptions.add(view.logoutClicked().subscribe(new Consumer<Boolean>() {
@@ -374,7 +474,7 @@ public class MainPresenterImpl extends LoggedInViewPresenterImpl implements Main
     }
 
     @Override
-    public BtnGrouping obtainDefaultSubButtons() {
+    public BtnGrouping obtainMediaButtons() {
         BtnParameters takePhoto = BtnParameters.builder()
                 .name("TAKE_PHOTO")
                 .actionCode(TAKE_PHOTO_ACTION)
@@ -401,7 +501,7 @@ public class MainPresenterImpl extends LoggedInViewPresenterImpl implements Main
                 .build();
     }
 
-    private void handleSubButtonClick(BtnReturnBundle parameters) {
+    private void handleMediaButtonClick(BtnReturnBundle parameters) {
         if (parameters != null) {
             switch (parameters.getButtonActionCode()) {
                 case TAKE_PHOTO_ACTION:
@@ -463,8 +563,8 @@ public class MainPresenterImpl extends LoggedInViewPresenterImpl implements Main
     }
 
     private void takeVideo() {
-        /*try {
-            Uri outputFileVideo = mediaService.createFileForMedia(".mpeg");
+        /* try {
+            Uri outputFileVideo = mediaService.createFileForMedia(".mpeg", MediaFile.FUNCTION_LIVEWIRE);
             Intent videoIntent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
             videoIntent.putExtra(MediaStore.EXTRA_OUTPUT, outputFileVideo);
             view.launchActivityForResult(videoIntent, TAKE_VIDEO_ACTION);
@@ -494,29 +594,6 @@ public class MainPresenterImpl extends LoggedInViewPresenterImpl implements Main
             result &= ContextCompat.checkSelfPermission(applicationContext, permissions[i]) == PackageManager.PERMISSION_GRANTED;
         }
         return result;
-    }
-
-    @Override
-    public void handleActivityResult(int requestCode, Intent data) {
-        if (requestCode == TAKE_PHOTO_ACTION) {
-            Timber.e("photo taken!");
-            mediaService
-                    .captureMediaFile(currentMediaFileUid, true)
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(new Consumer<String>() {
-                        @Override
-                        public void accept(@NonNull String s) throws Exception {
-                            view.showSuccessMsg("Done!");
-                            askForHeadline();
-                        }
-                    });
-        }
-    }
-
-    @Override
-    public void handleActivityResultError(int requestCode, int resultCode, Intent data) {
-
     }
 
     @Override

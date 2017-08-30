@@ -2,18 +2,13 @@ package za.org.grassroot.android.view.fragment;
 
 import android.support.annotation.CallSuper;
 import android.support.v4.app.Fragment;
-import android.view.View;
-import android.widget.ProgressBar;
 
-import butterknife.BindView;
 import butterknife.Unbinder;
 import io.reactivex.Observable;
 import io.reactivex.annotations.NonNull;
-import io.reactivex.functions.Function;
 import io.reactivex.functions.Predicate;
 import io.reactivex.subjects.PublishSubject;
 import timber.log.Timber;
-import za.org.grassroot.android.R;
 import za.org.grassroot.android.view.FragmentView;
 
 /**

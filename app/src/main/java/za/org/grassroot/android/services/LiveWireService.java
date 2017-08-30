@@ -21,7 +21,7 @@ public interface LiveWireService {
 
     Single<String> initiateAlertWithHeadline(String headline);
 
-    Single<Boolean> updateAlertMedia(String alertUid, String mediaFileUid);
+    Single<String> updateAlertMedia(String alertUid, String mediaFileUid);
 
     Single<String> updateAlertHeadline(String alertUid, String headline);
 

@@ -9,9 +9,10 @@ import za.org.grassroot.android.model.dto.BtnReturnBundle;
 
 public interface MainView extends LoggedInView {
 
-    Observable<CharSequence> mainTextNext();
+    Observable<BtnReturnBundle> mainTextNext();
+    Observable<BtnReturnBundle> defaultRequestTextOrButtons(int headerString, Integer explanationRes,
+                                                            boolean insideCreateCycle);
 
-    Observable<CharSequence> defaultRequestTextOrButtons(int headerString, Integer explanationRes, boolean clearBackStack);
     Observable<CharSequence> requestTextInputNextCancel(int headerString, int explanationRes);
     Observable<CharSequence> requestLongDescriptionInput(int headerString, int inputHint);
 

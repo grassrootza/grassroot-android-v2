@@ -58,13 +58,14 @@ public class MainActivity extends LoggedInActivity implements MainView {
                 .plus(new ApiModule())
                 .plus(new ActivityModule())
                 .inject(this);
+
         setActivePresenter(mainPresenter);
         mainPresenter.attach(MainActivity.this);
 
         Bundle extras = getIntent().getExtras();
         btnGrouping = (extras == null) ? null : (BtnGrouping) extras.getParcelable(BtnGrouping.BUTTON_GROUP_DETAILS);
         if (btnGrouping == null) {
-            btnGrouping = mainPresenter.obtainDefaultSubButtons();
+            btnGrouping = mainPresenter.obtainMediaButtons();
         }
 
         mainFragment = SingleTextMultiButtonFragment.newInstance(
@@ -86,35 +87,43 @@ public class MainActivity extends LoggedInActivity implements MainView {
     }
 
     // todo : watch out for the use of this 'MainFragment', may cause issues (quite a few)
+    // todo : double check if clear back stack needed
     @Override
-    public Observable<CharSequence> defaultRequestTextOrButtons(int headerString, Integer explanationRes, boolean clearBackStack) {
+    public Observable<BtnReturnBundle> defaultRequestTextOrButtons(int headerString, Integer explanationRes, boolean insideCreateCycle) {
+        Timber.e("calling default request text or buttons");
         FragmentManager fragmentManager = getSupportFragmentManager();
-        // todo : double check if needed
-        if (clearBackStack) {
+        if (!insideCreateCycle) {
             fragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+            mainFragment = SingleTextMultiButtonFragment.newInstance(
+                    headerString,
+                    explanationRes != null,
+                    explanationRes != null ? explanationRes : -1,
+                    btnGrouping);
         }
 
-        SingleTextMultiButtonFragment fragment = SingleTextMultiButtonFragment.newInstance(headerString, explanationRes != null,
-                explanationRes != null ? explanationRes : -1, btnGrouping);
 
-        Observable<CharSequence> observable = mainFragment
+        Observable<BtnReturnBundle> observable = mainFragment
                 .viewCreated()
-                .concatMap(new Function<Integer, ObservableSource<? extends CharSequence>>() {
+                .doOnError(new Consumer<Throwable>() {
                     @Override
-                    public ObservableSource<? extends CharSequence> apply(@NonNull Integer integer) throws Exception {
+                    public void accept(@NonNull Throwable throwable) throws Exception {
+                        Timber.e(throwable);
+                    }
+                })
+                .concatMap(new Function<Integer, ObservableSource<? extends BtnReturnBundle>>() {
+                    @Override
+                    public ObservableSource<? extends BtnReturnBundle> apply(@NonNull Integer integer) throws Exception {
+                        Timber.e("returning main fragment next");
                         return mainFragment.mainTextNext();
                     }
                 });
 
-        FragmentTransaction transaction = fragmentManager.beginTransaction();
-        if (clearBackStack) {
-            transaction.replace(R.id.main_frag_holder, fragment);
-        } else {
-            transaction.add(R.id.main_frag_holder, fragment)
-                    .addToBackStack("MAIN_FRAG");
+        if (!insideCreateCycle) {
+            FragmentTransaction transaction = fragmentManager.beginTransaction();
+            transaction.replace(R.id.main_frag_holder, mainFragment);
+            transaction.commit();
         }
 
-        transaction.commit();
         return observable;
     }
 
@@ -239,16 +248,6 @@ public class MainActivity extends LoggedInActivity implements MainView {
     }
 
     @Override
-    public void showProgressBar() {
-
-    }
-
-    @Override
-    public void closeProgressBar() {
-
-    }
-
-    @Override
     public void onDestroy() {
         super.onDestroy();
         cleanUpActivity();
@@ -261,7 +260,7 @@ public class MainActivity extends LoggedInActivity implements MainView {
     }
 
     @Override
-    public Observable<CharSequence> mainTextNext() {
+    public Observable<BtnReturnBundle> mainTextNext() {
         return mainFragment.mainTextNext();
     }
 

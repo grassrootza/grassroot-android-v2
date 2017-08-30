@@ -40,7 +40,7 @@ public class NetworkModule {
     HttpLoggingInterceptor provideLoggingInterceptor() {
         HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
         logging.setLevel(BuildConfig.BUILD_TYPE.equals("debug") ?
-                HttpLoggingInterceptor.Level.BODY : HttpLoggingInterceptor.Level.BASIC);
+                HttpLoggingInterceptor.Level.HEADERS : HttpLoggingInterceptor.Level.BASIC);
         return logging;
     }
 

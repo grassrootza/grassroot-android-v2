@@ -103,7 +103,7 @@ public class LargeMsgWithButtonsFragment extends GrassrootFragment implements La
     }
 
     private void setUpButtons() {
-        Timber.e("setting up buttons");
+        Timber.d("setting up buttons");
         btnObservables = new ArrayList<>();
         BtnParameters[] subButtonInfo = btnGrouping.getFirstSubMenu();
         if (subButtonInfo != null) {
@@ -124,7 +124,7 @@ public class LargeMsgWithButtonsFragment extends GrassrootFragment implements La
                         return new BtnReturnBundle("", btnActionCode);
                     }
                 });
-        Timber.e("added observable to sub-buttons");
+        Timber.d("added observable to sub-buttons");
         btnObservables.add(observable);
     }
 

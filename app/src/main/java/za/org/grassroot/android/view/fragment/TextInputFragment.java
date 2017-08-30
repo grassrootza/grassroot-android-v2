@@ -20,6 +20,8 @@ import za.org.grassroot.android.view.SingleTextView;
 
 public class TextInputFragment extends GrassrootFragment implements SingleTextView {
 
+    public static final int MAIN_TEXT_NEXT_ACTION = 100;
+
     protected static final String HEADER_TEXT_RES = "HEADER_TEXT_RES";
     protected static final String EXPLAN_TEXT_RES = "EXPLAN_TEXT_RES";
 

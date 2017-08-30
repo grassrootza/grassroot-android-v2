@@ -10,10 +10,12 @@ import javax.inject.Inject;
 import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
 import io.reactivex.ObservableOnSubscribe;
+import io.reactivex.ObservableSource;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
 import io.reactivex.functions.Predicate;
+import io.realm.Realm;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
@@ -62,13 +64,8 @@ public class NetworkServiceImpl implements NetworkService {
 
     @Override
     public Observable<UploadResult> uploadEntity(final EntityForUpload entityForUpload, final boolean forceEvenIfPriorUploaded) {
-        return Observable.create(new ObservableOnSubscribe<UploadResult>() {
-            @Override
-            public void subscribe(@NonNull ObservableEmitter<UploadResult> e) throws Exception {
-                currentUserUid = userDetailsService.getCurrentUserUid();
-                routeUploadRequest(entityForUpload, forceEvenIfPriorUploaded, e);
-            }
-        });
+        currentUserUid = userDetailsService.getCurrentUserUid();
+        return routeUpload(entityForUpload, forceEvenIfPriorUploaded);
     }
 
     // as with below (upload method), know there must be a more RX 'pure' pattern to do this than passing
@@ -136,37 +133,46 @@ public class NetworkServiceImpl implements NetworkService {
                 });
     }
 
-    private void routeUploadRequest(final EntityForUpload entity, boolean forceReUpload, ObservableEmitter<UploadResult> emitter) {
+    private Observable<UploadResult> routeUpload(final EntityForUpload entity, boolean forceUpload) {
         if (entity.isUploading()) {
-            emitter.onNext(new UploadResult(entity.getType(), new EntityAlreadyUploadingException()));
-        } else if (!forceReUpload && entity.isUploaded()) {
-            emitter.onNext(new UploadResult(entity.getType(), entity)); // maybe use a quasi-exception
-        } else if (entity.priorEntitiesToUpload() != null && !entity.priorEntitiesToUpload().isEmpty()) {
-            clearPriorUploadsNeeded(entity.priorEntitiesToUpload(), emitter);
+            return Observable.just(new UploadResult(entity.getType(), new EntityAlreadyUploadingException()));
+        } else if (!forceUpload && entity.isUploaded()) {
+            return Observable.just(new UploadResult(entity.getType(), entity));
         } else {
-            NetworkEntityType type = entity.getType();
-            switch (type) {
-                case LIVEWIRE_ALERT:
-                    uploadLiveWireAlert((LiveWireAlert) entity, emitter);
-                    break;
+            boolean hasPriorEntitiesToUpload = entity.priorEntitiesToUpload() != null && !entity.priorEntitiesToUpload().isEmpty();
+            final Observable<UploadResult> mainEntityUpload;
+            switch (entity.getType()) {
                 case MEDIA_FILE:
-                    Timber.i("having routed the upload request, calling for media file");
-                    uploadMediaFile((MediaFile) entity, emitter);
+                    mainEntityUpload = uploadMediaFile((MediaFile) entity);
+                    break;
+                case LIVEWIRE_ALERT:
+                    mainEntityUpload = uploadLiveWireAlert((LiveWireAlert) entity);
                     break;
                 default:
-                    emitter.onNext(new UploadResult(type, new IllegalArgumentException("Unsupported type for uploading to retrieve UID")));
+                    return Observable.just(new UploadResult(entity.getType(), new IllegalArgumentException("Unsupported type for uploading to retrieve UID")));
             }
+            return !hasPriorEntitiesToUpload ? mainEntityUpload :
+                    clearPriorUploads(entity.priorEntitiesToUpload())
+                            .concatMap(new Function<UploadResult, ObservableSource<? extends UploadResult>>() {
+                                @Override
+                                public ObservableSource<? extends UploadResult> apply(@NonNull UploadResult uploadResult) throws Exception {
+                                    return mainEntityUpload;
+                                }
+                            });
         }
     }
 
-    private void clearPriorUploadsNeeded(@NonNull List<EntityForUpload> priorQueue, ObservableEmitter<UploadResult> emitter) {
+    // todo : be careful of exactly how merging is done in here, merge is probably not the right operator
+    private Observable<UploadResult> clearPriorUploads(List<EntityForUpload> priorQueue) {
+        List<Observable<UploadResult>> uploadResults = new ArrayList<>();
         for (int i = 0; i < priorQueue.size(); i++) {
-            routeUploadRequest(priorQueue.get(i), false, emitter);
+            uploadResults.add(routeUpload(priorQueue.get(i), false));
         }
+        return Observable.merge(uploadResults);
     }
 
-    private void uploadLiveWireAlert(final LiveWireAlert alert, ObservableEmitter<UploadResult> emitter) {
-        executeCallWithUidResponse(alert, emitter, grassrootUserApi.createLiveWireAlert(
+    private Observable<UploadResult> uploadLiveWireAlert(final LiveWireAlert alert) {
+        final Call<RestResponse<String>> call = grassrootUserApi.createLiveWireAlert(
                 currentUserUid,
                 alert.getHeadline(),
                 alert.getDescription(),
@@ -176,37 +182,70 @@ public class NetworkServiceImpl implements NetworkService {
                 false,
                 0,
                 0,
-                null));
+                alert.getMediaFileKeys());
+        return executeUploadForUid(alert, call)
+                .concatMap(new Function<UploadResult, ObservableSource<? extends UploadResult>>() {
+                    @Override
+                    public ObservableSource<? extends UploadResult> apply(@NonNull final UploadResult uploadResult) throws Exception {
+                        if (uploadResult.getServerUid() != null) {
+                            realmService.executeTransaction(new Realm.Transaction() {
+                                @Override
+                                public void execute(Realm realm) {
+                                    alert.setServerUid(uploadResult.getServerUid());
+                                    alert.setUnderReview(true);
+                                    realm.copyToRealmOrUpdate(alert);
+                                }
+                            });
+                        }
+                        return Observable.just(uploadResult);
+                    }
+                });
     }
 
-    private void uploadMediaFile(final MediaFile mediaFile, ObservableEmitter<UploadResult> emitter) {
-        executeCallWithUidResponse(mediaFile, emitter, grassrootUserApi.sendMediaFile(
+    private Observable<UploadResult> uploadMediaFile(final MediaFile mediaFile) {
+        final Call<RestResponse<String>> call = grassrootUserApi.sendMediaFile(
                 currentUserUid,
                 mediaFile.getUid(),
                 mediaFile.getMediaFunction(),
                 mediaFile.getMimeType(),
-                getImageFromPath(mediaFile, "file")
-        ));
+                getImageFromPath(mediaFile, "file"));
+        return executeUploadForUid(mediaFile, call)
+                .concatMap(new Function<UploadResult, ObservableSource<? extends UploadResult>>() {
+                    @Override
+                    public ObservableSource<? extends UploadResult> apply(@NonNull final UploadResult uploadResult) throws Exception {
+                        if (uploadResult.getServerUid() != null) {
+                            realmService.executeTransaction(new Realm.Transaction() {
+                                @Override
+                                public void execute(Realm realm) {
+                                    mediaFile.setSentUpstream(true);
+                                    mediaFile.setServerUid(uploadResult.getServerUid());
+                                    realm.copyToRealmOrUpdate(mediaFile);
+                                }
+                            });
+                        }
+                        return Observable.just(uploadResult);
+                    }
+                });
     }
 
-    private void executeCallWithUidResponse(final EntityForUpload entity,
-                                            ObservableEmitter<UploadResult> emitter,
-                                            final Call<RestResponse<String>> networkCall) {
-        try {
-            Response<RestResponse<String>> response = networkCall.execute();
-            Timber.i("executed network call");
-            if (response.isSuccessful()) {
-
-                emitter.onNext(new UploadResult(entity.getType(), entity.getUid(), response.body().getData()));
-            } else {
-                Timber.e("error with upload! : {}", response.errorBody());
-                emitter.onNext(new UploadResult(entity.getType(), new ServerErrorException()));
+    private Observable<UploadResult> executeUploadForUid(final EntityForUpload entity, final Call<RestResponse<String>> networkCall) {
+        return Observable.create(new ObservableOnSubscribe<UploadResult>() {
+            @Override
+            public void subscribe(@NonNull ObservableEmitter<UploadResult> e) throws Exception {
+                try {
+                    Response<RestResponse<String>> response = networkCall.execute();
+                    if (response.isSuccessful()) {
+                        e.onNext(new UploadResult(entity.getType(), entity.getUid(), response.body().getData()));
+                    } else {
+                        e.onNext(new UploadResult(entity.getType(), new ServerErrorException()));
+                    }
+                } catch (IOException t1) {
+                    e.onNext(new UploadResult(entity.getType(), new NetworkUnavailableException()));
+                } catch (NullPointerException t2) {
+                    e.onNext(new UploadResult(entity.getType(), new IllegalArgumentException()));
+                }
             }
-        } catch (IOException error) {
-            Timber.e(error, "IO error!");
-            emitter.onNext(new UploadResult(NetworkEntityType.LIVEWIRE_ALERT, new NetworkUnavailableException()));
-        }
-
+        });
     }
 
     private MultipartBody.Part getImageFromPath(final MediaFile mediaFile, final String paramName) {
