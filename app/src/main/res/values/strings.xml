@@ -33,6 +33,7 @@
     <string name="take_video">Video</string>
     <string name="take_photo">Photo</string>
     <string name="take_audio">Audio</string>
+    <string name="pick_gallery">Gallery</string>
 
     <string name="lwire_headline_title">Headline</string>
     <string name="lwire_media_header">Add media</string>

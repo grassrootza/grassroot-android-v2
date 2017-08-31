@@ -30,11 +30,13 @@ public class LargeMsgWithButtonsFragment extends GrassrootFragment implements La
     private static final String MESSAGE_TEXT = "msg_text";
     private static final String SHOW_BUTTONS = "show_buttons";
     private static final String BUTTON_GROUP = "btn_group";
+    private static final String SHOW_SKIP = "show_skip";
 
     private int headerTextRes;
     private String messageText;
     private boolean showButtons;
     private BtnGrouping btnGrouping;
+    private boolean showSkip;
 
     @BindView(R.id.header_text) TextView headerView;
     @BindView(R.id.message_text) TextView messageView;
@@ -43,6 +45,8 @@ public class LargeMsgWithButtonsFragment extends GrassrootFragment implements La
     @BindView(R.id.button_1) Button subButton1;
     @BindView(R.id.button_2) Button subButton2;
     @BindView(R.id.button_3) Button subButton3;
+
+    @BindView(R.id.button_skip) Button skipButton;
 
     // todo: probably want to use a composite disposable instead of this observable list (ugly)
     private Button[] buttons;
@@ -55,12 +59,14 @@ public class LargeMsgWithButtonsFragment extends GrassrootFragment implements La
     public static LargeMsgWithButtonsFragment newInstance(int headerRes,
                                                           @NonNull String messageText,
                                                           boolean showButtons,
-                                                          @Nullable BtnGrouping btnGrouping) {
+                                                          @Nullable BtnGrouping btnGrouping,
+                                                          boolean showSkip) {
         LargeMsgWithButtonsFragment fragment = new LargeMsgWithButtonsFragment();
         Bundle args = new Bundle();
         args.putInt(HEADER_TEXT, headerRes);
         args.putString(MESSAGE_TEXT, messageText);
         args.putBoolean(SHOW_BUTTONS, showButtons);
+        args.putBoolean(SHOW_SKIP, showSkip);
         if (showButtons) {
             if (btnGrouping == null) {
                 throw new IllegalArgumentException("If show buttons is set then button grouping must be passed");
@@ -78,6 +84,7 @@ public class LargeMsgWithButtonsFragment extends GrassrootFragment implements La
             headerTextRes = getArguments().getInt(HEADER_TEXT);
             messageText = getArguments().getString(MESSAGE_TEXT);
             showButtons = getArguments().getBoolean(SHOW_BUTTONS);
+            showSkip = getArguments().getBoolean(SHOW_SKIP);
             btnGrouping = showButtons ? (BtnGrouping) getArguments().getParcelable(BUTTON_GROUP) : null;
         }
         lifecyclePublisher.onNext(ACTION_FRAGMENT_CREATED);
@@ -92,6 +99,8 @@ public class LargeMsgWithButtonsFragment extends GrassrootFragment implements La
         headerView.setText(headerTextRes);
         messageView.setText(messageText);
         buttonsRow.setVisibility(showButtons ? View.VISIBLE : View.GONE);
+
+        skipButton.setVisibility(showSkip ? View.VISIBLE : View.GONE);
 
         if (btnGrouping != null) {
             buttons = new Button[] { subButton1, subButton2, subButton3 };
@@ -131,6 +140,10 @@ public class LargeMsgWithButtonsFragment extends GrassrootFragment implements La
     // todo : handle this causing errors if no buttons
     public Observable<BtnReturnBundle> buttonClicked() {
         return Observable.merge(btnObservables);
+    }
+
+    public Observable<Object> skipClicked() {
+        return RxView.clicks(skipButton);
     }
 
 }

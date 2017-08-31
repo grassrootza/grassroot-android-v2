@@ -21,6 +21,8 @@ public interface MediaService {
     // todo: return type should state if need to prompt for compression etc
     Single<String> captureMediaFile(String mediaFileUid, boolean uploadNow);
 
+    Single<String> storeGalleryFile(String mediaFileUid, Uri fileUri, boolean uploadNow);
+
     void loadImageIntoView(Uri imageUri, ImageView view);
 
 }

@@ -11,8 +11,9 @@
         android:id="@+id/header_text"
         style="@style/LargeHeader"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center"
+        android:layout_height="0dp"
+        android:gravity="center_horizontal|bottom"
+        android:layout_weight="0.5"
         android:layout_marginBottom="@dimen/margin_std_large"
         android:text="@string/hello_blank_fragment" />
 
@@ -35,6 +36,7 @@
 
         <Button
             android:id="@+id/button_1"
+            style="@style/DefaultActionButton"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="0.33"
@@ -42,6 +44,7 @@
 
         <Button
             android:id="@+id/button_2"
+            style="@style/DefaultActionButton"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="0.34"
@@ -49,10 +52,30 @@
 
         <Button
             android:id="@+id/button_3"
+            style="@style/DefaultActionButton"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="0.33"
             tools:text="Confirm"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/skip_button_group"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="0.5"
+        android:orientation="horizontal"
+        android:layout_marginBottom="@dimen/margin_std_large"
+        android:gravity="bottom">
+
+        <Button
+            android:id="@+id/button_skip"
+            style="@style/DefaultActionButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            android:text="@string/button_skip" />
 
     </LinearLayout>
 

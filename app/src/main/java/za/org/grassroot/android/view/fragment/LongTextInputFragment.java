@@ -13,7 +13,9 @@ import butterknife.ButterKnife;
 import io.reactivex.Observable;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.functions.Function;
+import timber.log.Timber;
 import za.org.grassroot.android.R;
+import za.org.grassroot.android.model.dto.BtnReturnBundle;
 import za.org.grassroot.android.rxbinding.RxView;
 import za.org.grassroot.android.view.SingleInputNextOtherView;
 
@@ -84,6 +86,7 @@ public class LongTextInputFragment extends TextInputFragment implements SingleIn
         skipButton.setEnabled(enabled);
     }
 
+    // todo : clean up inheritance in here
     @Override
     public Observable<CharSequence> textInputNextDone() {
         // on this one we want to let people do done, and then confirm, rather than return immediately on input done
@@ -97,6 +100,17 @@ public class LongTextInputFragment extends TextInputFragment implements SingleIn
     }
 
     @Override
+    public Observable<BtnReturnBundle> mainTextNext() {
+        Timber.e("subscribed in here");
+        return textInputNextDone().map(new Function<CharSequence, BtnReturnBundle>() {
+            @Override
+            public BtnReturnBundle apply(@NonNull CharSequence sequence) throws Exception {
+                return new BtnReturnBundle(sequence, MAIN_TEXT_NEXT_ACTION);
+            }
+        });
+    }
+
+    @Override
     public Observable<CharSequence> textInputBackOther() {
         return RxView.clicks(skipButton)
                 .map(new Function<Object, CharSequence>() {
@@ -105,5 +119,9 @@ public class LongTextInputFragment extends TextInputFragment implements SingleIn
                         return inputText.getText();
                     }
                 });
+    }
+
+    public Observable<Object> skipClicked() {
+        return RxView.clicks(skipButton);
     }
 }

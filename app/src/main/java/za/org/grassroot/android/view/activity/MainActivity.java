@@ -29,11 +29,13 @@ import za.org.grassroot.android.presenter.MainPresenter;
 import za.org.grassroot.android.rxbinding.RxViewUtils;
 import za.org.grassroot.android.services.UserDetailsService;
 import za.org.grassroot.android.view.MainView;
+import za.org.grassroot.android.view.fragment.GrassrootFragment;
 import za.org.grassroot.android.view.fragment.ItemSelectionFragment;
 import za.org.grassroot.android.view.fragment.LargeMsgWithButtonsFragment;
 import za.org.grassroot.android.view.fragment.LongTextInputFragment;
 import za.org.grassroot.android.view.fragment.SingleTextInputFragment;
 import za.org.grassroot.android.view.fragment.SingleTextMultiButtonFragment;
+import za.org.grassroot.android.view.fragment.TextInputFragment;
 
 public class MainActivity extends LoggedInActivity implements MainView {
 
@@ -45,6 +47,7 @@ public class MainActivity extends LoggedInActivity implements MainView {
 
     BtnGrouping btnGrouping;
     SingleTextMultiButtonFragment mainFragment;
+    GrassrootFragment currentFragment;
 
     MenuItem logoutItem;
     MenuItem syncItem;
@@ -84,6 +87,8 @@ public class MainActivity extends LoggedInActivity implements MainView {
         getSupportFragmentManager().beginTransaction()
                 .add(R.id.main_frag_holder, mainFragment)
                 .commit();
+
+        currentFragment = mainFragment;
     }
 
     // todo : watch out for the use of this 'MainFragment', may cause issues (quite a few)
@@ -93,6 +98,7 @@ public class MainActivity extends LoggedInActivity implements MainView {
         Timber.e("calling default request text or buttons");
         FragmentManager fragmentManager = getSupportFragmentManager();
         if (!insideCreateCycle) {
+            Timber.e("popping back stack and recreating");
             fragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
             mainFragment = SingleTextMultiButtonFragment.newInstance(
                     headerString,
@@ -114,6 +120,7 @@ public class MainActivity extends LoggedInActivity implements MainView {
                     @Override
                     public ObservableSource<? extends BtnReturnBundle> apply(@NonNull Integer integer) throws Exception {
                         Timber.e("returning main fragment next");
+                        mainFragment.focusOnInput();
                         return mainFragment.mainTextNext();
                     }
                 });
@@ -124,6 +131,7 @@ public class MainActivity extends LoggedInActivity implements MainView {
             transaction.commit();
         }
 
+        currentFragment = mainFragment;
         return observable;
     }
 
@@ -159,21 +167,22 @@ public class MainActivity extends LoggedInActivity implements MainView {
                 .addToBackStack("TEXT_ENTRY")
                 .commit();
 
+        currentFragment = fragment;
         return observable;
     }
 
     @Override
-    public Observable<CharSequence> requestLongDescriptionInput(int headerString, int inputHint) {
+    public Observable<Integer> requestLongDescriptionInput(int headerString, final int inputHint) {
         final LongTextInputFragment longTextFragment = LongTextInputFragment.newInstance(headerString, inputHint,
                 R.string.button_skip, R.string.button_next);
 
-        Observable<CharSequence> observable = longTextFragment
+        Observable<Integer> observable = longTextFragment
                 .viewCreated()
-                .concatMap(new Function<Integer, ObservableSource<? extends CharSequence>>() {
+                .concatMap(new Function<Integer, ObservableSource<? extends Integer>>() {
                     @Override
-                    public ObservableSource<? extends CharSequence> apply(@NonNull Integer integer) throws Exception {
+                    public ObservableSource<? extends Integer> apply(@NonNull Integer integer) throws Exception {
                         longTextFragment.focusOnInput();
-                        return longTextFragment.textInputNextDone();
+                        return Observable.just(integer);
                     }
                 });
 
@@ -183,6 +192,7 @@ public class MainActivity extends LoggedInActivity implements MainView {
                 .addToBackStack("LONG_DESCRIPTION")
                 .commit();
 
+        currentFragment = longTextFragment;
         return observable;
     }
 
@@ -211,17 +221,17 @@ public class MainActivity extends LoggedInActivity implements MainView {
     }
 
     @Override
-    public Observable<BtnReturnBundle> requestConfirmationOrAction(int headerRes, String message, BtnGrouping btnGrouping) {
+    public Observable<Integer> requestConfirmationOrAction(int headerRes, String message, BtnGrouping btnGrouping, boolean allowSkip) {
         final LargeMsgWithButtonsFragment fragment = LargeMsgWithButtonsFragment.newInstance(headerRes,
-                message, true, btnGrouping);
+                message, true, btnGrouping, allowSkip);
 
-        Observable<BtnReturnBundle> observable = fragment.viewCreated()
+        /* Observable<BtnReturnBundle> observable = fragment.viewCreated()
                 .concatMap(new Function<Integer, ObservableSource<? extends BtnReturnBundle>>() {
                     @Override
                     public ObservableSource<? extends BtnReturnBundle> apply(@NonNull Integer integer) throws Exception {
                         return fragment.buttonClicked();
                     }
-                });
+                });*/
 
         closeProgressBar();
         closeKeyboard();
@@ -231,7 +241,27 @@ public class MainActivity extends LoggedInActivity implements MainView {
                 .addToBackStack("CONFIRMATION")
                 .commit();
 
-        return observable;
+        currentFragment = fragment;
+        return fragment.viewCreated();
+    }
+
+    @Override
+    public Observable<BtnReturnBundle> btnGroupClicked() {
+        Timber.e("returning observable of this thing");
+        return currentFragment instanceof LargeMsgWithButtonsFragment ?
+                ((LargeMsgWithButtonsFragment) currentFragment).buttonClicked() :
+                Observable.<BtnReturnBundle>empty();
+    }
+
+    @Override
+    public Observable<Object> skipButtonClicked() {
+        if (currentFragment instanceof LargeMsgWithButtonsFragment) {
+            return ((LargeMsgWithButtonsFragment) currentFragment).skipClicked();
+        } else if (currentFragment instanceof LongTextInputFragment) {
+            return ((LongTextInputFragment) currentFragment).skipClicked();
+        } else {
+            return Observable.empty();
+        }
     }
 
     // todo: pass it back to presenter
@@ -261,7 +291,11 @@ public class MainActivity extends LoggedInActivity implements MainView {
 
     @Override
     public Observable<BtnReturnBundle> mainTextNext() {
-        return mainFragment.mainTextNext();
+        if (currentFragment instanceof TextInputFragment) {
+            return ((TextInputFragment) currentFragment).mainTextNext();
+        } else {
+            return Observable.empty();
+        }
     }
 
     @Override

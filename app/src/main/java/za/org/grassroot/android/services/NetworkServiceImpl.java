@@ -1,5 +1,7 @@
 package za.org.grassroot.android.services;
 
+import android.text.TextUtils;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -175,7 +177,7 @@ public class NetworkServiceImpl implements NetworkService {
         final Call<RestResponse<String>> call = grassrootUserApi.createLiveWireAlert(
                 currentUserUid,
                 alert.getHeadline(),
-                alert.getDescription(),
+                TextUtils.isEmpty(alert.getDescription()) ? "" : alert.getDescription(), // very temp hack to avoid a redeploy of main platform just to make required (remove in future)
                 alert.getAlertType(),
                 alert.getGroupUid(),
                 alert.getTaskUid(),

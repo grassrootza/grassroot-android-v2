@@ -14,12 +14,16 @@ public interface MainView extends LoggedInView {
                                                             boolean insideCreateCycle);
 
     Observable<CharSequence> requestTextInputNextCancel(int headerString, int explanationRes);
-    Observable<CharSequence> requestLongDescriptionInput(int headerString, int inputHint);
+
+    Observable<Integer> requestLongDescriptionInput(int headerString, int inputHint);
 
     <T extends RealmObject & SelectableItem> Observable<String> requestSelection(int headerRes,
                                                                                  OrderedRealmCollection<T> items);
 
-    Observable<BtnReturnBundle> requestConfirmationOrAction(int headerRes, String message, BtnGrouping btnGrouping);
+    Observable<Integer> requestConfirmationOrAction(int headerRes, String message, BtnGrouping btnGrouping, boolean allowSkip);
+
+    Observable<BtnReturnBundle> btnGroupClicked();
+    Observable<Object> skipButtonClicked();
 
     void setBtnGrouping(BtnGrouping btnGrouping);
 

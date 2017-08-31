@@ -1,9 +1,12 @@
 package za.org.grassroot.android.services;
 
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Environment;
+import android.provider.MediaStore;
 import android.support.v4.content.FileProvider;
 import android.text.TextUtils;
 import android.webkit.MimeTypeMap;
@@ -21,6 +24,7 @@ import io.reactivex.SingleEmitter;
 import io.reactivex.SingleOnSubscribe;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.schedulers.Schedulers;
+import io.realm.Realm;
 import timber.log.Timber;
 import za.org.grassroot.android.dagger.ApplicationContext;
 import za.org.grassroot.android.model.MediaFile;
@@ -108,6 +112,31 @@ public class MediaServiceImpl implements MediaService {
         });
     }
 
+    @Override
+    public Single<String> storeGalleryFile(final String mediaFileUid, final Uri fileUri, final boolean uploadNow) {
+        return Single.create(new SingleOnSubscribe<String>() {
+            @Override
+            public void subscribe(@NonNull SingleEmitter<String> e) throws Exception {
+                final MediaFile mediaFile = realmService.loadObjectByUid(MediaFile.class, mediaFileUid, true);
+                mediaFile.setAbsolutePath(getLocalFileNameFromURI(fileUri));
+                mediaFile.setMimeType(getMimeType(fileUri));
+                mediaFile.setReadyToUpload(true);
+                e.onSuccess("DONE");
+                realmService.executeTransaction(new Realm.Transaction() {
+                    @Override
+                    public void execute(Realm realm) {
+                        realm.copyToRealmOrUpdate(mediaFile);
+                    }
+                });
+                if (uploadNow) {
+                    networkService.uploadEntity(mediaFile, true)
+                            .subscribeOn(Schedulers.io())
+                            .subscribe();
+                }
+            }
+        });
+    }
+
     // todo: this doesn't work but Android has, being Android, managed to regress badly
     // the FileProvider mechanism is catastrophic, and makes it a real pain to expose
     // images to the gallery. Images are recorded but do not show up. Ah well.
@@ -136,5 +165,39 @@ public class MediaServiceImpl implements MediaService {
         // Set the Image in ImageView for Previewing the Media
 
         cursor.close();*/
+    }
+
+    private String getLocalFileNameFromURI(final Uri selectedImage) {
+        String[] filePathColumn = {MediaStore.Images.Media.DATA};
+        Cursor cursor = applicationContext.getContentResolver().query(selectedImage, filePathColumn, null, null, null);
+        cursor.moveToFirst(); // if null, will throw error to subscriber, so check in here would be redundant
+        int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+        String localImagePath = cursor.getString(columnIndex);
+        cursor.close();
+        return localImagePath;
+    }
+
+    private String getMimeType(Uri uri) {
+        String mimeType = null;
+        String extension;
+        if (uri.getScheme().equals(ContentResolver.SCHEME_CONTENT)) {
+            final MimeTypeMap mime = MimeTypeMap.getSingleton();
+            extension = mime.getExtensionFromMimeType(applicationContext.getContentResolver().getType(uri));
+        } else {
+            extension = MimeTypeMap.getFileExtensionFromUrl(Uri.fromFile(new File(uri.getPath())).toString());
+        }
+        switch (extension) {
+            case "jpg":
+            case "jpeg":
+                mimeType = "image/jpeg";
+                break;
+            case "png":
+                mimeType = "image/png";
+                break;
+            default:
+                break;
+        }
+
+        return mimeType;
     }
 }

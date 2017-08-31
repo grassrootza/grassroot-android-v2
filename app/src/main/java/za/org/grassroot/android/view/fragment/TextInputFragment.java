@@ -7,11 +7,15 @@ import android.widget.TextView;
 
 import butterknife.BindView;
 import io.reactivex.Observable;
+import io.reactivex.ObservableSource;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.functions.Function;
 import io.reactivex.functions.Predicate;
+import timber.log.Timber;
 import za.org.grassroot.android.R;
+import za.org.grassroot.android.model.dto.BtnReturnBundle;
 import za.org.grassroot.android.rxbinding.RxTextView;
+import za.org.grassroot.android.rxbinding.RxViewUtils;
 import za.org.grassroot.android.view.SingleTextView;
 
 /**
@@ -82,6 +86,19 @@ public class TextInputFragment extends GrassrootFragment implements SingleTextVi
         if (inputText != null) {
             inputText.requestFocus();
         }
+    }
+
+    @Override
+    public Observable<BtnReturnBundle> mainTextNext() {
+        Timber.e("returning main text next");
+        return RxViewUtils.nullSafeTextViewNextDone(inputText)
+                .concatMap(new Function<CharSequence, ObservableSource<? extends BtnReturnBundle>>() {
+                    @Override
+                    public ObservableSource<? extends BtnReturnBundle> apply(@NonNull CharSequence sequence) throws Exception {
+                        Timber.e("main text next clicked");
+                        return Observable.just(new BtnReturnBundle(sequence, MAIN_TEXT_NEXT_ACTION));
+                    }
+                });
     }
 
 }
