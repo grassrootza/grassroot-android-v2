@@ -6,7 +6,7 @@
     android:orientation="vertical"
     android:background="@android:color/white"
     android:padding="@dimen/padding_std_large"
-    tools:context="za.org.grassroot.android.view.fragment.LongTextInputFragment">
+    tools:context="za.org.grassroot2.view.fragment.LongTextInputFragment">
 
     <TextView
         android:id="@+id/header_text"

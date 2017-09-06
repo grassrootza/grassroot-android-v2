@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="za.org.grassroot.android.view.activity.AudioActivity">
+    tools:context="za.org.grassroot2.view.activity.AudioActivity">
 
     <ImageView
         android:layout_width="wrap_content"

@@ -8,7 +8,7 @@
     android:gravity="center_vertical"
     android:background="@android:color/white"
     android:layout_centerInParent="true"
-    tools:context="za.org.grassroot.android.view.fragment.SingleTextInputFragment">
+    tools:context="za.org.grassroot2.view.fragment.SingleTextInputFragment">
 
     <TextView
         android:id="@+id/header_text"
