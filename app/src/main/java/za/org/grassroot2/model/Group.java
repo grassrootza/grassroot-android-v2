@@ -1,16 +1,14 @@
 package za.org.grassroot2.model;
 
 import com.google.gson.annotations.SerializedName;
+import com.j256.ormlite.field.DatabaseField;
+import com.j256.ormlite.table.DatabaseTable;
 
-import io.realm.RealmList;
-import io.realm.RealmObject;
-import io.realm.annotations.PrimaryKey;
-import io.realm.annotations.Required;
 import za.org.grassroot2.model.enums.NetworkEntityType;
-import za.org.grassroot2.model.helper.RealmString;
 import za.org.grassroot2.model.network.EntityForDownload;
 
-public class Group extends RealmObject implements EntityForDownload, SelectableItem {
+@DatabaseTable(tableName = "groups")
+public class Group implements EntityForDownload, SelectableItem {
 
     /*
     Central, highly important entity, so a few notes:
@@ -27,34 +25,35 @@ public class Group extends RealmObject implements EntityForDownload, SelectableI
 
      */
 
-    @PrimaryKey
-    @Required
+    @DatabaseField(id = true)
     @SerializedName("groupUid")
     private String uid;
 
-    @Required
+    @DatabaseField(canBeNull = false)
     @SerializedName("name")
     private String name;
 
-    @Required
+    @DatabaseField(canBeNull = false)
     @SerializedName("memberCount")
     private Integer memberCount;
 
-    @Required
+    @DatabaseField(canBeNull = false)
     @SerializedName("userRole")
     private String userRole;
 
+    @DatabaseField
     @SerializedName("lastGroupChange")
     private long lastTimeChangedServer = 0;
 
+    @DatabaseField
     @SerializedName("lastTaskOrChangeTime")
     private long lastActionOrChange = 0;
 
+    @DatabaseField
     @SerializedName("permissions")
-    private RealmList<RealmString> permissions;
+    private String permissions;
 
     public Group() {
-        // for Realm
     }
 
     @Override
@@ -100,11 +99,11 @@ public class Group extends RealmObject implements EntityForDownload, SelectableI
         this.userRole = userRole;
     }
 
-    public RealmList<RealmString> getPermissions() {
+    public String getPermissions() {
         return permissions;
     }
 
-    public void setPermissions(RealmList<RealmString> permissions) {
+    public void setPermissions(String permissions) {
         this.permissions = permissions;
     }
 
@@ -123,11 +122,6 @@ public class Group extends RealmObject implements EntityForDownload, SelectableI
     @Override
     public long getLastTimeChangedServer() {
         return lastTimeChangedServer;
-    }
-
-    @Override
-    public RealmObject getRealmObject() {
-        return this;
     }
 
     @Override

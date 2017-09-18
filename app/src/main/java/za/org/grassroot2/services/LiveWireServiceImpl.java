@@ -9,9 +9,9 @@ import io.reactivex.SingleOnSubscribe;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.functions.Function;
 import io.reactivex.functions.Predicate;
-import io.realm.Realm;
 import timber.log.Timber;
 import za.org.grassroot2.BuildConfig;
+import za.org.grassroot2.database.DatabaseService;
 import za.org.grassroot2.model.LiveWireAlert;
 import za.org.grassroot2.model.MediaFile;
 import za.org.grassroot2.model.UploadResult;
@@ -23,38 +23,35 @@ import za.org.grassroot2.model.exception.LiveWireAlertNotCompleteException;
 
 public class LiveWireServiceImpl implements LiveWireService {
 
-    private final RealmService realmService;
+    private final DatabaseService databaseService;
     private final NetworkService networkService;
 
     @Inject
-    public LiveWireServiceImpl(RealmService realmService, NetworkService networkService) {
-        this.realmService = realmService;
+    public LiveWireServiceImpl(DatabaseService realmService, NetworkService networkService) {
+        this.databaseService = realmService;
         this.networkService = networkService;
     }
 
     @Override
     public Single<LiveWireAlert> load(final String alertUid) {
-        return realmService.load(LiveWireAlert.class, alertUid);
+        return databaseService.load(LiveWireAlert.class, alertUid);
     }
 
     @Override
     public Single<String> initiateAlertWithMedia(final String mediaFileUid) {
-        return realmService.load(MediaFile.class, mediaFileUid)
-                .filter(new Predicate<MediaFile>() {
-                    @Override
-                    public boolean test(@NonNull MediaFile mediaFile) throws Exception {
-                        if (mediaFile == null) {
-                            Timber.e("error! tried to load media file that is null, need recovery mechanism");
-                            return false;
-                        } else {
-                            return true;
-                        }
+        return databaseService.load(MediaFile.class, mediaFileUid)
+                .filter(mediaFile -> {
+                    if (mediaFile == null) {
+                        Timber.e("error! tried to load media file that is null, need recovery mechanism");
+                        return false;
+                    } else {
+                        return true;
                     }
                 })
                 .flatMapSingle(new Function<MediaFile, Single<LiveWireAlert>>() {
                     @Override
                     public Single<LiveWireAlert> apply(@NonNull MediaFile mediaFile) throws Exception {
-                        return realmService.store(LiveWireAlert.newBuilder()
+                        return databaseService.store(LiveWireAlert.class, LiveWireAlert.newBuilder()
                                 .mediaFile(mediaFile)
                                 .build());
                     }
@@ -69,7 +66,7 @@ public class LiveWireServiceImpl implements LiveWireService {
 
     @Override
     public Single<String> initiateAlertWithHeadline(final String headline) {
-        return realmService.store(LiveWireAlert.newBuilder()
+        return databaseService.store(LiveWireAlert.class, LiveWireAlert.newBuilder()
                 .headline(headline)
                 .build())
                 .map(new Function<LiveWireAlert, String>() {
@@ -86,19 +83,14 @@ public class LiveWireServiceImpl implements LiveWireService {
         return Single.create(new SingleOnSubscribe<String>() {
             @Override
             public void subscribe(@NonNull SingleEmitter<String> e) throws Exception {
-                final MediaFile mediaFile = realmService.loadObjectByUid(MediaFile.class, mediaFileUid, false);
+                final MediaFile mediaFile = databaseService.loadObjectByUid(MediaFile.class, mediaFileUid);
                 Timber.e("mediaFile on DB load? " + mediaFile + ", for UID = " + mediaFileUid);
                 final LiveWireAlert alert = loadAlertToEdit(alertUid);
-                realmService.executeTransaction(new Realm.Transaction() {
-                    @Override
-                    public void execute(Realm realm) {
-                        alert.setMediaFile(mediaFile);
-                        realm.copyToRealmOrUpdate(alert);
-                        Timber.e("okay, we have set the media file");
-                    }
-                });
+                alert.setMediaFile(mediaFile);
+                databaseService.storeObject(LiveWireAlert.class, alert);
+                Timber.e("okay, we have set the media file");
                 Timber.e("returning, with alert Uid = " + alertUid);
-                Timber.e("uh, media file now? " + realmService.loadObjectByUid(LiveWireAlert.class, alertUid, true).getMediaFile());
+                Timber.e("uh, media file now? " + databaseService.loadObjectByUid(LiveWireAlert.class, alertUid).getMediaFile());
                 e.onSuccess(alertUid);
             }
         });
@@ -110,13 +102,8 @@ public class LiveWireServiceImpl implements LiveWireService {
             @Override
             public void subscribe(@NonNull SingleEmitter<String> e) throws Exception {
                 final LiveWireAlert alert = loadAlertToEdit(alertUid);
-                realmService.executeTransaction(new Realm.Transaction() {
-                    @Override
-                    public void execute(Realm realm) {
-                        alert.setHeadline(headline);
-                        realm.copyToRealmOrUpdate(alert);
-                    }
-                });
+                alert.setHeadline(headline);
+                databaseService.storeObject(LiveWireAlert.class, alert);
                 e.onSuccess(alertUid);
             }
         });
@@ -128,15 +115,10 @@ public class LiveWireServiceImpl implements LiveWireService {
             @Override
             public void subscribe(@NonNull SingleEmitter<Boolean> e) throws Exception {
                 Timber.e("looking for alert of UID = " + alertUid + ", to set description = " + description);
-                final LiveWireAlert alert = realmService.loadObjectByUid(LiveWireAlert.class, alertUid, false);
-                realmService.executeTransaction(new Realm.Transaction() {
-                    @Override
-                    public void execute(Realm realm) {
-                        alert.setDescription(description);
-                        realm.copyToRealmOrUpdate(alert);
-                    }
-                });
-                Timber.e("alert description = " + realmService.loadObjectByUid(LiveWireAlert.class, alertUid, true).getDescription());
+                final LiveWireAlert alert = databaseService.loadObjectByUid(LiveWireAlert.class, alertUid);
+                alert.setDescription(description);
+                databaseService.storeObject(LiveWireAlert.class, alert);
+                Timber.e("alert description = " + databaseService.loadObjectByUid(LiveWireAlert.class, alertUid).getDescription());
                 e.onSuccess(true);
             }
         });
@@ -148,14 +130,9 @@ public class LiveWireServiceImpl implements LiveWireService {
             @Override
             public void subscribe(@NonNull SingleEmitter<Boolean> e) throws Exception {
                 final LiveWireAlert alert = loadAlertToEdit(alertUid);
-                realmService.executeTransaction(new Realm.Transaction() {
-                    @Override
-                    public void execute(Realm realm) {
-                        alert.setAlertType(LiveWireAlert.TYPE_GENERIC);
-                        alert.setGroupUid(groupUid);
-                        realm.copyToRealmOrUpdate(alert);
-                    }
-                });
+                alert.setAlertType(LiveWireAlert.TYPE_GENERIC);
+                alert.setGroupUid(groupUid);
+                databaseService.storeObject(LiveWireAlert.class, alert);
                 e.onSuccess(true);
             }
         });
@@ -167,14 +144,9 @@ public class LiveWireServiceImpl implements LiveWireService {
             @Override
             public void subscribe(@NonNull SingleEmitter<Boolean> e) throws Exception {
                 final LiveWireAlert alert = loadAlertToEdit(alertUid);
-                realmService.executeTransaction(new Realm.Transaction() {
-                    @Override
-                    public void execute(Realm realm) {
-                        alert.setAlertType(LiveWireAlert.TYPE_MEETING);
-                        alert.setTaskUid(meetingUid);
-                        realm.copyToRealmOrUpdate(alert);
-                    }
-                });
+                alert.setAlertType(LiveWireAlert.TYPE_MEETING);
+                alert.setTaskUid(meetingUid);
+                databaseService.storeObject(LiveWireAlert.class, alert);
             }
         });
     }
@@ -186,17 +158,12 @@ public class LiveWireServiceImpl implements LiveWireService {
             public void subscribe(@NonNull SingleEmitter<Boolean> e) throws Exception {
                 final LiveWireAlert alert = loadAlertToEdit(alertUid);
                 if (alert.areMinimumFieldsComplete()) {
-                    realmService.executeTransaction(new Realm.Transaction() {
-                        @Override
-                        public void execute(Realm realm) {
-                            alert.setComplete(true);
-                        }
-                    });
+                    alert.setComplete(true);
+                    databaseService.storeObject(LiveWireAlert.class, alert);
                     e.onSuccess(true);
                 } else {
                     Timber.e("alert is not complete, entity = " + alert);
                     e.onError(new LiveWireAlertNotCompleteException());
-                    realmService.closeRealmOnThread();
                 }
             }
         });
@@ -204,7 +171,7 @@ public class LiveWireServiceImpl implements LiveWireService {
 
     @Override
     public Observable<Boolean> triggerAlertDispatch(String alertUid) {
-        LiveWireAlert alert = realmService.loadObjectByUid(LiveWireAlert.class, alertUid, true);
+        LiveWireAlert alert = databaseService.loadObjectByUid(LiveWireAlert.class, alertUid);
         return networkService.uploadEntity(alert, false)
                 .map(new Function<UploadResult, Boolean>() {
                     @Override
@@ -219,20 +186,18 @@ public class LiveWireServiceImpl implements LiveWireService {
 
     private LiveWireAlert loadAlertToEdit(final String alertUid) {
         if (BuildConfig.DEBUG) {
-            realmService.listAllEntitesOfType(LiveWireAlert.class);
+            databaseService.listAllEntitesOfType(LiveWireAlert.class);
         }
         Timber.e("looking for alert of UID : " + alertUid);
-        return realmService.loadObjectByUid(LiveWireAlert.class, alertUid, false);
+        return databaseService.loadObjectByUid(LiveWireAlert.class, alertUid);
     }
 
     private void tidyUp(SingleEmitter<Boolean> e) {
         e.onSuccess(true);
-        realmService.closeRealmOnThread();
     }
 
     private void tidyUp(String uid, SingleEmitter<String> e) {
         e.onSuccess(uid);
-        realmService.closeRealmOnThread();
     }
 
 }

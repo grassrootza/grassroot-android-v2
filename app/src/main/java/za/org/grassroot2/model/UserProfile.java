@@ -2,20 +2,22 @@ package za.org.grassroot2.model;
 
 import android.text.TextUtils;
 
-import io.realm.RealmObject;
-import io.realm.annotations.PrimaryKey;
+import com.j256.ormlite.field.DatabaseField;
+import com.j256.ormlite.table.DatabaseTable;
 
 /**
  * Class for storing details and preferences of current user
  */
-public class UserProfile extends RealmObject {
+@DatabaseTable(tableName = "user_profiles")
+public class UserProfile {
 
-    @PrimaryKey
-    private int id = 0;
-
+    @DatabaseField(id = true)
     private String uid;
+    @DatabaseField
     private String msisdn;
+    @DatabaseField
     private String displayName;
+    @DatabaseField
     private String systemRole;
 
     public UserProfile() {

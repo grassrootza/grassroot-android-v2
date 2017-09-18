@@ -10,10 +10,10 @@ import okhttp3.OkHttpClient;
 import retrofit2.Converter;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
-import za.org.grassroot2.Constants;
+import za.org.grassroot2.BuildConfig;
+import za.org.grassroot2.database.DatabaseService;
 import za.org.grassroot2.services.NetworkService;
 import za.org.grassroot2.services.NetworkServiceImpl;
-import za.org.grassroot2.services.RealmService;
 import za.org.grassroot2.services.UserDetailsService;
 import za.org.grassroot2.services.rest.AddTokenInterceptor;
 import za.org.grassroot2.services.rest.GrassrootUserApi;
@@ -23,14 +23,6 @@ import za.org.grassroot2.services.rest.GrassrootUserApi;
  */
 @Module
 public class ApiModule {
-
-    private static final String REST_BASE_URL = "REST_BASE_URL";
-
-    @Provides
-    @Named(REST_BASE_URL)
-    String provideRestBaseUrl() {
-        return Constants.BASE_URL;
-    }
 
     @Provides
     @UserScope
@@ -42,10 +34,9 @@ public class ApiModule {
     @UserScope
     Retrofit provideRetrofit(OkHttpClient okHttpClient,
                              Converter.Factory converter,
-                             AddTokenInterceptor tokenInterceptor,
-                             @Named(REST_BASE_URL) String baseUrl) {
+                             AddTokenInterceptor tokenInterceptor) {
         return new Retrofit.Builder()
-                .baseUrl(baseUrl)
+                .baseUrl(BuildConfig.API_BASE)
                 .client(okHttpClient.newBuilder().addInterceptor(tokenInterceptor).build())
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .addConverterFactory(converter)
@@ -62,7 +53,7 @@ public class ApiModule {
     @UserScope
     NetworkService provideNetworkService(UserDetailsService userDetailsService,
                                          GrassrootUserApi grassrootUserApi,
-                                         RealmService realmService) {
+                                         DatabaseService realmService) {
         return new NetworkServiceImpl(userDetailsService, grassrootUserApi, realmService);
     }
 

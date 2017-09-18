@@ -44,7 +44,7 @@ public abstract class GrassrootActivity extends AppCompatActivity implements Gra
     @Override
     protected void onCreate(Bundle icicle) {
         super.onCreate(icicle);
-        Debug.startMethodTracing("base_activity");
+//        Debug.startMethodTracing("base_activity");
         ((GrassrootApplication) getApplication())
                 .getAppComponent()
                 .inject(this);

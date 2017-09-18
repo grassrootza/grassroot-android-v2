@@ -5,12 +5,12 @@ import android.content.Context;
 import dagger.Module;
 import dagger.Provides;
 import za.org.grassroot2.dagger.ApplicationContext;
+import za.org.grassroot2.database.DatabaseService;
 import za.org.grassroot2.presenter.LoginPresenter;
 import za.org.grassroot2.presenter.MainPresenter;
 import za.org.grassroot2.presenter.MainPresenterImpl;
 import za.org.grassroot2.services.LiveWireService;
 import za.org.grassroot2.services.MediaService;
-import za.org.grassroot2.services.RealmService;
 import za.org.grassroot2.services.UserDetailsService;
 import za.org.grassroot2.services.rest.GrassrootAuthApi;
 
@@ -31,7 +31,7 @@ public class ActivityModule {
     @PerActivity
     MainPresenter provideMainPresenter(@ApplicationContext Context applicationContext,
                                        UserDetailsService userDetailsService,
-                                       RealmService realmService,
+                                       DatabaseService realmService,
                                        MediaService mediaService,
                                        LiveWireService liveWireService) {
         return new MainPresenterImpl(applicationContext, userDetailsService, realmService, mediaService, liveWireService);

@@ -8,9 +8,9 @@ import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
-import io.realm.Realm;
-import za.org.grassroot2.services.RealmService;
-import za.org.grassroot2.services.RealmServiceImpl;
+import za.org.grassroot2.database.DatabaseHelper;
+import za.org.grassroot2.database.DatabaseService;
+import za.org.grassroot2.database.DatabaseServiceImpl;
 import za.org.grassroot2.services.UserDetailsService;
 import za.org.grassroot2.services.UserDetailsServiceImpl;
 
@@ -40,20 +40,20 @@ public class AppModule {
 
     @Provides
     @Singleton
-    Realm provideRealm() {
-        return Realm.getDefaultInstance();
+    DatabaseService provideDatabase(DatabaseHelper helper) {
+        return new DatabaseServiceImpl(helper);
     }
 
     @Provides
     @Singleton
-    RealmService provideRealmService(final Realm realm) {
-        return new RealmServiceImpl(realm);
+    DatabaseHelper provideDatabaseHelper(@ApplicationContext  Context context) {
+        return new DatabaseHelper(context);
     }
 
     @Provides
     @Singleton
-    UserDetailsService provideUserDetailsService(AccountManager accountManager, RealmService realmService) {
-        return new UserDetailsServiceImpl(accountManager, realmService);
+    UserDetailsService provideUserDetailsService(AccountManager accountManager, DatabaseService databaseService) {
+        return new UserDetailsServiceImpl(accountManager, databaseService);
     }
 
 }

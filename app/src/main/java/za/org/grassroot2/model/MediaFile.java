@@ -1,10 +1,11 @@
 package za.org.grassroot2.model;
 
+import com.j256.ormlite.field.DatabaseField;
+import com.j256.ormlite.table.DatabaseTable;
+
 import java.util.ArrayList;
 import java.util.UUID;
 
-import io.realm.RealmObject;
-import io.realm.annotations.PrimaryKey;
 import za.org.grassroot2.model.enums.NetworkEntityType;
 import za.org.grassroot2.model.network.EntityForUpload;
 
@@ -13,30 +14,41 @@ import za.org.grassroot2.model.network.EntityForUpload;
  * Holds a record of a media file generated / stored for us (e.g., video/audio/image)
  */
 
-public class MediaFile extends RealmObject implements EntityForUpload {
+@DatabaseTable(tableName = "media_files")
+public class MediaFile implements EntityForUpload {
 
     public static final String FUNCTION_LIVEWIRE = "LIVEWIRE_MEDIA";
 
-    @PrimaryKey
-    private String uid;
+    @DatabaseField(generatedId = true)
+    private UUID uid;
+    @DatabaseField
     private String serverUid;
 
     // Realm cannot store URI, hence using String
     // And Android's FileProvider mechanism may be its most broken thing, so also storing own file
+    @DatabaseField
     private String absolutePath;
+    @DatabaseField
     private String contentProviderPath;
+    @DatabaseField
     private String mimeType;
 
+    @DatabaseField
     private boolean readyToUpload = false;
+    @DatabaseField
     private boolean compressOnSend = false;
+    @DatabaseField
     private boolean sendingUpstream = false;
+    @DatabaseField
     private boolean sentUpstream = false;
 
+    @DatabaseField
     private String mediaFunction;
+    @DatabaseField
     private String upstreamBucket; // will be set by server, and allows us to retrieve later, if we need (key will always be userUid + localUid)
 
     public MediaFile() {
-        this.uid = UUID.randomUUID().toString();
+        this.uid = UUID.randomUUID();
     }
 
 
@@ -49,7 +61,7 @@ public class MediaFile extends RealmObject implements EntityForUpload {
     }
 
     public String getUid() {
-        return uid;
+        return uid.toString();
     }
 
     public String getServerUid() {
