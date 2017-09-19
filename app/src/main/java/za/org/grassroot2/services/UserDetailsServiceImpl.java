@@ -12,26 +12,25 @@ import io.reactivex.SingleEmitter;
 import io.reactivex.SingleOnSubscribe;
 import io.reactivex.annotations.NonNull;
 import timber.log.Timber;
+import za.org.grassroot2.database.DatabaseService;
 import za.org.grassroot2.model.UserProfile;
 import za.org.grassroot2.services.account.AuthConstants;
 
 public class UserDetailsServiceImpl implements UserDetailsService {
 
     private final AccountManager accountManager;
-    private final RealmService realmService;
+    private final DatabaseService databaseService;
 
     private static final String CONTENT_AUTHORITY = "za.org.grassroot2.syncprovider";
 
     @Inject
-    public UserDetailsServiceImpl(AccountManager accountManager,
-                                  RealmService realmService) {
+    public UserDetailsServiceImpl(AccountManager accountManager, DatabaseService realmService) {
         this.accountManager = accountManager;
-        this.realmService = realmService;
+        this.databaseService = realmService;
     }
 
     @Override
     public void cleanUpForActivity() {
-        realmService.closeUiRealm();
     }
 
     public Single<UserProfile> storeUserDetails(final String userUid,
@@ -45,7 +44,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
                 final Account account = getOrCreateAccount();
                 accountManager.setAuthToken(account, AuthConstants.AUTH_TOKENTYPE, userToken);
                 Timber.v("stored auth token, number accounts = " + accountManager.getAccountsByType(AuthConstants.ACCOUNT_TYPE).length);
-                UserProfile userProfile = realmService.updateOrCreateUserProfile(userUid, userPhone, userDisplayName, userSystemRole);
+                UserProfile userProfile = databaseService.updateOrCreateUserProfile(userUid, userPhone, userDisplayName, userSystemRole);
                 e.onSuccess(userProfile);
             }
         });
@@ -68,9 +67,9 @@ public class UserDetailsServiceImpl implements UserDetailsService {
                         accountManager.removeAccount(account, null, null);
                     }
                 }
-                realmService.removeUserProfile(); // then, wipe the UID etc
+                databaseService.removeUserProfile(); // then, wipe the UID etc
                 if (wipeRealm) {
-                    realmService.wipeRealm();
+                    databaseService.wipeDatabase();
                 }
                 e.onSuccess(true);
             }
@@ -122,19 +121,16 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
     @Override
     public String getCurrentUserUid() {
-        UserProfile userProfile = realmService.loadUserProfile();
+        UserProfile userProfile = databaseService.loadUserProfile();
         // todo: throw an error if this is null, which should trigger a user logout
         final String userUid = userProfile == null ? null : userProfile.getUid();
-        realmService.closeRealmOnThread();
         return userUid;
     }
 
     @Override
     public String getCurrentUserMsisdn() {
-        UserProfile userProfile = realmService.loadUserProfile();
-        final String msisdn = userProfile == null ? null : userProfile.getMsisdn();
-        realmService.closeRealmOnThread();
-        return msisdn;
+        UserProfile userProfile = databaseService.loadUserProfile();
+        return userProfile == null ? null : userProfile.getMsisdn();
     }
 
     @Override

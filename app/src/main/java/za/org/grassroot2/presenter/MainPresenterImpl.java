@@ -21,6 +21,7 @@ import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 import za.org.grassroot2.R;
 import za.org.grassroot2.dagger.ApplicationContext;
+import za.org.grassroot2.database.DatabaseService;
 import za.org.grassroot2.model.Group;
 import za.org.grassroot2.model.LiveWireAlert;
 import za.org.grassroot2.model.MediaFile;
@@ -30,7 +31,6 @@ import za.org.grassroot2.model.dto.BtnReturnBundle;
 import za.org.grassroot2.model.exception.InvalidViewForPresenterException;
 import za.org.grassroot2.services.LiveWireService;
 import za.org.grassroot2.services.MediaService;
-import za.org.grassroot2.services.RealmService;
 import za.org.grassroot2.services.UserDetailsService;
 import za.org.grassroot2.view.MainView;
 import za.org.grassroot2.view.fragment.TextInputFragment;
@@ -64,7 +64,7 @@ public class MainPresenterImpl extends LoggedInViewPresenterImpl implements Main
     public static int REQUEST_PERMISSION_CODE = 01;
 
     private final Context applicationContext;
-    private final RealmService realmService;
+    private final DatabaseService databaseService;
     private final MediaService mediaService;
     private final LiveWireService liveWireService;
 
@@ -77,12 +77,12 @@ public class MainPresenterImpl extends LoggedInViewPresenterImpl implements Main
     @Inject
     public MainPresenterImpl(@ApplicationContext Context applicationContext,
                              UserDetailsService userDetailsService,
-                             RealmService realmService,
+                             DatabaseService realmService,
                              MediaService mediaService,
                              LiveWireService liveWireService) {
         super(userDetailsService);
         this.applicationContext = applicationContext;
-        this.realmService = realmService;
+        this.databaseService = realmService;
         this.mediaService = mediaService;
         this.liveWireService = liveWireService;
     }
@@ -92,7 +92,6 @@ public class MainPresenterImpl extends LoggedInViewPresenterImpl implements Main
         try {
             super.attach(view);
             this.view = view;
-            realmService.openUiRealm();
         } catch (ClassCastException e) {
             handleGenericKnownException(new InvalidViewForPresenterException());
             super.detach(view);
@@ -139,28 +138,23 @@ public class MainPresenterImpl extends LoggedInViewPresenterImpl implements Main
         liveWireService.load(currentLiveWireAlertUid)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Consumer<LiveWireAlert>() {
-                    @Override
-                    public void accept(@NonNull LiveWireAlert liveWireAlert) throws Exception {
-                        Timber.i("deciding next step, alert: " + liveWireAlert);
-                        if (TextUtils.isEmpty(liveWireAlert.getHeadline())) {
-                            askForHeadline();
-                        } else if (!skippedMediaFile && liveWireAlert.getMediaFile() == null) {
-                            askForMediaFile();
-                        } else if (TextUtils.isEmpty(liveWireAlert.getAlertType())) {
-                            // for now, default to group
-                            loadGroupSelection();
-                        } else if (!skippedDescription && TextUtils.isEmpty(liveWireAlert.getDescription())) {
-                            askForDescription();
-                        } else {
-                            askForConfirmation();
-                        }
+                .subscribe(liveWireAlert -> {
+                    Timber.i("deciding next step, alert: " + liveWireAlert);
+                    if (TextUtils.isEmpty(liveWireAlert.getHeadline())) {
+                        askForHeadline();
+                    } else if (!skippedMediaFile && liveWireAlert.getMediaFile() == null) {
+                        askForMediaFile();
+                    } else if (TextUtils.isEmpty(liveWireAlert.getAlertType())) {
+                        // for now, default to group
+                        loadGroupSelection();
+                    } else if (!skippedDescription && TextUtils.isEmpty(liveWireAlert.getDescription())) {
+                        askForDescription();
+                    } else {
+                        askForConfirmation();
                     }
-                }, new Consumer<Throwable>() {
-                    @Override
-                    public void accept(@NonNull Throwable throwable) throws Exception {
-                        showErrorAndReturnToNull();
-                    }
+                }, throwable -> {
+                    throwable.printStackTrace();
+                    showErrorAndReturnToNull();
                 });
     }
 
@@ -316,21 +310,18 @@ public class MainPresenterImpl extends LoggedInViewPresenterImpl implements Main
 
     private void loadGroupSelection() {
         Timber.i("loading group selection ... UID = " + currentLiveWireAlertUid);
-        realmService.listAllEntitesOfType(Group.class);
+        databaseService.listAllEntitesOfType(Group.class);
         subscriptions.add(view.requestSelection(
                 R.string.group_select_title,
-                realmService.loadObjectsForSelection(Group.class))
-                .subscribe(new Consumer<String>() {
-                    @Override
-                    public void accept(@NonNull String s) throws Exception {
-                        Timber.i("selected! : " + s);
-                        if (!TextUtils.isEmpty(currentLiveWireAlertUid)) {
-                            setGroupForAlert(currentLiveWireAlertUid, s);
-                        } else {
-                            Timber.e("error! selection called without valid LiveWire alert in waiting");
-                        }
+                databaseService.loadObjectsForSelection(Group.class))
+                .subscribe(s -> {
+                    Timber.i("selected! : " + s);
+                    if (!TextUtils.isEmpty(currentLiveWireAlertUid)) {
+                        setGroupForAlert(currentLiveWireAlertUid, s);
+                    } else {
+                        Timber.e("error! selection called without valid LiveWire alert in waiting");
                     }
-                }));
+                }, Throwable::printStackTrace));
     }
 
     private void setGroupForAlert(String alertUid, String groupUid) {
@@ -388,8 +379,8 @@ public class MainPresenterImpl extends LoggedInViewPresenterImpl implements Main
                     @Override
                     public void accept(@NonNull Boolean aBoolean) throws Exception {
                         Timber.i("back in main, description? alert : " +
-                                realmService.loadObjectByUid(LiveWireAlert.class, currentLiveWireAlertUid, false));
-                        realmService.load(LiveWireAlert.class, currentLiveWireAlertUid)
+                                databaseService.loadObjectByUid(LiveWireAlert.class, currentLiveWireAlertUid));
+                        databaseService.load(LiveWireAlert.class, currentLiveWireAlertUid)
                                 .subscribeOn(Schedulers.io())
                                 .subscribe(new Consumer<LiveWireAlert>() {
                                     @Override
@@ -404,7 +395,7 @@ public class MainPresenterImpl extends LoggedInViewPresenterImpl implements Main
 
     private void askForConfirmation() {
         Timber.i("asking for confirmation ...");
-        realmService.load(LiveWireAlert.class, currentLiveWireAlertUid)
+        databaseService.load(LiveWireAlert.class, currentLiveWireAlertUid)
                 .subscribeOn(Schedulers.io())
                 .subscribe(new Consumer<LiveWireAlert>() {
                     @Override
@@ -436,7 +427,7 @@ public class MainPresenterImpl extends LoggedInViewPresenterImpl implements Main
     private String alertConfirmBody(LiveWireAlert alert) {
         String description;
         Timber.e("alert group UID: " + alert.getGroupUid());
-        final String groupName = realmService.loadObjectByUid(Group.class, alert.getGroupUid(), true).getName();
+        final String groupName = databaseService.loadGroup(alert.getGroupUid()).getName();
         if (alert.hasMedia()) {
             description = applicationContext.getString(R.string.lwire_confirm_text_media,
                     alert.getHeadline(), groupName, alert.getMediaFile().getMimeType());
@@ -614,7 +605,7 @@ public class MainPresenterImpl extends LoggedInViewPresenterImpl implements Main
                 .subscribe(new Consumer<String>() {
                     @Override
                     public void accept(@NonNull String s) throws Exception {
-                        MediaFile mediaFile = realmService.loadObjectByUid(MediaFile.class, s, false);
+                        MediaFile mediaFile = databaseService.loadObjectByUid(MediaFile.class, s);
                         Timber.e("mediaFile stored and retrieved, = " + mediaFile);
                         // for some reason, sometimes it comes back null ...
                         Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);

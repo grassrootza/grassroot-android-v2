@@ -8,7 +8,7 @@ import okhttp3.OkHttpClient;
 import retrofit2.Converter;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
-import za.org.grassroot2.Constants;
+import za.org.grassroot2.BuildConfig;
 import za.org.grassroot2.services.rest.GrassrootAuthApi;
 
 /**
@@ -17,21 +17,12 @@ import za.org.grassroot2.services.rest.GrassrootAuthApi;
 @Module
 public class NoAuthApiModule {
 
-    private static final String AUTH_BASE_URL = "AUTH_BASE_URL";
-
-    @Provides
-    @Named(AUTH_BASE_URL)
-    String provideRestBaseUrl() {
-        return Constants.BASE_URL;
-    }
-
     @Provides
     @LoginScope
     Retrofit provideRetrofit(OkHttpClient okHttpClient,
-                             Converter.Factory converter,
-                             @Named(AUTH_BASE_URL) String baseUrl) {
+                             Converter.Factory converter) {
         return new Retrofit.Builder()
-                .baseUrl(baseUrl)
+                .baseUrl(BuildConfig.API_BASE)
                 .client(okHttpClient)
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .addConverterFactory(converter)

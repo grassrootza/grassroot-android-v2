@@ -6,13 +6,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import java.util.List;
+
 import io.reactivex.Observable;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.functions.Function;
 import io.reactivex.subjects.PublishSubject;
-import io.realm.OrderedRealmCollection;
-import io.realm.RealmObject;
-import io.realm.RealmRecyclerViewAdapter;
 import za.org.grassroot2.R;
 import za.org.grassroot2.model.SelectableItem;
 import za.org.grassroot2.rxbinding.RxView;
@@ -21,16 +20,18 @@ import za.org.grassroot2.rxbinding.RxView;
  * Created by luke on 2017/08/19.
  */
 
-public class ItemSelectionAdapter<T extends RealmObject & SelectableItem> extends RealmRecyclerViewAdapter<T, ItemSelectionAdapter.SelectableItemViewHolder> {
+public class ItemSelectionAdapter<T extends SelectableItem> extends RecyclerView.Adapter<ItemSelectionAdapter.SelectableItemViewHolder> {
 
+    private final List<T> data;
     private PublishSubject<String> viewClickSubject = PublishSubject.create();
-
-    public ItemSelectionAdapter(OrderedRealmCollection<T> data, boolean autoUpdate, boolean updateOnModification) {
-        super(data, autoUpdate, updateOnModification);
-    }
 
     public Observable<String> getViewClickObservable() {
         return viewClickSubject;
+    }
+
+    public ItemSelectionAdapter(List<T> data, boolean autoUpdate, boolean updateOnModification) {
+        super();
+        this.data = data;
     }
 
     @Override
@@ -41,7 +42,7 @@ public class ItemSelectionAdapter<T extends RealmObject & SelectableItem> extend
 
     @Override
     public void onBindViewHolder(final SelectableItemViewHolder holder, int position) {
-        SelectableItem item = getItem(position);
+        SelectableItem item = data.get(position);
         if (item != null) {
             holder.itemHeading.setText(item.getName());
             holder.itemDescription.setText(item.getDescription());
@@ -49,17 +50,17 @@ public class ItemSelectionAdapter<T extends RealmObject & SelectableItem> extend
 
             // todo: add "takeUntil" detaches
             RxView.clicks(holder.itemRoot)
-                    .map(new Function<Object, String>() {
-                        @Override
-                        public String apply(@NonNull Object o) throws Exception {
-                            return holder.itemUid;
-                        }
-                    })
+                    .map(o -> holder.itemUid)
                     .subscribe(viewClickSubject);
         } else {
             holder.itemHeading.setText("NULL");
             holder.itemDescription.setText("NULL");
         }
+    }
+
+    @Override
+    public int getItemCount() {
+        return data.size();
     }
 
     static class SelectableItemViewHolder extends RecyclerView.ViewHolder {

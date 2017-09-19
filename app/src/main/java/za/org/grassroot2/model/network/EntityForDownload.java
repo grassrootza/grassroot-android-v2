@@ -1,6 +1,6 @@
 package za.org.grassroot2.model.network;
 
-import io.realm.RealmObject;
+import java.util.UUID;
 
 /**
  * Created by luke on 2017/08/17.
@@ -8,7 +8,7 @@ import io.realm.RealmObject;
 
 public interface EntityForDownload extends NetworkEntity {
 
+    String getUid();
     long getLastTimeChangedServer();
-    RealmObject getRealmObject();
 
 }

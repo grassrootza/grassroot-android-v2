@@ -3,9 +3,6 @@ package za.org.grassroot2;
 import android.app.Application;
 import android.os.Debug;
 
-import io.realm.Realm;
-import io.realm.RealmConfiguration;
-import io.realm.exceptions.RealmMigrationNeededException;
 import timber.log.Timber;
 import za.org.grassroot2.dagger.AppComponent;
 import za.org.grassroot2.dagger.AppModule;
@@ -29,38 +26,15 @@ public class GrassrootApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        Debug.startMethodTracing("app_loader");
+//        Debug.startMethodTracing("app_loader");
         appComponent = initDagger(this);
         initTimber();
-        initRealmConfiguration();
         Debug.stopMethodTracing();
     }
 
     private void initTimber() {
         if (BuildConfig.DEBUG) {  // todo: build a release tree
             Timber.plant(new Timber.DebugTree());
-        }
-    }
-
-    private void initRealmConfiguration() {
-        Timber.i("Starting Realm configuration");
-        Realm.init(this);
-        RealmConfiguration realmConfiguration = new RealmConfiguration.Builder()
-                .build();
-        Realm.setDefaultConfiguration(realmConfiguration);
-
-        if (!BuildConfig.DEBUG || skipMigrationTest) {
-            safeCheckRealmMigration(realmConfiguration);
-        }
-    }
-
-    private void safeCheckRealmMigration(RealmConfiguration config) {
-        try {
-            Realm realm = Realm.getDefaultInstance();
-            realm.close();
-        } catch (RealmMigrationNeededException e) {
-            Timber.e("Error! Should have migrated");
-            Realm.deleteRealm(config);
         }
     }
 

@@ -1,5 +1,6 @@
 package za.org.grassroot2.services;
 
+import android.provider.MediaStore;
 import android.text.TextUtils;
 
 import java.io.File;
@@ -17,13 +18,13 @@ import io.reactivex.annotations.NonNull;
 import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
 import io.reactivex.functions.Predicate;
-import io.realm.Realm;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Response;
 import timber.log.Timber;
+import za.org.grassroot2.database.DatabaseService;
 import za.org.grassroot2.model.Group;
 import za.org.grassroot2.model.LiveWireAlert;
 import za.org.grassroot2.model.MediaFile;
@@ -45,17 +46,17 @@ public class NetworkServiceImpl implements NetworkService {
 
     private final UserDetailsService userDetailsService;
     private final GrassrootUserApi grassrootUserApi;
-    private final RealmService realmService;
+    private final DatabaseService databaseService;
 
     private String currentUserUid; // given frequency of calling/using, best to stash
 
     @Inject
     public NetworkServiceImpl(UserDetailsService userDetailsService,
                               GrassrootUserApi grassrootUserApi,
-                              RealmService realmService) {
+                              DatabaseService databaseService) {
         this.userDetailsService = userDetailsService;
         this.grassrootUserApi = grassrootUserApi;
-        this.realmService = realmService;
+        this.databaseService = databaseService;
     }
 
     private void setUserUid() {
@@ -94,7 +95,7 @@ public class NetworkServiceImpl implements NetworkService {
     @Override
     public Observable<List<Group>> downloadAllChangedOrNewGroups() {
         return grassrootUserApi
-                .fetchUserGroups(currentUserUid, realmService.loadExistingObjectsWithLastChangeTime(Group.class))
+                .fetchUserGroups(currentUserUid, databaseService.loadExistingObjectsWithLastChangeTime(Group.class))
                 .doOnError(new Consumer<Throwable>() {
                     @Override
                     public void accept(@NonNull Throwable throwable) throws Exception {
@@ -190,14 +191,9 @@ public class NetworkServiceImpl implements NetworkService {
                     @Override
                     public ObservableSource<? extends UploadResult> apply(@NonNull final UploadResult uploadResult) throws Exception {
                         if (uploadResult.getServerUid() != null) {
-                            realmService.executeTransaction(new Realm.Transaction() {
-                                @Override
-                                public void execute(Realm realm) {
-                                    alert.setServerUid(uploadResult.getServerUid());
-                                    alert.setUnderReview(true);
-                                    realm.copyToRealmOrUpdate(alert);
-                                }
-                            });
+                            alert.setServerUid(uploadResult.getServerUid());
+                            alert.setUnderReview(true);
+                            databaseService.storeObject(LiveWireAlert.class, alert);
                         }
                         return Observable.just(uploadResult);
                     }
@@ -216,14 +212,9 @@ public class NetworkServiceImpl implements NetworkService {
                     @Override
                     public ObservableSource<? extends UploadResult> apply(@NonNull final UploadResult uploadResult) throws Exception {
                         if (uploadResult.getServerUid() != null) {
-                            realmService.executeTransaction(new Realm.Transaction() {
-                                @Override
-                                public void execute(Realm realm) {
-                                    mediaFile.setSentUpstream(true);
-                                    mediaFile.setServerUid(uploadResult.getServerUid());
-                                    realm.copyToRealmOrUpdate(mediaFile);
-                                }
-                            });
+                            mediaFile.setSentUpstream(true);
+                            mediaFile.setServerUid(uploadResult.getServerUid());
+                            databaseService.storeObject(MediaFile.class, mediaFile);
                         }
                         return Observable.just(uploadResult);
                     }

@@ -9,21 +9,21 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import java.util.List;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.reactivex.Observable;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.functions.Function;
 import io.reactivex.functions.Predicate;
-import io.realm.OrderedRealmCollection;
-import io.realm.RealmObject;
 import timber.log.Timber;
 import za.org.grassroot2.R;
 import za.org.grassroot2.model.SelectableItem;
 import za.org.grassroot2.view.ItemSelectionView;
 import za.org.grassroot2.view.adapter.ItemSelectionAdapter;
 
-public class ItemSelectionFragment<T extends RealmObject & SelectableItem> extends GrassrootFragment
+public class ItemSelectionFragment<T extends SelectableItem> extends GrassrootFragment
         implements ItemSelectionView<T> {
 
     private static final String HEADER_STRING = "HEADER";
@@ -37,7 +37,7 @@ public class ItemSelectionFragment<T extends RealmObject & SelectableItem> exten
         // mandatory
     }
 
-    public static <T extends RealmObject & SelectableItem> ItemSelectionFragment<T> newInstance(int headerTextRes) {
+    public static <T extends SelectableItem> ItemSelectionFragment<T> newInstance(int headerTextRes) {
         ItemSelectionFragment<T> fragment = new ItemSelectionFragment<>();
         Bundle args = new Bundle();
         args.putInt(HEADER_STRING, headerTextRes);
@@ -98,7 +98,7 @@ public class ItemSelectionFragment<T extends RealmObject & SelectableItem> exten
     }
 
     @Override
-    public Observable<String> addData(OrderedRealmCollection<T> data) {
+    public Observable<String> addData(List<T> data) {
         recyclerViewAdapter = new ItemSelectionAdapter<T>(data, true, true);
         return recyclerViewAdapter.getViewClickObservable();
     }

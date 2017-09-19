@@ -1,0 +1,141 @@
+#
+# generated on 2017/09/19 03:55:37
+#
+# --table-start--
+dataClass=za.org.grassroot2.model.Group
+tableName=groups
+# --table-fields-start--
+# --field-start--
+fieldName=uid
+id=true
+# --field-end--
+# --field-start--
+fieldName=name
+canBeNull=false
+# --field-end--
+# --field-start--
+fieldName=memberCount
+canBeNull=false
+# --field-end--
+# --field-start--
+fieldName=userRole
+canBeNull=false
+# --field-end--
+# --field-start--
+fieldName=lastTimeChangedServer
+# --field-end--
+# --field-start--
+fieldName=lastActionOrChange
+# --field-end--
+# --field-start--
+fieldName=permissions
+# --field-end--
+# --table-fields-end--
+# --table-end--
+#################################
+# --table-start--
+dataClass=za.org.grassroot2.model.LiveWireAlert
+tableName=livewire_alerts
+# --table-fields-start--
+# --field-start--
+fieldName=uid
+generatedId=true
+# --field-end--
+# --field-start--
+fieldName=serverUid
+# --field-end--
+# --field-start--
+fieldName=headline
+# --field-end--
+# --field-start--
+fieldName=mediaFile
+foreign=true
+# --field-end--
+# --field-start--
+fieldName=description
+# --field-end--
+# --field-start--
+fieldName=alertType
+# --field-end--
+# --field-start--
+fieldName=taskUid
+# --field-end--
+# --field-start--
+fieldName=groupUid
+# --field-end--
+# --field-start--
+fieldName=complete
+# --field-end--
+# --field-start--
+fieldName=sending
+# --field-end--
+# --field-start--
+fieldName=underReview
+# --field-end--
+# --field-start--
+fieldName=released
+# --field-end--
+# --table-fields-end--
+# --table-end--
+#################################
+# --table-start--
+dataClass=za.org.grassroot2.model.MediaFile
+tableName=media_files
+# --table-fields-start--
+# --field-start--
+fieldName=uid
+generatedId=true
+# --field-end--
+# --field-start--
+fieldName=serverUid
+# --field-end--
+# --field-start--
+fieldName=absolutePath
+# --field-end--
+# --field-start--
+fieldName=contentProviderPath
+# --field-end--
+# --field-start--
+fieldName=mimeType
+# --field-end--
+# --field-start--
+fieldName=readyToUpload
+# --field-end--
+# --field-start--
+fieldName=compressOnSend
+# --field-end--
+# --field-start--
+fieldName=sendingUpstream
+# --field-end--
+# --field-start--
+fieldName=sentUpstream
+# --field-end--
+# --field-start--
+fieldName=mediaFunction
+# --field-end--
+# --field-start--
+fieldName=upstreamBucket
+# --field-end--
+# --table-fields-end--
+# --table-end--
+#################################
+# --table-start--
+dataClass=za.org.grassroot2.model.UserProfile
+tableName=user_profiles
+# --table-fields-start--
+# --field-start--
+fieldName=uid
+id=true
+# --field-end--
+# --field-start--
+fieldName=msisdn
+# --field-end--
+# --field-start--
+fieldName=displayName
+# --field-end--
+# --field-start--
+fieldName=systemRole
+# --field-end--
+# --table-fields-end--
+# --table-end--
+#################################

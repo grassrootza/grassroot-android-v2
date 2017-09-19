@@ -12,6 +12,7 @@ import android.support.annotation.RequiresApi;
 
 import org.json.JSONException;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,21 +20,20 @@ import javax.inject.Inject;
 
 import io.reactivex.annotations.NonNull;
 import io.reactivex.functions.Consumer;
-import io.realm.RealmObject;
-import io.realm.internal.IOException;
 import timber.log.Timber;
 import za.org.grassroot2.GrassrootApplication;
 import za.org.grassroot2.dagger.user.ApiModule;
+import za.org.grassroot2.database.DatabaseService;
+import za.org.grassroot2.model.Group;
 import za.org.grassroot2.model.enums.NetworkEntityType;
 import za.org.grassroot2.model.exception.ServerUnreachableException;
 import za.org.grassroot2.model.network.EntityForDownload;
 import za.org.grassroot2.services.NetworkService;
-import za.org.grassroot2.services.RealmService;
 
 public class SyncAdapter extends AbstractThreadedSyncAdapter {
 
     private NetworkService networkService;
-    private RealmService realmService;
+    private DatabaseService databaseService;
 
     public SyncAdapter(Context context, boolean autoInitialize) {
         super(context, autoInitialize);
@@ -60,8 +60,8 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
     }
 
     @Inject
-    public void setRealmService(RealmService realmService) {
-        this.realmService = realmService;
+    public void setDatabaseService(DatabaseService databaseService) {
+        this.databaseService = databaseService;
     }
 
 
@@ -77,36 +77,29 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
     public void onPerformSync(Account account, Bundle extras, String authority, ContentProviderClient provider, final SyncResult syncResult) {
         Timber.d("Starting synchronization...");
         networkService.downloadAllChangedOrNewEntities(NetworkEntityType.GROUP, false)
-            .subscribe(new Consumer<List<EntityForDownload>>() {
-                @Override
-                public void accept(@NonNull List<EntityForDownload> entityForDownloads) throws Exception {
-                    realmService.copyOrUpdateListOfEntities(convert(entityForDownloads));
-                }
-            }, new Consumer<Throwable>() {
-                @Override
-                public void accept(@NonNull Throwable throwable) throws Exception {
-                    if (throwable instanceof IOException || throwable instanceof ServerUnreachableException) {
-                        Timber.e(throwable, "Error synchronizing!");
-                        syncResult.stats.numIoExceptions++;
-                    } else if (throwable instanceof JSONException) {
-                        Timber.e(throwable, "Error synchronizing!");
-                        syncResult.stats.numParseExceptions++;
-                    } else if (throwable instanceof RemoteException ||
-                            throwable instanceof OperationApplicationException) {
-                        Timber.e(throwable, "Error synchronizing!");
-                        syncResult.stats.numAuthExceptions++;
-                    }
+            .subscribe(entityForDownloads ->
+                databaseService.copyOrUpdateListOfEntities(Group.class, convert(entityForDownloads)),
+                    throwable -> {
+                if (throwable instanceof IOException || throwable instanceof ServerUnreachableException) {
+                    Timber.e(throwable, "Error synchronizing!");
+                    syncResult.stats.numIoExceptions++;
+                } else if (throwable instanceof JSONException) {
+                    Timber.e(throwable, "Error synchronizing!");
+                    syncResult.stats.numParseExceptions++;
+                } else if (throwable instanceof RemoteException ||
+                        throwable instanceof OperationApplicationException) {
+                    Timber.e(throwable, "Error synchronizing!");
+                    syncResult.stats.numAuthExceptions++;
                 }
             });
     }
 
     // multiple bounds are not playing nice with the observable, so using this slight hack
     // todo: figure out and fix multiple bounds on method above
-    private static List<RealmObject> convert(List<EntityForDownload> entityForDownloads) {
-        List<RealmObject> list = new ArrayList<>();
-        final int size = entityForDownloads.size();
-        for (int i = 0; i < size; i++) {
-            list.add(entityForDownloads.get(i).getRealmObject());
+    private List<Group> convert(List<EntityForDownload> entityForDownloads) {
+        List<Group> list = new ArrayList<>();
+        for (EntityForDownload e : entityForDownloads) {
+            list.add((Group) e);
         }
         return list;
     }

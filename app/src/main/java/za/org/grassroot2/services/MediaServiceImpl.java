@@ -24,9 +24,9 @@ import io.reactivex.SingleEmitter;
 import io.reactivex.SingleOnSubscribe;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.schedulers.Schedulers;
-import io.realm.Realm;
 import timber.log.Timber;
 import za.org.grassroot2.dagger.ApplicationContext;
+import za.org.grassroot2.database.DatabaseService;
 import za.org.grassroot2.model.MediaFile;
 import za.org.grassroot2.model.exception.FailedToCreateMediaFileException;
 
@@ -40,15 +40,15 @@ public class MediaServiceImpl implements MediaService {
     private static final String MEDIA_DIRECTORY = "/grassroot/";
 
     private final Context applicationContext;
-    private final RealmService realmService;
+    private final DatabaseService databaseService;
     private final NetworkService networkService;
 
     @Inject
     public MediaServiceImpl(@ApplicationContext Context applicationContext,
-                            RealmService realmService,
+                            DatabaseService databaseService,
                             NetworkService networkService) {
         this.applicationContext = applicationContext;
-        this.realmService = realmService;
+        this.databaseService = databaseService;
         this.networkService = networkService;
     }
 
@@ -64,11 +64,9 @@ public class MediaServiceImpl implements MediaService {
                             imageFile);
                     Timber.d("taking image, URI = " + imageUri);
                     // could do this more elegantly, but, Android, Realm, threads
-                    MediaFile createdFile = realmService.storeRealmObject(
-                            new MediaFile(imageUri.toString(), imageFile.getAbsolutePath(), mimeType, mediaFunction), false);
+                    MediaFile createdFile = databaseService.storeObject(MediaFile.class, new MediaFile(imageUri.toString(), imageFile.getAbsolutePath(), mimeType, mediaFunction));
                     Timber.d("created media file = " + createdFile);
                     final String createdUid = createdFile.getUid();
-                    realmService.closeRealmOnThread();
                     e.onSuccess(createdUid);
                 } catch (Throwable t) {
                     Timber.e(t);
@@ -97,7 +95,7 @@ public class MediaServiceImpl implements MediaService {
         return Single.create(new SingleOnSubscribe<String>() {
             @Override
             public void subscribe(@NonNull SingleEmitter<String> e) throws Exception {
-                MediaFile mediaFile = realmService.loadObjectByUid(MediaFile.class, mediaFileUid, false);
+                MediaFile mediaFile = databaseService.loadObjectByUid(MediaFile.class, mediaFileUid);
                 mediaFile.setReadyToUpload(true);
                 e.onSuccess("DONE");
                 if (uploadNow) {
@@ -107,7 +105,6 @@ public class MediaServiceImpl implements MediaService {
                             .subscribe();
                 }
                 triggerMediaScan(mediaFile.getContentProviderPath());
-                realmService.closeRealmOnThread();
             }
         });
     }
@@ -117,17 +114,12 @@ public class MediaServiceImpl implements MediaService {
         return Single.create(new SingleOnSubscribe<String>() {
             @Override
             public void subscribe(@NonNull SingleEmitter<String> e) throws Exception {
-                final MediaFile mediaFile = realmService.loadObjectByUid(MediaFile.class, mediaFileUid, true);
+                final MediaFile mediaFile = databaseService.loadObjectByUid(MediaFile.class, mediaFileUid);
                 mediaFile.setAbsolutePath(getLocalFileNameFromURI(fileUri));
                 mediaFile.setMimeType(getMimeType(fileUri));
                 mediaFile.setReadyToUpload(true);
                 e.onSuccess("DONE");
-                realmService.executeTransaction(new Realm.Transaction() {
-                    @Override
-                    public void execute(Realm realm) {
-                        realm.copyToRealmOrUpdate(mediaFile);
-                    }
-                });
+                databaseService.storeObject(MediaFile.class, mediaFile);
                 if (uploadNow) {
                     networkService.uploadEntity(mediaFile, true)
                             .subscribeOn(Schedulers.io())

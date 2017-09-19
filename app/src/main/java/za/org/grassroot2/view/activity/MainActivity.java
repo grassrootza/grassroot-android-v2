@@ -8,6 +8,8 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 
+import java.util.List;
+
 import javax.inject.Inject;
 
 import io.reactivex.Observable;
@@ -15,8 +17,6 @@ import io.reactivex.ObservableSource;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
-import io.realm.OrderedRealmCollection;
-import io.realm.RealmObject;
 import timber.log.Timber;
 import za.org.grassroot2.GrassrootApplication;
 import za.org.grassroot2.R;
@@ -197,17 +197,11 @@ public class MainActivity extends LoggedInActivity implements MainView {
     }
 
     @Override
-    public <T extends RealmObject & SelectableItem> Observable<String> requestSelection(int headerRes,
-                                                                                        final OrderedRealmCollection<T> items) {
+    public <T extends SelectableItem> Observable<String> requestSelection(int headerRes, final List<T> items) {
         final ItemSelectionFragment<T> selectionFragment = ItemSelectionFragment.newInstance(headerRes);
         Observable<String> observable = selectionFragment
                 .viewAttached()
-                .concatMap(new Function<Boolean, Observable<String>>() {
-                    @Override
-                    public Observable<String> apply(@NonNull Boolean aBoolean) throws Exception {
-                        return selectionFragment.addData(items);
-                    }
-                });
+                .concatMap(aBoolean -> selectionFragment.addData(items));
 
         closeKeyboard();
         getSupportFragmentManager().beginTransaction()

@@ -2,13 +2,14 @@ package za.org.grassroot2.model;
 
 import android.text.TextUtils;
 
+import com.j256.ormlite.field.DatabaseField;
+import com.j256.ormlite.table.DatabaseTable;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Set;
 import java.util.UUID;
 
-import io.realm.RealmObject;
-import io.realm.annotations.PrimaryKey;
 import za.org.grassroot2.model.enums.NetworkEntityType;
 import za.org.grassroot2.model.network.EntityForUpload;
 
@@ -18,31 +19,40 @@ import za.org.grassroot2.model.network.EntityForUpload;
  * todo: add destination information
  */
 
-public class LiveWireAlert extends RealmObject implements EntityForUpload {
+@DatabaseTable(tableName = "livewire_alerts")
+public class LiveWireAlert implements EntityForUpload {
 
     public static final String TYPE_GENERIC = "INSTANT"; // server calls it this, for legacy reasons
     public static final String TYPE_MEETING = "MEETING";
 
-    @PrimaryKey
-    private String uid;
+    @DatabaseField(generatedId = true)
+    private UUID uid;
+    @DatabaseField
     private String serverUid;
-
+    @DatabaseField
     private String headline;
+    @DatabaseField(foreign = true)
     private MediaFile mediaFile;
+    @DatabaseField
     private String description;
-
+    @DatabaseField
     private String alertType;
+    @DatabaseField
     private String taskUid;
+    @DatabaseField
     private String groupUid;
-
+    @DatabaseField
     private boolean complete;
+    @DatabaseField
     private boolean sending;
+    @DatabaseField
     private boolean underReview;
+    @DatabaseField
     private boolean released;
 
     public LiveWireAlert() {
         // for Realm/Dagger
-        this.uid = UUID.randomUUID().toString();
+        this.uid = UUID.randomUUID();
     }
 
     private LiveWireAlert(Builder builder) {
@@ -152,7 +162,7 @@ public class LiveWireAlert extends RealmObject implements EntityForUpload {
     }
 
     public String getUid() {
-        return uid;
+        return uid.toString();
     }
 
     public String getServerUid() {

@@ -1,8 +1,8 @@
 package za.org.grassroot2.view;
 
+import java.util.List;
+
 import io.reactivex.Observable;
-import io.realm.OrderedRealmCollection;
-import io.realm.RealmObject;
 import za.org.grassroot2.model.SelectableItem;
 import za.org.grassroot2.model.dto.BtnGrouping;
 import za.org.grassroot2.model.dto.BtnReturnBundle;
@@ -17,8 +17,7 @@ public interface MainView extends LoggedInView {
 
     Observable<Integer> requestLongDescriptionInput(int headerString, int inputHint);
 
-    <T extends RealmObject & SelectableItem> Observable<String> requestSelection(int headerRes,
-                                                                                 OrderedRealmCollection<T> items);
+    <T extends SelectableItem> Observable<String> requestSelection(int headerRes, List<T> items);
 
     Observable<Integer> requestConfirmationOrAction(int headerRes, String message, BtnGrouping btnGrouping, boolean allowSkip);
 
