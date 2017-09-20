@@ -29,10 +29,6 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         this.databaseService = realmService;
     }
 
-    @Override
-    public void cleanUpForActivity() {
-    }
-
     public Single<UserProfile> storeUserDetails(final String userUid,
                                                 final String userPhone,
                                                 final String userDisplayName,
@@ -50,7 +46,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         });
     }
 
-    // todo: add exception handling, also calls to server, GCM, etc
+    // todo: disposableOnDetach exception handling, also calls to server, GCM, etc
     @Override
     public Single<Boolean> logout(final boolean deleteAndroidAccount, final boolean wipeRealm) {
         return Single.create(new SingleOnSubscribe<Boolean>() {
@@ -143,4 +139,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
     }
 
+    @Override
+    public void cleanUpForActivity() {
+    }
 }

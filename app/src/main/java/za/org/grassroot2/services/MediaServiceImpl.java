@@ -54,24 +54,21 @@ public class MediaServiceImpl implements MediaService {
 
     @Override
     public Single<String> createFileForMedia(final String mimeType, final String mediaFunction) {
-        return Single.create(new SingleOnSubscribe<String>() {
-            @Override
-            public void subscribe(@NonNull SingleEmitter<String> e) throws Exception {
-                try {
-                    File imageFile = createImageFile(mimeType);
-                    final Uri imageUri = FileProvider.getUriForFile(applicationContext,
-                            "za.org.grassroot2.fileprovider",
-                            imageFile);
-                    Timber.d("taking image, URI = " + imageUri);
-                    // could do this more elegantly, but, Android, Realm, threads
-                    MediaFile createdFile = databaseService.storeObject(MediaFile.class, new MediaFile(imageUri.toString(), imageFile.getAbsolutePath(), mimeType, mediaFunction));
-                    Timber.d("created media file = " + createdFile);
-                    final String createdUid = createdFile.getUid();
-                    e.onSuccess(createdUid);
-                } catch (Throwable t) {
-                    Timber.e(t);
-                    throw new FailedToCreateMediaFileException();
-                }
+        return Single.create(e -> {
+            try {
+                File imageFile = createImageFile(mimeType);
+                final Uri imageUri = FileProvider.getUriForFile(applicationContext,
+                        "za.org.grassroot2.fileprovider",
+                        imageFile);
+                Timber.d("taking image, URI = " + imageUri);
+                // could do this more elegantly, but, Android, Realm, threads
+                MediaFile createdFile = databaseService.storeObject(MediaFile.class, new MediaFile(imageUri.toString(), imageFile.getAbsolutePath(), mimeType, mediaFunction));
+                Timber.d("created media file = " + createdFile);
+                final String createdUid = createdFile.getUid();
+                e.onSuccess(createdUid);
+            } catch (Throwable t) {
+                Timber.e(t);
+                throw new FailedToCreateMediaFileException();
             }
         });
     }

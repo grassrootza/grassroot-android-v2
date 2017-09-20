@@ -1,18 +1,18 @@
 package za.org.grassroot2.view.fragment;
 
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
+import org.greenrobot.eventbus.EventBus;
+
 import butterknife.BindView;
-import butterknife.ButterKnife;
 import io.reactivex.Observable;
-import io.reactivex.annotations.NonNull;
-import io.reactivex.functions.Function;
-import io.reactivex.functions.Predicate;
+import za.org.grassroot2.GrassrootApplication;
 import za.org.grassroot2.R;
 import za.org.grassroot2.rxbinding.RxTextView;
 import za.org.grassroot2.rxbinding.RxView;
@@ -32,7 +32,6 @@ public class SingleTextInputFragment extends TextInputFragment implements Single
     @BindView(R.id.button_next) Button nextButton;
 
     public SingleTextInputFragment() {
-        // Required empty public constructor
     }
 
     public static SingleTextInputFragment newInstance(int headerTextRes, int explanTextRes,
@@ -54,15 +53,16 @@ public class SingleTextInputFragment extends TextInputFragment implements Single
             backBtnRes = args.getInt(BACK_BUTTON_RES);
             nextBtnRes = args.getInt(NEXT_BUTTON_RES);
         }
-        // leave this down here so it executes right at the end
-        lifecyclePublisher.onNext(ACTION_FRAGMENT_CREATED);
+    }
+
+    @Override
+    protected void onInject(GrassrootApplication application) {
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.fragment_single_text_input, container, false);
-        unbinder = ButterKnife.bind(this, v);
+        View v = super.onCreateView(inflater, container, savedInstanceState);
         header.setText(headerTextRes);
         explanation.setText(explanTextRes);
         backButton.setText(backBtnRes);
@@ -72,40 +72,30 @@ public class SingleTextInputFragment extends TextInputFragment implements Single
     }
 
     @Override
-    public Observable<CharSequence> textInputNextDone() {
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
         Observable<CharSequence> editTextNext = RxTextView
                 .editorActions(inputText, RxViewUtils.imeNextDonePredicate())
-                .filter(new Predicate<Integer>() {
-                    @Override
-                    public boolean test(@NonNull Integer integer) throws Exception {
-                        return inputText != null; // because Android
-                    }
+                .filter(integer -> {
+                    return inputText != null; // because Android
                 })
-                .map(new Function<Integer, CharSequence>() {
-                    @Override
-                    public CharSequence apply(@NonNull Integer integer) throws Exception {
-                        return inputText.getText();
-                    }
-                });
+                .map(integer -> inputText.getText());
         Observable<CharSequence> nextButtonClicked = RxView
-                .clicks(nextButton).map(new Function<Object, CharSequence>() {
-                    @Override
-                    public CharSequence apply(@NonNull Object o) throws Exception {
-                        return inputText.getText();
-                    }
-                });
-        return Observable.merge(editTextNext, nextButtonClicked);
+                .clicks(nextButton).map(o -> inputText.getText());
+        Observable<CharSequence> backClick = RxView.clicks(backButton)
+                .map(o -> inputText.getText());
+        disposables.add(RxTextView.textChanges(inputText).subscribe(charSequence -> {
+            if (charSequence.length()>1) {
+                toggleNextDoneButton(true);
+            }
+        }, Throwable::printStackTrace));
+        disposables.add(Observable.merge(editTextNext, nextButtonClicked, backClick).subscribe(charSequence ->
+                EventBus.getDefault().post(new SingleInputTextEvent(charSequence)), Throwable::printStackTrace));
     }
 
     @Override
-    public Observable<CharSequence> textInputBackOther() {
-        return RxView.clicks(backButton)
-                .map(new Function<Object, CharSequence>() {
-                    @Override
-                    public CharSequence apply(@NonNull Object o) throws Exception {
-                        return inputText.getText();
-                    }
-                });
+    public int getLayoutResourceId() {
+        return R.layout.fragment_single_text_input;
     }
 
     @Override
@@ -118,4 +108,11 @@ public class SingleTextInputFragment extends TextInputFragment implements Single
         backButton.setEnabled(enabled);
     }
 
+    public static class SingleInputTextEvent {
+        public final CharSequence value;
+
+        public SingleInputTextEvent(CharSequence charSequence) {
+            this.value = charSequence;
+        }
+    }
 }

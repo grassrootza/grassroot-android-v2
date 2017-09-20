@@ -10,7 +10,6 @@ import io.reactivex.Observable;
 
 public interface LoggedInView extends GrassrootView {
 
-    void requestPermission(String[] permissions);
     void launchActivityForResult(Intent intent, int requestCode);
 
     Observable<Boolean> logoutClicked();

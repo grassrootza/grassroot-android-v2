@@ -4,16 +4,15 @@ import android.content.Intent;
 
 import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.annotations.NonNull;
-import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 import za.org.grassroot2.services.UserDetailsService;
+import za.org.grassroot2.view.GrassrootView;
 import za.org.grassroot2.view.LoginActivity;
 
 /**
  * Created by luke on 2017/08/09.
  */
-public abstract class LoggedInViewPresenterImpl extends ViewPresenterImpl implements LoggedInViewPresenter {
+public abstract class LoggedInViewPresenterImpl<T extends GrassrootView> extends BasePresenter<T> implements LoggedInViewPresenter {
 
     protected final UserDetailsService userDetailsService;
 
@@ -38,12 +37,9 @@ public abstract class LoggedInViewPresenterImpl extends ViewPresenterImpl implem
         setLogoutParams(wipeData)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Consumer<Boolean>() {
-                    @Override
-                    public void accept(@NonNull Boolean aBoolean) throws Exception {
-                        if (aBoolean) {
-                            view.launchActivity(LoginActivity.class, null);
-                        }
+                .subscribe(aBoolean -> {
+                    if (aBoolean) {
+                        view.launchActivity(LoginActivity.class, null);
                     }
                 });
     }

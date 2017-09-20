@@ -1,6 +1,5 @@
 package za.org.grassroot2.services;
 
-import android.provider.MediaStore;
 import android.text.TextUtils;
 
 import java.io.File;
@@ -11,13 +10,6 @@ import java.util.List;
 import javax.inject.Inject;
 
 import io.reactivex.Observable;
-import io.reactivex.ObservableEmitter;
-import io.reactivex.ObservableOnSubscribe;
-import io.reactivex.ObservableSource;
-import io.reactivex.annotations.NonNull;
-import io.reactivex.functions.Consumer;
-import io.reactivex.functions.Function;
-import io.reactivex.functions.Predicate;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
@@ -81,12 +73,7 @@ public class NetworkServiceImpl implements NetworkService {
         switch (entityType) {
             case GROUP:
                 return downloadAllChangedOrNewGroups()
-                        .flatMap(new Function<List<Group>, Observable<List<E>>>() {
-                            @Override
-                            public Observable<List<E>> apply(@NonNull List<Group> groups) throws Exception {
-                                return Observable.just((List<E>) groups);
-                            }
-                        });
+                        .flatMap(groups -> Observable.just((List<E>) groups));
             default:
                 throw new IllegalArgumentException("Error! Trying to download an unimplemented type");
         }
@@ -96,43 +83,24 @@ public class NetworkServiceImpl implements NetworkService {
     public Observable<List<Group>> downloadAllChangedOrNewGroups() {
         return grassrootUserApi
                 .fetchUserGroups(currentUserUid, databaseService.loadExistingObjectsWithLastChangeTime(Group.class))
-                .doOnError(new Consumer<Throwable>() {
-                    @Override
-                    public void accept(@NonNull Throwable throwable) throws Exception {
-                        Timber.e(throwable);
-                    }
+                .doOnError(Timber::e)
+                .filter(listRestResponse -> {
+                    Timber.e("filtering if group list empty, what does map look like? " + listRestResponse.getData());
+                    return listRestResponse.getData() != null && !listRestResponse.getData().isEmpty();
                 })
-                .filter(new Predicate<RestResponse<List<Group>>>() {
-                    @Override
-                    public boolean test(@NonNull RestResponse<List<Group>> listRestResponse) throws Exception {
-                        Timber.e("filtering if group list empty, what does map look like? " + listRestResponse.getData());
-                        return listRestResponse.getData() != null && !listRestResponse.getData().isEmpty();
+                .concatMap(listRestResponse -> {
+                    Timber.e("getting group info for remainder");
+                    List<Group> changedGroups = listRestResponse.getData();
+                    List<String> changedUids = new ArrayList<>();
+                    for (int i = 0; i < changedGroups.size(); i++) {
+                        changedUids.add(changedGroups.get(i).getUid());
                     }
+                    return grassrootUserApi.fetchGroupsInfo(currentUserUid, changedUids);
                 })
-                .concatMap(new Function<RestResponse<List<Group>>, Observable<RestResponse<List<Group>>>>() {
-                    @Override
-                    public Observable<RestResponse<List<Group>>> apply(@NonNull RestResponse<List<Group>> listRestResponse) throws Exception {
-                        Timber.e("getting group info for remainder");
-                        List<Group> changedGroups = listRestResponse.getData();
-                        List<String> changedUids = new ArrayList<>();
-                        for (int i = 0; i < changedGroups.size(); i++) {
-                            changedUids.add(changedGroups.get(i).getUid());
-                        }
-                        return grassrootUserApi.fetchGroupsInfo(currentUserUid, changedUids);
-                    }
-                })
-                .doOnError(new Consumer<Throwable>() {
-                    @Override
-                    public void accept(@NonNull Throwable throwable) throws Exception {
-                        Timber.e(throwable);
-                    }
-                })
-                .flatMap(new Function<RestResponse<List<Group>>, Observable<List<Group>>>() {
-                    @Override
-                    public Observable<List<Group>> apply(@NonNull RestResponse<List<Group>> listRestResponse) throws Exception {
-                        Timber.d("alright, here are the full groups back: " + listRestResponse.getData());
-                        return Observable.just(listRestResponse.getData());
-                    }
+                .doOnError(Timber::e)
+                .flatMap(listRestResponse -> {
+                    Timber.d("alright, here are the full groups back: " + listRestResponse.getData());
+                    return Observable.just(listRestResponse.getData());
                 });
     }
 
@@ -156,12 +124,7 @@ public class NetworkServiceImpl implements NetworkService {
             }
             return !hasPriorEntitiesToUpload ? mainEntityUpload :
                     clearPriorUploads(entity.priorEntitiesToUpload())
-                            .concatMap(new Function<UploadResult, ObservableSource<? extends UploadResult>>() {
-                                @Override
-                                public ObservableSource<? extends UploadResult> apply(@NonNull UploadResult uploadResult) throws Exception {
-                                    return mainEntityUpload;
-                                }
-                            });
+                            .concatMap(uploadResult -> mainEntityUpload);
         }
     }
 
@@ -187,16 +150,13 @@ public class NetworkServiceImpl implements NetworkService {
                 0,
                 alert.getMediaFileKeys());
         return executeUploadForUid(alert, call)
-                .concatMap(new Function<UploadResult, ObservableSource<? extends UploadResult>>() {
-                    @Override
-                    public ObservableSource<? extends UploadResult> apply(@NonNull final UploadResult uploadResult) throws Exception {
-                        if (uploadResult.getServerUid() != null) {
-                            alert.setServerUid(uploadResult.getServerUid());
-                            alert.setUnderReview(true);
-                            databaseService.storeObject(LiveWireAlert.class, alert);
-                        }
-                        return Observable.just(uploadResult);
+                .concatMap(uploadResult -> {
+                    if (uploadResult.getServerUid() != null) {
+                        alert.setServerUid(uploadResult.getServerUid());
+                        alert.setUnderReview(true);
+                        databaseService.storeObject(LiveWireAlert.class, alert);
                     }
+                    return Observable.just(uploadResult);
                 });
     }
 
@@ -208,35 +168,29 @@ public class NetworkServiceImpl implements NetworkService {
                 mediaFile.getMimeType(),
                 getImageFromPath(mediaFile, "file"));
         return executeUploadForUid(mediaFile, call)
-                .concatMap(new Function<UploadResult, ObservableSource<? extends UploadResult>>() {
-                    @Override
-                    public ObservableSource<? extends UploadResult> apply(@NonNull final UploadResult uploadResult) throws Exception {
-                        if (uploadResult.getServerUid() != null) {
-                            mediaFile.setSentUpstream(true);
-                            mediaFile.setServerUid(uploadResult.getServerUid());
-                            databaseService.storeObject(MediaFile.class, mediaFile);
-                        }
-                        return Observable.just(uploadResult);
+                .concatMap(uploadResult -> {
+                    if (uploadResult.getServerUid() != null) {
+                        mediaFile.setSentUpstream(true);
+                        mediaFile.setServerUid(uploadResult.getServerUid());
+                        databaseService.storeObject(MediaFile.class, mediaFile);
                     }
+                    return Observable.just(uploadResult);
                 });
     }
 
     private Observable<UploadResult> executeUploadForUid(final EntityForUpload entity, final Call<RestResponse<String>> networkCall) {
-        return Observable.create(new ObservableOnSubscribe<UploadResult>() {
-            @Override
-            public void subscribe(@NonNull ObservableEmitter<UploadResult> e) throws Exception {
-                try {
-                    Response<RestResponse<String>> response = networkCall.execute();
-                    if (response.isSuccessful()) {
-                        e.onNext(new UploadResult(entity.getType(), entity.getUid(), response.body().getData()));
-                    } else {
-                        e.onNext(new UploadResult(entity.getType(), new ServerErrorException()));
-                    }
-                } catch (IOException t1) {
-                    e.onNext(new UploadResult(entity.getType(), new NetworkUnavailableException()));
-                } catch (NullPointerException t2) {
-                    e.onNext(new UploadResult(entity.getType(), new IllegalArgumentException()));
+        return Observable.create(e -> {
+            try {
+                Response<RestResponse<String>> response = networkCall.execute();
+                if (response.isSuccessful()) {
+                    e.onNext(new UploadResult(entity.getType(), entity.getUid(), response.body().getData()));
+                } else {
+                    e.onNext(new UploadResult(entity.getType(), new ServerErrorException()));
                 }
+            } catch (IOException t1) {
+                e.onNext(new UploadResult(entity.getType(), new NetworkUnavailableException()));
+            } catch (NullPointerException t2) {
+                e.onNext(new UploadResult(entity.getType(), new IllegalArgumentException()));
             }
         });
     }

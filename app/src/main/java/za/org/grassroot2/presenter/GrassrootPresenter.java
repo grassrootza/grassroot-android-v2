@@ -10,6 +10,4 @@ public interface GrassrootPresenter {
     void handleAuthenticationError(AuthenticationInvalidException t);
     void handleServerUnreachableError(ServerUnreachableException t);
 
-    void cleanUpForActivity(); // close realm, etc
-
 }

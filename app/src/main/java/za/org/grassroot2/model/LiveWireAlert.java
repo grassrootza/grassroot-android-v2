@@ -16,7 +16,7 @@ import za.org.grassroot2.model.network.EntityForUpload;
 /**
  * Created by luke on 2017/08/15.
  * Holds the information needed to generate a LiveWire alert
- * todo: add destination information
+ * todo: disposableOnDetach destination information
  */
 
 @DatabaseTable(tableName = "livewire_alerts")

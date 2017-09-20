@@ -1,6 +1,6 @@
-package za.org.grassroot2.dagger.login;
+package za.org.grassroot2.dagger;
 
-import javax.inject.Named;
+import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
@@ -9,6 +9,10 @@ import retrofit2.Converter;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import za.org.grassroot2.BuildConfig;
+import za.org.grassroot2.dagger.NonAuthorized;
+import za.org.grassroot2.dagger.activity.PerActivity;
+import za.org.grassroot2.presenter.LoginPresenter;
+import za.org.grassroot2.services.UserDetailsService;
 import za.org.grassroot2.services.rest.GrassrootAuthApi;
 
 /**
@@ -18,7 +22,7 @@ import za.org.grassroot2.services.rest.GrassrootAuthApi;
 public class NoAuthApiModule {
 
     @Provides
-    @LoginScope
+    @NonAuthorized
     Retrofit provideRetrofit(OkHttpClient okHttpClient,
                              Converter.Factory converter) {
         return new Retrofit.Builder()
@@ -30,8 +34,8 @@ public class NoAuthApiModule {
     }
 
     @Provides
-    @LoginScope
-    GrassrootAuthApi provideGrassrootAuthApi(Retrofit retrofit) {
+    @Singleton
+    GrassrootAuthApi provideGrassrootAuthApi(@NonAuthorized Retrofit retrofit) {
         return retrofit.create(GrassrootAuthApi.class);
     }
 

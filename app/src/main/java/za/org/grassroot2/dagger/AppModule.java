@@ -11,8 +11,12 @@ import dagger.Provides;
 import za.org.grassroot2.database.DatabaseHelper;
 import za.org.grassroot2.database.DatabaseService;
 import za.org.grassroot2.database.DatabaseServiceImpl;
+import za.org.grassroot2.services.MediaService;
+import za.org.grassroot2.services.MediaServiceImpl;
+import za.org.grassroot2.services.NetworkService;
 import za.org.grassroot2.services.UserDetailsService;
 import za.org.grassroot2.services.UserDetailsServiceImpl;
+import za.org.grassroot2.util.StringDescriptionProvider;
 
 /**
  * Created by luke on 2017/08/08.
@@ -48,6 +52,12 @@ public class AppModule {
     @Singleton
     DatabaseHelper provideDatabaseHelper(@ApplicationContext  Context context) {
         return new DatabaseHelper(context);
+    }
+
+    @Provides
+    @Singleton
+    StringDescriptionProvider provideDescriptionProvider(@ApplicationContext Context context) {
+        return new StringDescriptionProvider(context);
     }
 
     @Provides

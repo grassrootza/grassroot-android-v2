@@ -8,17 +8,17 @@ import android.text.InputType;
 import android.text.TextUtils;
 import android.view.inputmethod.EditorInfo;
 
+import org.greenrobot.eventbus.Subscribe;
+
 import javax.inject.Inject;
 
 import butterknife.ButterKnife;
 import io.reactivex.Observable;
 import io.reactivex.annotations.NonNull;
-import io.reactivex.functions.Consumer;
 import timber.log.Timber;
 import za.org.grassroot2.BuildConfig;
 import za.org.grassroot2.GrassrootApplication;
 import za.org.grassroot2.R;
-import za.org.grassroot2.dagger.login.NoAuthApiModule;
 import za.org.grassroot2.model.enums.AuthRecoveryResult;
 import za.org.grassroot2.model.enums.ConnectionResult;
 import za.org.grassroot2.presenter.LoginPresenter;
@@ -41,12 +41,9 @@ public class LoginActivity extends GrassrootActivity implements LoginView {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        ((GrassrootApplication) getApplication())
-                .getAppComponent()
-                .plus(new NoAuthApiModule())
-                .inject(this);
         ButterKnife.bind(this);
-
+        ((GrassrootApplication) getApplication())
+                .getAppComponent().plus(getActivityModule()).inject(this);
         Timber.d("is login presenter injected? " + (loginPresenter != null));
         loginPresenter.attach(LoginActivity.this);
 
@@ -54,34 +51,27 @@ public class LoginActivity extends GrassrootActivity implements LoginView {
                 R.string.login_enter_msisdn,
                 R.string.login_button_register,
                 R.string.button_next);
-        usernameFragment.viewCreated().subscribe(new Consumer<Integer>() {
-            @Override
-            public void accept(@NonNull Integer integer) throws Exception {
-                loginPresenter.onViewCreated();
-                usernameFragment.toggleNextDoneButton(false);
-                usernameFragment.setInputType(InputType.TYPE_CLASS_PHONE);
-                usernameFragment.setImeOptions(EditorInfo.IME_ACTION_NEXT);
-                usernameFragment.focusOnInput();
-            }
+        usernameFragment.viewCreated().subscribe(integer -> {
+            loginPresenter.onViewCreated();
+            usernameFragment.toggleNextDoneButton(false);
+            usernameFragment.setInputType(InputType.TYPE_CLASS_PHONE);
+            usernameFragment.setImeOptions(EditorInfo.IME_ACTION_NEXT);
+            usernameFragment.focusOnInput();
         });
 
         otpFragment = SingleTextInputFragment.newInstance(R.string.login_enter_otp_banner,
                 R.string.login_enter_otp_string,
                 R.string.login_button_register,
                 R.string.button_login);
-        otpFragment.viewCreated().subscribe(new Consumer<Integer>() {
-            @Override
-            public void accept(@NonNull Integer integer) throws Exception {
-                loginPresenter.attachOtp(LoginActivity.this);
-                otpFragment.toggleNextDoneButton(false);
-                otpFragment.toggleBackOtherButton(false);
-                if (!TextUtils.isEmpty(debugOtp)) {
-                    otpFragment.setInputDefault(debugOtp);
-                }
-                usernameFragment.setInputType(InputType.TYPE_CLASS_NUMBER);
-                usernameFragment.setImeOptions(EditorInfo.IME_ACTION_DONE);
-                usernameFragment.focusOnInput();
+        otpFragment.viewCreated().subscribe(integer -> {
+            otpFragment.toggleNextDoneButton(false);
+            otpFragment.toggleBackOtherButton(false);
+            if (!TextUtils.isEmpty(debugOtp)) {
+                otpFragment.setInputDefault(debugOtp);
             }
+            usernameFragment.setInputType(InputType.TYPE_CLASS_NUMBER);
+            usernameFragment.setImeOptions(EditorInfo.IME_ACTION_DONE);
+            usernameFragment.focusOnInput();
         });
 
         currentFragment = usernameFragment;
@@ -91,7 +81,7 @@ public class LoginActivity extends GrassrootActivity implements LoginView {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        cleanUpActivity();
+        loginPresenter.detach(this);
     }
 
     private void setToUsernameEntry() {
@@ -119,23 +109,8 @@ public class LoginActivity extends GrassrootActivity implements LoginView {
     }
 
     @Override
-    public Observable<CharSequence> usernameNext() {
-        return usernameFragment.textInputNextDone();
-    }
-
-    @Override
     public Observable<CharSequence> otpChanged() {
         return otpFragment.textInputChanged();
-    }
-
-    @Override
-    public Observable<CharSequence> otpEntered() {
-        return otpFragment.textInputNextDone();
-    }
-
-    @Override
-    public Observable<CharSequence> newUserClicked() {
-        return otpFragment.textInputBackOther();
     }
 
     @Override
@@ -178,7 +153,11 @@ public class LoginActivity extends GrassrootActivity implements LoginView {
     @Override
     public void cleanUpActivity() {
         loginPresenter.detach(this);
-        loginPresenter.cleanUpForActivity();
+    }
+
+    @Subscribe
+    void singleInput(SingleTextInputFragment.SingleInputTextEvent e) {
+        loginPresenter.processInput(e.value);
     }
 
 }
