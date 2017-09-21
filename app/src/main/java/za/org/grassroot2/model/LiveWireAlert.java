@@ -10,7 +10,7 @@ import java.util.Collections;
 import java.util.Set;
 import java.util.UUID;
 
-import za.org.grassroot2.model.enums.NetworkEntityType;
+import za.org.grassroot2.model.enums.GrassrootEntityType;
 import za.org.grassroot2.model.network.EntityForUpload;
 
 /**
@@ -70,8 +70,8 @@ public class LiveWireAlert implements EntityForUpload {
     }
 
     @Override
-    public NetworkEntityType getType() {
-        return NetworkEntityType.LIVEWIRE_ALERT;
+    public GrassrootEntityType getType() {
+        return GrassrootEntityType.LIVEWIRE_ALERT;
     }
 
     @Override

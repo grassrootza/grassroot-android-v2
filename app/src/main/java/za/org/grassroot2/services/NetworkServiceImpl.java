@@ -1,6 +1,5 @@
 package za.org.grassroot2.services;
 
-import android.provider.MediaStore;
 import android.text.TextUtils;
 
 import java.io.File;
@@ -29,7 +28,7 @@ import za.org.grassroot2.model.Group;
 import za.org.grassroot2.model.LiveWireAlert;
 import za.org.grassroot2.model.MediaFile;
 import za.org.grassroot2.model.UploadResult;
-import za.org.grassroot2.model.enums.NetworkEntityType;
+import za.org.grassroot2.model.enums.GrassrootEntityType;
 import za.org.grassroot2.model.exception.EntityAlreadyUploadingException;
 import za.org.grassroot2.model.exception.NetworkUnavailableException;
 import za.org.grassroot2.model.exception.ServerErrorException;
@@ -75,7 +74,7 @@ public class NetworkServiceImpl implements NetworkService {
     // along the emitter, but I'm struggling to work out what, and defaulting to get work -> get clean
     @SuppressWarnings("unchecked")
     @Override
-    public <E extends EntityForDownload> Observable<List<E>> downloadAllChangedOrNewEntities(final NetworkEntityType entityType, boolean forceFullRefresh) {
+    public <E extends EntityForDownload> Observable<List<E>> downloadAllChangedOrNewEntities(final GrassrootEntityType entityType, boolean forceFullRefresh) {
         setUserUid();
         Timber.e("user UID = ? " + currentUserUid);
         switch (entityType) {

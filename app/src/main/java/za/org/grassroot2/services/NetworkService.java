@@ -5,7 +5,7 @@ import java.util.List;
 import io.reactivex.Observable;
 import za.org.grassroot2.model.Group;
 import za.org.grassroot2.model.UploadResult;
-import za.org.grassroot2.model.enums.NetworkEntityType;
+import za.org.grassroot2.model.enums.GrassrootEntityType;
 import za.org.grassroot2.model.network.EntityForDownload;
 import za.org.grassroot2.model.network.EntityForUpload;
 
@@ -24,7 +24,7 @@ public interface NetworkService {
      * @param <E> The dynamic type
      * @return An observable that emits each changed or new entity
      */
-    <E extends EntityForDownload> Observable<List<E>> downloadAllChangedOrNewEntities(NetworkEntityType entityType, boolean forceFullRefresh);
+    <E extends EntityForDownload> Observable<List<E>> downloadAllChangedOrNewEntities(GrassrootEntityType entityType, boolean forceFullRefresh);
     Observable<List<Group>> downloadAllChangedOrNewGroups();
 
 }

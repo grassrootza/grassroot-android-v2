@@ -4,7 +4,7 @@ import com.google.gson.annotations.SerializedName;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
-import za.org.grassroot2.model.enums.NetworkEntityType;
+import za.org.grassroot2.model.enums.GrassrootEntityType;
 import za.org.grassroot2.model.network.EntityForDownload;
 
 @DatabaseTable(tableName = "groups")
@@ -57,8 +57,8 @@ public class Group implements EntityForDownload, SelectableItem {
     }
 
     @Override
-    public NetworkEntityType getType() {
-        return NetworkEntityType.GROUP;
+    public GrassrootEntityType getType() {
+        return GrassrootEntityType.GROUP;
     }
 
     public String getUid() {

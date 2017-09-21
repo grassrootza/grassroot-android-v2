@@ -18,14 +18,12 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import io.reactivex.annotations.NonNull;
-import io.reactivex.functions.Consumer;
 import timber.log.Timber;
 import za.org.grassroot2.GrassrootApplication;
 import za.org.grassroot2.dagger.user.ApiModule;
 import za.org.grassroot2.database.DatabaseService;
 import za.org.grassroot2.model.Group;
-import za.org.grassroot2.model.enums.NetworkEntityType;
+import za.org.grassroot2.model.enums.GrassrootEntityType;
 import za.org.grassroot2.model.exception.ServerUnreachableException;
 import za.org.grassroot2.model.network.EntityForDownload;
 import za.org.grassroot2.services.NetworkService;
@@ -76,7 +74,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
     @Override
     public void onPerformSync(Account account, Bundle extras, String authority, ContentProviderClient provider, final SyncResult syncResult) {
         Timber.d("Starting synchronization...");
-        networkService.downloadAllChangedOrNewEntities(NetworkEntityType.GROUP, false)
+        networkService.downloadAllChangedOrNewEntities(GrassrootEntityType.GROUP, false)
             .subscribe(entityForDownloads ->
                 databaseService.copyOrUpdateListOfEntities(Group.class, convert(entityForDownloads)),
                     throwable -> {

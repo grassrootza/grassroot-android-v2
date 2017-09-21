@@ -6,7 +6,7 @@ import com.j256.ormlite.table.DatabaseTable;
 import java.util.ArrayList;
 import java.util.UUID;
 
-import za.org.grassroot2.model.enums.NetworkEntityType;
+import za.org.grassroot2.model.enums.GrassrootEntityType;
 import za.org.grassroot2.model.network.EntityForUpload;
 
 /**
@@ -133,8 +133,8 @@ public class MediaFile implements EntityForUpload {
     }
 
     @Override
-    public NetworkEntityType getType() {
-        return NetworkEntityType.MEDIA_FILE;
+    public GrassrootEntityType getType() {
+        return GrassrootEntityType.MEDIA_FILE;
     }
 
     @Override
