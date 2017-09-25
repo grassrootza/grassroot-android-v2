@@ -8,7 +8,7 @@ import za.org.grassroot2.model.exception.AuthenticationInvalidException;
 import za.org.grassroot2.model.exception.NetworkUnavailableException;
 import za.org.grassroot2.model.exception.ServerUnreachableException;
 import za.org.grassroot2.presenter.GrassrootPresenter;
-import za.org.grassroot2.presenter.ViewPresenterImpl;
+import za.org.grassroot2.presenter.BasePresenter;
 
 /**
  * TODO: work out if can do this better via an operator
@@ -18,7 +18,7 @@ public class RestSubscriber<T> implements Observer<T> {
     private GrassrootPresenter presenter;
     private SingleObserver<T> child;
 
-    public RestSubscriber(ViewPresenterImpl presenter, SingleObserver<T> child) {
+    public RestSubscriber(BasePresenter presenter, SingleObserver<T> child) {
         this.presenter = presenter;
         this.child = child;
     }

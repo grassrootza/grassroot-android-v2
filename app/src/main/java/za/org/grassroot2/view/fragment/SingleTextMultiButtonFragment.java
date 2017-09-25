@@ -1,33 +1,38 @@
 package za.org.grassroot2.view.fragment;
 
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
+import org.greenrobot.eventbus.EventBus;
+
 import java.util.ArrayList;
 
+import javax.inject.Inject;
+
 import butterknife.BindView;
-import butterknife.ButterKnife;
 import io.reactivex.Observable;
-import io.reactivex.ObservableSource;
-import io.reactivex.annotations.NonNull;
-import io.reactivex.functions.Function;
 import timber.log.Timber;
+import za.org.grassroot2.GrassrootApplication;
 import za.org.grassroot2.R;
+import za.org.grassroot2.dagger.user.ApiModule;
 import za.org.grassroot2.model.dto.BtnGrouping;
 import za.org.grassroot2.model.dto.BtnParameters;
 import za.org.grassroot2.model.dto.BtnReturnBundle;
+import za.org.grassroot2.presenter.fragment.SingleTextMultiButtonPresenter;
 import za.org.grassroot2.rxbinding.RxView;
 import za.org.grassroot2.rxbinding.RxViewUtils;
-import za.org.grassroot2.view.SingleTextMultiButtonView;
+import za.org.grassroot2.view.activity.GrassrootActivity;
+import za.org.grassroot2.view.event.MoveNextWithInputEvent;
 
 /**
  * Created by luke on 2017/08/10.
  */
-public class SingleTextMultiButtonFragment extends TextInputFragment implements SingleTextMultiButtonView {
+public class SingleTextMultiButtonFragment extends TextInputFragment implements SingleTextMultiButtonPresenter.SingleTextMultiButtonView {
 
     private static final String BUTTON_GROUP = "BUTTON_GROUP";
     private static final String SHOW_EXPLANATION = "SHOW_EXPLANATION";
@@ -41,6 +46,8 @@ public class SingleTextMultiButtonFragment extends TextInputFragment implements 
     @BindView(R.id.sub_button_1) Button subButton1;
     @BindView(R.id.sub_button_2) Button subButton2;
     @BindView(R.id.sub_button_3) Button subButton3;
+
+    @Inject SingleTextMultiButtonPresenter presenter;
 
     private Button[] subButtons;
     private ArrayList<Observable<BtnReturnBundle>> subButtonReturns;
@@ -66,17 +73,20 @@ public class SingleTextMultiButtonFragment extends TextInputFragment implements 
             btnGrouping = getArguments().getParcelable(BUTTON_GROUP);
             showExplanation = getArguments().getBoolean(SHOW_EXPLANATION, false);
         }
-        // leave this down here so it executes right at the end
-        lifecyclePublisher.onNext(ACTION_FRAGMENT_CREATED);
+    }
+
+    @Override
+    protected void onInject(GrassrootApplication application) {
+        GrassrootActivity activity = (GrassrootActivity) getActivity();
+        activity.getAppComponent().plus(activity.getActivityModule()).inject(this);
+        presenter.attach(this);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.fragment_text_input_multi_button, container, false);
-        unbinder = ButterKnife.bind(this, v);
+        View v = super.onCreateView(inflater, container, savedInstanceState);
         header.setText(headerTextRes);
-
         if (explanation != null) {
             if (showExplanation) {
                 explanation.setText(explanTextRes);
@@ -86,8 +96,7 @@ public class SingleTextMultiButtonFragment extends TextInputFragment implements 
         }
 
         if (btnGrouping != null) {
-            subButtons = new Button[] { subButton1, subButton2, subButton3 };
-            setButtonViewToFirstRow();
+            setupButtons();
         } else {
             subtitleButtons.setVisibility(View.GONE);
         }
@@ -95,6 +104,17 @@ public class SingleTextMultiButtonFragment extends TextInputFragment implements 
         Timber.e("calling action fragment view created");
         lifecyclePublisher.onNext(ACTION_FRAGMENT_VIEW_CREATED);
         return v;
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        presenter.onViewCreated();
+    }
+
+    @Override
+    public int getLayoutResourceId() {
+        return R.layout.fragment_text_input_multi_button;
     }
 
     private void setButtonViewToFirstRow() {
@@ -114,49 +134,21 @@ public class SingleTextMultiButtonFragment extends TextInputFragment implements 
             subButtons[index].setText(btnInfo.getLabelRes());
             final int btnActionCode = btnInfo.getActionCode();
             Observable<BtnReturnBundle> observable = RxView.clicks(subButtons[index])
-                    .map(new Function<Object, BtnReturnBundle>() {
-                        @Override
-                        public BtnReturnBundle apply(@NonNull Object o) throws Exception {
-                            return new BtnReturnBundle(inputText.getText(), btnActionCode);
-                        }
-                    });
+                    .map(o -> new BtnReturnBundle(inputText.getText(), btnActionCode));
             Timber.d("added observable to sub-buttons");
             subButtonReturns.add(observable);
         }
     }
 
     @Override
-    public Observable<BtnReturnBundle> mainTextNext() {
-        Timber.e("returning main text next");
-        return RxViewUtils.nullSafeTextViewNextDone(mainTextView)
-                .concatMap(new Function<CharSequence, ObservableSource<? extends BtnReturnBundle>>() {
-                    @Override
-                    public ObservableSource<? extends BtnReturnBundle> apply(@NonNull CharSequence sequence) throws Exception {
-                        Timber.e("main text next clicked");
-                        return Observable.just(new BtnReturnBundle(sequence, MAIN_TEXT_NEXT_ACTION));
-                    }
-                });
+    public Observable<CharSequence> inputTextDone() {
+        return RxViewUtils.nullSafeTextViewNextDone(mainTextView);
     }
 
     @Override
-    public Observable<CharSequence> bigButtonClicked() {
-        return null;
+    public void setupButtons() {
+        subButtons = new Button[] { subButton1, subButton2, subButton3 };
+        setButtonViewToFirstRow();
     }
 
-    // todo: check behaviour on back pressed -- looks like observables are being duplicated
-    @Override
-    public Observable<BtnReturnBundle> subtitleButtonClicked() {
-        if (subButtonReturns != null) {
-            Timber.d("returning merge ... how many observables? " + subButtonReturns.size());
-            return Observable.merge(subButtonReturns); // maybe
-        } else {
-            Timber.e("well, should not have this ...");
-            return Observable.empty();
-        }
-    }
-
-    @Override
-    public void scrollToPageOfSubtitles(int page) {
-
-    }
 }

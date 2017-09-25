@@ -8,7 +8,6 @@ import javax.inject.Inject;
 
 import timber.log.Timber;
 import za.org.grassroot2.GrassrootApplication;
-import za.org.grassroot2.dagger.login.NoAuthApiModule;
 import za.org.grassroot2.services.rest.GrassrootAuthApi;
 
 public class GrassrootAuthService extends Service {
@@ -21,9 +20,7 @@ public class GrassrootAuthService extends Service {
         Timber.e("creating auth service");
 
         ((GrassrootApplication) (getApplicationContext()))
-                .getAppComponent()
-                .plus(new NoAuthApiModule())
-                .inject(this);
+                .getAppComponent().inject(this);
     }
 
     @Inject

@@ -10,22 +10,22 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
+import org.greenrobot.eventbus.EventBus;
+
 import java.util.ArrayList;
 
 import butterknife.BindView;
-import butterknife.ButterKnife;
 import io.reactivex.Observable;
-import io.reactivex.functions.Function;
 import timber.log.Timber;
+import za.org.grassroot2.GrassrootApplication;
 import za.org.grassroot2.R;
 import za.org.grassroot2.model.dto.BtnGrouping;
 import za.org.grassroot2.model.dto.BtnParameters;
 import za.org.grassroot2.model.dto.BtnReturnBundle;
 import za.org.grassroot2.rxbinding.RxView;
-import za.org.grassroot2.view.LargeMsgWithButtonsView;
 
 // todo : abstract 'with button row' maybe (although, some subtle differences, so might be overdoing ...)
-public class LargeMsgWithButtonsFragment extends GrassrootFragment implements LargeMsgWithButtonsView {
+public class LargeMsgWithButtonsFragment extends GrassrootFragment {
     private static final String HEADER_TEXT = "header_text";
     private static final String MESSAGE_TEXT = "msg_text";
     private static final String SHOW_BUTTONS = "show_buttons";
@@ -87,15 +87,16 @@ public class LargeMsgWithButtonsFragment extends GrassrootFragment implements La
             showSkip = getArguments().getBoolean(SHOW_SKIP);
             btnGrouping = showButtons ? (BtnGrouping) getArguments().getParcelable(BUTTON_GROUP) : null;
         }
-        lifecyclePublisher.onNext(ACTION_FRAGMENT_CREATED);
+    }
+
+    @Override
+    protected void onInject(GrassrootApplication application) {
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.fragment_large_msg_with_buttons, container, false);
-        unbinder = ButterKnife.bind(this, v);
-
+        View v = super.onCreateView(inflater, container, savedInstanceState);
         headerView.setText(headerTextRes);
         messageView.setText(messageText);
         buttonsRow.setVisibility(showButtons ? View.VISIBLE : View.GONE);
@@ -111,6 +112,11 @@ public class LargeMsgWithButtonsFragment extends GrassrootFragment implements La
         return v;
     }
 
+    @Override
+    public int getLayoutResourceId() {
+        return R.layout.fragment_large_msg_with_buttons;
+    }
+
     private void setUpButtons() {
         Timber.d("setting up buttons");
         btnObservables = new ArrayList<>();
@@ -123,27 +129,31 @@ public class LargeMsgWithButtonsFragment extends GrassrootFragment implements La
         }
     }
 
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        disposables.add(Observable.merge(btnObservables).subscribe(btnReturnBundle -> {
+            EventBus.getDefault().post(new BtnClickEvent(btnReturnBundle));
+        }, Throwable::printStackTrace));
+        disposables.add(RxView.clicks(skipButton).subscribe(o -> {
+            EventBus.getDefault().post(new BtnClickEvent(null));
+        }, Throwable::printStackTrace));
+    }
+
     private void setupSubButtonView(int index, final BtnParameters btnInfo) {
         buttons[index].setText(btnInfo.getLabelRes());
         final int btnActionCode = btnInfo.getActionCode();
         Observable<BtnReturnBundle> observable = RxView.clicks(buttons[index])
-                .map(new Function<Object, BtnReturnBundle>() {
-                    @Override
-                    public BtnReturnBundle apply(@io.reactivex.annotations.NonNull Object o) throws Exception {
-                        return new BtnReturnBundle("", btnActionCode);
-                    }
-                });
+                .map(o -> new BtnReturnBundle("", btnActionCode));
         Timber.d("added observable to sub-buttons");
         btnObservables.add(observable);
     }
 
-    // todo : handle this causing errors if no buttons
-    public Observable<BtnReturnBundle> buttonClicked() {
-        return Observable.merge(btnObservables);
-    }
+    public static class BtnClickEvent {
+        public final BtnReturnBundle value;
 
-    public Observable<Object> skipClicked() {
-        return RxView.clicks(skipButton);
+        public BtnClickEvent(BtnReturnBundle grouping) {
+            value = grouping;
+        }
     }
-
 }

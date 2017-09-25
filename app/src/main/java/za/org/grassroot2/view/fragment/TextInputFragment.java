@@ -21,7 +21,7 @@ import za.org.grassroot2.view.SingleTextView;
  * Created by luke on 2017/08/10.
  */
 
-public class TextInputFragment extends GrassrootFragment implements SingleTextView {
+public abstract class TextInputFragment extends GrassrootFragment implements SingleTextView {
 
     public static final int MAIN_TEXT_NEXT_ACTION = 100;
 
@@ -85,19 +85,6 @@ public class TextInputFragment extends GrassrootFragment implements SingleTextVi
         if (inputText != null) {
             inputText.requestFocus();
         }
-    }
-
-    @Override
-    public Observable<BtnReturnBundle> mainTextNext() {
-        Timber.e("returning main text next");
-        return RxViewUtils.nullSafeTextViewNextDone(inputText)
-                .concatMap(new Function<CharSequence, ObservableSource<? extends BtnReturnBundle>>() {
-                    @Override
-                    public ObservableSource<? extends BtnReturnBundle> apply(@NonNull CharSequence sequence) throws Exception {
-                        Timber.e("main text next clicked");
-                        return Observable.just(new BtnReturnBundle(sequence, MAIN_TEXT_NEXT_ACTION));
-                    }
-                });
     }
 
 }

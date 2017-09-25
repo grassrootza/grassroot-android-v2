@@ -11,6 +11,7 @@ import retrofit2.Converter;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import za.org.grassroot2.BuildConfig;
+import za.org.grassroot2.dagger.Authorized;
 import za.org.grassroot2.database.DatabaseService;
 import za.org.grassroot2.services.NetworkService;
 import za.org.grassroot2.services.NetworkServiceImpl;
@@ -25,13 +26,12 @@ import za.org.grassroot2.services.rest.GrassrootUserApi;
 public class ApiModule {
 
     @Provides
-    @UserScope
     AddTokenInterceptor provideTokenInterceptor(AccountManager accountManager) {
         return new AddTokenInterceptor(accountManager);
     }
 
     @Provides
-    @UserScope
+    @Authorized
     Retrofit provideRetrofit(OkHttpClient okHttpClient,
                              Converter.Factory converter,
                              AddTokenInterceptor tokenInterceptor) {
@@ -44,13 +44,11 @@ public class ApiModule {
     }
 
     @Provides
-    @UserScope
-    GrassrootUserApi provideGrassrootRestService(Retrofit retrofit) {
+    GrassrootUserApi provideGrassrootRestService(@Authorized Retrofit retrofit) {
         return retrofit.create(GrassrootUserApi.class);
     }
 
     @Provides
-    @UserScope
     NetworkService provideNetworkService(UserDetailsService userDetailsService,
                                          GrassrootUserApi grassrootUserApi,
                                          DatabaseService realmService) {

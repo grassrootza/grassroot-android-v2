@@ -20,7 +20,6 @@ import javax.inject.Inject;
 
 import timber.log.Timber;
 import za.org.grassroot2.GrassrootApplication;
-import za.org.grassroot2.dagger.user.ApiModule;
 import za.org.grassroot2.database.DatabaseService;
 import za.org.grassroot2.model.Group;
 import za.org.grassroot2.model.enums.GrassrootEntityType;
@@ -46,10 +45,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 
     private void initDagger() {
         Timber.d("created sync adapter ...");
-        ((GrassrootApplication) (getContext().getApplicationContext()))
-                .getAppComponent()
-                .plus(new ApiModule())
-                .inject(this);
+        ((GrassrootApplication) (getContext().getApplicationContext())).getAppComponent().inject(this);
     }
 
     @Inject

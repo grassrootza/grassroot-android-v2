@@ -1,43 +1,32 @@
 package za.org.grassroot2.presenter;
 
-import android.support.annotation.CallSuper;
 import android.util.Log;
 
 import io.reactivex.disposables.CompositeDisposable;
-import za.org.grassroot2.R;
+import io.reactivex.disposables.Disposable;
 import za.org.grassroot2.model.exception.AuthenticationInvalidException;
-import za.org.grassroot2.model.exception.LifecycleOutOfSyncException;
 import za.org.grassroot2.model.exception.NetworkUnavailableException;
 import za.org.grassroot2.model.exception.ServerUnreachableException;
 import za.org.grassroot2.view.GrassrootView;
 
-/**
- * Created by luke on 2017/08/08.
- * todo: make sure the detached calls are happening so the subscriptions are being disposed
- */
 
-public abstract class ViewPresenterImpl implements ViewPresenter {
+public abstract class BasePresenter<T extends GrassrootView> implements GrassrootPresenter {
 
-    CompositeDisposable subscriptions;
-    protected GrassrootView view;
+    protected T view;
+    private CompositeDisposable disposables = new CompositeDisposable();
 
-    @CallSuper
-    public void attach(GrassrootView view) {
+    public void attach(T view) {
         this.view = view;
-        this.subscriptions = new CompositeDisposable();
     }
 
-    @CallSuper
-    public void detach(GrassrootView view) {
+    public void detach(T view) {
+        disposables.clear();
         this.view = null;
     }
 
-    @CallSuper
-    protected void onViewDetached() {
-        try {
-            subscriptions.dispose();
-        } catch (NullPointerException e) {
-            handleGenericKnownException(new LifecycleOutOfSyncException());
+    protected void disposableOnDetach(Disposable d) {
+        if (!disposables.isDisposed()) {
+            disposables.add(d);
         }
     }
 
@@ -57,19 +46,18 @@ public abstract class ViewPresenterImpl implements ViewPresenter {
     public void handleServerUnreachableError(ServerUnreachableException e) {
         Log.e("SERVER", e.toString());
         view.closeProgressBar();
-        view.showErrorToast(R.string.error_server_unreachable);
         view.closeKeyboard();
+//        view.showErrorToast(R.string.error_server_unreachable);
     }
 
     // these two should only be called internally, to enforce design
     void handleGenericKnownException(Throwable t) {
         Log.e("ERROR", t.toString());
-        // add toast & exit to main
     }
 
     void handleUnknownError(Exception e) {
         e.printStackTrace();
-        view.showErrorToast(R.string.error_unknown_generic);
+//        view.showErrorToast(R.string.error_unknown_generic);
     }
 
 }

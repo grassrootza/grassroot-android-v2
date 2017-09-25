@@ -16,6 +16,8 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import org.greenrobot.eventbus.EventBus;
+
 import javax.inject.Inject;
 
 import butterknife.BindView;
@@ -24,6 +26,8 @@ import io.reactivex.Observable;
 import timber.log.Timber;
 import za.org.grassroot2.GrassrootApplication;
 import za.org.grassroot2.R;
+import za.org.grassroot2.dagger.AppComponent;
+import za.org.grassroot2.dagger.activity.ActivityModule;
 import za.org.grassroot2.model.enums.AuthRecoveryResult;
 import za.org.grassroot2.model.enums.ConnectionResult;
 import za.org.grassroot2.services.account.AuthConstants;
@@ -45,9 +49,7 @@ public abstract class GrassrootActivity extends AppCompatActivity implements Gra
     protected void onCreate(Bundle icicle) {
         super.onCreate(icicle);
 //        Debug.startMethodTracing("base_activity");
-        ((GrassrootApplication) getApplication())
-                .getAppComponent()
-                .inject(this);
+        ((GrassrootApplication) getApplication()).getAppComponent().plus(getActivityModule()).inject(this);
 
         authResponse = getIntent().getParcelableExtra(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE);
         if (authResponse != null) {
@@ -62,6 +64,18 @@ public abstract class GrassrootActivity extends AppCompatActivity implements Gra
             finish();
         }
         Debug.stopMethodTracing();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        EventBus.getDefault().unregister(this);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        EventBus.getDefault().register(this);
     }
 
     private boolean needsToLoginOrRegister() {
@@ -165,6 +179,14 @@ public abstract class GrassrootActivity extends AppCompatActivity implements Gra
         if (progressBar != null) {
             progressBar.setVisibility(shown ? View.VISIBLE : View.GONE);
         }
+    }
+
+    public ActivityModule getActivityModule() {
+        return new ActivityModule(this);
+    }
+
+    public AppComponent getAppComponent() {
+        return ((GrassrootApplication)getApplication()).getAppComponent();
     }
 
 }
