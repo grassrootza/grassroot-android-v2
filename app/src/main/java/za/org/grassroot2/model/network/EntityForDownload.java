@@ -8,7 +8,7 @@ import java.util.UUID;
 
 public interface EntityForDownload extends NetworkEntity {
 
-    String getUid();
+    UUID getUid();
     long getLastTimeChangedServer();
 
 }

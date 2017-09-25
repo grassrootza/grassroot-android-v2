@@ -23,7 +23,7 @@ import za.org.grassroot2.R;
 import za.org.grassroot2.dagger.ApplicationContext;
 import za.org.grassroot2.database.DatabaseService;
 import za.org.grassroot2.model.Group;
-import za.org.grassroot2.model.LiveWireAlert;
+import za.org.grassroot2.model.alert.LiveWireAlert;
 import za.org.grassroot2.model.MediaFile;
 import za.org.grassroot2.model.dto.BtnGrouping;
 import za.org.grassroot2.model.dto.BtnParameters;

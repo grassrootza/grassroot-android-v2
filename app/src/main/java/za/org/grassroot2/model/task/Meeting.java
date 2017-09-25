@@ -4,6 +4,7 @@ import android.text.TextUtils;
 
 import com.google.gson.annotations.SerializedName;
 import com.j256.ormlite.field.DatabaseField;
+import com.j256.ormlite.table.DatabaseTable;
 
 import java.util.Date;
 import java.util.UUID;
@@ -14,7 +15,7 @@ import za.org.grassroot2.model.enums.GrassrootEntityType;
 /**
  * Created by luke on 2017/09/20.
  */
-
+@DatabaseTable(tableName = "meetings")
 public class Meeting implements Task {
 
     public static final String ATTENDING = "RSVP_YES";
@@ -54,9 +55,15 @@ public class Meeting implements Task {
     @DatabaseField(foreign = true)
     private MediaFile mediaFile;
 
+    @DatabaseField
+    private boolean userPartOf = true;
+
+    @DatabaseField
+    private boolean publicMtg = false;
+
     @Override
-    public String getUid() {
-        return uid.toString();
+    public UUID getUid() {
+        return uid;
     }
 
     @Override
@@ -108,5 +115,15 @@ public class Meeting implements Task {
     @Override
     public boolean hasMedia() {
         return mediaFile != null;
+    }
+
+    @Override
+    public boolean isUserPartOf() {
+        return userPartOf;
+    }
+
+    @Override
+    public boolean isPublic() {
+        return publicMtg;
     }
 }

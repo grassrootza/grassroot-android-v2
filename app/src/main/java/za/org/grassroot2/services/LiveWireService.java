@@ -2,7 +2,7 @@ package za.org.grassroot2.services;
 
 import io.reactivex.Observable;
 import io.reactivex.Single;
-import za.org.grassroot2.model.LiveWireAlert;
+import za.org.grassroot2.model.alert.LiveWireAlert;
 
 /**
  * Created by luke on 2017/08/15.

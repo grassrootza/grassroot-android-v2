@@ -60,8 +60,8 @@ public class MediaFile implements EntityForUpload {
         this.mediaFunction = mediaFunction;
     }
 
-    public String getUid() {
-        return uid.toString();
+    public UUID getUid() {
+        return uid;
     }
 
     public String getServerUid() {

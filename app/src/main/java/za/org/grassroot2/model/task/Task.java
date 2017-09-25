@@ -22,4 +22,7 @@ public interface Task extends EntityForDownload, SelectableItem {
     boolean hasResponded();
     boolean hasMedia();
 
+    boolean isUserPartOf();
+    boolean isPublic();
+
 }

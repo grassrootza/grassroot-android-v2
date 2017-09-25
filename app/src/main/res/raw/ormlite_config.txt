@@ -1,6 +1,47 @@
 #
-# generated on 2017/09/19 03:55:37
+# generated on 2017/09/25 06:50:57
 #
+# --table-start--
+dataClass=za.org.grassroot2.model.MediaFile
+tableName=media_files
+# --table-fields-start--
+# --field-start--
+fieldName=uid
+generatedId=true
+# --field-end--
+# --field-start--
+fieldName=serverUid
+# --field-end--
+# --field-start--
+fieldName=absolutePath
+# --field-end--
+# --field-start--
+fieldName=contentProviderPath
+# --field-end--
+# --field-start--
+fieldName=mimeType
+# --field-end--
+# --field-start--
+fieldName=readyToUpload
+# --field-end--
+# --field-start--
+fieldName=compressOnSend
+# --field-end--
+# --field-start--
+fieldName=sendingUpstream
+# --field-end--
+# --field-start--
+fieldName=sentUpstream
+# --field-end--
+# --field-start--
+fieldName=mediaFunction
+# --field-end--
+# --field-start--
+fieldName=upstreamBucket
+# --field-end--
+# --table-fields-end--
+# --table-end--
+#################################
 # --table-start--
 dataClass=za.org.grassroot2.model.Group
 tableName=groups
@@ -34,7 +75,81 @@ fieldName=permissions
 # --table-end--
 #################################
 # --table-start--
-dataClass=za.org.grassroot2.model.LiveWireAlert
+dataClass=za.org.grassroot2.model.PublicGroup
+tableName=public_groups
+# --table-fields-start--
+# --field-start--
+fieldName=uid
+id=true
+# --field-end--
+# --field-start--
+fieldName=name
+canBeNull=false
+# --field-end--
+# --field-start--
+fieldName=memberCount
+canBeNull=false
+# --field-end--
+# --table-fields-end--
+# --table-end--
+#################################
+# --table-start--
+dataClass=za.org.grassroot2.model.request.GroupJoinRequest
+tableName=group_join_request
+# --table-fields-start--
+# --field-start--
+fieldName=uid
+id=true
+# --field-end--
+# --field-start--
+fieldName=groupUid
+canBeNull=false
+# --field-end--
+# --field-start--
+fieldName=requestorName
+canBeNull=false
+# --field-end--
+# --field-start--
+fieldName=status
+canBeNull=false
+# --field-end--
+# --field-start--
+fieldName=description
+# --field-end--
+# --field-start--
+fieldName=createdDateTimeMillis
+# --field-end--
+# --field-start--
+fieldName=processedDateTimeMillis
+# --field-end--
+# --field-start--
+fieldName=lastTimeChangedServerMillis
+# --field-end--
+# --table-fields-end--
+# --table-end--
+#################################
+# --table-start--
+dataClass=za.org.grassroot2.model.UserProfile
+tableName=user_profiles
+# --table-fields-start--
+# --field-start--
+fieldName=uid
+id=true
+# --field-end--
+# --field-start--
+fieldName=msisdn
+# --field-end--
+# --field-start--
+fieldName=displayName
+# --field-end--
+# --field-start--
+fieldName=systemRole
+# --field-end--
+# --table-fields-end--
+# --table-end--
+#################################
+# --table-start--
+dataClass=za.org.grassroot2.model.alert.LiveWireAlert
 tableName=livewire_alerts
 # --table-fields-start--
 # --field-start--
@@ -79,62 +194,195 @@ fieldName=released
 # --table-end--
 #################################
 # --table-start--
-dataClass=za.org.grassroot2.model.MediaFile
-tableName=media_files
-# --table-fields-start--
-# --field-start--
-fieldName=uid
-generatedId=true
-# --field-end--
-# --field-start--
-fieldName=serverUid
-# --field-end--
-# --field-start--
-fieldName=absolutePath
-# --field-end--
-# --field-start--
-fieldName=contentProviderPath
-# --field-end--
-# --field-start--
-fieldName=mimeType
-# --field-end--
-# --field-start--
-fieldName=readyToUpload
-# --field-end--
-# --field-start--
-fieldName=compressOnSend
-# --field-end--
-# --field-start--
-fieldName=sendingUpstream
-# --field-end--
-# --field-start--
-fieldName=sentUpstream
-# --field-end--
-# --field-start--
-fieldName=mediaFunction
-# --field-end--
-# --field-start--
-fieldName=upstreamBucket
-# --field-end--
-# --table-fields-end--
-# --table-end--
-#################################
-# --table-start--
-dataClass=za.org.grassroot2.model.UserProfile
-tableName=user_profiles
+dataClass=za.org.grassroot2.model.alert.SafetyAlert
+tableName=safety_alerts
 # --table-fields-start--
 # --field-start--
 fieldName=uid
 id=true
 # --field-end--
 # --field-start--
-fieldName=msisdn
+fieldName=createdDateTimeMillis
+canBeNull=false
 # --field-end--
 # --field-start--
-fieldName=displayName
+fieldName=lastTimeChangedServerMillis
 # --field-end--
 # --field-start--
-fieldName=systemRole
+fieldName=callingUserName
+canBeNull=false
+# --field-end--
+# --field-start--
+fieldName=description
+# --field-end--
+# --field-start--
+fieldName=responded
+# --field-end--
+# --field-start--
+fieldName=falseAlarm
+# --field-end--
+# --table-fields-end--
+# --table-end--
+#################################
+# --table-start--
+dataClass=za.org.grassroot2.model.task.Vote
+tableName=votes
+# --table-fields-start--
+# --field-start--
+fieldName=uid
+id=true
+# --field-end--
+# --field-start--
+fieldName=parentUid
+# --field-end--
+# --field-start--
+fieldName=parentEntityType
+# --field-end--
+# --field-start--
+fieldName=subject
+canBeNull=false
+# --field-end--
+# --field-start--
+fieldName=description
+# --field-end--
+# --field-start--
+fieldName=callerName
+canBeNull=false
+# --field-end--
+# --field-start--
+fieldName=createdDateTimeMillis
+# --field-end--
+# --field-start--
+fieldName=closingDateTimeMillis
+# --field-end--
+# --field-start--
+fieldName=lastChangeTimeServerMillis
+# --field-end--
+# --field-start--
+fieldName=voteOptions
+# --field-end--
+# --field-start--
+fieldName=voteResponse
+# --field-end--
+# --field-start--
+fieldName=mediaFile
+foreign=true
+# --field-end--
+# --table-fields-end--
+# --table-end--
+#################################
+# --table-start--
+dataClass=za.org.grassroot2.model.task.Todo
+tableName=todos
+# --table-fields-start--
+# --field-start--
+fieldName=uid
+id=true
+# --field-end--
+# --field-start--
+fieldName=parentUid
+# --field-end--
+# --field-start--
+fieldName=parentEntityType
+# --field-end--
+# --field-start--
+fieldName=summary
+canBeNull=false
+# --field-end--
+# --field-start--
+fieldName=description
+# --field-end--
+# --field-start--
+fieldName=recorderName
+canBeNull=false
+# --field-end--
+# --field-start--
+fieldName=needsConfirmation
+# --field-end--
+# --field-start--
+fieldName=isConfirmed
+# --field-end--
+# --field-start--
+fieldName=createdDateTimeMillis
+# --field-end--
+# --field-start--
+fieldName=deadlineDateTimeMillis
+# --field-end--
+# --field-start--
+fieldName=lastChangeTimeServerMillis
+# --field-end--
+# --field-start--
+fieldName=assignedMembers
+# --field-end--
+# --field-start--
+fieldName=confirmingMembers
+# --field-end--
+# --field-start--
+fieldName=hasConfirmed
+# --field-end--
+# --field-start--
+fieldName=mediaFile
+foreign=true
+# --field-end--
+# --field-start--
+fieldName=userPartOf
+# --field-end--
+# --field-start--
+fieldName=publicTodo
+# --field-end--
+# --table-fields-end--
+# --table-end--
+#################################
+# --table-start--
+dataClass=za.org.grassroot2.model.task.Meeting
+tableName=meetings
+# --table-fields-start--
+# --field-start--
+fieldName=uid
+id=true
+# --field-end--
+# --field-start--
+fieldName=parentUid
+# --field-end--
+# --field-start--
+fieldName=parentEntityType
+# --field-end--
+# --field-start--
+fieldName=subject
+canBeNull=false
+# --field-end--
+# --field-start--
+fieldName=description
+# --field-end--
+# --field-start--
+fieldName=callerName
+canBeNull=false
+# --field-end--
+# --field-start--
+fieldName=locationDescription
+canBeNull=false
+# --field-end--
+# --field-start--
+fieldName=createdDateTimeMillis
+# --field-end--
+# --field-start--
+fieldName=meetingDateTimeMillis
+# --field-end--
+# --field-start--
+fieldName=lastChangeTimeServerMillis
+# --field-end--
+# --field-start--
+fieldName=response
+# --field-end--
+# --field-start--
+fieldName=mediaFile
+foreign=true
+# --field-end--
+# --field-start--
+fieldName=userPartOf
+# --field-end--
+# --field-start--
+fieldName=publicMtg
 # --field-end--
 # --table-fields-end--
 # --table-end--

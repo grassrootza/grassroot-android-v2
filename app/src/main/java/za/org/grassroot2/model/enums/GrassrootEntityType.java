@@ -9,10 +9,17 @@ package za.org.grassroot2.model.enums;
 public enum GrassrootEntityType {
 
     GROUP,
-    LIVEWIRE_ALERT,
-    MEDIA_FILE,
+    PUBLIC_GROUP,
+
     MEETING,
     VOTE,
-    TODO
+    TODO,
+
+    GROUP_JOIN_REQUEST,
+
+    LIVEWIRE_ALERT,
+    SAFETY_ALERT,
+
+    MEDIA_FILE
 
 }

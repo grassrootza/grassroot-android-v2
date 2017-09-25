@@ -2,6 +2,7 @@ package za.org.grassroot2.model.task;
 
 import com.google.gson.annotations.SerializedName;
 import com.j256.ormlite.field.DatabaseField;
+import com.j256.ormlite.table.DatabaseTable;
 
 import java.util.Date;
 import java.util.List;
@@ -13,7 +14,7 @@ import za.org.grassroot2.model.enums.GrassrootEntityType;
 /**
  * Created by luke on 2017/09/21.
  */
-
+@DatabaseTable(tableName = "todos")
 public class Todo implements Task {
 
     @DatabaseField(id = true)
@@ -60,9 +61,15 @@ public class Todo implements Task {
     @DatabaseField(foreign = true)
     private MediaFile mediaFile;
 
+    @DatabaseField
+    private boolean userPartOf = true;
+
+    @DatabaseField
+    private boolean publicTodo = false; // no such thing yet, but flexibility for future
+
     @Override
-    public String getUid() {
-        return uid.toString();
+    public UUID getUid() {
+        return uid;
     }
 
     @Override
@@ -113,5 +120,15 @@ public class Todo implements Task {
     @Override
     public boolean hasMedia() {
         return mediaFile != null;
+    }
+
+    @Override
+    public boolean isUserPartOf() {
+        return userPartOf;
+    }
+
+    @Override
+    public boolean isPublic() {
+        return publicTodo;
     }
 }

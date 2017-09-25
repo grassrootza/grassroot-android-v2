@@ -46,7 +46,7 @@ public class ItemSelectionAdapter<T extends SelectableItem> extends RecyclerView
         if (item != null) {
             holder.itemHeading.setText(item.getName());
             holder.itemDescription.setText(item.getDescription());
-            holder.itemUid = item.getUid();
+            holder.itemUid = item.getUid().toString();
 
             // todo: add "takeUntil" detaches
             RxView.clicks(holder.itemRoot)

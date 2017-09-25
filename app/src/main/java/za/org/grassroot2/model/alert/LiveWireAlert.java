@@ -1,4 +1,4 @@
-package za.org.grassroot2.model;
+package za.org.grassroot2.model.alert;
 
 import android.text.TextUtils;
 
@@ -10,6 +10,7 @@ import java.util.Collections;
 import java.util.Set;
 import java.util.UUID;
 
+import za.org.grassroot2.model.MediaFile;
 import za.org.grassroot2.model.enums.GrassrootEntityType;
 import za.org.grassroot2.model.network.EntityForUpload;
 
@@ -161,8 +162,8 @@ public class LiveWireAlert implements EntityForUpload {
 
     }
 
-    public String getUid() {
-        return uid.toString();
+    public UUID getUid() {
+        return uid;
     }
 
     public String getServerUid() {
@@ -251,7 +252,7 @@ public class LiveWireAlert implements EntityForUpload {
 
     public Set<String> getMediaFileKeys() {
         return mediaFile == null ? null :
-                Collections.singleton(mediaFile.getUid());
+                Collections.singleton(mediaFile.getUid().toString());
     }
 
     @Override

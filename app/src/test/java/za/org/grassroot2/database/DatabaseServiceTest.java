@@ -14,9 +14,9 @@ import java.util.UUID;
 
 import za.org.grassroot2.GrassrootApplication;
 import za.org.grassroot2.model.Group;
-import za.org.grassroot2.model.LiveWireAlert;
 import za.org.grassroot2.model.MediaFile;
 import za.org.grassroot2.model.UserProfile;
+import za.org.grassroot2.model.alert.LiveWireAlert;
 
 
 /**
@@ -51,7 +51,7 @@ public class DatabaseServiceTest extends TestCase{
     public void loadGroup() throws Exception {
         Group g = createGroup(UUID.randomUUID().toString());
         databaseService.storeObject(Group.class, g);
-        Group loadedGroup = databaseService.loadGroup(g.getUid());
+        Group loadedGroup = databaseService.loadGroup(g.getUid().toString());
         assertEquals(g.getName(), loadedGroup.getName());
     }
 
@@ -61,12 +61,12 @@ public class DatabaseServiceTest extends TestCase{
         alert.setDescription("Test description");
         alert.setGroupUid("1");
         databaseService.storeObject(LiveWireAlert.class, alert);
-        LiveWireAlert loadedAlert = databaseService.loadObjectByUid(LiveWireAlert.class, alert.getUid());
+        LiveWireAlert loadedAlert = databaseService.loadObjectByUid(LiveWireAlert.class, alert.getUid().toString());
         assertEquals(alert.getUid(), loadedAlert.getUid());
 
         MediaFile file = new MediaFile("path", "path", "image/", "thumbnail");
         databaseService.storeObject(MediaFile.class, file);
-        MediaFile loadedMediaFile = databaseService.loadObjectByUid(MediaFile.class, file.getUid());
+        MediaFile loadedMediaFile = databaseService.loadObjectByUid(MediaFile.class, file.getUid().toString());
         assertEquals(file.getUid(), loadedMediaFile.getUid());
     }
 
@@ -90,7 +90,7 @@ public class DatabaseServiceTest extends TestCase{
         items.add(g2);
         g1.setName("Name 3");
         databaseService.copyOrUpdateListOfEntities(Group.class, items);
-        Group changedGroup = databaseService.loadObjectByUid(Group.class, g1.getUid());
+        Group changedGroup = databaseService.loadObjectByUid(Group.class, g1.getUid().toString());
         assertNotSame(g1.getName(), changedGroup.getName());
     }
 
@@ -104,7 +104,7 @@ public class DatabaseServiceTest extends TestCase{
     private Group createGroup(String name) {
         Group g = new Group();
         g.setName(name);
-        g.setUid(UUID.randomUUID().toString());
+        g.setUid(UUID.randomUUID());
         g.setMemberCount(10);
         g.setUserRole("Admin");
         g.setLastActionOrChange(System.currentTimeMillis());
