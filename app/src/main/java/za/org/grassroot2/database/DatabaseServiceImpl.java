@@ -90,7 +90,7 @@ public class DatabaseServiceImpl implements DatabaseService {
             EntityForDownload entityHolder;
             for (E row : result) {
                 entityHolder = (EntityForDownload) row;
-                returnMap.put(entityHolder.getUid(), entityHolder.getLastTimeChangedServer());
+                returnMap.put(entityHolder.getUid().toString(), entityHolder.getLastTimeChangedServer());
             }
         } catch (SQLException e) {
             e.printStackTrace();

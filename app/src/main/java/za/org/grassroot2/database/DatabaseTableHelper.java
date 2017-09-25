@@ -8,7 +8,7 @@ import com.j256.ormlite.table.TableUtils;
 import java.sql.SQLException;
 
 import za.org.grassroot2.model.Group;
-import za.org.grassroot2.model.LiveWireAlert;
+import za.org.grassroot2.model.alert.LiveWireAlert;
 import za.org.grassroot2.model.MediaFile;
 import za.org.grassroot2.model.UserProfile;
 

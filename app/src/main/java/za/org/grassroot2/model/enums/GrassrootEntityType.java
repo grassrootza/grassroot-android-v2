@@ -6,10 +6,20 @@ package za.org.grassroot2.model.enums;
  * the correct upload call and entity type
  */
 
-public enum NetworkEntityType {
+public enum GrassrootEntityType {
 
     GROUP,
+    PUBLIC_GROUP,
+
+    MEETING,
+    VOTE,
+    TODO,
+
+    GROUP_JOIN_REQUEST,
+
     LIVEWIRE_ALERT,
+    SAFETY_ALERT,
+
     MEDIA_FILE
 
 }

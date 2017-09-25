@@ -8,11 +8,10 @@ import io.reactivex.SingleEmitter;
 import io.reactivex.SingleOnSubscribe;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.functions.Function;
-import io.reactivex.functions.Predicate;
 import timber.log.Timber;
 import za.org.grassroot2.BuildConfig;
 import za.org.grassroot2.database.DatabaseService;
-import za.org.grassroot2.model.LiveWireAlert;
+import za.org.grassroot2.model.alert.LiveWireAlert;
 import za.org.grassroot2.model.MediaFile;
 import za.org.grassroot2.model.UploadResult;
 import za.org.grassroot2.model.exception.LiveWireAlertNotCompleteException;
@@ -48,20 +47,10 @@ public class LiveWireServiceImpl implements LiveWireService {
                         return true;
                     }
                 })
-                .flatMapSingle(new Function<MediaFile, Single<LiveWireAlert>>() {
-                    @Override
-                    public Single<LiveWireAlert> apply(@NonNull MediaFile mediaFile) throws Exception {
-                        return databaseService.store(LiveWireAlert.class, LiveWireAlert.newBuilder()
-                                .mediaFile(mediaFile)
-                                .build());
-                    }
-                })
-                .map(new Function<LiveWireAlert, String>() {
-                    @Override
-                    public String apply(@NonNull LiveWireAlert liveWireAlert) throws Exception {
-                        return liveWireAlert == null ? null : liveWireAlert.getUid();
-                    }
-                });
+                .flatMapSingle(mediaFile -> databaseService.store(LiveWireAlert.class, LiveWireAlert.newBuilder()
+                        .mediaFile(mediaFile)
+                        .build()))
+                .map(liveWireAlert -> liveWireAlert == null ? null : liveWireAlert.getUid().toString());
     }
 
     @Override
@@ -72,7 +61,7 @@ public class LiveWireServiceImpl implements LiveWireService {
                 .map(new Function<LiveWireAlert, String>() {
                     @Override
                     public String apply(@NonNull LiveWireAlert liveWireAlert) throws Exception {
-                        return liveWireAlert.getUid();
+                        return liveWireAlert.getUid().toString();
                     }
                 });
     }

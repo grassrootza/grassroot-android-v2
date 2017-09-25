@@ -1,6 +1,6 @@
 package za.org.grassroot2.model;
 
-import za.org.grassroot2.model.enums.NetworkEntityType;
+import za.org.grassroot2.model.enums.GrassrootEntityType;
 import za.org.grassroot2.model.network.EntityForUpload;
 
 /**
@@ -10,13 +10,13 @@ import za.org.grassroot2.model.network.EntityForUpload;
 
 public class UploadResult {
 
-    private final NetworkEntityType entityType;
+    private final GrassrootEntityType entityType;
     private final String localUid;
     private final String serverUid;
     private final EntityForUpload returnedEntity;
     private final Throwable uploadException;
 
-    public UploadResult(final NetworkEntityType entityType, final String localUid, final String serverUid) {
+    public UploadResult(final GrassrootEntityType entityType, final String localUid, final String serverUid) {
         this.entityType = entityType;
         this.localUid = localUid;
         this.serverUid = serverUid;
@@ -24,7 +24,7 @@ public class UploadResult {
         this.uploadException = null;
     }
 
-    public UploadResult(final NetworkEntityType entityType, EntityForUpload returnedEntity) {
+    public UploadResult(final GrassrootEntityType entityType, EntityForUpload returnedEntity) {
         this.entityType = entityType;
         this.returnedEntity = returnedEntity;
         this.localUid = null;
@@ -32,7 +32,7 @@ public class UploadResult {
         this.uploadException = null;
     }
 
-    public UploadResult(final NetworkEntityType entityType, final Throwable uploadException) {
+    public UploadResult(final GrassrootEntityType entityType, final Throwable uploadException) {
         this.entityType = entityType;
         this.uploadException = uploadException;
         this.returnedEntity = null;

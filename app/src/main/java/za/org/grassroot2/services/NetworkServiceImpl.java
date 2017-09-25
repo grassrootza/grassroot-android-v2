@@ -18,10 +18,10 @@ import retrofit2.Response;
 import timber.log.Timber;
 import za.org.grassroot2.database.DatabaseService;
 import za.org.grassroot2.model.Group;
-import za.org.grassroot2.model.LiveWireAlert;
 import za.org.grassroot2.model.MediaFile;
 import za.org.grassroot2.model.UploadResult;
-import za.org.grassroot2.model.enums.NetworkEntityType;
+import za.org.grassroot2.model.alert.LiveWireAlert;
+import za.org.grassroot2.model.enums.GrassrootEntityType;
 import za.org.grassroot2.model.exception.EntityAlreadyUploadingException;
 import za.org.grassroot2.model.exception.NetworkUnavailableException;
 import za.org.grassroot2.model.exception.ServerErrorException;
@@ -67,7 +67,7 @@ public class NetworkServiceImpl implements NetworkService {
     // along the emitter, but I'm struggling to work out what, and defaulting to get work -> get clean
     @SuppressWarnings("unchecked")
     @Override
-    public <E extends EntityForDownload> Observable<List<E>> downloadAllChangedOrNewEntities(final NetworkEntityType entityType, boolean forceFullRefresh) {
+    public <E extends EntityForDownload> Observable<List<E>> downloadAllChangedOrNewEntities(final GrassrootEntityType entityType, boolean forceFullRefresh) {
         setUserUid();
         Timber.e("user UID = ? " + currentUserUid);
         switch (entityType) {
@@ -93,7 +93,7 @@ public class NetworkServiceImpl implements NetworkService {
                     List<Group> changedGroups = listRestResponse.getData();
                     List<String> changedUids = new ArrayList<>();
                     for (int i = 0; i < changedGroups.size(); i++) {
-                        changedUids.add(changedGroups.get(i).getUid());
+                        changedUids.add(changedGroups.get(i).getUid().toString());
                     }
                     return grassrootUserApi.fetchGroupsInfo(currentUserUid, changedUids);
                 })
@@ -163,7 +163,7 @@ public class NetworkServiceImpl implements NetworkService {
     private Observable<UploadResult> uploadMediaFile(final MediaFile mediaFile) {
         final Call<RestResponse<String>> call = grassrootUserApi.sendMediaFile(
                 currentUserUid,
-                mediaFile.getUid(),
+                mediaFile.getUid().toString(),
                 mediaFile.getMediaFunction(),
                 mediaFile.getMimeType(),
                 getImageFromPath(mediaFile, "file"));
@@ -183,7 +183,7 @@ public class NetworkServiceImpl implements NetworkService {
             try {
                 Response<RestResponse<String>> response = networkCall.execute();
                 if (response.isSuccessful()) {
-                    e.onNext(new UploadResult(entity.getType(), entity.getUid(), response.body().getData()));
+                    e.onNext(new UploadResult(entity.getType(), entity.getUid().toString(), response.body().getData()));
                 } else {
                     e.onNext(new UploadResult(entity.getType(), new ServerErrorException()));
                 }

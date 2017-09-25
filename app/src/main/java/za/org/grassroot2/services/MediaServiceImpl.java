@@ -64,7 +64,7 @@ public class MediaServiceImpl implements MediaService {
                 // could do this more elegantly, but, Android, Realm, threads
                 MediaFile createdFile = databaseService.storeObject(MediaFile.class, new MediaFile(imageUri.toString(), imageFile.getAbsolutePath(), mimeType, mediaFunction));
                 Timber.d("created media file = " + createdFile);
-                final String createdUid = createdFile.getUid();
+                final String createdUid = createdFile.getUid().toString();
                 e.onSuccess(createdUid);
             } catch (Throwable t) {
                 Timber.e(t);

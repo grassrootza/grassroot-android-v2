@@ -8,14 +8,14 @@ import javax.inject.Inject;
 
 import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.annotations.NonNull;
 import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 import za.org.grassroot2.R;
 import za.org.grassroot2.database.DatabaseService;
-import za.org.grassroot2.model.LiveWireAlert;
+
 import za.org.grassroot2.model.MediaFile;
+import za.org.grassroot2.model.alert.LiveWireAlert;
 import za.org.grassroot2.model.dto.BtnGrouping;
 import za.org.grassroot2.model.dto.BtnParameters;
 import za.org.grassroot2.model.dto.BtnReturnBundle;
