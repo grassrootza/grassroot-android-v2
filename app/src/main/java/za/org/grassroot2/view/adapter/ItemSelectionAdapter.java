@@ -20,16 +20,16 @@ import za.org.grassroot2.rxbinding.RxView;
  * Created by luke on 2017/08/19.
  */
 
-public class ItemSelectionAdapter<T extends SelectableItem> extends RecyclerView.Adapter<ItemSelectionAdapter.SelectableItemViewHolder> {
+public class ItemSelectionAdapter extends RecyclerView.Adapter<ItemSelectionAdapter.SelectableItemViewHolder> {
 
-    private final List<T> data;
+    private final List<SelectableItem> data;
     private PublishSubject<String> viewClickSubject = PublishSubject.create();
 
     public Observable<String> getViewClickObservable() {
         return viewClickSubject;
     }
 
-    public ItemSelectionAdapter(List<T> data, boolean autoUpdate, boolean updateOnModification) {
+    public ItemSelectionAdapter(List<SelectableItem> data) {
         super();
         this.data = data;
     }
@@ -48,7 +48,7 @@ public class ItemSelectionAdapter<T extends SelectableItem> extends RecyclerView
             holder.itemDescription.setText(item.getDescription());
             holder.itemUid = item.getUid();
 
-            // todo: add "takeUntil" detaches
+            // todo: disposableOnDetach "takeUntil" detaches
             RxView.clicks(holder.itemRoot)
                     .map(o -> holder.itemUid)
                     .subscribe(viewClickSubject);

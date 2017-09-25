@@ -2,6 +2,7 @@ package za.org.grassroot2.view.fragment;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -9,36 +10,38 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import org.greenrobot.eventbus.EventBus;
+
 import java.util.List;
 
+import javax.inject.Inject;
+
 import butterknife.BindView;
-import butterknife.ButterKnife;
-import io.reactivex.Observable;
-import io.reactivex.annotations.NonNull;
-import io.reactivex.functions.Function;
-import io.reactivex.functions.Predicate;
 import timber.log.Timber;
+import za.org.grassroot2.GrassrootApplication;
 import za.org.grassroot2.R;
+import za.org.grassroot2.dagger.user.ApiModule;
 import za.org.grassroot2.model.SelectableItem;
-import za.org.grassroot2.view.ItemSelectionView;
+import za.org.grassroot2.presenter.fragment.ItemSelectionFragmentPresenter;
+import za.org.grassroot2.view.activity.GrassrootActivity;
 import za.org.grassroot2.view.adapter.ItemSelectionAdapter;
 
-public class ItemSelectionFragment<T extends SelectableItem> extends GrassrootFragment
-        implements ItemSelectionView<T> {
+public class ItemSelectionFragment extends GrassrootFragment implements ItemSelectionFragmentPresenter.ItemSelectionFragmentView {
 
     private static final String HEADER_STRING = "HEADER";
 
     @BindView(R.id.list_header) TextView listHeader;
 
-    private ItemSelectionAdapter<T> recyclerViewAdapter;
+    private ItemSelectionAdapter recyclerViewAdapter;
     @BindView(R.id.list_recycler_view) RecyclerView recyclerView;
 
+    @Inject ItemSelectionFragmentPresenter presenter;
+
     public ItemSelectionFragment() {
-        // mandatory
     }
 
-    public static <T extends SelectableItem> ItemSelectionFragment<T> newInstance(int headerTextRes) {
-        ItemSelectionFragment<T> fragment = new ItemSelectionFragment<>();
+    public static ItemSelectionFragment newInstance(int headerTextRes) {
+        ItemSelectionFragment fragment = new ItemSelectionFragment();
         Bundle args = new Bundle();
         args.putInt(HEADER_STRING, headerTextRes);
         fragment.setArguments(args);
@@ -48,59 +51,59 @@ public class ItemSelectionFragment<T extends SelectableItem> extends GrassrootFr
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        lifecyclePublisher.onNext(ACTION_FRAGMENT_ATTACHED);
+        presenter.attach(this);
+    }
+
+    @Override
+    protected void onInject(GrassrootApplication application) {
+        application.getAppComponent().plus(((GrassrootActivity)getActivity()).getActivityModule()).inject(this);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_selectable_item_list, container, false);
-        unbinder = ButterKnife.bind(this, view);
-
+        View view = super.onCreateView(inflater, container, savedInstanceState);
         if (getArguments() !=null && getArguments().containsKey(HEADER_STRING)) {
             listHeader.setVisibility(View.VISIBLE);
             listHeader.setText(getArguments().getInt(HEADER_STRING));
         } else {
             listHeader.setVisibility(View.GONE);
         }
-
-        if (recyclerViewAdapter != null) {
-            recyclerView.setAdapter(recyclerViewAdapter);
-            recyclerView.setLayoutManager(new LinearLayoutManager(view.getContext()));
-        } else {
-            Timber.e("no adapter for recycler view during create view!");
-        }
-
-        lifecyclePublisher.onNext(ACTION_FRAGMENT_VIEW_CREATED);
         return view;
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        presenter.onViewCreated();
+    }
+
+    @Override
+    public int getLayoutResourceId() {
+        return R.layout.fragment_selectable_item_list;
     }
 
     @Override
     public void onDetach() {
         super.onDetach();
+        presenter.detach(this);
     }
 
     @Override
-    public Observable<Boolean> viewAttached() {
-        return lifecyclePublisher
-                .filter(new Predicate<Integer>() {
-                    @Override
-                    public boolean test(@NonNull Integer integer) throws Exception {
-                        return integer == ACTION_FRAGMENT_ATTACHED;
-                    }
-                })
-                .map(new Function<Integer, Boolean>() {
-                    @Override
-                    public Boolean apply(@NonNull Integer integer) throws Exception {
-                        return true;
-                    }
-                });
+    public void renderResults(List<SelectableItem> data) {
+        recyclerViewAdapter = new ItemSelectionAdapter(data);
+        recyclerView.setAdapter(recyclerViewAdapter);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        disposables.add(recyclerViewAdapter.getViewClickObservable().subscribe(s -> {
+            EventBus.getDefault().post(new SelectionEvent(s));
+        }));
     }
 
-    @Override
-    public Observable<String> addData(List<T> data) {
-        recyclerViewAdapter = new ItemSelectionAdapter<T>(data, true, true);
-        return recyclerViewAdapter.getViewClickObservable();
-    }
+    public static class SelectionEvent {
+        public final String s;
 
+        SelectionEvent(String s) {
+            this.s = s;
+        }
+    }
 }

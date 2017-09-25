@@ -2,20 +2,18 @@ package za.org.grassroot2.view.fragment;
 
 
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
+import org.greenrobot.eventbus.EventBus;
+
 import butterknife.BindView;
-import butterknife.ButterKnife;
-import io.reactivex.Observable;
-import io.reactivex.annotations.NonNull;
-import io.reactivex.functions.Function;
-import timber.log.Timber;
+import za.org.grassroot2.GrassrootApplication;
 import za.org.grassroot2.R;
-import za.org.grassroot2.model.dto.BtnReturnBundle;
 import za.org.grassroot2.rxbinding.RxView;
 import za.org.grassroot2.view.SingleInputNextOtherView;
 
@@ -64,16 +62,33 @@ public class LongTextInputFragment extends TextInputFragment implements SingleIn
     }
 
     @Override
+    protected void onInject(GrassrootApplication application) {
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.fragment_long_text_input, container, false);
-        unbinder = ButterKnife.bind(this, v);
+        View v = super.onCreateView(inflater, container, savedInstanceState);
         header.setText(headerTextRes); // res value set via super calls
         inputText.setHint(inputHintRes);
         nextButton.setText(nextBtnRes);
         skipButton.setText(skipBtnRes);
         lifecyclePublisher.onNext(ACTION_FRAGMENT_VIEW_CREATED);
         return v;
+    }
+
+    @Override
+    public int getLayoutResourceId() {
+        return R.layout.fragment_long_text_input;
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        disposables.add(RxView.clicks(skipButton).subscribe(o -> {
+            EventBus.getDefault().post(new LongInputEvent(null));
+        }));
+        disposables.add(RxView.clicks(nextButton).map(o -> inputText.getText()).subscribe(editable -> EventBus.getDefault().post(new LongInputEvent(editable.toString()))));
     }
 
     @Override
@@ -86,42 +101,11 @@ public class LongTextInputFragment extends TextInputFragment implements SingleIn
         skipButton.setEnabled(enabled);
     }
 
-    // todo : clean up inheritance in here
-    @Override
-    public Observable<CharSequence> textInputNextDone() {
-        // on this one we want to let people do done, and then confirm, rather than return immediately on input done
-        return RxView.clicks(nextButton)
-                .map(new Function<Object, CharSequence>() {
-                    @Override
-                    public CharSequence apply(@NonNull Object o) throws Exception {
-                        return inputText.getText();
-                    }
-                });
-    }
+    public static class LongInputEvent {
+        public final String s;
 
-    @Override
-    public Observable<BtnReturnBundle> mainTextNext() {
-        Timber.e("subscribed in here");
-        return textInputNextDone().map(new Function<CharSequence, BtnReturnBundle>() {
-            @Override
-            public BtnReturnBundle apply(@NonNull CharSequence sequence) throws Exception {
-                return new BtnReturnBundle(sequence, MAIN_TEXT_NEXT_ACTION);
-            }
-        });
-    }
-
-    @Override
-    public Observable<CharSequence> textInputBackOther() {
-        return RxView.clicks(skipButton)
-                .map(new Function<Object, CharSequence>() {
-                    @Override
-                    public CharSequence apply(@NonNull Object o) throws Exception {
-                        return inputText.getText();
-                    }
-                });
-    }
-
-    public Observable<Object> skipClicked() {
-        return RxView.clicks(skipButton);
+        public LongInputEvent(String s) {
+            this.s = s;
+        }
     }
 }

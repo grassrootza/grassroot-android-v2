@@ -7,12 +7,10 @@ import timber.log.Timber;
 import za.org.grassroot2.dagger.AppComponent;
 import za.org.grassroot2.dagger.AppModule;
 import za.org.grassroot2.dagger.DaggerAppComponent;
-import za.org.grassroot2.dagger.user.UserComponent;
 
 public class GrassrootApplication extends Application {
 
     private AppComponent appComponent;
-    private UserComponent userComponent;
 
     // since we sometimes want to enforce Realm not deleting itself during development
     private static final boolean skipMigrationTest = true;
@@ -26,6 +24,7 @@ public class GrassrootApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+        
 //        Debug.startMethodTracing("app_loader");
         appComponent = initDagger(this);
         initTimber();

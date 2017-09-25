@@ -23,11 +23,6 @@ public abstract class LoggedInActivity extends GrassrootActivity implements Logg
     }
 
     @Override
-    public void requestPermission(String[] permissions) {
-        ActivityCompat.requestPermissions(this, permissions, REQUEST_PERMISSION_CODE);
-    }
-
-    @Override
     public void launchActivityForResult(Intent intent, int requestCode) {
         if (activePresenter == null) {
             Timber.e("ERROR! Trying to start activity for result with nowhere to send result back to");

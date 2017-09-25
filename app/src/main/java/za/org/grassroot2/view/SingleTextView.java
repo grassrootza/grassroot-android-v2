@@ -9,7 +9,6 @@ import za.org.grassroot2.model.dto.BtnReturnBundle;
 public interface SingleTextView extends FragmentView {
 
     Observable<CharSequence> textInputChanged();
-    Observable<BtnReturnBundle> mainTextNext();
 
     void setInputDefault(CharSequence defaultValue);
     void displayErrorMessage(int messageRes);
