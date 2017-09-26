@@ -1,7 +1,10 @@
 package za.org.grassroot2.view.activity;
 
 import android.Manifest;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -61,7 +64,7 @@ public class MainActivity extends LoggedInActivity implements MainView {
         }
         SingleTextMultiButtonFragment fragment = SingleTextMultiButtonFragment.newInstance(
                 R.string.main_explanation,
-                false, -1, btnGrouping);
+                false, -1, null);
         Timber.d("Created main fragment, subscribing to view created");
         getSupportFragmentManager().beginTransaction()
                 .add(R.id.main_frag_holder, fragment)
@@ -165,6 +168,14 @@ public class MainActivity extends LoggedInActivity implements MainView {
         for (int i = count; i>0; i--) {
             getSupportFragmentManager().popBackStack();
         }
+    }
+
+    @Override
+    public void cameraForResult(Uri output, String s, int requestCode) {
+        Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, output);
+        cameraIntent.putExtra("MY_UID", s);
+        startActivityForResult(cameraIntent, requestCode);
     }
 
     @Override

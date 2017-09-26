@@ -21,10 +21,10 @@ public class Vote implements Task {
 
     @DatabaseField(id = true)
     @SerializedName("taskUid")
-    private UUID uid;
+    private String uid;
 
     @DatabaseField
-    private UUID parentUid;
+    private String parentUid;
 
     @DatabaseField
     private GrassrootEntityType parentEntityType;
@@ -55,12 +55,12 @@ public class Vote implements Task {
     private MediaFile mediaFile;
 
     @Override
-    public UUID getUid() {
+    public String getUid() {
         return uid;
     }
 
     @Override
-    public UUID getParentUid() {
+    public String getParentUid() {
         return parentUid;
     }
 

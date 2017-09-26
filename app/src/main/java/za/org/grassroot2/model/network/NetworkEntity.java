@@ -1,7 +1,5 @@
 package za.org.grassroot2.model.network;
 
-import java.util.UUID;
-
 import za.org.grassroot2.model.enums.GrassrootEntityType;
 
 /**
@@ -11,6 +9,6 @@ import za.org.grassroot2.model.enums.GrassrootEntityType;
 public interface NetworkEntity {
 
     GrassrootEntityType getType();
-    UUID getUid();
+    String getUid();
 
 }

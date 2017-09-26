@@ -5,6 +5,8 @@ import android.accounts.AccountManager;
 import android.content.ContentResolver;
 import android.os.Bundle;
 
+import java.util.concurrent.TimeUnit;
+
 import javax.inject.Inject;
 
 import io.reactivex.Single;
@@ -24,9 +26,9 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     private static final String CONTENT_AUTHORITY = "za.org.grassroot2.syncprovider";
 
     @Inject
-    public UserDetailsServiceImpl(AccountManager accountManager, DatabaseService realmService) {
+    public UserDetailsServiceImpl(AccountManager accountManager, DatabaseService databaseService) {
         this.accountManager = accountManager;
-        this.databaseService = realmService;
+        this.databaseService = databaseService;
     }
 
     public Single<UserProfile> storeUserDetails(final String userUid,
@@ -34,41 +36,35 @@ public class UserDetailsServiceImpl implements UserDetailsService {
                                                 final String userDisplayName,
                                                 final String userSystemRole,
                                                 final String userToken) {
-        return Single.create(new SingleOnSubscribe<UserProfile>() {
-            @Override
-            public void subscribe(@NonNull SingleEmitter<UserProfile> e) throws Exception {
-                final Account account = getOrCreateAccount();
-                accountManager.setAuthToken(account, AuthConstants.AUTH_TOKENTYPE, userToken);
-                Timber.v("stored auth token, number accounts = " + accountManager.getAccountsByType(AuthConstants.ACCOUNT_TYPE).length);
-                UserProfile userProfile = databaseService.updateOrCreateUserProfile(userUid, userPhone, userDisplayName, userSystemRole);
-                e.onSuccess(userProfile);
-            }
+        return Single.create(e -> {
+            final Account account = getOrCreateAccount();
+            accountManager.setAuthToken(account, AuthConstants.AUTH_TOKENTYPE, userToken);
+            Timber.v("stored auth token, number accounts = " + accountManager.getAccountsByType(AuthConstants.ACCOUNT_TYPE).length);
+            UserProfile userProfile = databaseService.updateOrCreateUserProfile(userUid, userPhone, userDisplayName, userSystemRole);
+            e.onSuccess(userProfile);
         });
     }
 
     // todo: disposableOnDetach exception handling, also calls to server, GCM, etc
     @Override
     public Single<Boolean> logout(final boolean deleteAndroidAccount, final boolean wipeRealm) {
-        return Single.create(new SingleOnSubscribe<Boolean>() {
-            @Override
-            public void subscribe(@NonNull SingleEmitter<Boolean> e) throws Exception {
-                // first, wipe the details stored in account
-                Account account = getAccount();
-                if (account != null) {
-                    accountManager.invalidateAuthToken(AuthConstants.ACCOUNT_TYPE,
-                            accountManager.peekAuthToken(account, AuthConstants.AUTH_TOKENTYPE));
-                    accountManager.setPassword(account, null);
-                    if (deleteAndroidAccount) {
-                        // using deprecated because non-deprecated requires API22+ .. oh Android
-                        accountManager.removeAccount(account, null, null);
-                    }
+        return Single.create(e -> {
+            // first, wipe the details stored in account
+            Account account = getAccount();
+            if (account != null) {
+                accountManager.invalidateAuthToken(AuthConstants.ACCOUNT_TYPE,
+                        accountManager.peekAuthToken(account, AuthConstants.AUTH_TOKENTYPE));
+                accountManager.setPassword(account, null);
+                if (deleteAndroidAccount) {
+                    // using deprecated because non-deprecated requires API22+ .. oh Android
+                    accountManager.removeAccount(account, null, null);
                 }
-                databaseService.removeUserProfile(); // then, wipe the UID etc
-                if (wipeRealm) {
-                    databaseService.wipeDatabase();
-                }
-                e.onSuccess(true);
             }
+            databaseService.removeUserProfile(); // then, wipe the UID etc
+            if (wipeRealm) {
+                databaseService.wipeDatabase();
+            }
+            e.onSuccess(true);
         });
     }
 
@@ -81,22 +77,23 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         Timber.d("getting or creating account for Grassroot ...");
         Account[] accounts = accountManager.getAccountsByType(AuthConstants.ACCOUNT_TYPE);
         Timber.d("number of accounts: " + accounts.length);
+        Account account;
         if (accounts.length != 0) {
-            return accounts[0];
+            account = accounts[0];
         } else {
-            Account account = new Account(AuthConstants.ACCOUNT_NAME, AuthConstants.ACCOUNT_TYPE);
+            account = new Account(AuthConstants.ACCOUNT_NAME, AuthConstants.ACCOUNT_TYPE);
             Timber.d("adding account explicitly");
             accountManager.addAccountExplicitly(account, null, null);
             Timber.d("setting account as syncable");
-            setAccountAsSyncable(account);
-            return account;
         }
+        setAccountAsSyncable(account);
+        return account;
     }
 
     // warehousing
     private void setAccountAsSyncable(Account account) {
         final String AUTHORITY = CONTENT_AUTHORITY;
-        final long SYNC_FREQUENCY = 900; // 15 minutes (in seconds)
+        final long SYNC_FREQUENCY = TimeUnit.MINUTES.toMillis(15);
 
         // Inform the system that this account supports sync
         ContentResolver.setIsSyncable(account, AUTHORITY, 1);

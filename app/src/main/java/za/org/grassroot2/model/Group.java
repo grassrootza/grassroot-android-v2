@@ -29,7 +29,7 @@ public class Group implements EntityForDownload, SelectableItem {
 
     @DatabaseField(id = true)
     @SerializedName("groupUid")
-    private UUID uid;
+    private String uid;
 
     @DatabaseField(canBeNull = false)
     @SerializedName("name")
@@ -63,11 +63,11 @@ public class Group implements EntityForDownload, SelectableItem {
         return GrassrootEntityType.GROUP;
     }
 
-    public UUID getUid() {
+    public String getUid() {
         return uid;
     }
 
-    public void setUid(UUID uid) {
+    public void setUid(String uid) {
         this.uid = uid;
     }
 

@@ -19,13 +19,11 @@ public class MediaFile implements EntityForUpload {
 
     public static final String FUNCTION_LIVEWIRE = "LIVEWIRE_MEDIA";
 
-    @DatabaseField(generatedId = true)
-    private UUID uid;
+    @DatabaseField(id = true)
+    private String uid;
     @DatabaseField
     private String serverUid;
 
-    // Realm cannot store URI, hence using String
-    // And Android's FileProvider mechanism may be its most broken thing, so also storing own file
     @DatabaseField
     private String absolutePath;
     @DatabaseField
@@ -48,7 +46,7 @@ public class MediaFile implements EntityForUpload {
     private String upstreamBucket; // will be set by server, and allows us to retrieve later, if we need (key will always be userUid + localUid)
 
     public MediaFile() {
-        this.uid = UUID.randomUUID();
+        this.uid = UUID.randomUUID().toString();
     }
 
 
@@ -60,7 +58,7 @@ public class MediaFile implements EntityForUpload {
         this.mediaFunction = mediaFunction;
     }
 
-    public UUID getUid() {
+    public String getUid() {
         return uid;
     }
 

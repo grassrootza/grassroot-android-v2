@@ -52,7 +52,7 @@ public class DatabaseServiceImpl implements DatabaseService {
         return Single.create(e -> {
             try {
                 Dao<E, ?> dao = helper.getDao(clazz);
-                e.onSuccess(dao.queryBuilder().where().eq("uid", UUID.fromString(uid)).queryForFirst());
+                e.onSuccess(dao.queryBuilder().where().eq("uid", uid).queryForFirst());
             } catch (SQLException ex) {
                 ex.printStackTrace();
             }
@@ -63,7 +63,7 @@ public class DatabaseServiceImpl implements DatabaseService {
     public <E> E loadObjectByUid(Class<E> cls, String uid) {
         try {
             Dao<E, ?> dao = helper.getDao(cls);
-            return dao.queryBuilder().where().eq("uid", UUID.fromString(uid)).queryForFirst();
+            return dao.queryBuilder().where().eq("uid", uid).queryForFirst();
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
@@ -90,7 +90,7 @@ public class DatabaseServiceImpl implements DatabaseService {
             EntityForDownload entityHolder;
             for (E row : result) {
                 entityHolder = (EntityForDownload) row;
-                returnMap.put(entityHolder.getUid().toString(), entityHolder.getLastTimeChangedServer());
+                returnMap.put(entityHolder.getUid(), entityHolder.getLastTimeChangedServer());
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -113,18 +113,15 @@ public class DatabaseServiceImpl implements DatabaseService {
 
     @Override
     public <E> Single<E> store(final Class<E> cls, final E object) {
-        return Single.create(new SingleOnSubscribe<E>() {
-            @Override
-            public void subscribe(SingleEmitter<E> e) throws Exception {
-                try {
-                    Dao<E, ?> dao = helper.getDao(cls);
-                    dao.createOrUpdate(object);
-                } catch (SQLException ex) {
-                    Log.e(TAG, "Error while saving object: " + object.toString());
-                    ex.printStackTrace();
-                }
-                e.onSuccess(object);
+        return Single.create(e -> {
+            try {
+                Dao<E, ?> dao = helper.getDao(cls);
+                dao.createOrUpdate(object);
+            } catch (SQLException ex) {
+                Log.e(TAG, "Error while saving object: " + object.toString());
+                ex.printStackTrace();
             }
+            e.onSuccess(object);
         });
     }
 

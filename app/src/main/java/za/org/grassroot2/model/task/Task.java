@@ -13,7 +13,7 @@ import za.org.grassroot2.model.network.EntityForDownload;
 
 public interface Task extends EntityForDownload, SelectableItem {
 
-    UUID getParentUid();
+    String getParentUid();
     GrassrootEntityType getParentEntityType();
 
     Date getCreatedDateTime();
