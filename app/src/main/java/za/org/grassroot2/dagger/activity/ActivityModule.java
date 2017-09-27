@@ -12,6 +12,7 @@ import za.org.grassroot2.dagger.ApplicationContext;
 import za.org.grassroot2.database.DatabaseService;
 import za.org.grassroot2.presenter.LoginPresenter;
 import za.org.grassroot2.presenter.MainPresenter;
+import za.org.grassroot2.presenter.fragment.GroupFragmentPresenter;
 import za.org.grassroot2.presenter.fragment.SingleTextMultiButtonPresenter;
 import za.org.grassroot2.services.LiveWireService;
 import za.org.grassroot2.services.LiveWireServiceImpl;
@@ -80,6 +81,12 @@ public class ActivityModule {
     LoginPresenter provideLoginPresenter(GrassrootAuthApi grassrootAuthApi,
                                          UserDetailsService userDetailsService) {
         return new LoginPresenter(grassrootAuthApi, userDetailsService);
+    }
+
+    @Provides
+    @PerActivity
+    GroupFragmentPresenter provideGroupFragmentPresenter(DatabaseService dbService, NetworkService networkService) {
+        return new GroupFragmentPresenter(dbService, networkService);
     }
 
     @Provides

@@ -66,5 +66,27 @@
     <!-- Strings for account preference screen -->
     <string name="sync_on_title">Sync</string>
     <string name="sync_on_desc">Refresh automatically</string>
+    <string name="title_activity_dashboard">DashboardActivity</string>
+    <string name="title_home">Home</string>
+    <string name="title_dashboard">Groups</string>
+    <string name="title_around">Around me</string>
+    <string name="title_me">Me</string>
 
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="title_groups">Groups</string>
+    <string name="or">Or</string>
+    <string name="join_an_existing_one">JOIN AN EXISTING ONE</string>
+    <string name="create_a_new_group">CREATE A NEW GROUP</string>
+    <string name="no_group_info">You are not part of any group at the moment.</string>
+
+    <plurals name="member_count" >
+        <item quantity="one">%d member</item>
+        <item quantity="other">%d members</item>
+    </plurals>
+
+    <plurals name="last_modified">
+        <item quantity="one">%1$d %2$s ago</item>
+        <item quantity="other">%1$d %2$ss ago</item>
+    </plurals>
 </resources>

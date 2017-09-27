@@ -12,9 +12,6 @@ public class GrassrootApplication extends Application {
 
     private AppComponent appComponent;
 
-    // since we sometimes want to enforce Realm not deleting itself during development
-    private static final boolean skipMigrationTest = true;
-
     protected AppComponent initDagger(GrassrootApplication application) {
         return DaggerAppComponent.builder()
                 .appModule(new AppModule(application))
@@ -24,8 +21,6 @@ public class GrassrootApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        
-//        Debug.startMethodTracing("app_loader");
         appComponent = initDagger(this);
         initTimber();
         Debug.stopMethodTracing();

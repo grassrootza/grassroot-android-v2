@@ -19,17 +19,17 @@ import za.org.grassroot2.model.Group;
 public interface GrassrootUserApi {
 
     // Fetching groups
-    @POST("/api/mobile/group/fetch/updated/{userUid}")
+    @POST("/api/group/fetch/updated/{userUid}")
     Observable<RestResponse<List<Group>>> fetchUserGroups(@Path("userUid") String userUid,
                                                           @Body Map<String, Long> existingUids);
 
-    @GET("/api/mobile/group/fetch/info/{userUid}")
+    @GET("/api/group/fetch/info/{userUid}")
     Observable<RestResponse<List<Group>>> fetchGroupsInfo(@Path("userUid") String userUid,
                                                           @Query("groupUids") List<String> groupUids);
 
     // Send a media file to the server for storage
     @Multipart
-    @POST("/api/mobile/media/store/{userUid}")
+    @POST("/api/media/store/{userUid}")
     Call<RestResponse<String>> sendMediaFile(@Path("userUid") String userUid,
                                  @Query("imageKey") String fileUid,
                                  @Query("mediaFunction") String function,
@@ -37,7 +37,7 @@ public interface GrassrootUserApi {
                                  @Part MultipartBody.Part file);
 
     // Create a LiveWire alert
-    @POST("/api/mobile/livewire/create/{userUid}")
+    @POST("/api/livewire/create/{userUid}")
     Call<RestResponse<String>> createLiveWireAlert(@Path("userUid") String userUid,
                                      @Query("headline") String headline,
                                      @Query("description") String description,

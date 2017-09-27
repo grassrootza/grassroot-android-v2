@@ -69,6 +69,7 @@ public class MainActivity extends LoggedInActivity implements MainView {
         getSupportFragmentManager().beginTransaction()
                 .add(R.id.main_frag_holder, fragment)
                 .commit();
+        DashboardActivity.start(this);
     }
 
     @Override
@@ -219,6 +220,18 @@ public class MainActivity extends LoggedInActivity implements MainView {
     @Subscribe
     void gotDescription(LongTextInputFragment.LongInputEvent e) {
         presenter.setDescription(e.s);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        EventBus.getDefault().unregister(this);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        EventBus.getDefault().register(this);
     }
 }
 

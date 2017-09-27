@@ -14,59 +14,58 @@
     <uses-permission android:name="android.permission.READ_SYNC_STATS" />
 
     <application
-        android:name="za.org.grassroot2.GrassrootApplication"
+        android:name=".GrassrootApplication"
         android:allowBackup="true"
         android:icon="@mipmap/app_icon"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-
-        <activity android:name="za.org.grassroot2.view.activity.MainActivity"
+        <activity
+            android:name=".view.activity.MainActivity"
             android:label="@string/title_main_activity"
             android:windowSoftInputMode="adjustResize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity
-            android:name="za.org.grassroot2.view.LoginActivity"
+            android:name=".view.LoginActivity"
             android:label="@string/title_login_activity"
-            android:theme="@style/Theme.AppCompat.FullScreen">
-        </activity>
-
-        <activity android:name="za.org.grassroot2.view.activity.AudioActivity" />
+            android:theme="@style/Theme.AppCompat.FullScreen"></activity>
+        <activity android:name=".view.activity.AudioActivity" />
 
         <service
-            android:name="za.org.grassroot2.services.account.GrassrootAuthService"
+            android:name=".services.account.GrassrootAuthService"
             android:exported="false">
             <intent-filter>
                 <action android:name="android.accounts.AccountAuthenticator" />
             </intent-filter>
+
             <meta-data
                 android:name="android.accounts.AccountAuthenticator"
                 android:resource="@xml/authenticator" />
         </service>
-
         <service
-            android:name="za.org.grassroot2.services.account.SyncService"
+            android:name=".services.account.SyncService"
             android:exported="true"
             android:process=":sync">
             <intent-filter>
                 <action android:name="android.content.SyncAdapter" />
             </intent-filter>
+
             <meta-data
                 android:name="android.content.SyncAdapter"
                 android:resource="@xml/syncadapter" />
         </service>
 
         <provider
+            android:name=".services.account.StubProvider"
             android:authorities="za.org.grassroot2.syncprovider"
-            android:name="za.org.grassroot2.services.account.StubProvider"
             android:exported="false"
             android:syncable="true" />
-
         <provider
             android:name="android.support.v4.content.FileProvider"
             android:authorities="za.org.grassroot2.fileprovider"
@@ -74,10 +73,13 @@
             android:grantUriPermissions="true">
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/file_paths">
-            </meta-data>
+                android:resource="@xml/file_paths"></meta-data>
         </provider>
 
+        <activity
+            android:name=".view.activity.DashboardActivity"
+            android:theme="@style/AppTheme.Toolbar"
+            android:screenOrientation="portrait" />
     </application>
 
 </manifest>

@@ -48,9 +48,7 @@ public abstract class GrassrootActivity extends AppCompatActivity implements Gra
     @Override
     protected void onCreate(Bundle icicle) {
         super.onCreate(icicle);
-//        Debug.startMethodTracing("base_activity");
         ((GrassrootApplication) getApplication()).getAppComponent().plus(getActivityModule()).inject(this);
-
         authResponse = getIntent().getParcelableExtra(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE);
         if (authResponse != null) {
             authResponse.onRequestContinued();
@@ -64,18 +62,6 @@ public abstract class GrassrootActivity extends AppCompatActivity implements Gra
             finish();
         }
         Debug.stopMethodTracing();
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        EventBus.getDefault().unregister(this);
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        EventBus.getDefault().register(this);
     }
 
     private boolean needsToLoginOrRegister() {
