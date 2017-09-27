@@ -2,7 +2,6 @@ package za.org.grassroot2.presenter;
 
 import android.content.Intent;
 import android.net.Uri;
-import android.provider.MediaStore;
 
 import javax.inject.Inject;
 
@@ -13,7 +12,6 @@ import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 import za.org.grassroot2.R;
 import za.org.grassroot2.database.DatabaseService;
-
 import za.org.grassroot2.model.MediaFile;
 import za.org.grassroot2.model.alert.LiveWireAlert;
 import za.org.grassroot2.model.dto.BtnGrouping;
@@ -330,7 +328,7 @@ public class MainPresenter extends LoggedInViewPresenterImpl<MainView> {
                     tryLaunchVideo();
                     break;
                 case PICK_GALLERY_ACTION:
-                    pickGallery();
+                    tryPickFromGallery();
                     break;
                 case CONFIRM_ACTION:
                     handleConfirmResponse(parameters);
@@ -339,6 +337,12 @@ public class MainPresenter extends LoggedInViewPresenterImpl<MainView> {
                     Timber.e("ERROR! Tried to call button handlers without well defined action");
             }
         }
+    }
+
+    private void tryPickFromGallery() {
+        disposableOnDetach(view.ensureExternalStoragePermission().subscribe(result -> {
+            pickFromGallery();
+        }, Throwable::printStackTrace));
     }
 
     private void tryLaunchPhoto() {
@@ -357,19 +361,16 @@ public class MainPresenter extends LoggedInViewPresenterImpl<MainView> {
                     MediaFile mediaFile = databaseService.loadObjectByUid(MediaFile.class, s);
                     Timber.e("mediaFile stored and retrieved, = " + mediaFile);
                     // for some reason, sometimes it comes back null ...
-                    Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                    cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.parse(mediaFile.getContentProviderPath()));
-                    cameraIntent.putExtra("MY_UID", s);
                     Timber.d("media URI passed to intent: " + Uri.parse(mediaFile.getContentProviderPath()));
                     currentMediaFileUid = s;
-                    view.launchActivityForResult(cameraIntent, TAKE_PHOTO_ACTION);
+                    view.cameraForResult(Uri.parse(mediaFile.getContentProviderPath()), s, TAKE_PHOTO_ACTION);
                 }, throwable -> {
                     Timber.e(throwable, "Error creating file");
                     view.showErrorToast(R.string.error_file_creation);
                 }));
     }
 
-    private void pickGallery() {
+    private void pickFromGallery() {
         disposableOnDetach(mediaService.createFileForMedia("image/jpeg", MediaFile.FUNCTION_LIVEWIRE)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())

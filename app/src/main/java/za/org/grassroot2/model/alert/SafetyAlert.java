@@ -17,7 +17,7 @@ public class SafetyAlert implements EntityForDownload {
 
     @DatabaseField(id = true)
     @SerializedName("uid")
-    private UUID uid;
+    private String uid;
 
     @DatabaseField(canBeNull = false)
     private long createdDateTimeMillis;
@@ -44,7 +44,7 @@ public class SafetyAlert implements EntityForDownload {
     }
 
     @Override
-    public UUID getUid() {
+    public String getUid() {
         return uid;
     }
 

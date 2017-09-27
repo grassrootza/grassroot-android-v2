@@ -19,10 +19,10 @@ public class Todo implements Task {
 
     @DatabaseField(id = true)
     @SerializedName("taskUid")
-    private UUID uid;
+    private String uid;
 
     @DatabaseField
-    private UUID parentUid;
+    private String parentUid;
 
     @DatabaseField
     private GrassrootEntityType parentEntityType;
@@ -68,12 +68,12 @@ public class Todo implements Task {
     private boolean publicTodo = false; // no such thing yet, but flexibility for future
 
     @Override
-    public UUID getUid() {
+    public String getUid() {
         return uid;
     }
 
     @Override
-    public UUID getParentUid() {
+    public String getParentUid() {
         return parentUid;
     }
 

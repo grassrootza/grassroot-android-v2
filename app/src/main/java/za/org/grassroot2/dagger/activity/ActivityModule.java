@@ -9,7 +9,6 @@ import dagger.Module;
 import dagger.Provides;
 import za.org.grassroot2.dagger.ActivityContext;
 import za.org.grassroot2.dagger.ApplicationContext;
-import za.org.grassroot2.dagger.user.UserScope;
 import za.org.grassroot2.database.DatabaseService;
 import za.org.grassroot2.presenter.LoginPresenter;
 import za.org.grassroot2.presenter.MainPresenter;
@@ -21,6 +20,7 @@ import za.org.grassroot2.services.MediaServiceImpl;
 import za.org.grassroot2.services.NetworkService;
 import za.org.grassroot2.services.UserDetailsService;
 import za.org.grassroot2.services.rest.GrassrootAuthApi;
+import za.org.grassroot2.util.ImageUtil;
 import za.org.grassroot2.util.StringDescriptionProvider;
 
 /**
@@ -49,9 +49,15 @@ public class ActivityModule {
 
     @Provides
     @PerActivity
+    ImageUtil provideImageUtil(@ActivityContext AppCompatActivity act) {
+        return new ImageUtil(act);
+    }
+
+    @Provides
+    @PerActivity
     MediaService provideMediaService(@ApplicationContext Context applicationContext, DatabaseService realmService,
-                                     NetworkService networkService) {
-        return new MediaServiceImpl(applicationContext, realmService, networkService);
+                                     NetworkService networkService, ImageUtil imageUtil) {
+        return new MediaServiceImpl(applicationContext, realmService, networkService, imageUtil);
     }
 
     @Provides

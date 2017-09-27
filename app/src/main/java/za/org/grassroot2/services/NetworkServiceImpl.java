@@ -37,8 +37,8 @@ import za.org.grassroot2.services.rest.RestResponse;
 public class NetworkServiceImpl implements NetworkService {
 
     private final UserDetailsService userDetailsService;
-    private final GrassrootUserApi grassrootUserApi;
-    private final DatabaseService databaseService;
+    private final GrassrootUserApi   grassrootUserApi;
+    private final DatabaseService    databaseService;
 
     private String currentUserUid; // given frequency of calling/using, best to stash
 
@@ -93,7 +93,7 @@ public class NetworkServiceImpl implements NetworkService {
                     List<Group> changedGroups = listRestResponse.getData();
                     List<String> changedUids = new ArrayList<>();
                     for (int i = 0; i < changedGroups.size(); i++) {
-                        changedUids.add(changedGroups.get(i).getUid().toString());
+                        changedUids.add(changedGroups.get(i).getUid());
                     }
                     return grassrootUserApi.fetchGroupsInfo(currentUserUid, changedUids);
                 })
@@ -163,7 +163,7 @@ public class NetworkServiceImpl implements NetworkService {
     private Observable<UploadResult> uploadMediaFile(final MediaFile mediaFile) {
         final Call<RestResponse<String>> call = grassrootUserApi.sendMediaFile(
                 currentUserUid,
-                mediaFile.getUid().toString(),
+                mediaFile.getUid(),
                 mediaFile.getMediaFunction(),
                 mediaFile.getMimeType(),
                 getImageFromPath(mediaFile, "file"));
@@ -183,7 +183,7 @@ public class NetworkServiceImpl implements NetworkService {
             try {
                 Response<RestResponse<String>> response = networkCall.execute();
                 if (response.isSuccessful()) {
-                    e.onNext(new UploadResult(entity.getType(), entity.getUid().toString(), response.body().getData()));
+                    e.onNext(new UploadResult(entity.getType(), entity.getUid(), response.body().getData()));
                 } else {
                     e.onNext(new UploadResult(entity.getType(), new ServerErrorException()));
                 }

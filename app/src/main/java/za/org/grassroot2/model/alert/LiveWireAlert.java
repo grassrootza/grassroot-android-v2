@@ -26,8 +26,8 @@ public class LiveWireAlert implements EntityForUpload {
     public static final String TYPE_GENERIC = "INSTANT"; // server calls it this, for legacy reasons
     public static final String TYPE_MEETING = "MEETING";
 
-    @DatabaseField(generatedId = true)
-    private UUID uid;
+    @DatabaseField(id = true)
+    private String uid;
     @DatabaseField
     private String serverUid;
     @DatabaseField
@@ -53,7 +53,7 @@ public class LiveWireAlert implements EntityForUpload {
 
     public LiveWireAlert() {
         // for Realm/Dagger
-        this.uid = UUID.randomUUID();
+        this.uid = UUID.randomUUID().toString();
     }
 
     private LiveWireAlert(Builder builder) {
@@ -162,7 +162,7 @@ public class LiveWireAlert implements EntityForUpload {
 
     }
 
-    public UUID getUid() {
+    public String getUid() {
         return uid;
     }
 

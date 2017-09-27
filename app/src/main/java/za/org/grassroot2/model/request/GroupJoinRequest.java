@@ -16,7 +16,7 @@ public class GroupJoinRequest implements Request {
 
     @DatabaseField(id = true)
     @SerializedName("requestUid")
-    private UUID uid;
+    private String uid;
     @DatabaseField(canBeNull = false)
     @SerializedName("groupUid")
     private UUID groupUid;
@@ -42,7 +42,7 @@ public class GroupJoinRequest implements Request {
         return GrassrootEntityType.GROUP_JOIN_REQUEST;
     }
 
-    public UUID getUid() {
+    public String getUid() {
         return uid;
     }
 

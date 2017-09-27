@@ -1,5 +1,6 @@
 package za.org.grassroot2.view.adapter;
 
+import android.media.MediaScannerConnection;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -46,7 +47,7 @@ public class ItemSelectionAdapter extends RecyclerView.Adapter<ItemSelectionAdap
         if (item != null) {
             holder.itemHeading.setText(item.getName());
             holder.itemDescription.setText(item.getDescription());
-            holder.itemUid = item.getUid().toString();
+            holder.itemUid = item.getUid();
 
             // todo: disposableOnDetach "takeUntil" detaches
             RxView.clicks(holder.itemRoot)
