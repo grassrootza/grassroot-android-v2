@@ -79,6 +79,7 @@
     <string name="join_an_existing_one">JOIN AN EXISTING ONE</string>
     <string name="create_a_new_group">CREATE A NEW GROUP</string>
     <string name="no_group_info">You are not part of any group at the moment.</string>
+    <string name="sync_problem">Sync failed. Please try to sync once again.</string>
 
     <plurals name="member_count" >
         <item quantity="one">%d member</item>

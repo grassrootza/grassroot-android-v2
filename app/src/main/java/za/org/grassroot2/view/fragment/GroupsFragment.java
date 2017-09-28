@@ -2,7 +2,6 @@ package za.org.grassroot2.view.fragment;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -11,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
+import android.widget.TextView;
 
 import java.util.List;
 
@@ -27,10 +27,11 @@ import za.org.grassroot2.view.adapter.GroupsAdapter;
 
 public class GroupsFragment extends GrassrootFragment implements GroupFragmentPresenter.GroupFragmentView {
 
-    @Inject                           GroupFragmentPresenter presenter;
-    @BindView(R.id.toolbar)           Toolbar                toolbar;
-    @BindView(R.id.emptyInfo)         View                   emptyInfo;
-    @BindView(R.id.groupRecyclerView) RecyclerView           groupsRecyclerView;
+    @Inject                            GroupFragmentPresenter presenter;
+    @BindView(R.id.toolbar)            Toolbar                toolbar;
+    @BindView(R.id.emptyInfoContainer) View                   emptyInfoContainer;
+    @BindView(R.id.emptyInfo)          TextView               emptyInfo;
+    @BindView(R.id.groupRecyclerView)  RecyclerView           groupsRecyclerView;
 
     public GroupsFragment() {
     }
@@ -81,7 +82,7 @@ public class GroupsFragment extends GrassrootFragment implements GroupFragmentPr
 
     @Override
     public void render(List<Group> groups) {
-        emptyInfo.setVisibility(View.GONE);
+        emptyInfoContainer.setVisibility(View.GONE);
         groupsRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         GroupsAdapter adapter = new GroupsAdapter(getActivity(), groups);
         View footer = LayoutInflater.from(getActivity()).inflate(R.layout.item_group_footer, null, false);
@@ -91,12 +92,23 @@ public class GroupsFragment extends GrassrootFragment implements GroupFragmentPr
 
     @Override
     public void renderEmpty() {
-        emptyInfo.setVisibility(View.VISIBLE);
-        groupsRecyclerView.setVisibility(View.GONE);
+        displayEmptyLayout();
+        emptyInfo.setText(R.string.no_group_info);
+    }
+
+    @Override
+    public void renderEmptyFailedSync() {
+        displayEmptyLayout();
+        emptyInfo.setText(R.string.sync_problem);
     }
 
     @OnClick(R.id.fab)
     public void fabClick() {
 
+    }
+
+    private void displayEmptyLayout() {
+        emptyInfoContainer.setVisibility(View.VISIBLE);
+        groupsRecyclerView.setVisibility(View.GONE);
     }
 }

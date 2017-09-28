@@ -19,9 +19,10 @@ public class UserProfile {
     private String displayName;
     @DatabaseField
     private String systemRole;
+    @DatabaseField
+    private boolean syncComplete = false;
 
     public UserProfile() {
-        // for Android / Realm
     }
 
     public UserProfile(String uid, String msisdn, String displayName, String systemRole) {
@@ -78,6 +79,14 @@ public class UserProfile {
         this.systemRole = systemRole;
     }
 
+    public boolean isSyncComplete() {
+        return syncComplete;
+    }
+
+    public void setSyncComplete(boolean syncComplete) {
+        this.syncComplete = syncComplete;
+    }
+
     @Override
     public String toString() {
         return "UserProfile{" +
@@ -85,6 +94,7 @@ public class UserProfile {
                 ", msisdn='" + msisdn + '\'' +
                 ", displayName='" + displayName + '\'' +
                 ", systemRole='" + systemRole + '\'' +
+                ", syncComplete=" + syncComplete +
                 '}';
     }
 }

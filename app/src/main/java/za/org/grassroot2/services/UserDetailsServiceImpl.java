@@ -10,9 +10,6 @@ import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 
 import io.reactivex.Single;
-import io.reactivex.SingleEmitter;
-import io.reactivex.SingleOnSubscribe;
-import io.reactivex.annotations.NonNull;
 import timber.log.Timber;
 import za.org.grassroot2.database.DatabaseService;
 import za.org.grassroot2.model.UserProfile;
@@ -47,7 +44,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
     // todo: disposableOnDetach exception handling, also calls to server, GCM, etc
     @Override
-    public Single<Boolean> logout(final boolean deleteAndroidAccount, final boolean wipeRealm) {
+    public Single<Boolean> logout(final boolean deleteAndroidAccount, final boolean wipeDb) {
         return Single.create(e -> {
             // first, wipe the details stored in account
             Account account = getAccount();
@@ -61,11 +58,24 @@ public class UserDetailsServiceImpl implements UserDetailsService {
                 }
             }
             databaseService.removeUserProfile(); // then, wipe the UID etc
-            if (wipeRealm) {
+            if (wipeDb) {
                 databaseService.wipeDatabase();
             }
             e.onSuccess(true);
         });
+    }
+
+    @Override
+    public boolean isSyncCompleted() {
+        UserProfile userProfile = databaseService.loadUserProfile();
+        return userProfile != null && userProfile.isSyncComplete();
+    }
+
+    @Override
+    public void setSyncCompleted() {
+        UserProfile userProfile = databaseService.loadUserProfile();
+        userProfile.setSyncComplete(true);
+        databaseService.storeObject(UserProfile.class, userProfile);
     }
 
     public String getCurrentToken() {
