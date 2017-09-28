@@ -1,6 +1,5 @@
 package za.org.grassroot2.view;
 
-import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.app.Activity;
 import android.content.Intent;
@@ -9,6 +8,7 @@ import android.text.InputType;
 import android.text.TextUtils;
 import android.view.inputmethod.EditorInfo;
 
+import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
 import javax.inject.Inject;
@@ -16,7 +16,6 @@ import javax.inject.Inject;
 import butterknife.ButterKnife;
 import io.reactivex.Observable;
 import io.reactivex.annotations.NonNull;
-import timber.log.Timber;
 import za.org.grassroot2.BuildConfig;
 import za.org.grassroot2.GrassrootApplication;
 import za.org.grassroot2.R;
@@ -30,8 +29,7 @@ import za.org.grassroot2.view.fragment.SingleTextInputFragment;
 public class LoginActivity extends GrassrootActivity implements LoginView {
 
     public static final String EXTRA_NEW_ACCOUNT = "extra_new_account";
-    @Inject
-    LoginPresenter loginPresenter;
+    @Inject LoginPresenter loginPresenter;
 
     private SingleTextInputFragment currentFragment; // just as a pointer
     private SingleTextInputFragment usernameFragment;
@@ -137,12 +135,6 @@ public class LoginActivity extends GrassrootActivity implements LoginView {
         intent.putExtra(AccountManager.KEY_ACCOUNT_NAME, AuthConstants.ACCOUNT_NAME);
         intent.putExtra(AccountManager.KEY_ACCOUNT_TYPE, AuthConstants.ACCOUNT_TYPE);
         intent.putExtra(AccountManager.KEY_AUTHTOKEN, authToken);
-//        Account account = new Account(AuthConstants.ACCOUNT_NAME, AuthConstants.ACCOUNT_TYPE);
-//        if (getIntent().getBooleanExtra(EXTRA_NEW_ACCOUNT, false)) {
-//            accountManager.addAccountExplicitly(account, authToken, null);
-//        } else {
-//            accountManager.setPassword(account, authToken);
-//        }
         setAccountAuthenticatorResult(intent.getExtras());
         setResult(Activity.RESULT_OK, intent);
         finish();
@@ -162,6 +154,18 @@ public class LoginActivity extends GrassrootActivity implements LoginView {
     @Override
     public void cleanUpActivity() {
         loginPresenter.detach(this);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        EventBus.getDefault().unregister(this);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        EventBus.getDefault().register(this);
     }
 
     @Subscribe

@@ -7,7 +7,5 @@ import io.reactivex.Observable;
  */
 
 public interface FragmentView {
-
     Observable<Integer> viewCreated();
-
 }

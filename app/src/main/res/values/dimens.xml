@@ -22,5 +22,9 @@
 
     <!-- progress bar -->
     <dimen name="prog_bar_mdm_size">84dip</dimen>
+    <!-- Default screen margins, per the Android Design guidelines. -->
+    <dimen name="activity_horizontal_margin">16dp</dimen>
+    <dimen name="activity_vertical_margin">16dp</dimen>
+    <dimen name="default_font_size">14sp</dimen>
 
 </resources>

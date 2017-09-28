@@ -8,6 +8,9 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <style name="AppTheme.Toolbar" parent="Theme.AppCompat.NoActionBar">
+    </style>
+
     <!-- Theme for no title bar -->
     <style name="Theme.AppCompat.FullScreen" parent="AppTheme">
         <item name="windowNoTitle">true</item>
