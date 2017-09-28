@@ -17,6 +17,8 @@ public interface UserDetailsService extends GrassrootService {
 
     Single<Boolean> logout(boolean deleteAndroidAccount, boolean wipeRealm);
 
+    boolean isSyncCompleted();
+    void setSyncCompleted();
     String getCurrentToken();
     String getCurrentUserUid();
     String getCurrentUserMsisdn();
