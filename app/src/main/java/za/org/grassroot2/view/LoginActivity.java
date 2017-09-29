@@ -152,11 +152,6 @@ public class LoginActivity extends GrassrootActivity implements LoginView {
     }
 
     @Override
-    public void cleanUpActivity() {
-        loginPresenter.detach(this);
-    }
-
-    @Override
     protected void onPause() {
         super.onPause();
         EventBus.getDefault().unregister(this);
@@ -169,7 +164,7 @@ public class LoginActivity extends GrassrootActivity implements LoginView {
     }
 
     @Subscribe
-    void singleInput(SingleTextInputFragment.SingleInputTextEvent e) {
+    public void singleInput(SingleTextInputFragment.SingleInputTextEvent e) {
         loginPresenter.processInput(e.value);
     }
 

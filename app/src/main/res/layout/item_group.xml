@@ -10,19 +10,21 @@
         android:id="@+id/root"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
+        android:clickable="true"
+        android:foreground="?android:attr/selectableItemBackground"
+        app:cardBackgroundColor="@color/white"
         app:cardCornerRadius="8dp"
         app:cardElevation="0dp">
 
         <android.support.constraint.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@color/white">
+            android:layout_height="wrap_content">
 
             <RelativeLayout
                 android:id="@+id/imageContainer"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginLeft="13dp"
                 android:layout_marginStart="13dp"
                 android:layout_marginTop="22dp"
                 app:layout_constraintStart_toStartOf="parent"

@@ -7,8 +7,8 @@ import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
-import java.util.UUID;
 
 import za.org.grassroot2.model.MediaFile;
 import za.org.grassroot2.model.enums.GrassrootEntityType;
@@ -30,26 +30,35 @@ public class Vote implements Task {
     private GrassrootEntityType parentEntityType;
 
     // note: watch out for nullable here, may want to allow it depending on user route (once NLU etc in place)
+    @SerializedName("title")
     @DatabaseField(canBeNull = false)
     private String subject;
 
     @DatabaseField
     private String description;
 
+    @SerializedName("createdByUserName")
     @DatabaseField(canBeNull = false)
     private String callerName;
 
     @DatabaseField
     private long createdDateTimeMillis;
+
     @DatabaseField
+    @SerializedName("deadlineMillis")
     private long closingDateTimeMillis;
     @DatabaseField
     private long lastChangeTimeServerMillis;
 
+    @SerializedName("voteCount")
     @DatabaseField
-    private List<String> voteOptions;
+    private HashMap<String, Integer> voteOptions;
+
     @DatabaseField
     private String voteResponse;
+
+    @DatabaseField
+    private List<String> tags;
 
     @DatabaseField(foreign = true)
     private MediaFile mediaFile;
@@ -95,8 +104,8 @@ public class Vote implements Task {
     }
 
     @Override
-    public Date getDeadlineDateTime() {
-        return new Date(closingDateTimeMillis);
+    public long getDeadlineMillis() {
+        return closingDateTimeMillis;
     }
 
     @Override
@@ -118,5 +127,17 @@ public class Vote implements Task {
     @Override
     public boolean isPublic() {
         return false; // see above
+    }
+
+    public List<String> getTags() {
+        return tags;
+    }
+
+    public String getCallerName() {
+        return callerName;
+    }
+
+    public HashMap<String, Integer> getVoteOptions() {
+        return voteOptions;
     }
 }

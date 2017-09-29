@@ -9,19 +9,17 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 import io.reactivex.Single;
-import io.reactivex.SingleEmitter;
-import io.reactivex.SingleOnSubscribe;
 import timber.log.Timber;
 import za.org.grassroot2.model.Group;
 import za.org.grassroot2.model.UserProfile;
+import za.org.grassroot2.model.enums.GrassrootEntityType;
 import za.org.grassroot2.model.network.EntityForDownload;
-
-/**
- * Created by qbasso on 18.09.2017.
- */
+import za.org.grassroot2.model.task.Meeting;
+import za.org.grassroot2.model.task.Task;
+import za.org.grassroot2.model.task.Todo;
+import za.org.grassroot2.model.task.Vote;
 
 public class DatabaseServiceImpl implements DatabaseService {
 
@@ -31,6 +29,7 @@ public class DatabaseServiceImpl implements DatabaseService {
     public DatabaseServiceImpl(DatabaseHelper helper) {
         this.helper = helper;
     }
+
     @Override
     public void wipeDatabase() {
         helper.clearDatabase();
@@ -112,6 +111,42 @@ public class DatabaseServiceImpl implements DatabaseService {
     }
 
     @Override
+    public Single<List<Task>> loadTasksForGroup(String groupUid, GrassrootEntityType type) {
+        return Single.create(e -> {
+            List<Task> returnList = new ArrayList<>();
+            if (type == null) {
+                returnList.addAll(loadObjectsByParentUid(Meeting.class, groupUid));
+                returnList.addAll(loadObjectsByParentUid(Vote.class, groupUid));
+                returnList.addAll(loadObjectsByParentUid(Todo.class, groupUid));
+            } else {
+                switch (type) {
+                    case MEETING:
+                        returnList.addAll(loadObjectsByParentUid(Meeting.class, groupUid));
+                        break;
+                    case VOTE:
+                        returnList.addAll(loadObjectsByParentUid(Vote.class, groupUid));
+                        break;
+                    case TODO:
+                        returnList.addAll(loadObjectsByParentUid(Todo.class, groupUid));
+                        break;
+                }
+            }
+            e.onSuccess(returnList);
+        });
+    }
+
+    public <E> List<E> loadObjectsByParentUid(Class<E> cls, String parentUid) {
+        List<E> result = new ArrayList<>();
+        try {
+            Dao<E, ?> taskDao = helper.getDao(cls);
+            result = taskDao.queryBuilder().where().eq("parentUid", parentUid).query();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return result;
+    }
+
+    @Override
     public <E> Single<E> store(final Class<E> cls, final E object) {
         return Single.create(e -> {
             try {
@@ -187,6 +222,26 @@ public class DatabaseServiceImpl implements DatabaseService {
             }
         } catch (SQLException e) {
             e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void storeTasks(List<Task> data) {
+        for (Task t : data) {
+            GrassrootEntityType type = t.getType();
+            switch (type) {
+                case VOTE:
+                    storeObject(Vote.class, (Vote) t);
+                    break;
+                case MEETING:
+                    storeObject(Meeting.class, (Meeting) t);
+                    break;
+                case TODO:
+                    storeObject(Todo.class, (Todo) t);
+                    break;
+                default:
+                    break;
+            }
         }
     }
 }

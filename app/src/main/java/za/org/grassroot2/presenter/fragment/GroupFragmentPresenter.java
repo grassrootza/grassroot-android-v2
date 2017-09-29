@@ -9,6 +9,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import io.reactivex.Observable;
 import za.org.grassroot2.database.DatabaseService;
 import za.org.grassroot2.model.Group;
 import za.org.grassroot2.services.UserDetailsService;
@@ -53,6 +54,7 @@ public class GroupFragmentPresenter extends BaseFragmentPresenter<GroupFragmentP
             view.renderEmpty();
         } else {
             view.render(groups);
+            disposableOnDetach(view.itemClick().subscribe(s -> view.openDetails(s), Throwable::printStackTrace));
         }
     }
 
@@ -66,6 +68,10 @@ public class GroupFragmentPresenter extends BaseFragmentPresenter<GroupFragmentP
 
         void renderEmpty();
 
+        Observable<String> itemClick();
+
         void renderEmptyFailedSync();
+
+        void openDetails(String groupUid);
     }
 }

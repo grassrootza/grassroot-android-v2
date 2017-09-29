@@ -7,17 +7,13 @@ import za.org.grassroot2.model.SelectableItem;
 import za.org.grassroot2.model.enums.GrassrootEntityType;
 import za.org.grassroot2.model.network.EntityForDownload;
 
-/**
- * Created by luke on 2017/09/20.
- */
-
 public interface Task extends EntityForDownload, SelectableItem {
 
     String getParentUid();
     GrassrootEntityType getParentEntityType();
 
     Date getCreatedDateTime();
-    Date getDeadlineDateTime();
+    long getDeadlineMillis();
 
     boolean hasResponded();
     boolean hasMedia();

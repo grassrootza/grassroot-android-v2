@@ -19,18 +19,20 @@ import io.reactivex.functions.Predicate;
 import io.reactivex.subjects.PublishSubject;
 import timber.log.Timber;
 import za.org.grassroot2.GrassrootApplication;
+import za.org.grassroot2.presenter.fragment.BaseFragmentPresenter;
 import za.org.grassroot2.view.FragmentView;
 
 /**
  * Created by luke on 2017/08/10.
  */
 
-public abstract class GrassrootFragment extends Fragment implements FragmentView {
+public abstract class GrassrootFragment<P extends BaseFragmentPresenter> extends Fragment implements FragmentView {
 
     protected static final int ACTION_FRAGMENT_ATTACHED = 1;
     protected static final int ACTION_FRAGMENT_CREATED = 2;
     protected static final int ACTION_FRAGMENT_VIEW_CREATED = 3;
 
+    protected P presenter;
     protected Unbinder unbinder;
     protected PublishSubject<Integer> lifecyclePublisher = PublishSubject.create();
     protected CompositeDisposable disposables = new CompositeDisposable();

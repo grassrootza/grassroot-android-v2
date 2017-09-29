@@ -2,12 +2,14 @@ package za.org.grassroot2.services;
 
 import java.util.List;
 
+import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import za.org.grassroot2.model.Group;
 import za.org.grassroot2.model.UploadResult;
 import za.org.grassroot2.model.enums.GrassrootEntityType;
 import za.org.grassroot2.model.network.EntityForDownload;
 import za.org.grassroot2.model.network.EntityForUpload;
+import za.org.grassroot2.model.task.Task;
 
 /**
  * Created by luke on 2017/08/16.
@@ -27,4 +29,5 @@ public interface NetworkService {
     <E extends EntityForDownload> Observable<List<E>> downloadAllChangedOrNewEntities(GrassrootEntityType entityType, boolean forceFullRefresh);
     Observable<List<Group>> downloadAllChangedOrNewGroups();
 
+    Flowable<Resource<List<Task>>> getTasks(String groupId, GrassrootEntityType type);
 }
