@@ -34,10 +34,10 @@ public class UserDetailsServiceImpl implements UserDetailsService {
                                                 final String userSystemRole,
                                                 final String userToken) {
         return Single.create(e -> {
+            UserProfile userProfile = databaseService.updateOrCreateUserProfile(userUid, userPhone, userDisplayName, userSystemRole);
             final Account account = getOrCreateAccount();
             accountManager.setAuthToken(account, AuthConstants.AUTH_TOKENTYPE, userToken);
             Timber.v("stored auth token, number accounts = " + accountManager.getAccountsByType(AuthConstants.ACCOUNT_TYPE).length);
-            UserProfile userProfile = databaseService.updateOrCreateUserProfile(userUid, userPhone, userDisplayName, userSystemRole);
             e.onSuccess(userProfile);
         });
     }
@@ -49,6 +49,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
             // first, wipe the details stored in account
             Account account = getAccount();
             if (account != null) {
+                ContentResolver.setIsSyncable(account, CONTENT_AUTHORITY, 0);
                 accountManager.invalidateAuthToken(AuthConstants.ACCOUNT_TYPE,
                         accountManager.peekAuthToken(account, AuthConstants.AUTH_TOKENTYPE));
                 accountManager.setPassword(account, null);

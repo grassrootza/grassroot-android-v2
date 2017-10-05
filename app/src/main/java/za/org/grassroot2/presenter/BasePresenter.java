@@ -5,7 +5,6 @@ import android.util.Log;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import za.org.grassroot2.model.exception.AuthenticationInvalidException;
-import za.org.grassroot2.model.exception.NetworkUnavailableException;
 import za.org.grassroot2.model.exception.ServerUnreachableException;
 import za.org.grassroot2.view.GrassrootView;
 
@@ -31,7 +30,7 @@ public abstract class BasePresenter<T extends GrassrootView> implements Grassroo
     }
 
     @Override
-    public void handleNetworkConnectionError(NetworkUnavailableException t) {
+    public void handleNetworkConnectionError(Throwable t) {
         Log.e("CONNECTION", t.toString());
         view.closeProgressBar();
         view.showConnectionFailedDialog().subscribe();

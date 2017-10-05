@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.TextView;
 
 import org.greenrobot.eventbus.EventBus;
@@ -51,22 +52,9 @@ public class GroupsFragment extends GrassrootFragment implements GroupFragmentPr
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
-        EventBus.getDefault().register(this);
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        EventBus.getDefault().unregister(this);
-    }
-
-    @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
-        presenter.attach(this);
     }
 
     @Override
@@ -80,6 +68,7 @@ public class GroupsFragment extends GrassrootFragment implements GroupFragmentPr
         super.onActivityCreated(savedInstanceState);
         ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
         ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(R.string.title_groups);
+        presenter.attach(this);
         presenter.onViewCreated();
     }
 
@@ -101,6 +90,7 @@ public class GroupsFragment extends GrassrootFragment implements GroupFragmentPr
 
     @Override
     public void render(List<Group> groups) {
+        groupsRecyclerView.setVisibility(View.VISIBLE);
         emptyInfoContainer.setVisibility(View.GONE);
         groupsRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         groupsAdapter = new GroupsAdapter(getActivity(), groups);
@@ -134,11 +124,6 @@ public class GroupsFragment extends GrassrootFragment implements GroupFragmentPr
     @OnClick(R.id.fab)
     public void fabClick() {
 
-    }
-
-    @Subscribe
-    public void syncCompleted(SyncAdapter.SyncCompletedEvent e) {
-        presenter.onViewCreated();
     }
 
     private void displayEmptyLayout() {

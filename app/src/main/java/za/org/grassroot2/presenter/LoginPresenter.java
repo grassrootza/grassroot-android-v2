@@ -2,11 +2,7 @@ package za.org.grassroot2.presenter;
 
 import javax.inject.Inject;
 
-import io.reactivex.SingleObserver;
 import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.annotations.NonNull;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 import za.org.grassroot2.BuildConfig;
@@ -15,13 +11,11 @@ import za.org.grassroot2.model.TokenResponse;
 import za.org.grassroot2.model.exception.InvalidPhoneNumberException;
 import za.org.grassroot2.model.exception.InvalidViewForPresenterException;
 import za.org.grassroot2.model.exception.LifecycleOutOfSyncException;
-import za.org.grassroot2.model.exception.NetworkUnavailableException;
 import za.org.grassroot2.model.util.PhoneNumberUtil;
 import za.org.grassroot2.services.UserDetailsService;
 import za.org.grassroot2.services.account.AuthConstants;
 import za.org.grassroot2.services.rest.GrassrootAuthApi;
 import za.org.grassroot2.services.rest.RestResponse;
-import za.org.grassroot2.services.rest.RestSubscriber;
 import za.org.grassroot2.view.GrassrootView;
 import za.org.grassroot2.view.LoginView;
 import za.org.grassroot2.view.activity.MainActivity;
@@ -32,24 +26,24 @@ public class LoginPresenter extends BasePresenter<LoginView> {
 
     private String userName;
 
-    private GrassrootAuthApi grassrootAuthApi;
+    private GrassrootAuthApi   grassrootAuthApi;
     private UserDetailsService userDetailsService;
 
     public void processInput(CharSequence value) {
-        if (currentState == State.USERNAME) {
-            try {
+        try {
+            if (currentState == State.USERNAME) {
+
                 stashUsernameAndRequestOtp(PhoneNumberUtil.convertToMsisdn(value));
-            } catch (InvalidPhoneNumberException e) {
-                Timber.e("error converting number to msisdn! : " + value);
-                view.showErrorToast(R.string.error_phone_number);
-            } catch (NetworkUnavailableException e) {
-                handleNetworkConnectionError(e);
-            } catch (Exception e) {
-                handleUnknownError(e);
+
+            } else if (currentState == State.OTP) {
+                validateOtpEntry(value);
+                currentState = State.NEXT;
             }
-        } else if (currentState == State.OTP){
-            validateOtpEntry(value);
-            currentState = State.NEXT;
+        } catch (InvalidPhoneNumberException e) {
+            Timber.e("error converting number to msisdn! : " + value);
+            view.showErrorToast(R.string.error_phone_number);
+        } catch (Throwable e) {
+            handleNetworkConnectionError(e);
         }
     }
 
@@ -80,7 +74,7 @@ public class LoginPresenter extends BasePresenter<LoginView> {
             disposableOnDetach(view.usernameChanged().subscribe(charSequence -> {
                 Timber.v("username changed to: " + charSequence);
                 view.toggleNextButton(PhoneNumberUtil.isPossibleNumber(charSequence));
-            }, Throwable::printStackTrace));
+            }, java.lang.Throwable::printStackTrace));
         } catch (NullPointerException e) {
             e.printStackTrace();
             handleGenericKnownException(new LifecycleOutOfSyncException());
@@ -92,7 +86,7 @@ public class LoginPresenter extends BasePresenter<LoginView> {
             if (sequence.length() >= MIN_OTP_LENGTH) {
                 view.toggleNextButton(true);
             }
-        }, Throwable::printStackTrace));
+        }, java.lang.Throwable::printStackTrace));
     }
 
     private void stashUsernameAndRequestOtp(String msisdn) {
@@ -112,7 +106,7 @@ public class LoginPresenter extends BasePresenter<LoginView> {
                 }));
     }
 
-    private void validateOtpEntry(CharSequence charSequence) throws NetworkUnavailableException {
+    private void validateOtpEntry(CharSequence charSequence) throws Throwable {
         // call the authentication service and check if these are okay, and if so, store and continue
         view.showProgressBar();
         disposableOnDetach(grassrootAuthApi
@@ -137,6 +131,6 @@ public class LoginPresenter extends BasePresenter<LoginView> {
                     view.closeProgressBar();
                     // need to pass back the JWT to the activity to ensure storage (via setResult)
                     view.loginSuccessContinue(tokenAndUserDetails.getToken(), MainActivity.class);
-                }, Throwable::printStackTrace));
+                }, java.lang.Throwable::printStackTrace));
     }
 }

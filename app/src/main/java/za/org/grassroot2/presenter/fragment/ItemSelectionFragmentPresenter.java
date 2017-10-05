@@ -25,7 +25,7 @@ public class ItemSelectionFragmentPresenter extends BaseFragmentPresenter<ItemSe
     @Override
     public void onViewCreated() {
         List<SelectableItem> data = new ArrayList<>();
-        data.addAll(databaseService.loadObjectsForSelection(Group.class));
+        data.addAll(databaseService.loadObjects(Group.class));
         view.renderResults(data);
     }
 

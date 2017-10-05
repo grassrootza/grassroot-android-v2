@@ -98,7 +98,22 @@ public class DatabaseServiceImpl implements DatabaseService {
     }
 
     @Override
-    public <E> List<E> loadObjectsForSelection(Class<E> clazz) {
+    public Map<String, Long> getTasksLastChangedTimestamp(String groupUid) {
+        Map<String, Long> returnMap = new HashMap<>();
+        EntityForDownload entityHolder;
+        List<Task> tasks = new ArrayList<>();
+        tasks.addAll(loadObjectsByParentUid(Meeting.class, groupUid));
+        tasks.addAll(loadObjectsByParentUid(Vote.class, groupUid));
+        tasks.addAll(loadObjectsByParentUid(Todo.class, groupUid));
+        for (Task row : tasks) {
+            entityHolder = row;
+            returnMap.put(entityHolder.getUid(), entityHolder.getLastTimeChangedServer());
+        }
+        return returnMap;
+    }
+
+    @Override
+    public <E> List<E> loadObjects(Class<E> clazz) {
         List<E> returnList = new ArrayList<>();
         try {
             Dao<E, ?> dao = helper.getDao(clazz);
@@ -243,5 +258,20 @@ public class DatabaseServiceImpl implements DatabaseService {
                     break;
             }
         }
+    }
+
+    @Override
+    public Map<String, Long> getAllTasksLastChangedTimestamp() {
+        Map<String, Long> returnMap = new HashMap<>();
+        EntityForDownload entityHolder;
+        List<Task> tasks = new ArrayList<>();
+        tasks.addAll(loadObjects(Meeting.class));
+        tasks.addAll(loadObjects(Vote.class));
+        tasks.addAll(loadObjects(Todo.class));
+        for (Task row : tasks) {
+            entityHolder = row;
+            returnMap.put(entityHolder.getUid(), entityHolder.getLastTimeChangedServer());
+        }
+        return returnMap;
     }
 }

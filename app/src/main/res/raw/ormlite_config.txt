@@ -1,5 +1,5 @@
 #
-# generated on 2017/10/04 09:01:45
+# generated on 2017/10/09 08:35:23
 #
 # --table-start--
 dataClass=za.org.grassroot2.model.alert.LiveWireAlert
@@ -227,11 +227,6 @@ fieldName=description
 # --field-end--
 # --field-start--
 fieldName=callerName
-canBeNull=false
-# --field-end--
-# --field-start--
-fieldName=locationDescription
-canBeNull=false
 # --field-end--
 # --field-start--
 fieldName=createdDateTimeMillis
@@ -281,7 +276,6 @@ fieldName=description
 # --field-end--
 # --field-start--
 fieldName=recorderName
-canBeNull=false
 # --field-end--
 # --field-start--
 fieldName=needsConfirmation
@@ -343,7 +337,6 @@ fieldName=description
 # --field-end--
 # --field-start--
 fieldName=callerName
-canBeNull=false
 # --field-end--
 # --field-start--
 fieldName=createdDateTimeMillis

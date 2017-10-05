@@ -1,6 +1,6 @@
 package za.org.grassroot2.presenter.fragment;
 
-import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
 
 import java.util.Collections;
 import java.util.List;
@@ -9,15 +9,17 @@ import javax.inject.Inject;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
+import za.org.grassroot2.database.DatabaseService;
 import za.org.grassroot2.model.enums.GrassrootEntityType;
 import za.org.grassroot2.model.task.Task;
-import za.org.grassroot2.services.NetworkService;
-import za.org.grassroot2.services.Status;
+import za.org.grassroot2.presenter.GroupDetailsPresenter;
 import za.org.grassroot2.view.FragmentView;
 
 public class GroupTasksPresenter extends BaseFragmentPresenter<GroupTasksPresenter.AllFragmentView> {
 
-    private NetworkService api;
+    private DatabaseService databaseService;
+    private String groupUid;
+    private GrassrootEntityType type;
 
     @Inject
     public GroupTasksPresenter() {
@@ -27,21 +29,25 @@ public class GroupTasksPresenter extends BaseFragmentPresenter<GroupTasksPresent
     public void onViewCreated() {
     }
 
-    public void loadTasks(String groupUid, GrassrootEntityType type) {
-        api.getTasks(groupUid, type).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(tasks -> {
-            if (!tasks.data.isEmpty()) {
-                Collections.sort(tasks.data, (o1, o2) -> o1.getDeadlineMillis() < o2.getDeadlineMillis() ? 1 : (o1.getDeadlineMillis() > o2.getDeadlineMillis() ? -1 : 0));
-                view.render(tasks.data);
-            } else if (tasks.status == Status.SUCCESS) {
-                EventBus.getDefault().post(new GroupTasksEmptyEvent());
+    public void loadTasks() {
+        databaseService.loadTasksForGroup(groupUid, type).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(tasks -> {
+            if (!tasks.isEmpty()) {
+                Collections.sort(tasks, (o1, o2) -> o1.getDeadlineMillis() < o2.getDeadlineMillis() ? 1 : (o1.getDeadlineMillis() > o2.getDeadlineMillis() ? -1 : 0));
+                view.render(tasks);
+            } else {
                 view.empty();
             }
         }, Throwable::printStackTrace);
     }
 
+    public void init(String groupUid, GrassrootEntityType type) {
+        this.groupUid = groupUid;
+        this.type = type;
+    }
+
     @Inject
-    public void setApi(NetworkService api) {
-        this.api = api;
+    public void setDatabaseService(DatabaseService databaseService) {
+        this.databaseService = databaseService;
     }
 
     public interface AllFragmentView extends FragmentView {
@@ -50,6 +56,9 @@ public class GroupTasksPresenter extends BaseFragmentPresenter<GroupTasksPresent
         void empty();
     }
 
-    public static class GroupTasksEmptyEvent {
+    @Subscribe
+    void refreshData(GroupDetailsPresenter.TasksUpdatedEvent e) {
+        loadTasks();
     }
+
 }

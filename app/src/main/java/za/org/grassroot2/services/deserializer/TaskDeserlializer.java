@@ -19,7 +19,12 @@ public class TaskDeserlializer implements JsonDeserializer<Task> {
     public Task deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
         Task result;
         JsonObject object = json.getAsJsonObject();
-        GrassrootEntityType type = GrassrootEntityType.valueOf(object.get("type").getAsString());
+        GrassrootEntityType type;
+        if (object.has("type")) {
+            type = GrassrootEntityType.valueOf(object.get("type").getAsString());
+        } else {
+            type = GrassrootEntityType.valueOf(object.get("taskType").getAsString());
+        }
         switch (type) {
             case TODO:
                 result = context.deserialize(object, Todo.class);

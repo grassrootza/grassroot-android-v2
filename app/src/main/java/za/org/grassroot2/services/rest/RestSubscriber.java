@@ -5,7 +5,6 @@ import io.reactivex.SingleObserver;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.Disposable;
 import za.org.grassroot2.model.exception.AuthenticationInvalidException;
-import za.org.grassroot2.model.exception.NetworkUnavailableException;
 import za.org.grassroot2.model.exception.ServerUnreachableException;
 import za.org.grassroot2.presenter.GrassrootPresenter;
 import za.org.grassroot2.presenter.BasePresenter;
@@ -34,9 +33,9 @@ public class RestSubscriber<T> implements Observer<T> {
     }
 
     @Override
-    public void onError(@NonNull Throwable e) {
-        if (e instanceof NetworkUnavailableException) {
-            presenter.handleNetworkConnectionError((NetworkUnavailableException) e);
+    public void onError(@NonNull java.lang.Throwable e) {
+        if (e instanceof Throwable) {
+            presenter.handleNetworkConnectionError((Throwable) e);
         } else if (e instanceof AuthenticationInvalidException) {
             presenter.handleAuthenticationError((AuthenticationInvalidException) e);
         } else if (e instanceof ServerUnreachableException) {

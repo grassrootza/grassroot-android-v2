@@ -35,7 +35,7 @@ public class Todo implements Task {
     private String description;
 
     @SerializedName("createdByUserName")
-    @DatabaseField(canBeNull = false)
+    @DatabaseField
     private String recorderName;
 
     @DatabaseField
@@ -112,7 +112,7 @@ public class Todo implements Task {
 
     @Override
     public long getLastTimeChangedServer() {
-        return 0;
+        return lastChangeTimeServerMillis;
     }
 
     @Override
