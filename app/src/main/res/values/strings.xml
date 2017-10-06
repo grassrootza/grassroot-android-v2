@@ -80,8 +80,25 @@
     <string name="create_a_new_group">CREATE A NEW GROUP</string>
     <string name="no_group_info">You are not part of any group at the moment.</string>
     <string name="sync_problem">Sync failed. Please try to sync once again.</string>
+    <string name="button_invite_members">INVITE MEMBERS</string>
+    <string name="button_about">ABOUT</string>
+    <string name="title_all">ALL</string>
+    <string name="title_votes">VOTES</string>
+    <string name="title_meetings">MEETINGS</string>
+    <string name="title_todos">TO-DO</string>
+    <string name="text_meeting_title"><b>%1$s</b> has called a meeting <b>\"%2$s\"</b></string>
+    <string name="text_rsvp">RSVP</string>
+    <string name="text_view">VIEW</string>
+    <string name="text_group_header">CURRENT AND UPCOMING ACTIONS</string>
+    <string name="text_todo_title"><b>%1$s</b> created to-do item <b>\"%2$s\"</b></string>
+    <string name="text_empty_group_items">Nothing happening in your Group just yet</string>
+    <string name="text_vote">VOTE</string>
+    <string name="text_vote_title"><b>%1$s</b> started a vote:\n\"%2$s\"</string>
+    <string name="info_invite_group_members">Get this Group going,\ninvite new members!</string>
+    <string name="info_group_create_item">Why not creating\nyour first action? Tap here!</string>
+    <string name="text_old_header">Older</string>
 
-    <plurals name="member_count" >
+    <plurals name="member_count">
         <item quantity="one">%d member</item>
         <item quantity="other">%d members</item>
     </plurals>
@@ -89,5 +106,9 @@
     <plurals name="last_modified">
         <item quantity="one">%1$d %2$s ago</item>
         <item quantity="other">%1$d %2$ss ago</item>
+    </plurals>
+    <plurals name="vote_count" >
+        <item quantity="one">%1$d vote</item>
+        <item quantity="other">%1$d votes</item>
     </plurals>
 </resources>

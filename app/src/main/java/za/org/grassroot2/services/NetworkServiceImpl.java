@@ -9,7 +9,11 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import io.reactivex.BackpressureStrategy;
+import io.reactivex.Flowable;
+import io.reactivex.FlowableOnSubscribe;
 import io.reactivex.Observable;
+import io.reactivex.Single;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
@@ -27,6 +31,7 @@ import za.org.grassroot2.model.exception.NetworkUnavailableException;
 import za.org.grassroot2.model.exception.ServerErrorException;
 import za.org.grassroot2.model.network.EntityForDownload;
 import za.org.grassroot2.model.network.EntityForUpload;
+import za.org.grassroot2.model.task.Task;
 import za.org.grassroot2.services.rest.GrassrootUserApi;
 import za.org.grassroot2.services.rest.RestResponse;
 
@@ -49,12 +54,7 @@ public class NetworkServiceImpl implements NetworkService {
         this.userDetailsService = userDetailsService;
         this.grassrootUserApi = grassrootUserApi;
         this.databaseService = databaseService;
-    }
-
-    private void setUserUid() {
-        if (currentUserUid == null) {
-            currentUserUid = userDetailsService.getCurrentUserUid();
-        }
+        currentUserUid = userDetailsService.getCurrentUserUid();
     }
 
     @Override
@@ -68,7 +68,6 @@ public class NetworkServiceImpl implements NetworkService {
     @SuppressWarnings("unchecked")
     @Override
     public <E extends EntityForDownload> Observable<List<E>> downloadAllChangedOrNewEntities(final GrassrootEntityType entityType, boolean forceFullRefresh) {
-        setUserUid();
         Timber.e("user UID = ? " + currentUserUid);
         switch (entityType) {
             case GROUP:
@@ -85,23 +84,53 @@ public class NetworkServiceImpl implements NetworkService {
                 .fetchUserGroups(currentUserUid, databaseService.loadExistingObjectsWithLastChangeTime(Group.class))
                 .doOnError(Timber::e)
                 .filter(listRestResponse -> {
-                    Timber.e("filtering if group list empty, what does map look like? " + listRestResponse.getData());
-                    return listRestResponse.getData() != null && !listRestResponse.getData().isEmpty();
+                    Timber.e("filtering if group list empty, what does map look like? " + listRestResponse);
+                    return listRestResponse != null && !listRestResponse.isEmpty();
                 })
-                .concatMap(listRestResponse -> {
+                .concatMap(groups -> {
                     Timber.e("getting group info for remainder");
-                    List<Group> changedGroups = listRestResponse.getData();
                     List<String> changedUids = new ArrayList<>();
-                    for (int i = 0; i < changedGroups.size(); i++) {
-                        changedUids.add(changedGroups.get(i).getUid());
+                    for (int i = 0; i < groups.size(); i++) {
+                        changedUids.add(groups.get(i).getUid());
                     }
                     return grassrootUserApi.fetchGroupsInfo(currentUserUid, changedUids);
                 })
                 .doOnError(Timber::e)
                 .flatMap(listRestResponse -> {
-                    Timber.d("alright, here are the full groups back: " + listRestResponse.getData());
-                    return Observable.just(listRestResponse.getData());
+                    Timber.d("alright, here are the full groups back: " + listRestResponse);
+                    return Observable.just(listRestResponse);
                 });
+    }
+
+    @Override
+    public Flowable<Resource<List<Task>>> getTasks(String groupId, GrassrootEntityType type) {
+        return Flowable.create(e -> new NetworkResource<List<Task>, List<Task>>(e) {
+            @Override
+            public Single<List<Task>> getLocal() {
+                return databaseService.loadTasksForGroup(groupId, type);
+            }
+
+            @Override
+            public Observable<List<Task>> getRemote() {
+                return grassrootUserApi.fetchTasksForGroup(currentUserUid, groupId, 0).map(listRestResponse -> {
+                    if (listRestResponse.getAddedAndUpdated()!=null) {
+                        return listRestResponse.getAddedAndUpdated();
+                    } else {
+                        return new ArrayList<>();
+                    }
+                });
+            }
+
+            @Override
+            public void saveResult(List<Task> data) {
+                databaseService.storeTasks(data);
+            }
+
+            @Override
+            protected boolean shouldFetch() {
+                return true;
+            }
+        }, BackpressureStrategy.BUFFER);
     }
 
     private Observable<UploadResult> routeUpload(final EntityForUpload entity, boolean forceUpload) {

@@ -5,10 +5,13 @@ import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
 import com.j256.ormlite.android.apptools.OrmLiteSqliteOpenHelper;
+import com.j256.ormlite.field.DataPersisterManager;
 import com.j256.ormlite.support.ConnectionSource;
 
 import za.org.grassroot2.BuildConfig;
 import za.org.grassroot2.R;
+import za.org.grassroot2.database.serialization.HashMapPersister;
+import za.org.grassroot2.database.serialization.StringCollectionPersister;
 
 public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
@@ -16,10 +19,12 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
     public DatabaseHelper(Context context) {
         super(context, BuildConfig.databaseName, null, BuildConfig.databaseVersion, R.raw.ormlite_config);
+        DataPersisterManager.registerDataPersisters(StringCollectionPersister.getSingleton(), HashMapPersister.getSingleton());
     }
 
     public DatabaseHelper(Context context, String databaseName) {
         super(context, databaseName, null, BuildConfig.databaseVersion);
+        DataPersisterManager.registerDataPersisters(StringCollectionPersister.getSingleton());
     }
 
     public synchronized void clearDatabase() {

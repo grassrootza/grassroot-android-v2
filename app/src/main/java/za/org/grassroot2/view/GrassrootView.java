@@ -21,5 +21,4 @@ public interface GrassrootView extends ProgressBarContainer {
     void closeKeyboard();
 
     void launchActivity(Class<?> cls, Bundle args);
-    void cleanUpActivity();
 }

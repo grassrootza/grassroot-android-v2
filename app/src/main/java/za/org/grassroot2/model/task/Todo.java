@@ -27,12 +27,14 @@ public class Todo implements Task {
     @DatabaseField
     private GrassrootEntityType parentEntityType;
 
+    @SerializedName("title")
     @DatabaseField(canBeNull = false)
     private String summary;
 
     @DatabaseField
     private String description;
 
+    @SerializedName("createdByUserName")
     @DatabaseField(canBeNull = false)
     private String recorderName;
 
@@ -45,6 +47,7 @@ public class Todo implements Task {
     @DatabaseField
     private long createdDateTimeMillis;
     @DatabaseField
+    @SerializedName("deadlineMillis")
     private long deadlineDateTimeMillis;
     @DatabaseField
     private long lastChangeTimeServerMillis;
@@ -88,8 +91,8 @@ public class Todo implements Task {
     }
 
     @Override
-    public Date getDeadlineDateTime() {
-        return new Date(deadlineDateTimeMillis);
+    public long getDeadlineMillis() {
+        return deadlineDateTimeMillis;
     }
 
     @Override
@@ -130,5 +133,9 @@ public class Todo implements Task {
     @Override
     public boolean isPublic() {
         return publicTodo;
+    }
+
+    public String getRecorderName() {
+        return recorderName;
     }
 }

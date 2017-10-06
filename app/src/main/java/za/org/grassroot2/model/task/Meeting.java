@@ -12,9 +12,6 @@ import java.util.UUID;
 import za.org.grassroot2.model.MediaFile;
 import za.org.grassroot2.model.enums.GrassrootEntityType;
 
-/**
- * Created by luke on 2017/09/20.
- */
 @DatabaseTable(tableName = "meetings")
 public class Meeting implements Task {
 
@@ -31,20 +28,24 @@ public class Meeting implements Task {
     @DatabaseField
     private GrassrootEntityType parentEntityType;
 
+    @SerializedName("title")
     @DatabaseField(canBeNull = false)
     private String subject;
 
     @DatabaseField
     private String description;
 
+    @SerializedName("createdByUserName")
     @DatabaseField(canBeNull = false)
     private String callerName;
 
+    @SerializedName("location")
     @DatabaseField(canBeNull = false)
     private String locationDescription;
     @DatabaseField
     private long createdDateTimeMillis;
     @DatabaseField
+    @SerializedName("deadlineMillis")
     private long meetingDateTimeMillis;
     @DatabaseField
     private long lastChangeTimeServerMillis;
@@ -81,10 +82,9 @@ public class Meeting implements Task {
         return new Date(createdDateTimeMillis);
     }
 
-
     @Override
-    public Date getDeadlineDateTime() {
-        return new Date(meetingDateTimeMillis);
+    public long getDeadlineMillis() {
+        return meetingDateTimeMillis;
     }
 
     @Override
@@ -125,5 +125,9 @@ public class Meeting implements Task {
     @Override
     public boolean isPublic() {
         return publicMtg;
+    }
+
+    public String getCallerName() {
+        return callerName;
     }
 }

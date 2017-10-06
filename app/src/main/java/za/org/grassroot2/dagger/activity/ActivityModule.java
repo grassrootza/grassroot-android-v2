@@ -10,6 +10,7 @@ import dagger.Provides;
 import za.org.grassroot2.dagger.ActivityContext;
 import za.org.grassroot2.dagger.ApplicationContext;
 import za.org.grassroot2.database.DatabaseService;
+import za.org.grassroot2.presenter.GroupDetailsPresenter;
 import za.org.grassroot2.presenter.LoginPresenter;
 import za.org.grassroot2.presenter.MainPresenter;
 import za.org.grassroot2.presenter.fragment.GroupFragmentPresenter;
@@ -87,6 +88,12 @@ public class ActivityModule {
     @PerActivity
     GroupFragmentPresenter provideGroupFragmentPresenter(DatabaseService dbService, UserDetailsService networkService) {
         return new GroupFragmentPresenter(dbService, networkService);
+    }
+
+    @Provides
+    @PerActivity
+    GroupDetailsPresenter provideGroupDetailsPresenter(DatabaseService dbService) {
+        return new GroupDetailsPresenter(dbService);
     }
 
     @Provides

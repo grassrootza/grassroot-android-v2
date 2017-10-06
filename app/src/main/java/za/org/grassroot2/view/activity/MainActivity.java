@@ -43,8 +43,8 @@ public class MainActivity extends LoggedInActivity implements MainView {
     RxPermissions rxPermissions;
 
     BtnGrouping btnGrouping;
-    MenuItem logoutItem;
-    MenuItem syncItem;
+    MenuItem    logoutItem;
+    MenuItem    syncItem;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,11 +87,6 @@ public class MainActivity extends LoggedInActivity implements MainView {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        presenter.detach(this);
-    }
-
-    @Override
-    public void cleanUpActivity() {
         presenter.detach(this);
     }
 
@@ -166,7 +161,7 @@ public class MainActivity extends LoggedInActivity implements MainView {
     @Override
     public void goToDefaultScreen() {
         int count = getSupportFragmentManager().getBackStackEntryCount();
-        for (int i = count; i>0; i--) {
+        for (int i = count; i > 0; i--) {
             getSupportFragmentManager().popBackStack();
         }
     }
@@ -190,21 +185,21 @@ public class MainActivity extends LoggedInActivity implements MainView {
     }
 
     @Subscribe
-    void singleInput(SingleTextInputFragment.SingleInputTextEvent e) {
+    public void singleInput(SingleTextInputFragment.SingleInputTextEvent e) {
     }
 
     @Subscribe
-    void gotHeadline(MoveNextWithInputEvent e) {
+    public void gotHeadline(MoveNextWithInputEvent e) {
 //        presenter.createOrUpdateLiveWireAlertWithHeadline(e.input);
     }
 
     @Subscribe
-    void moveNextWithSingleInput(MoveNextWithInputEvent e) {
+    public void moveNextWithSingleInput(MoveNextWithInputEvent e) {
         presenter.createOrUpdateLiveWireAlertWithHeadline(e.input);
     }
 
     @Subscribe
-    void mediaButtonClick(LargeMsgWithButtonsFragment.BtnClickEvent e) {
+    public void mediaButtonClick(LargeMsgWithButtonsFragment.BtnClickEvent e) {
         if (e.value == null) {
             presenter.skipMedia();
         } else {
@@ -213,12 +208,12 @@ public class MainActivity extends LoggedInActivity implements MainView {
     }
 
     @Subscribe
-    void groupSelected(ItemSelectionFragment.SelectionEvent e) {
+    public void groupSelected(ItemSelectionFragment.SelectionEvent e) {
         presenter.setGroupForAlert(e.s);
     }
 
     @Subscribe
-    void gotDescription(LongTextInputFragment.LongInputEvent e) {
+    public void gotDescription(LongTextInputFragment.LongInputEvent e) {
         presenter.setDescription(e.s);
     }
 

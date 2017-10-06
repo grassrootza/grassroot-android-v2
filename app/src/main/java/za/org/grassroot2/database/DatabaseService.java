@@ -5,8 +5,9 @@ import java.util.Map;
 
 import io.reactivex.Single;
 import za.org.grassroot2.model.Group;
-import za.org.grassroot2.model.MediaFile;
 import za.org.grassroot2.model.UserProfile;
+import za.org.grassroot2.model.enums.GrassrootEntityType;
+import za.org.grassroot2.model.task.Task;
 
 /**
  * Created by luke on 2017/08/10.
@@ -21,11 +22,10 @@ public interface DatabaseService {
     <E> Single<E> load(Class<E> clazz, String uid);
     <E> E loadObjectByUid(Class<E> cls, String uid);
     Group loadGroup(String uid);
-
     <E> Map<String, Long> loadExistingObjectsWithLastChangeTime(Class<E> clazz);
-
     <E> List<E> loadObjectsForSelection(Class<E> clazz);
 
+    Single<List<Task>> loadTasksForGroup(String groupUid, GrassrootEntityType type);
 
     // write and read methods (can only be called within an observable on background thread)
     <E> Single<E> store(Class<E> cls, E object);
@@ -40,4 +40,5 @@ public interface DatabaseService {
 
     // only for debugging
     <E> void listAllEntitesOfType(Class<E> clazz);
+    void storeTasks(List<Task> data);
 }

@@ -20,6 +20,8 @@ import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Converter;
 import retrofit2.converter.gson.GsonConverterFactory;
 import za.org.grassroot2.BuildConfig;
+import za.org.grassroot2.model.task.Task;
+import za.org.grassroot2.services.deserializer.TaskDeserlializer;
 import za.org.grassroot2.services.rest.CommonErrorHandlerInterceptor;
 
 /**
@@ -31,7 +33,7 @@ public class NetworkModule {
     @Provides
     @Singleton
     Converter.Factory provideGsonConverter() {
-        Gson gson = new GsonBuilder().create();
+        Gson gson = new GsonBuilder().registerTypeAdapter(Task.class, new TaskDeserlializer()).create();
         return GsonConverterFactory
                 .create(gson);
     }

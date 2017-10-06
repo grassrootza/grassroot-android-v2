@@ -12,17 +12,23 @@ import android.view.MenuInflater;
 import android.view.View;
 import android.widget.TextView;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+
 import java.util.List;
 
 import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.OnClick;
+import io.reactivex.Observable;
 import za.org.grassroot2.GrassrootApplication;
 import za.org.grassroot2.R;
 import za.org.grassroot2.model.Group;
 import za.org.grassroot2.presenter.fragment.GroupFragmentPresenter;
+import za.org.grassroot2.services.account.SyncAdapter;
 import za.org.grassroot2.view.activity.GrassrootActivity;
+import za.org.grassroot2.view.activity.GroupDetailsActivity;
 import za.org.grassroot2.view.adapter.GroupsAdapter;
 
 public class GroupsFragment extends GrassrootFragment implements GroupFragmentPresenter.GroupFragmentView {
@@ -32,6 +38,7 @@ public class GroupsFragment extends GrassrootFragment implements GroupFragmentPr
     @BindView(R.id.emptyInfoContainer) View                   emptyInfoContainer;
     @BindView(R.id.emptyInfo)          TextView               emptyInfo;
     @BindView(R.id.groupRecyclerView)  RecyclerView           groupsRecyclerView;
+    private GroupsAdapter                                     groupsAdapter;
 
     public GroupsFragment() {
     }
@@ -41,6 +48,18 @@ public class GroupsFragment extends GrassrootFragment implements GroupFragmentPr
         Bundle args = new Bundle();
         fragment.setArguments(args);
         return fragment;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        EventBus.getDefault().register(this);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        EventBus.getDefault().unregister(this);
     }
 
     @Override
@@ -84,10 +103,10 @@ public class GroupsFragment extends GrassrootFragment implements GroupFragmentPr
     public void render(List<Group> groups) {
         emptyInfoContainer.setVisibility(View.GONE);
         groupsRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        GroupsAdapter adapter = new GroupsAdapter(getActivity(), groups);
+        groupsAdapter = new GroupsAdapter(getActivity(), groups);
         View footer = LayoutInflater.from(getActivity()).inflate(R.layout.item_group_footer, null, false);
-        adapter.addFooter(footer);
-        groupsRecyclerView.setAdapter(adapter);
+        groupsAdapter.addFooter(footer);
+        groupsRecyclerView.setAdapter(groupsAdapter);
     }
 
     @Override
@@ -97,14 +116,29 @@ public class GroupsFragment extends GrassrootFragment implements GroupFragmentPr
     }
 
     @Override
+    public Observable<String> itemClick() {
+        return groupsAdapter.getViewClickObservable();
+    }
+
+    @Override
     public void renderEmptyFailedSync() {
         displayEmptyLayout();
         emptyInfo.setText(R.string.sync_problem);
     }
 
+    @Override
+    public void openDetails(String groupUid) {
+        GroupDetailsActivity.start(getActivity(), groupUid);
+    }
+
     @OnClick(R.id.fab)
     public void fabClick() {
 
+    }
+
+    @Subscribe
+    public void syncCompleted(SyncAdapter.SyncCompletedEvent e) {
+        presenter.onViewCreated();
     }
 
     private void displayEmptyLayout() {

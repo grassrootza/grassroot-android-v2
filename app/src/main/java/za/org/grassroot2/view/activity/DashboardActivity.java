@@ -58,10 +58,6 @@ public class DashboardActivity extends GrassrootActivity {
         bottomNavigation.setSelectedItemId(R.id.navigation_groups);
     }
 
-    @Override
-    public void cleanUpActivity() {
-    }
-
     public static void start(Activity activity) {
         activity.startActivity(new Intent(activity, DashboardActivity.class));
     }

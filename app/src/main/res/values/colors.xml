@@ -11,4 +11,9 @@
     <color name="bottom_nav_text_color">#757575</color>
     <color name="black">#000000</color>
     <color name="text_grey">#8f8f8f</color>
+    <color name="grey">#757575</color>
+    <color name="default_backgrond_grey">#f2f2f2</color>
+    <color name="bg_vote_rounded">#e4e4e4</color>
+    <color name="vote_option_progress_color">#d2eef5</color>
+    <color name="light_green">#86cc96</color>
 </resources>

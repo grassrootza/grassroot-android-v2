@@ -15,16 +15,17 @@ import retrofit2.http.Part;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
 import za.org.grassroot2.model.Group;
+import za.org.grassroot2.model.task.Task;
 
 public interface GrassrootUserApi {
 
     // Fetching groups
     @POST("/api/group/fetch/updated/{userUid}")
-    Observable<RestResponse<List<Group>>> fetchUserGroups(@Path("userUid") String userUid,
+    Observable<List<Group>> fetchUserGroups(@Path("userUid") String userUid,
                                                           @Body Map<String, Long> existingUids);
 
     @GET("/api/group/fetch/info/{userUid}")
-    Observable<RestResponse<List<Group>>> fetchGroupsInfo(@Path("userUid") String userUid,
+    Observable<List<Group>> fetchGroupsInfo(@Path("userUid") String userUid,
                                                           @Query("groupUids") List<String> groupUids);
 
     // Send a media file to the server for storage
@@ -48,6 +49,9 @@ public interface GrassrootUserApi {
                                      @Query("latitude") double latitude,
                                      @Query("longitude") double longitude,
                                      @Query("mediaFileKeys") Set<String> mediaFileUids);
+
+    @GET("/api/task/fetch/group/{userUid}/{groupUid}")
+    Observable<SyncResponse<List<Task>>> fetchTasksForGroup(@Path("userUid") String userUid, @Path("groupUid") String groupUid, @Query("changedSinceMillis") long timestamp);
 
 
 
