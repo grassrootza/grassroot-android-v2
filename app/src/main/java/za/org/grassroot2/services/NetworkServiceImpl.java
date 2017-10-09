@@ -5,15 +5,13 @@ import android.text.TextUtils;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 
-import io.reactivex.BackpressureStrategy;
-import io.reactivex.Flowable;
-import io.reactivex.FlowableOnSubscribe;
 import io.reactivex.Observable;
-import io.reactivex.Single;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
@@ -27,7 +25,6 @@ import za.org.grassroot2.model.UploadResult;
 import za.org.grassroot2.model.alert.LiveWireAlert;
 import za.org.grassroot2.model.enums.GrassrootEntityType;
 import za.org.grassroot2.model.exception.EntityAlreadyUploadingException;
-import za.org.grassroot2.model.exception.NetworkUnavailableException;
 import za.org.grassroot2.model.exception.ServerErrorException;
 import za.org.grassroot2.model.network.EntityForDownload;
 import za.org.grassroot2.model.network.EntityForUpload;
@@ -103,35 +100,34 @@ public class NetworkServiceImpl implements NetworkService {
     }
 
     @Override
-    public Flowable<Resource<List<Task>>> getTasks(String groupId, GrassrootEntityType type) {
-        return Flowable.create(e -> new NetworkResource<List<Task>, List<Task>>(e) {
-            @Override
-            public Single<List<Task>> getLocal() {
-                return databaseService.loadTasksForGroup(groupId, type);
-            }
-
-            @Override
-            public Observable<List<Task>> getRemote() {
-                return grassrootUserApi.fetchTasksForGroup(currentUserUid, groupId, 0).map(listRestResponse -> {
-                    if (listRestResponse.getAddedAndUpdated()!=null) {
-                        return listRestResponse.getAddedAndUpdated();
-                    } else {
-                        return new ArrayList<>();
-                    }
-                });
-            }
-
-            @Override
-            public void saveResult(List<Task> data) {
-                databaseService.storeTasks(data);
-            }
-
-            @Override
-            protected boolean shouldFetch() {
-                return true;
-            }
-        }, BackpressureStrategy.BUFFER);
+    public Observable<List<Task>> downloadTaskMinimumInfo() {
+        return grassrootUserApi
+                .fetchUserTasksMinimumInfo(currentUserUid, databaseService.getAllTasksLastChangedTimestamp())
+                .doOnError(Timber::e);
     }
+
+    @Override
+    public Observable<List<Task>> getTasksForGroup(String groupId) {
+        return grassrootUserApi.fetchGroupTasksMinimumInfo(currentUserUid, groupId, databaseService.getTasksLastChangedTimestamp(groupId)).flatMap(listRestResponse -> {
+            if (listRestResponse != null) {
+                Map<String, String> uids = new HashMap<>();
+                for (Task t : listRestResponse) {
+                    uids.put(t.getUid(), t.getType().name());
+                }
+                return grassrootUserApi.fetchTasksByUid(currentUserUid, uids);
+            } else {
+                return Observable.just(new ArrayList<>());
+            }
+        });
+    }
+
+    @Override
+    public Observable<List<Task>> getTasksByUids(Map<String, String> uids) {
+        return grassrootUserApi
+                .fetchTasksByUid(currentUserUid, uids)
+                .doOnError(Timber::e);
+    }
+
 
     private Observable<UploadResult> routeUpload(final EntityForUpload entity, boolean forceUpload) {
         if (entity.isUploading()) {
@@ -217,7 +213,7 @@ public class NetworkServiceImpl implements NetworkService {
                     e.onNext(new UploadResult(entity.getType(), new ServerErrorException()));
                 }
             } catch (IOException t1) {
-                e.onNext(new UploadResult(entity.getType(), new NetworkUnavailableException()));
+                e.onNext(new UploadResult(entity.getType(), new Throwable()));
             } catch (NullPointerException t2) {
                 e.onNext(new UploadResult(entity.getType(), new IllegalArgumentException()));
             }

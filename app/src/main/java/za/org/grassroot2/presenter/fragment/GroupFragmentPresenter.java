@@ -30,13 +30,11 @@ public class GroupFragmentPresenter extends BaseFragmentPresenter<GroupFragmentP
     @Override
     public void attach(GroupFragmentView view) {
         super.attach(view);
-        EventBus.getDefault().register(this);
     }
 
     @Override
     public void detach(GroupFragmentView view) {
         super.detach(view);
-        EventBus.getDefault().unregister(this);
     }
 
     @Override
@@ -49,7 +47,7 @@ public class GroupFragmentPresenter extends BaseFragmentPresenter<GroupFragmentP
     }
 
     private void loadGroups() {
-        List<Group> groups = databaseService.loadObjectsForSelection(Group.class);
+        List<Group> groups = databaseService.loadObjects(Group.class);
         if (groups.isEmpty()) {
             view.renderEmpty();
         } else {
@@ -58,8 +56,9 @@ public class GroupFragmentPresenter extends BaseFragmentPresenter<GroupFragmentP
         }
     }
 
-    @Subscribe(threadMode = ThreadMode.MAIN)
+    @Subscribe(threadMode = ThreadMode.MAIN, sticky = true)
     public void syncComplete(SyncAdapter.SyncCompletedEvent e) {
+        EventBus.getDefault().removeStickyEvent(SyncAdapter.SyncCompletedEvent.class);
         onViewCreated();
     }
 

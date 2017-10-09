@@ -15,7 +15,9 @@ import org.json.JSONException;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -26,6 +28,7 @@ import za.org.grassroot2.model.Group;
 import za.org.grassroot2.model.enums.GrassrootEntityType;
 import za.org.grassroot2.model.exception.ServerUnreachableException;
 import za.org.grassroot2.model.network.EntityForDownload;
+import za.org.grassroot2.model.task.Task;
 import za.org.grassroot2.services.NetworkService;
 import za.org.grassroot2.services.UserDetailsService;
 
@@ -79,25 +82,34 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
     @Override
     public void onPerformSync(Account account, Bundle extras, String authority, ContentProviderClient provider, final SyncResult syncResult) {
         Timber.d("Starting synchronization...");
-        networkService.downloadAllChangedOrNewEntities(GrassrootEntityType.GROUP, false)
-                .subscribe(entityForDownloads -> {
-                    databaseService.copyOrUpdateListOfEntities(Group.class, convert(entityForDownloads));
-                    Timber.d("Sync done aaaa");
-                    userDetailsService.setSyncCompleted();
-                    EventBus.getDefault().post(new SyncCompletedEvent());
-                }, throwable -> {
-                    if (throwable instanceof IOException || throwable instanceof ServerUnreachableException) {
-                        Timber.e(throwable, "Error synchronizing!");
-                        syncResult.stats.numIoExceptions++;
-                    } else if (throwable instanceof JSONException) {
-                        Timber.e(throwable, "Error synchronizing!");
-                        syncResult.stats.numParseExceptions++;
-                    } else if (throwable instanceof RemoteException ||
-                            throwable instanceof OperationApplicationException) {
-                        Timber.e(throwable, "Error synchronizing!");
-                        syncResult.stats.numAuthExceptions++;
-                    }
-                });
+        networkService.downloadAllChangedOrNewEntities(GrassrootEntityType.GROUP, false).subscribe(entityForDownloads -> {
+            databaseService.copyOrUpdateListOfEntities(Group.class, convert(entityForDownloads));
+        });
+        networkService.downloadTaskMinimumInfo().flatMap(tasksMin -> {
+            databaseService.storeTasks(tasksMin);
+            Map<String, String> uids = new HashMap<>();
+            for (Task t : tasksMin) {
+                uids.put(t.getUid(), t.getType().name());
+            }
+            return networkService.getTasksByUids(uids);
+        }).subscribe(tasksFull -> databaseService.storeTasks(tasksFull), throwable -> handleSyncError(syncResult, throwable));
+        userDetailsService.setSyncCompleted();
+        EventBus.getDefault().postSticky(new SyncCompletedEvent());
+    }
+
+    private void handleSyncError(SyncResult syncResult, Throwable throwable) {
+        throwable.printStackTrace();
+        if (throwable instanceof IOException || throwable instanceof ServerUnreachableException) {
+            Timber.e(throwable, "Error synchronizing!");
+            syncResult.stats.numIoExceptions++;
+        } else if (throwable instanceof JSONException) {
+            Timber.e(throwable, "Error synchronizing!");
+            syncResult.stats.numParseExceptions++;
+        } else if (throwable instanceof RemoteException ||
+                throwable instanceof OperationApplicationException) {
+            Timber.e(throwable, "Error synchronizing!");
+            syncResult.stats.numAuthExceptions++;
+        }
     }
 
     // multiple bounds are not playing nice with the observable, so using this slight hack

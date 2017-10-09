@@ -56,19 +56,7 @@ public class GroupDetailsActivity extends GrassrootActivity implements GroupDeta
         groupUid = getIntent().getStringExtra(EXTRA_GROUP_UID);
         initView();
         presenter.attach(this);
-        presenter.loadGroup(groupUid);
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        EventBus.getDefault().unregister(this);
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        EventBus.getDefault().register(this);
+        presenter.loadData(groupUid);
     }
 
     @Override
@@ -115,8 +103,8 @@ public class GroupDetailsActivity extends GrassrootActivity implements GroupDeta
         title.setText(group.getName());
     }
 
-    @Subscribe
-    public void emptyData(GroupTasksPresenter.GroupTasksEmptyEvent e) {
+    @Override
+    public void emptyData() {
 //        ViewTooltip.on(inviteMembers)
 //                .color(getResources().getColor(R.color.light_green))
 //                .corner(10).autoHide(true, 2000).padding(10, 10, 10, 10)

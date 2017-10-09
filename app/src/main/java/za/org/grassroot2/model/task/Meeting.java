@@ -36,11 +36,10 @@ public class Meeting implements Task {
     private String description;
 
     @SerializedName("createdByUserName")
-    @DatabaseField(canBeNull = false)
+    @DatabaseField
     private String callerName;
 
     @SerializedName("location")
-    @DatabaseField(canBeNull = false)
     private String locationDescription;
     @DatabaseField
     private long createdDateTimeMillis;

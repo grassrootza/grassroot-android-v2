@@ -23,7 +23,10 @@ public interface DatabaseService {
     <E> E loadObjectByUid(Class<E> cls, String uid);
     Group loadGroup(String uid);
     <E> Map<String, Long> loadExistingObjectsWithLastChangeTime(Class<E> clazz);
-    <E> List<E> loadObjectsForSelection(Class<E> clazz);
+
+    Map<String, Long> getTasksLastChangedTimestamp(String groupUid);
+
+    <E> List<E> loadObjects(Class<E> clazz);
 
     Single<List<Task>> loadTasksForGroup(String groupUid, GrassrootEntityType type);
 
@@ -40,5 +43,8 @@ public interface DatabaseService {
 
     // only for debugging
     <E> void listAllEntitesOfType(Class<E> clazz);
+
     void storeTasks(List<Task> data);
+
+    Map<String,Long> getAllTasksLastChangedTimestamp();
 }

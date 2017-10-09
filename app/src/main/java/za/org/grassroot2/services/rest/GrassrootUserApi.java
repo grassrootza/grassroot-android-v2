@@ -15,6 +15,7 @@ import retrofit2.http.Part;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
 import za.org.grassroot2.model.Group;
+import za.org.grassroot2.model.request.TaskRequest;
 import za.org.grassroot2.model.task.Task;
 
 public interface GrassrootUserApi {
@@ -50,9 +51,16 @@ public interface GrassrootUserApi {
                                      @Query("longitude") double longitude,
                                      @Query("mediaFileKeys") Set<String> mediaFileUids);
 
-    @GET("/api/task/fetch/group/{userUid}/{groupUid}")
-    Observable<SyncResponse<List<Task>>> fetchTasksForGroup(@Path("userUid") String userUid, @Path("groupUid") String groupUid, @Query("changedSinceMillis") long timestamp);
+    @POST("/api/task/fetch/updated/group/{userUid}/{groupUid}")
+    Observable<List<Task>> fetchGroupTasksMinimumInfo(@Path("userUid") String userUid, @Path("groupUid") String groupUid, @Body Map<String, Long> timestamps);
 
+    @POST("/api/task/fetch/specified/{userUid}")
+    Observable<List<Task>> fetchTasksByUid(@Path("userUid") String userUid, @Body Map<String, String> taskUids);
 
+    @POST("/api/task/fetch/updated/{userUid}")
+    Observable<List<Task>> fetchUserTasksMinimumInfo(@Path("userUid") String userUid, @Body Map<String, Long> timestamps);
+
+    @GET("/api/task/fetch/all/{userUid}")
+    Observable<List<Task>> fetchUserTasksFull(@Path("userUid") String userUid);
 
 }

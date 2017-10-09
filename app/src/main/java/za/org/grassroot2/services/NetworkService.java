@@ -1,6 +1,7 @@
 package za.org.grassroot2.services;
 
 import java.util.List;
+import java.util.Map;
 
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
@@ -29,5 +30,9 @@ public interface NetworkService {
     <E extends EntityForDownload> Observable<List<E>> downloadAllChangedOrNewEntities(GrassrootEntityType entityType, boolean forceFullRefresh);
     Observable<List<Group>> downloadAllChangedOrNewGroups();
 
-    Flowable<Resource<List<Task>>> getTasks(String groupId, GrassrootEntityType type);
+    Observable<List<Task>> downloadTaskMinimumInfo();
+
+    Observable<List<Task>> getTasksForGroup(String groupId);
+
+    Observable<List<Task>> getTasksByUids(Map<String, String> uids);
 }

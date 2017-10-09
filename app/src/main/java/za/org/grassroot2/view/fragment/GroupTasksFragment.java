@@ -84,7 +84,8 @@ public class GroupTasksFragment extends GrassrootFragment implements GroupTasksP
         allRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         adapter = new GroupTasksAdapter(getActivity(), new ArrayList<>(), oldAfter);
         allRecyclerView.setAdapter(adapter);
-        presenter.loadTasks(getArguments().getString(EXTRA_GROUP_UID), (GrassrootEntityType) getArguments().getSerializable(EXTRA_TYPE));
+        presenter.init(getArguments().getString(EXTRA_GROUP_UID), (GrassrootEntityType) getArguments().getSerializable(EXTRA_TYPE));
+        presenter.loadTasks();
     }
 
     @Override

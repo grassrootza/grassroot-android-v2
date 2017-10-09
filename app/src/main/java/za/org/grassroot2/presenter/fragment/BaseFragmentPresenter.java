@@ -1,5 +1,8 @@
 package za.org.grassroot2.presenter.fragment;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import za.org.grassroot2.view.FragmentView;
@@ -14,10 +17,12 @@ public abstract class BaseFragmentPresenter<T extends FragmentView> {
 
     public void attach(T view) {
         this.view = view;
+        EventBus.getDefault().register(this);
     }
 
     public void detach(T view) {
         disposables.clear();
+        EventBus.getDefault().unregister(this);
         this.view = null;
     }
 
@@ -26,5 +31,8 @@ public abstract class BaseFragmentPresenter<T extends FragmentView> {
             disposables.add(d);
         }
     }
+
+    @Subscribe
+    void emptyEvent(Object o) {}
 
 }

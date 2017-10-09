@@ -38,7 +38,7 @@ public class Vote implements Task {
     private String description;
 
     @SerializedName("createdByUserName")
-    @DatabaseField(canBeNull = false)
+    @DatabaseField
     private String callerName;
 
     @DatabaseField
@@ -50,7 +50,7 @@ public class Vote implements Task {
     @DatabaseField
     private long lastChangeTimeServerMillis;
 
-    @SerializedName("voteCount")
+    @SerializedName("voteResults")
     @DatabaseField
     private HashMap<String, Integer> voteOptions;
 
