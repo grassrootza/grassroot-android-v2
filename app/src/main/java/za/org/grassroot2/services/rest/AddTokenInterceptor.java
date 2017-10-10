@@ -3,6 +3,8 @@ package za.org.grassroot2.services.rest;
 import android.accounts.Account;
 import android.accounts.AccountManager;
 
+import org.greenrobot.eventbus.EventBus;
+
 import java.io.IOException;
 
 import javax.inject.Inject;
@@ -32,6 +34,8 @@ public final class AddTokenInterceptor implements Interceptor {
         if (token != null) {
             Timber.v("Adding header: " + token);
             requestBuilder.addHeader("Authorization", "Bearer " + token);
+        } else {
+            EventBus.getDefault().postSticky(new TokenRefreshEvent());
         }
         requestBuilder.addHeader("Accept", "application/json");
         Response response = chain.proceed(requestBuilder.build());
@@ -45,6 +49,7 @@ public final class AddTokenInterceptor implements Interceptor {
             if (accounts.length != 0 ) {
                 accountManager.invalidateAuthToken(AuthConstants.ACCOUNT_TYPE,
                         accountManager.peekAuthToken(accounts[0], AuthConstants.AUTH_TOKENTYPE));
+                EventBus.getDefault().postSticky(new TokenRefreshEvent());
             }
         }
     }
@@ -52,5 +57,8 @@ public final class AddTokenInterceptor implements Interceptor {
     private String getToken() {
         Account[] accounts = accountManager.getAccountsByType(AuthConstants.ACCOUNT_TYPE);
         return accounts.length == 0 ? null : accountManager.peekAuthToken(accounts[0], AuthConstants.AUTH_TOKENTYPE);
+    }
+
+    public static class TokenRefreshEvent {
     }
 }

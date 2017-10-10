@@ -1,5 +1,8 @@
 package za.org.grassroot2.view.fragment;
 
+import android.accounts.Account;
+import android.accounts.AccountManager;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
@@ -27,6 +30,7 @@ import za.org.grassroot2.GrassrootApplication;
 import za.org.grassroot2.R;
 import za.org.grassroot2.model.Group;
 import za.org.grassroot2.presenter.fragment.GroupFragmentPresenter;
+import za.org.grassroot2.services.account.AuthConstants;
 import za.org.grassroot2.services.account.SyncAdapter;
 import za.org.grassroot2.view.activity.GrassrootActivity;
 import za.org.grassroot2.view.activity.GroupDetailsActivity;
@@ -70,6 +74,12 @@ public class GroupsFragment extends GrassrootFragment implements GroupFragmentPr
         ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(R.string.title_groups);
         presenter.attach(this);
         presenter.onViewCreated();
+//                AccountManager accountManager = (AccountManager) getActivity().getSystemService(Context.ACCOUNT_SERVICE);
+//        Account[] accounts = accountManager.getAccountsByType(AuthConstants.ACCOUNT_TYPE);
+//        if (accounts.length != 0) {
+//            accountManager.invalidateAuthToken(AuthConstants.ACCOUNT_TYPE,
+//                    accountManager.peekAuthToken(accounts[0], AuthConstants.AUTH_TOKENTYPE));
+//        }
     }
 
     @Override

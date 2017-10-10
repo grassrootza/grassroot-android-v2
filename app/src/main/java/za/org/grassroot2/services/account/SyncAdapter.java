@@ -82,9 +82,9 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
     @Override
     public void onPerformSync(Account account, Bundle extras, String authority, ContentProviderClient provider, final SyncResult syncResult) {
         Timber.d("Starting synchronization...");
-        networkService.downloadAllChangedOrNewEntities(GrassrootEntityType.GROUP, false).subscribe(entityForDownloads -> {
-            databaseService.copyOrUpdateListOfEntities(Group.class, convert(entityForDownloads));
-        });
+        networkService.downloadAllChangedOrNewEntities(GrassrootEntityType.GROUP, false)
+                .subscribe(entityForDownloads -> databaseService.copyOrUpdateListOfEntities(Group.class,
+                        convert(entityForDownloads)), throwable -> handleSyncError(syncResult, throwable));
         networkService.downloadTaskMinimumInfo().flatMap(tasksMin -> {
             databaseService.storeTasks(tasksMin);
             Map<String, String> uids = new HashMap<>();

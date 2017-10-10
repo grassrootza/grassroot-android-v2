@@ -1,5 +1,7 @@
 package za.org.grassroot2.presenter;
 
+import java.util.concurrent.TimeUnit;
+
 import javax.inject.Inject;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -110,7 +112,7 @@ public class LoginPresenter extends BasePresenter<LoginView> {
         // call the authentication service and check if these are okay, and if so, store and continue
         view.showProgressBar();
         disposableOnDetach(grassrootAuthApi
-                .validateOtp(userName, "" + charSequence, AuthConstants.AUTH_CLIENT_TYPE)
+                .validateOtp(userName, "" + charSequence, AuthConstants.AUTH_CLIENT_TYPE, null)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(this::storeSuccessfulAuthAndProceed, throwable -> {

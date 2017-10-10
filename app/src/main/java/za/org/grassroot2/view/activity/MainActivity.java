@@ -217,16 +217,5 @@ public class MainActivity extends LoggedInActivity implements MainView {
         presenter.setDescription(e.s);
     }
 
-    @Override
-    protected void onPause() {
-        super.onPause();
-        EventBus.getDefault().unregister(this);
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        EventBus.getDefault().register(this);
-    }
 }
 

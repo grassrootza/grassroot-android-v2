@@ -34,12 +34,21 @@ public class UserDetailsServiceImpl implements UserDetailsService {
                                                 final String userSystemRole,
                                                 final String userToken) {
         return Single.create(e -> {
-            UserProfile userProfile = databaseService.updateOrCreateUserProfile(userUid, userPhone, userDisplayName, userSystemRole);
-            final Account account = getOrCreateAccount();
-            accountManager.setAuthToken(account, AuthConstants.AUTH_TOKENTYPE, userToken);
+            Account account = setAuthToken(userToken);
             Timber.v("stored auth token, number accounts = " + accountManager.getAccountsByType(AuthConstants.ACCOUNT_TYPE).length);
+            UserProfile userProfile = databaseService.updateOrCreateUserProfile(userUid, userPhone, userDisplayName, userSystemRole);
+            setAccountAsSyncable(account);
             e.onSuccess(userProfile);
         });
+    }
+
+    @Override
+    public Account setAuthToken(String userToken) {
+        final Account account = getOrCreateAccount();
+        accountManager.setAuthToken(account, AuthConstants.AUTH_TOKENTYPE, userToken);
+        accountManager.setUserData(account, AuthConstants.USER_DATA_CURRENT_TOKEN, userToken);
+        accountManager.setUserData(account, AuthConstants.USER_DATA_LOGGED_IN, "true");
+        return account;
     }
 
     // todo: disposableOnDetach exception handling, also calls to server, GCM, etc
@@ -53,6 +62,8 @@ public class UserDetailsServiceImpl implements UserDetailsService {
                 accountManager.invalidateAuthToken(AuthConstants.ACCOUNT_TYPE,
                         accountManager.peekAuthToken(account, AuthConstants.AUTH_TOKENTYPE));
                 accountManager.setPassword(account, null);
+                accountManager.setUserData(account, AuthConstants.USER_DATA_CURRENT_TOKEN, null);
+                accountManager.setUserData(account, AuthConstants.USER_DATA_LOGGED_IN, null);
                 if (deleteAndroidAccount) {
                     // using deprecated because non-deprecated requires API22+ .. oh Android
                     accountManager.removeAccount(account, null, null);
@@ -97,7 +108,6 @@ public class UserDetailsServiceImpl implements UserDetailsService {
             accountManager.addAccountExplicitly(account, null, null);
             Timber.d("setting account as syncable");
         }
-        setAccountAsSyncable(account);
         return account;
     }
 

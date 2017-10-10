@@ -1,9 +1,11 @@
 package za.org.grassroot2.view;
 
+import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.text.InputType;
 import android.text.TextUtils;
 import android.view.inputmethod.EditorInfo;
@@ -24,18 +26,20 @@ import za.org.grassroot2.model.enums.ConnectionResult;
 import za.org.grassroot2.presenter.LoginPresenter;
 import za.org.grassroot2.services.account.AuthConstants;
 import za.org.grassroot2.view.activity.GrassrootActivity;
+import za.org.grassroot2.view.activity.MainActivity;
 import za.org.grassroot2.view.fragment.SingleTextInputFragment;
 
 public class LoginActivity extends GrassrootActivity implements LoginView {
 
-    public static final String EXTRA_NEW_ACCOUNT = "extra_new_account";
+    public static final String EXTRA_NEW_ACCOUNT   = "extra_new_account";
+    public static final String EXTRA_TOKEN_EXPIRED = "extra_token_expired";
     @Inject LoginPresenter loginPresenter;
 
     private SingleTextInputFragment currentFragment; // just as a pointer
     private SingleTextInputFragment usernameFragment;
     private SingleTextInputFragment otpFragment;
 
-    private String debugOtp;
+    private String         debugOtp;
     private AccountManager accountManager;
 
     @Override
@@ -46,8 +50,11 @@ public class LoginActivity extends GrassrootActivity implements LoginView {
         ((GrassrootApplication) getApplication())
                 .getAppComponent().plus(getActivityModule()).inject(this);
         loginPresenter.attach(LoginActivity.this);
-        accountManager = AccountManager.get(this);
-
+        if (loggedIn()) {
+            startActivity(new Intent(this, MainActivity.class));
+            finish();
+            return;
+        }
         usernameFragment = SingleTextInputFragment.newInstance(R.string.login_welcome,
                 R.string.login_enter_msisdn,
                 R.string.login_button_register,
@@ -77,6 +84,9 @@ public class LoginActivity extends GrassrootActivity implements LoginView {
 
         currentFragment = usernameFragment;
         setToUsernameEntry();
+        if (getIntent().hasExtra(EXTRA_TOKEN_EXPIRED)) {
+            Snackbar.make(findViewById(android.R.id.content), R.string.token_expired, Snackbar.LENGTH_LONG).show();
+        }
     }
 
     @Override
@@ -94,7 +104,7 @@ public class LoginActivity extends GrassrootActivity implements LoginView {
 
     @Override
     public void requestOtpEntry(String defaultValue) {
-        if ( BuildConfig.DEBUG) {
+        if (BuildConfig.DEBUG) {
             debugOtp = defaultValue;
         }
         getSupportFragmentManager().beginTransaction()
@@ -149,18 +159,6 @@ public class LoginActivity extends GrassrootActivity implements LoginView {
     @Override
     public Observable<AuthRecoveryResult> showAuthenticationRecoveryDialog() {
         return null;
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        EventBus.getDefault().unregister(this);
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        EventBus.getDefault().register(this);
     }
 
     @Subscribe

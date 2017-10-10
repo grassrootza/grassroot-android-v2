@@ -3,6 +3,7 @@ package za.org.grassroot2.services.rest;
 import io.reactivex.Observable;
 import io.reactivex.Single;
 import retrofit2.Call;
+import retrofit2.Response;
 import retrofit2.http.GET;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
@@ -21,11 +22,12 @@ public interface GrassrootAuthApi {
     @GET("/api/auth/login")
     Observable<RestResponse<TokenResponse>> validateOtp(@Query("phoneNumber") String msisdn,
                                                         @Query("otp") String otp,
-                                                        @Query("clientType") String clientType);
+                                                        @Query("clientType") String clientType,
+                                                        @Query("durationMillis") Long expirationMillis);
 
-    @GET("/api/auth/refresh")
-    Call<RestResponse<TokenResponse>> refreshOtp(@Query("phoneNumber") String msisdn,
-                                                 @Query("clientType") String clientType);
+    @GET("/api/auth/token/refresh")
+    Observable<Response<RestResponse<String>>> refreshOtp(@Query("oldToken") String oldToken,
+                                                         @Query("durationMillis") Long expiresIn);
 
     @GET("/api/auth/token/validate")
     Single<RestResponse> validateToken(@Query("token") String token);

@@ -97,6 +97,7 @@
     <string name="info_invite_group_members">Get this Group going,\ninvite new members!</string>
     <string name="info_group_create_item">Why not creating\nyour first action? Tap here!</string>
     <string name="text_old_header">Older</string>
+    <string name="token_expired">Your session expired. Please log in again.</string>
 
     <plurals name="member_count">
         <item quantity="one">%d member</item>
