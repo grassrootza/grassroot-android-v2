@@ -95,12 +95,7 @@ public class NetworkModule {
 //            Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress("192.168.0.180", 8888));
 //            builder.proxy(proxy);
             builder.sslSocketFactory(sslSocketFactory, (X509TrustManager) trustAllCerts[0]);
-            builder.hostnameVerifier(new HostnameVerifier() {
-                @Override
-                public boolean verify(String hostname, SSLSession session) {
-                    return true;
-                }
-            });
+            builder.hostnameVerifier((hostname, session) -> true);
             HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
             logging.setLevel(HttpLoggingInterceptor.Level.BODY);
             builder.addInterceptor(logging);

@@ -1,5 +1,7 @@
 package za.org.grassroot2.services;
 
+import android.accounts.Account;
+
 import io.reactivex.Single;
 import za.org.grassroot2.model.UserProfile;
 
@@ -14,6 +16,8 @@ public interface UserDetailsService extends GrassrootService {
                                          final String userDisplayName,
                                          final String userSystemRole,
                                          final String userToken);
+
+    Account setAuthToken(String userToken);
 
     Single<Boolean> logout(boolean deleteAndroidAccount, boolean wipeRealm);
 

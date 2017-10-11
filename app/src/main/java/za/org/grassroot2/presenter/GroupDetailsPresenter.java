@@ -36,7 +36,7 @@ public class GroupDetailsPresenter extends BasePresenter<GroupDetailsPresenter.G
             } else {
                 view.emptyData();
             }
-        }, this::handleNetworkConnectionError));
+        }, Throwable::printStackTrace));
 
     }
 

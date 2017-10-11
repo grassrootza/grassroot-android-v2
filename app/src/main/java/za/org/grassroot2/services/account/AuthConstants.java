@@ -6,5 +6,7 @@ public interface AuthConstants {
     String AUTH_TOKENTYPE = ACCOUNT_TYPE;
 
     // for calls to auth server
-    String AUTH_CLIENT_TYPE = "ANDROID";
+    String AUTH_CLIENT_TYPE        = "ANDROID";
+    String USER_DATA_CURRENT_TOKEN = "current_token";
+    String USER_DATA_LOGGED_IN     = "logged_in";
 }
