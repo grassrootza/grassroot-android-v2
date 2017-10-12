@@ -1,23 +1,16 @@
 package za.org.grassroot2.view.activity;
 
-import android.Manifest;
-import android.accounts.Account;
-import android.accounts.AccountManager;
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
-
-import com.tbruyelle.rxpermissions2.RxPermissions;
 
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import za.org.grassroot2.R;
-import za.org.grassroot2.services.account.AuthConstants;
 import za.org.grassroot2.view.fragment.GroupsFragment;
 
 public class DashboardActivity extends GrassrootActivity {

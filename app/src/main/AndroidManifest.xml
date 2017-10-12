@@ -85,6 +85,12 @@
             android:name=".view.activity.GroupDetailsActivity"
             android:theme="@style/AppTheme.Toolbar"
             android:screenOrientation="portrait" />
+
+        <receiver android:name=".services.OfflineReceiver" android:exported="false">
+            <intent-filter>
+                <action android:name="za.org.grassroot2.RESET_OFFLINE_INFO" />
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>

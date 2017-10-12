@@ -5,6 +5,8 @@ import org.greenrobot.eventbus.Subscribe;
 
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
+import timber.log.Timber;
+import za.org.grassroot2.util.UserPreference;
 import za.org.grassroot2.view.FragmentView;
 
 
@@ -34,5 +36,15 @@ public abstract class BaseFragmentPresenter<T extends FragmentView> {
 
     @Subscribe
     void emptyEvent(Object o) {}
+
+    public void handleNetworkConnectionError(Throwable t) {
+        Timber.d(t);
+        view.handleNoConnection();
+    }
+
+    public void handleNetworkUploadError(Throwable t) {
+        Timber.d(t);
+        view.handleNoConnectionUpload();
+    }
 
 }

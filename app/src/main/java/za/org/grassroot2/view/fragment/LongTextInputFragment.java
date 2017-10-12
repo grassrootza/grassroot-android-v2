@@ -14,6 +14,7 @@ import org.greenrobot.eventbus.EventBus;
 import butterknife.BindView;
 import za.org.grassroot2.GrassrootApplication;
 import za.org.grassroot2.R;
+import za.org.grassroot2.dagger.activity.ActivityComponent;
 import za.org.grassroot2.rxbinding.RxView;
 import za.org.grassroot2.view.SingleInputNextOtherView;
 
@@ -62,7 +63,7 @@ public class LongTextInputFragment extends TextInputFragment implements SingleIn
     }
 
     @Override
-    protected void onInject(GrassrootApplication application) {
+    protected void onInject(ActivityComponent activityComponent) {
     }
 
     @Override

@@ -1,7 +1,5 @@
 package za.org.grassroot2.presenter;
 
-import java.util.concurrent.TimeUnit;
-
 import javax.inject.Inject;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -34,9 +32,7 @@ public class LoginPresenter extends BasePresenter<LoginView> {
     public void processInput(CharSequence value) {
         try {
             if (currentState == State.USERNAME) {
-
                 stashUsernameAndRequestOtp(PhoneNumberUtil.convertToMsisdn(value));
-
             } else if (currentState == State.OTP) {
                 validateOtpEntry(value);
                 currentState = State.NEXT;

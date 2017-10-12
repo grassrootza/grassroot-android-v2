@@ -20,6 +20,7 @@ import butterknife.BindView;
 import timber.log.Timber;
 import za.org.grassroot2.GrassrootApplication;
 import za.org.grassroot2.R;
+import za.org.grassroot2.dagger.activity.ActivityComponent;
 import za.org.grassroot2.dagger.user.ApiModule;
 import za.org.grassroot2.model.SelectableItem;
 import za.org.grassroot2.presenter.fragment.ItemSelectionFragmentPresenter;
@@ -55,8 +56,8 @@ public class ItemSelectionFragment extends GrassrootFragment implements ItemSele
     }
 
     @Override
-    protected void onInject(GrassrootApplication application) {
-        application.getAppComponent().plus(((GrassrootActivity)getActivity()).getActivityModule()).inject(this);
+    protected void onInject(ActivityComponent activityComponent) {
+        activityComponent.inject(this);
     }
 
     @Override

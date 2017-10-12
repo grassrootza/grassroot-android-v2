@@ -16,9 +16,6 @@ import android.widget.TextView;
 
 import com.github.florent37.viewtooltip.ViewTooltip;
 
-import org.greenrobot.eventbus.EventBus;
-import org.greenrobot.eventbus.Subscribe;
-
 import javax.inject.Inject;
 
 import butterknife.BindView;
@@ -27,7 +24,6 @@ import za.org.grassroot2.R;
 import za.org.grassroot2.model.Group;
 import za.org.grassroot2.model.enums.GrassrootEntityType;
 import za.org.grassroot2.presenter.GroupDetailsPresenter;
-import za.org.grassroot2.presenter.fragment.GroupTasksPresenter;
 import za.org.grassroot2.view.adapter.GenericViewPagerAdapter;
 import za.org.grassroot2.view.fragment.GroupTasksFragment;
 
@@ -62,7 +58,7 @@ public class GroupDetailsActivity extends GrassrootActivity implements GroupDeta
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        presenter.detach(this);
+        presenter.detach();
     }
 
     private void initView() {

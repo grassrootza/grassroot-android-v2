@@ -19,6 +19,7 @@ import io.reactivex.Observable;
 import timber.log.Timber;
 import za.org.grassroot2.GrassrootApplication;
 import za.org.grassroot2.R;
+import za.org.grassroot2.dagger.activity.ActivityComponent;
 import za.org.grassroot2.model.dto.BtnGrouping;
 import za.org.grassroot2.model.dto.BtnParameters;
 import za.org.grassroot2.model.dto.BtnReturnBundle;
@@ -90,7 +91,8 @@ public class LargeMsgWithButtonsFragment extends GrassrootFragment {
     }
 
     @Override
-    protected void onInject(GrassrootApplication application) {
+    protected void onInject(ActivityComponent activityComponent) {
+
     }
 
     @Override

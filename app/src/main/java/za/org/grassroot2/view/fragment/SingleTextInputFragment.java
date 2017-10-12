@@ -14,6 +14,7 @@ import butterknife.BindView;
 import io.reactivex.Observable;
 import za.org.grassroot2.GrassrootApplication;
 import za.org.grassroot2.R;
+import za.org.grassroot2.dagger.activity.ActivityComponent;
 import za.org.grassroot2.rxbinding.RxTextView;
 import za.org.grassroot2.rxbinding.RxView;
 import za.org.grassroot2.rxbinding.RxViewUtils;
@@ -56,7 +57,7 @@ public class SingleTextInputFragment extends TextInputFragment implements Single
     }
 
     @Override
-    protected void onInject(GrassrootApplication application) {
+    protected void onInject(ActivityComponent activityComponent) {
     }
 
     @Override

@@ -1,10 +1,12 @@
 package za.org.grassroot2.dagger.activity;
 
+import android.accounts.AccountManager;
 import android.content.Context;
 import android.support.v7.app.AppCompatActivity;
 
 import com.tbruyelle.rxpermissions2.RxPermissions;
 
+import dagger.Lazy;
 import dagger.Module;
 import dagger.Provides;
 import za.org.grassroot2.dagger.ActivityContext;
@@ -24,6 +26,7 @@ import za.org.grassroot2.services.UserDetailsService;
 import za.org.grassroot2.services.rest.GrassrootAuthApi;
 import za.org.grassroot2.util.ImageUtil;
 import za.org.grassroot2.util.StringDescriptionProvider;
+import za.org.grassroot2.util.UserPreference;
 
 /**
  * Created by luke on 2017/08/08.

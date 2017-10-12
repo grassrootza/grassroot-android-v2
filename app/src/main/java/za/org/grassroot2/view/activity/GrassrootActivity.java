@@ -10,6 +10,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
+import android.support.v4.app.DialogFragment;
+import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.view.View;
@@ -26,24 +29,29 @@ import javax.inject.Inject;
 
 import butterknife.BindView;
 import dagger.Lazy;
-import io.reactivex.Observable;
+import io.reactivex.disposables.CompositeDisposable;
 import za.org.grassroot2.GrassrootApplication;
 import za.org.grassroot2.R;
 import za.org.grassroot2.dagger.AppComponent;
+import za.org.grassroot2.dagger.activity.ActivityComponent;
 import za.org.grassroot2.dagger.activity.ActivityModule;
-import za.org.grassroot2.model.enums.AuthRecoveryResult;
-import za.org.grassroot2.model.enums.ConnectionResult;
+import za.org.grassroot2.services.OfflineReceiver;
 import za.org.grassroot2.services.account.AuthConstants;
 import za.org.grassroot2.services.rest.AddTokenInterceptor;
+import za.org.grassroot2.util.AlarmManagerHelper;
+import za.org.grassroot2.util.UserPreference;
 import za.org.grassroot2.view.GrassrootView;
+import za.org.grassroot2.view.dialog.NoConnectionDialog;
 
 public abstract class GrassrootActivity extends AppCompatActivity implements GrassrootView {
 
+    private static final String DIALOG_TAG = "dialog";
     @Inject public Lazy<AccountManager> accountManagerProvider;
-    public         AccountManager       accountManager;
+    @Inject public UserPreference       userPreference;
 
-    private AccountAuthenticatorResponse authResponse     = null;
-    private Bundle                       authResultBundle = null;
+    private   AccountAuthenticatorResponse authResponse     = null;
+    private   Bundle                       authResultBundle = null;
+    protected CompositeDisposable          disposables      = new CompositeDisposable();
 
     @BindView(R.id.progressBar)
     @Nullable
@@ -60,11 +68,8 @@ public abstract class GrassrootActivity extends AppCompatActivity implements Gra
     }
 
     protected boolean loggedIn() {
-        if (accountManager == null) {
-            accountManager = accountManagerProvider.get();
-        }
-        Account[] accounts = accountManager.getAccountsByType(AuthConstants.ACCOUNT_TYPE);
-        return accounts.length != 0 && !TextUtils.isEmpty(accountManager.getUserData(accounts[0], AuthConstants.USER_DATA_LOGGED_IN));
+        Account[] accounts = accountManagerProvider.get().getAccountsByType(AuthConstants.ACCOUNT_TYPE);
+        return accounts.length != 0 && !TextUtils.isEmpty(accountManagerProvider.get().getUserData(accounts[0], AuthConstants.USER_DATA_LOGGED_IN));
     }
 
     @Override
@@ -73,13 +78,27 @@ public abstract class GrassrootActivity extends AppCompatActivity implements Gra
     }
 
     @Override
-    public Observable<ConnectionResult> showConnectionFailedDialog() {
-        return null;
+    public void handleNoConnection() {
+        if (!userPreference.connectionInfoDisplayed()) {
+            DialogFragment dialog;
+            if (loggedIn()) {
+                dialog = NoConnectionDialog.newInstance(NoConnectionDialog.TYPE_AUTHORIZED);
+            } else {
+                dialog = NoConnectionDialog.newInstance(NoConnectionDialog.TYPE_NOT_AUTHORIZED);
+            }
+            dialog.show(getSupportFragmentManager(), DIALOG_TAG);
+            userPreference.setNoConnectionInfoDisplayed(true);
+            AlarmManagerHelper.scheduleAlarmForBroadcastReceiver(this, OfflineReceiver.class);
+        }
     }
 
     @Override
-    public Observable<AuthRecoveryResult> showAuthenticationRecoveryDialog() {
-        return null;
+    public void handleNoConnectionUpload() {
+        if (userPreference.connectionInfoDisplayed()) {
+            showNoConnectionMessage();
+        } else {
+            handleNoConnection();
+        }
     }
 
     @Override
@@ -173,6 +192,22 @@ public abstract class GrassrootActivity extends AppCompatActivity implements Gra
     }
 
     @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        dismissDialogs();
+        if (!disposables.isDisposed()) {
+            disposables.clear();
+        }
+    }
+
+    private void dismissDialogs() {
+        Fragment fragmentByTag = getSupportFragmentManager().findFragmentByTag(DIALOG_TAG);
+        if (fragmentByTag != null) {
+            ((DialogFragment) fragmentByTag).dismiss();
+        }
+    }
+
+    @Override
     protected void onResume() {
         super.onResume();
         EventBus.getDefault().register(this);
@@ -181,7 +216,7 @@ public abstract class GrassrootActivity extends AppCompatActivity implements Gra
     @Subscribe(sticky = true)
     void tokenRefreshEvent(AddTokenInterceptor.TokenRefreshEvent e) {
         EventBus.getDefault().removeStickyEvent(e);
-        accountManager = accountManagerProvider.get();
+        AccountManager accountManager = accountManagerProvider.get();
         final Account[] accounts = accountManager.getAccountsByType(AuthConstants.ACCOUNT_TYPE);
         accountManager.getAuthToken(accounts[0], AuthConstants.AUTH_TOKENTYPE, null, this, future -> {
             try {
@@ -193,6 +228,11 @@ public abstract class GrassrootActivity extends AppCompatActivity implements Gra
                 e1.printStackTrace();
             }
         }, null);
+    }
+
+    @Override
+    public void showNoConnectionMessage() {
+        Snackbar.make(findViewById(android.R.id.content), R.string.snackbar_offline, Snackbar.LENGTH_SHORT).show();
     }
 
 }
