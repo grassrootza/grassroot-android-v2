@@ -11,6 +11,10 @@ import com.j256.ormlite.table.DatabaseTable;
 @DatabaseTable(tableName = "user_profiles")
 public class UserProfile {
 
+    public static final int SYNC_STATE_NONE = 0;
+    public static final int SYNC_STATE_COMPLETED = 1;
+    public static final int SYNC_STATE_FAILED = 2;
+
     @DatabaseField(id = true)
     private String uid;
     @DatabaseField
@@ -20,7 +24,7 @@ public class UserProfile {
     @DatabaseField
     private String systemRole;
     @DatabaseField
-    private boolean syncComplete = false;
+    private int syncStatus = SYNC_STATE_NONE;
 
     public UserProfile() {
     }
@@ -79,12 +83,20 @@ public class UserProfile {
         this.systemRole = systemRole;
     }
 
-    public boolean isSyncComplete() {
-        return syncComplete;
+    public int getSyncStatus() {
+        return syncStatus;
     }
 
-    public void setSyncComplete(boolean syncComplete) {
-        this.syncComplete = syncComplete;
+    public boolean isSyncComplete() {
+        return syncStatus == SYNC_STATE_COMPLETED;
+    }
+
+    public boolean isSyncFailed() {
+        return syncStatus == SYNC_STATE_FAILED;
+    }
+
+    public void setSyncState(int status) {
+        this.syncStatus = status;
     }
 
     @Override
@@ -94,7 +106,8 @@ public class UserProfile {
                 ", msisdn='" + msisdn + '\'' +
                 ", displayName='" + displayName + '\'' +
                 ", systemRole='" + systemRole + '\'' +
-                ", syncComplete=" + syncComplete +
+                ", syncStatus=" + syncStatus +
                 '}';
     }
+
 }

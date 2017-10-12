@@ -10,8 +10,7 @@ public interface GrassrootView extends ProgressBarContainer {
 
     Activity getActivity();
     void showSuccessMsg(int successMsg);
-    void showSuccessMsg(String message);
-    void showErrorToast(int errorTextRes);
+    void showErrorSnackbar(int errorTextRes);
     void closeKeyboard();
     void launchActivity(Class<?> cls, Bundle args);
 

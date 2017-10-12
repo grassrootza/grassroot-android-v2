@@ -20,6 +20,7 @@ public class GroupFragmentPresenter extends BaseFragmentPresenter<GroupFragmentP
 
     private final DatabaseService    databaseService;
     private final UserDetailsService userDetailsService;
+    private boolean firstSyncNotCompleted;
 
     @Inject
     public GroupFragmentPresenter(DatabaseService dbService, UserDetailsService userDetailsService) {
@@ -39,16 +40,24 @@ public class GroupFragmentPresenter extends BaseFragmentPresenter<GroupFragmentP
 
     @Override
     public void onViewCreated() {
-        if (!userDetailsService.isSyncCompleted()) {
+        firstSyncNotCompleted = !userDetailsService.isSyncFailed() && !userDetailsService.isSyncCompleted();
+        if (userDetailsService.isSyncFailed()) {
+            view.closeProgressBar();
             view.renderEmptyFailedSync();
         } else {
+            if (firstSyncNotCompleted) {
+                view.showProgressBar();
+            } else {
+                view.closeProgressBar();
+            }
             loadGroups();
         }
     }
 
     private void loadGroups() {
         List<Group> groups = databaseService.loadObjects(Group.class);
-        if (groups.isEmpty()) {
+        if (groups.isEmpty() && !firstSyncNotCompleted) {
+            view.closeProgressBar();
             view.renderEmpty();
         } else {
             view.render(groups);

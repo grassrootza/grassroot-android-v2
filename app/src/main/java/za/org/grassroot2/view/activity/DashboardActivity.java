@@ -52,10 +52,13 @@ public class DashboardActivity extends GrassrootActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_dashboard);
-        ButterKnife.bind(this);
         bottomNavigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
         bottomNavigation.setSelectedItemId(R.id.navigation_groups);
+    }
+
+    @Override
+    protected int getLayoutResourceId() {
+        return R.layout.activity_dashboard;
     }
 
     public static void start(Activity activity) {

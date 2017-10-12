@@ -1,14 +1,11 @@
 package za.org.grassroot2.view.adapter;
 
 import android.content.Context;
-import android.media.Image;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-
-import com.tbruyelle.rxpermissions2.RxPermissions;
 
 import java.util.List;
 
@@ -18,11 +15,10 @@ import io.reactivex.Observable;
 import io.reactivex.subjects.PublishSubject;
 import za.org.grassroot2.R;
 import za.org.grassroot2.model.Group;
-import za.org.grassroot2.model.SelectableItem;
 import za.org.grassroot2.rxbinding.RxView;
 import za.org.grassroot2.util.LastModifiedFormatter;
 
-public class GroupsAdapter extends FooterAdapter<Group> {
+public class GroupsAdapter extends FooterEnabledAdapter<Group> {
 
     private final Context context;
     private PublishSubject<String> viewClickSubject = PublishSubject.create();

@@ -35,7 +35,7 @@ public abstract class BaseFragmentPresenter<T extends FragmentView> {
     }
 
     @Subscribe
-    void emptyEvent(Object o) {}
+    public void emptyEvent(Object o) {}
 
     public void handleNetworkConnectionError(Throwable t) {
         Timber.d(t);

@@ -23,6 +23,5 @@ public interface AppComponent {
     void inject(AccountAuthenticator accountAuthenticator);
     void inject(OfflineReceiver offlineReceiver);
 
-    // void inject(LoggedInViewPresenterImpl target);
     ActivityComponent plus(ActivityModule activityModule);
 }

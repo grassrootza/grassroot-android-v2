@@ -5,8 +5,10 @@ import java.util.Map;
 
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
+import retrofit2.Response;
 import za.org.grassroot2.model.Group;
 import za.org.grassroot2.model.UploadResult;
+import za.org.grassroot2.model.contact.Contact;
 import za.org.grassroot2.model.enums.GrassrootEntityType;
 import za.org.grassroot2.model.network.EntityForDownload;
 import za.org.grassroot2.model.network.EntityForUpload;
@@ -31,6 +33,8 @@ public interface NetworkService {
     Observable<List<Group>> downloadAllChangedOrNewGroups();
 
     Observable<List<Task>> downloadTaskMinimumInfo();
+
+    Observable<Response<Void>> inviteContactsToGroup(String groupId, List<Contact> contacts);
 
     Observable<List<Task>> getTasksForGroup(String groupId);
 

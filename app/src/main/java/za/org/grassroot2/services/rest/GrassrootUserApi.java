@@ -7,6 +7,7 @@ import java.util.Set;
 import io.reactivex.Observable;
 import okhttp3.MultipartBody;
 import retrofit2.Call;
+import retrofit2.Response;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
 import retrofit2.http.Multipart;
@@ -15,7 +16,7 @@ import retrofit2.http.Part;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
 import za.org.grassroot2.model.Group;
-import za.org.grassroot2.model.request.TaskRequest;
+import za.org.grassroot2.model.request.MemberRequestObject;
 import za.org.grassroot2.model.task.Task;
 
 public interface GrassrootUserApi {
@@ -60,7 +61,7 @@ public interface GrassrootUserApi {
     @POST("/api/task/fetch/updated/{userUid}")
     Observable<List<Task>> fetchUserTasksMinimumInfo(@Path("userUid") String userUid, @Body Map<String, Long> timestamps);
 
-    @GET("/api/task/fetch/all/{userUid}")
-    Observable<List<Task>> fetchUserTasksFull(@Path("userUid") String userUid);
+    @POST("/api/group/modify/members/add/{userUid}/{groupUid}")
+    Observable<Response<Void>> addMembersToGroup(@Path("userUid") String userId, @Path("groupUid") String groupId, @Body List<MemberRequestObject> request);
 
 }

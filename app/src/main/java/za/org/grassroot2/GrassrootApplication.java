@@ -3,6 +3,8 @@ package za.org.grassroot2;
 import android.app.Application;
 import android.os.Debug;
 
+import com.facebook.stetho.Stetho;
+
 import timber.log.Timber;
 import za.org.grassroot2.dagger.AppComponent;
 import za.org.grassroot2.dagger.AppModule;
@@ -23,7 +25,7 @@ public class GrassrootApplication extends Application {
         super.onCreate();
         appComponent = initDagger(this);
         initTimber();
-        Debug.stopMethodTracing();
+        Stetho.initializeWithDefaults(this);
     }
 
     private void initTimber() {

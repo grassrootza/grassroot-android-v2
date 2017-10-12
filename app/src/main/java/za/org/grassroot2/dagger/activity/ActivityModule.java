@@ -15,6 +15,7 @@ import za.org.grassroot2.database.DatabaseService;
 import za.org.grassroot2.presenter.GroupDetailsPresenter;
 import za.org.grassroot2.presenter.LoginPresenter;
 import za.org.grassroot2.presenter.MainPresenter;
+import za.org.grassroot2.presenter.PickContactPresenter;
 import za.org.grassroot2.presenter.fragment.GroupFragmentPresenter;
 import za.org.grassroot2.presenter.fragment.SingleTextMultiButtonPresenter;
 import za.org.grassroot2.services.LiveWireService;
@@ -24,6 +25,7 @@ import za.org.grassroot2.services.MediaServiceImpl;
 import za.org.grassroot2.services.NetworkService;
 import za.org.grassroot2.services.UserDetailsService;
 import za.org.grassroot2.services.rest.GrassrootAuthApi;
+import za.org.grassroot2.util.ContactHelper;
 import za.org.grassroot2.util.ImageUtil;
 import za.org.grassroot2.util.StringDescriptionProvider;
 import za.org.grassroot2.util.UserPreference;
@@ -97,6 +99,12 @@ public class ActivityModule {
     @PerActivity
     GroupDetailsPresenter provideGroupDetailsPresenter(DatabaseService dbService, NetworkService networkService) {
         return new GroupDetailsPresenter(dbService, networkService);
+    }
+
+    @Provides
+    @PerActivity
+    PickContactPresenter providePickContactPresenter(ContactHelper helper) {
+        return new PickContactPresenter(helper);
     }
 
     @Provides

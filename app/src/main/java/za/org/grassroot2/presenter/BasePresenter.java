@@ -4,6 +4,7 @@ import android.util.Log;
 
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
+import retrofit2.Response;
 import timber.log.Timber;
 import za.org.grassroot2.model.exception.AuthenticationInvalidException;
 import za.org.grassroot2.model.exception.ServerUnreachableException;
@@ -31,6 +32,10 @@ public class BasePresenter<T extends GrassrootView> implements GrassrootPresente
         }
     }
 
+
+    @Override
+    public void handleResponseError(Response response) {
+    }
 
     @Override
     public void handleNetworkConnectionError(Throwable t) {

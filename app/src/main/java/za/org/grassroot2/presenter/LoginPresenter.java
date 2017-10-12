@@ -39,7 +39,7 @@ public class LoginPresenter extends BasePresenter<LoginView> {
             }
         } catch (InvalidPhoneNumberException e) {
             Timber.e("error converting number to msisdn! : " + value);
-            view.showErrorToast(R.string.error_phone_number);
+            view.showErrorSnackbar(R.string.error_phone_number);
         } catch (Throwable e) {
             handleNetworkConnectionError(e);
         }

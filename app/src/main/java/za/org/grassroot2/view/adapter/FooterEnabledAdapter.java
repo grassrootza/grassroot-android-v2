@@ -8,7 +8,7 @@ import android.widget.FrameLayout;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class FooterAdapter<E> extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+public abstract class FooterEnabledAdapter<E> extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     protected List<E> items = new ArrayList<>();
     List<View> footers = new ArrayList<>();
@@ -16,7 +16,7 @@ public abstract class FooterAdapter<E> extends RecyclerView.Adapter<RecyclerView
     public static final int TYPE_FOOTER = 222;
     public static final int TYPE_ITEM   = 333;
 
-    public FooterAdapter(List<E> data) {
+    public FooterEnabledAdapter(List<E> data) {
         items = data;
     }
 

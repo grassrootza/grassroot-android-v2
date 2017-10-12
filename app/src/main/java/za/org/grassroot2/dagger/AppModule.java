@@ -13,6 +13,7 @@ import za.org.grassroot2.database.DatabaseService;
 import za.org.grassroot2.database.DatabaseServiceImpl;
 import za.org.grassroot2.services.UserDetailsService;
 import za.org.grassroot2.services.UserDetailsServiceImpl;
+import za.org.grassroot2.util.ContactHelper;
 import za.org.grassroot2.util.StringDescriptionProvider;
 import za.org.grassroot2.util.UserPreference;
 
@@ -38,6 +39,12 @@ public class AppModule {
     @Singleton
     public AccountManager providesAccountManager(@ApplicationContext Context context) {
         return AccountManager.get(context);
+    }
+
+    @Provides
+    @Singleton
+    public ContactHelper providesContactHelper(@ApplicationContext Context context) {
+        return new ContactHelper(context);
     }
 
     @Provides

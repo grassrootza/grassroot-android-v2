@@ -57,7 +57,7 @@ public class GroupTasksPresenter extends BaseFragmentPresenter<GroupTasksPresent
     }
 
     @Subscribe
-    void refreshData(GroupDetailsPresenter.TasksUpdatedEvent e) {
+    public void refreshData(GroupDetailsPresenter.TasksUpdatedEvent e) {
         loadTasks();
     }
 
