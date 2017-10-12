@@ -1,8 +1,6 @@
 package za.org.grassroot2.presenter.fragment;
 
 
-import android.accounts.Account;
-
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
@@ -15,7 +13,6 @@ import io.reactivex.Observable;
 import za.org.grassroot2.database.DatabaseService;
 import za.org.grassroot2.model.Group;
 import za.org.grassroot2.services.UserDetailsService;
-import za.org.grassroot2.services.account.AuthConstants;
 import za.org.grassroot2.services.account.SyncAdapter;
 import za.org.grassroot2.view.FragmentView;
 

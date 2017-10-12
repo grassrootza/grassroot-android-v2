@@ -4,21 +4,23 @@ import android.util.Log;
 
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
+import timber.log.Timber;
 import za.org.grassroot2.model.exception.AuthenticationInvalidException;
 import za.org.grassroot2.model.exception.ServerUnreachableException;
 import za.org.grassroot2.view.GrassrootView;
 
 
-public abstract class BasePresenter<T extends GrassrootView> implements GrassrootPresenter {
+public class BasePresenter<T extends GrassrootView> implements GrassrootPresenter {
 
     protected T view;
     private CompositeDisposable disposables = new CompositeDisposable();
+
 
     public void attach(T view) {
         this.view = view;
     }
 
-    public void detach(T view) {
+    public void detach() {
         disposables.clear();
         this.view = null;
     }
@@ -29,34 +31,35 @@ public abstract class BasePresenter<T extends GrassrootView> implements Grassroo
         }
     }
 
+
     @Override
     public void handleNetworkConnectionError(Throwable t) {
-        Log.e("CONNECTION", t.toString());
+        Timber.d(t);
         view.closeProgressBar();
-        view.showConnectionFailedDialog().subscribe();
+        view.handleNoConnection();
+    }
+
+    @Override
+    public void handleNetworkUploadError(Throwable t) {
+        Timber.d(t);
+        view.closeProgressBar();
+        view.handleNoConnectionUpload();
     }
 
     public void handleAuthenticationError(AuthenticationInvalidException t) {
-        Log.e("AUTHENTICATION", t.toString());
+        Timber.d(t);
         view.closeProgressBar();
-        view.showAuthenticationRecoveryDialog().subscribe();
     }
 
     public void handleServerUnreachableError(ServerUnreachableException e) {
-        Log.e("SERVER", e.toString());
+        Timber.d(e);
         view.closeProgressBar();
         view.closeKeyboard();
-//        view.showErrorToast(R.string.error_server_unreachable);
     }
 
     // these two should only be called internally, to enforce design
     void handleGenericKnownException(Throwable t) {
         Log.e("ERROR", t.toString());
-    }
-
-    void handleUnknownError(Exception e) {
-        e.printStackTrace();
-//        view.showErrorToast(R.string.error_unknown_generic);
     }
 
 }

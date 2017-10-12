@@ -1,8 +1,5 @@
 package za.org.grassroot2.view.fragment;
 
-import android.accounts.Account;
-import android.accounts.AccountManager;
-import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
@@ -13,11 +10,7 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.TextView;
-
-import org.greenrobot.eventbus.EventBus;
-import org.greenrobot.eventbus.Subscribe;
 
 import java.util.List;
 
@@ -28,10 +21,9 @@ import butterknife.OnClick;
 import io.reactivex.Observable;
 import za.org.grassroot2.GrassrootApplication;
 import za.org.grassroot2.R;
+import za.org.grassroot2.dagger.activity.ActivityComponent;
 import za.org.grassroot2.model.Group;
 import za.org.grassroot2.presenter.fragment.GroupFragmentPresenter;
-import za.org.grassroot2.services.account.AuthConstants;
-import za.org.grassroot2.services.account.SyncAdapter;
 import za.org.grassroot2.view.activity.GrassrootActivity;
 import za.org.grassroot2.view.activity.GroupDetailsActivity;
 import za.org.grassroot2.view.adapter.GroupsAdapter;
@@ -74,12 +66,6 @@ public class GroupsFragment extends GrassrootFragment implements GroupFragmentPr
         ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(R.string.title_groups);
         presenter.attach(this);
         presenter.onViewCreated();
-//                AccountManager accountManager = (AccountManager) getActivity().getSystemService(Context.ACCOUNT_SERVICE);
-//        Account[] accounts = accountManager.getAccountsByType(AuthConstants.ACCOUNT_TYPE);
-//        if (accounts.length != 0) {
-//            accountManager.invalidateAuthToken(AuthConstants.ACCOUNT_TYPE,
-//                    accountManager.peekAuthToken(accounts[0], AuthConstants.AUTH_TOKENTYPE));
-//        }
     }
 
     @Override
@@ -88,8 +74,8 @@ public class GroupsFragment extends GrassrootFragment implements GroupFragmentPr
     }
 
     @Override
-    protected void onInject(GrassrootApplication application) {
-        application.getAppComponent().plus(((GrassrootActivity) getActivity()).getActivityModule()).inject(this);
+    protected void onInject(ActivityComponent activityComponent) {
+        activityComponent.inject(this);
     }
 
     @Override
@@ -140,4 +126,5 @@ public class GroupsFragment extends GrassrootFragment implements GroupFragmentPr
         emptyInfoContainer.setVisibility(View.VISIBLE);
         groupsRecyclerView.setVisibility(View.GONE);
     }
+
 }

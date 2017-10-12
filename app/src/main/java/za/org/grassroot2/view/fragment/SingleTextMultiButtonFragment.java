@@ -19,6 +19,7 @@ import io.reactivex.Observable;
 import timber.log.Timber;
 import za.org.grassroot2.GrassrootApplication;
 import za.org.grassroot2.R;
+import za.org.grassroot2.dagger.activity.ActivityComponent;
 import za.org.grassroot2.dagger.user.ApiModule;
 import za.org.grassroot2.model.dto.BtnGrouping;
 import za.org.grassroot2.model.dto.BtnParameters;
@@ -76,9 +77,8 @@ public class SingleTextMultiButtonFragment extends TextInputFragment implements 
     }
 
     @Override
-    protected void onInject(GrassrootApplication application) {
-        GrassrootActivity activity = (GrassrootActivity) getActivity();
-        activity.getAppComponent().plus(activity.getActivityModule()).inject(this);
+    protected void onInject(ActivityComponent application) {
+        application.inject(this);
         presenter.attach(this);
     }
 

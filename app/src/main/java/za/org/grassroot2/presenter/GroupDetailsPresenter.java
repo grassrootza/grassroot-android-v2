@@ -1,14 +1,18 @@
 package za.org.grassroot2.presenter;
 
+import android.accounts.AccountManager;
+
 import org.greenrobot.eventbus.EventBus;
 
 import javax.inject.Inject;
 
+import dagger.Lazy;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 import za.org.grassroot2.database.DatabaseService;
 import za.org.grassroot2.model.Group;
 import za.org.grassroot2.services.NetworkService;
+import za.org.grassroot2.util.UserPreference;
 import za.org.grassroot2.view.GrassrootView;
 
 
@@ -36,7 +40,7 @@ public class GroupDetailsPresenter extends BasePresenter<GroupDetailsPresenter.G
             } else {
                 view.emptyData();
             }
-        }, Throwable::printStackTrace));
+        }, this::handleNetworkConnectionError));
 
     }
 

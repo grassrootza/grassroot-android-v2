@@ -11,7 +11,6 @@ import android.view.MenuItem;
 
 import com.tbruyelle.rxpermissions2.RxPermissions;
 
-import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
 import javax.inject.Inject;
@@ -21,13 +20,11 @@ import io.reactivex.Observable;
 import timber.log.Timber;
 import za.org.grassroot2.GrassrootApplication;
 import za.org.grassroot2.R;
-import za.org.grassroot2.dagger.user.ApiModule;
 import za.org.grassroot2.model.dto.BtnGrouping;
 import za.org.grassroot2.presenter.MainPresenter;
 import za.org.grassroot2.rxbinding.RxViewUtils;
 import za.org.grassroot2.view.MainView;
 import za.org.grassroot2.view.event.MoveNextWithInputEvent;
-import za.org.grassroot2.view.fragment.GrassrootFragment;
 import za.org.grassroot2.view.fragment.ItemSelectionFragment;
 import za.org.grassroot2.view.fragment.LargeMsgWithButtonsFragment;
 import za.org.grassroot2.view.fragment.LongTextInputFragment;
@@ -87,7 +84,7 @@ public class MainActivity extends LoggedInActivity implements MainView {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        presenter.detach(this);
+        presenter.detach();
     }
 
     @Override

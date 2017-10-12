@@ -20,6 +20,7 @@ import butterknife.BindView;
 import io.reactivex.Observable;
 import za.org.grassroot2.GrassrootApplication;
 import za.org.grassroot2.R;
+import za.org.grassroot2.dagger.activity.ActivityComponent;
 import za.org.grassroot2.model.enums.GrassrootEntityType;
 import za.org.grassroot2.model.task.Task;
 import za.org.grassroot2.presenter.fragment.GroupTasksPresenter;
@@ -54,6 +55,11 @@ public class GroupTasksFragment extends GrassrootFragment implements GroupTasksP
         super.onCreate(savedInstanceState);
     }
 
+    @Override
+    protected void onInject(ActivityComponent activityComponent) {
+        activityComponent.inject(this);
+    }
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -65,11 +71,6 @@ public class GroupTasksFragment extends GrassrootFragment implements GroupTasksP
     public void onDestroy() {
         super.onDestroy();
         presenter.detach(this);
-    }
-
-    @Override
-    protected void onInject(GrassrootApplication application) {
-        application.getAppComponent().plus(((GrassrootActivity) getActivity()).getActivityModule()).inject(this);
     }
 
     @Override

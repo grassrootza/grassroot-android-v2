@@ -1,6 +1,7 @@
 package za.org.grassroot2.dagger.user;
 
 import android.accounts.AccountManager;
+import android.content.Context;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -14,6 +15,7 @@ import retrofit2.Converter;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import za.org.grassroot2.BuildConfig;
+import za.org.grassroot2.dagger.ApplicationContext;
 import za.org.grassroot2.dagger.Authorized;
 import za.org.grassroot2.database.DatabaseService;
 import za.org.grassroot2.model.task.Task;
@@ -23,6 +25,7 @@ import za.org.grassroot2.services.UserDetailsService;
 import za.org.grassroot2.services.deserializer.TaskDeserlializer;
 import za.org.grassroot2.services.rest.AddTokenInterceptor;
 import za.org.grassroot2.services.rest.GrassrootUserApi;
+import za.org.grassroot2.util.UserPreference;
 
 /**
  * Created by luke on 2017/08/08.
@@ -31,8 +34,8 @@ import za.org.grassroot2.services.rest.GrassrootUserApi;
 public class ApiModule {
 
     @Provides
-    AddTokenInterceptor provideTokenInterceptor(AccountManager accountManager) {
-        return new AddTokenInterceptor(accountManager);
+    AddTokenInterceptor provideTokenInterceptor(@ApplicationContext Context c, AccountManager accountManager, UserPreference userPref) {
+        return new AddTokenInterceptor(c, accountManager, userPref);
     }
 
     @Provides

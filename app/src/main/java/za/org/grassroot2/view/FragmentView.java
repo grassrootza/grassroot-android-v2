@@ -8,4 +8,7 @@ import io.reactivex.Observable;
 
 public interface FragmentView {
     Observable<Integer> viewCreated();
+    void showNoConnectionMessage();
+    void handleNoConnection();
+    void handleNoConnectionUpload();
 }

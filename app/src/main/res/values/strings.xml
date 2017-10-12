@@ -98,6 +98,11 @@
     <string name="info_group_create_item">Why not creating\nyour first action? Tap here!</string>
     <string name="text_old_header">Older</string>
     <string name="token_expired">Your session expired. Please log in again.</string>
+    <string name="close">Close</string>
+    <string name="info_no_data_not_authorized">Grassroot uses very little data, but you need some to use the app. Please switch on data or reload your balance and try again.</string>
+    <string name="continue_offline">Continue offline</string>
+    <string name="retry_connection">Retry connection</string>
+    <string name="snackbar_offline">You\'re still offline</string>
 
     <plurals name="member_count">
         <item quantity="one">%d member</item>

@@ -14,6 +14,7 @@ import za.org.grassroot2.database.DatabaseServiceImpl;
 import za.org.grassroot2.services.UserDetailsService;
 import za.org.grassroot2.services.UserDetailsServiceImpl;
 import za.org.grassroot2.util.StringDescriptionProvider;
+import za.org.grassroot2.util.UserPreference;
 
 /**
  * Created by luke on 2017/08/08.
@@ -43,6 +44,12 @@ public class AppModule {
     @Singleton
     DatabaseService provideDatabase(DatabaseHelper helper) {
         return new DatabaseServiceImpl(helper);
+    }
+
+    @Provides
+    @Singleton
+    UserPreference provideUserPreference(@ApplicationContext Context context) {
+        return new UserPreference(context);
     }
 
     @Provides

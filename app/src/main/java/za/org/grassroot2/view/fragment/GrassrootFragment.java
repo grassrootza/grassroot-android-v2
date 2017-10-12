@@ -1,17 +1,24 @@
 package za.org.grassroot2.view.fragment;
 
+import android.accounts.Account;
+import android.accounts.AccountManager;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.CallSuper;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.Nullable;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import javax.inject.Inject;
+
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
+import dagger.Lazy;
 import io.reactivex.Observable;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.CompositeDisposable;
@@ -19,32 +26,43 @@ import io.reactivex.functions.Predicate;
 import io.reactivex.subjects.PublishSubject;
 import timber.log.Timber;
 import za.org.grassroot2.GrassrootApplication;
+import za.org.grassroot2.dagger.activity.ActivityComponent;
 import za.org.grassroot2.presenter.fragment.BaseFragmentPresenter;
+import za.org.grassroot2.services.OfflineReceiver;
+import za.org.grassroot2.services.account.AuthConstants;
+import za.org.grassroot2.util.AlarmManagerHelper;
+import za.org.grassroot2.util.UserPreference;
 import za.org.grassroot2.view.FragmentView;
+import za.org.grassroot2.view.activity.GrassrootActivity;
+import za.org.grassroot2.view.dialog.NoConnectionDialog;
 
 /**
  * Created by luke on 2017/08/10.
  */
 
-public abstract class GrassrootFragment<P extends BaseFragmentPresenter> extends Fragment implements FragmentView {
+public abstract class GrassrootFragment extends Fragment implements FragmentView {
 
-    protected static final int ACTION_FRAGMENT_ATTACHED = 1;
-    protected static final int ACTION_FRAGMENT_CREATED = 2;
+    protected static final int ACTION_FRAGMENT_CREATED      = 2;
     protected static final int ACTION_FRAGMENT_VIEW_CREATED = 3;
+    private static final String DIALOG_TAG                  = "dialog";
 
-    protected P presenter;
     protected Unbinder unbinder;
     protected PublishSubject<Integer> lifecyclePublisher = PublishSubject.create();
     protected CompositeDisposable disposables = new CompositeDisposable();
 
+    @Inject        UserPreference       userPreference;
+    @Inject public Lazy<AccountManager> accountManagerProvider;
 
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        onInject((GrassrootApplication)getActivity().getApplication());
+        GrassrootApplication application = (GrassrootApplication) getActivity().getApplication();
+        ActivityComponent activityComponent = application.getAppComponent().plus(((GrassrootActivity) getActivity()).getActivityModule());
+        activityComponent.inject(this);
+        onInject(activityComponent);
     }
 
-    protected abstract void onInject(GrassrootApplication application);
+    protected abstract void onInject(ActivityComponent activityComponent);
 
     @Override
     @CallSuper
@@ -75,4 +93,36 @@ public abstract class GrassrootFragment<P extends BaseFragmentPresenter> extends
                 .filter(integer -> integer == ACTION_FRAGMENT_VIEW_CREATED);
     }
 
+    @Override
+    public void showNoConnectionMessage() {
+    }
+
+    @Override
+    public void handleNoConnection() {
+        if (!userPreference.connectionInfoDisplayed()) {
+            DialogFragment dialog;
+            if (loggedIn()) {
+                dialog = NoConnectionDialog.newInstance(NoConnectionDialog.TYPE_AUTHORIZED);
+            } else {
+                dialog = NoConnectionDialog.newInstance(NoConnectionDialog.TYPE_NOT_AUTHORIZED);
+            }
+            dialog.show(getChildFragmentManager(), DIALOG_TAG);
+            userPreference.setNoConnectionInfoDisplayed(true);
+            AlarmManagerHelper.scheduleAlarmForBroadcastReceiver(getActivity(), OfflineReceiver.class);
+        }
+    }
+
+    @Override
+    public void handleNoConnectionUpload() {
+        if (userPreference.connectionInfoDisplayed()) {
+            showNoConnectionMessage();
+        } else {
+            handleNoConnection();
+        }
+    }
+
+    protected boolean loggedIn() {
+        Account[] accounts = accountManagerProvider.get().getAccountsByType(AuthConstants.ACCOUNT_TYPE);
+        return accounts.length != 0 && !TextUtils.isEmpty(accountManagerProvider.get().getUserData(accounts[0], AuthConstants.USER_DATA_LOGGED_IN));
+    }
 }

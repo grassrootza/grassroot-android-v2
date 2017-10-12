@@ -1,6 +1,5 @@
 package za.org.grassroot2.view;
 
-import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.app.Activity;
 import android.content.Intent;
@@ -10,7 +9,6 @@ import android.text.InputType;
 import android.text.TextUtils;
 import android.view.inputmethod.EditorInfo;
 
-import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
 import javax.inject.Inject;
@@ -22,7 +20,6 @@ import za.org.grassroot2.BuildConfig;
 import za.org.grassroot2.GrassrootApplication;
 import za.org.grassroot2.R;
 import za.org.grassroot2.model.enums.AuthRecoveryResult;
-import za.org.grassroot2.model.enums.ConnectionResult;
 import za.org.grassroot2.presenter.LoginPresenter;
 import za.org.grassroot2.services.account.AuthConstants;
 import za.org.grassroot2.view.activity.GrassrootActivity;
@@ -40,7 +37,6 @@ public class LoginActivity extends GrassrootActivity implements LoginView {
     private SingleTextInputFragment otpFragment;
 
     private String         debugOtp;
-    private AccountManager accountManager;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -59,19 +55,19 @@ public class LoginActivity extends GrassrootActivity implements LoginView {
                 R.string.login_enter_msisdn,
                 R.string.login_button_register,
                 R.string.button_next);
-        usernameFragment.viewCreated().subscribe(integer -> {
+        disposables.add(usernameFragment.viewCreated().subscribe(integer -> {
             loginPresenter.onViewCreated();
             usernameFragment.toggleNextDoneButton(false);
             usernameFragment.setInputType(InputType.TYPE_CLASS_PHONE);
             usernameFragment.setImeOptions(EditorInfo.IME_ACTION_NEXT);
             usernameFragment.focusOnInput();
-        });
+        }, throwable -> {}));
 
         otpFragment = SingleTextInputFragment.newInstance(R.string.login_enter_otp_banner,
                 R.string.login_enter_otp_string,
                 R.string.login_button_register,
                 R.string.button_login);
-        otpFragment.viewCreated().subscribe(integer -> {
+        disposables.add(otpFragment.viewCreated().subscribe(integer -> {
             otpFragment.toggleNextDoneButton(false);
             otpFragment.toggleBackOtherButton(false);
             if (!TextUtils.isEmpty(debugOtp)) {
@@ -80,7 +76,7 @@ public class LoginActivity extends GrassrootActivity implements LoginView {
             usernameFragment.setInputType(InputType.TYPE_CLASS_NUMBER);
             usernameFragment.setImeOptions(EditorInfo.IME_ACTION_DONE);
             usernameFragment.focusOnInput();
-        });
+        },  throwable -> {}));
 
         currentFragment = usernameFragment;
         setToUsernameEntry();
@@ -92,7 +88,7 @@ public class LoginActivity extends GrassrootActivity implements LoginView {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        loginPresenter.detach(this);
+        loginPresenter.detach();
     }
 
     private void setToUsernameEntry() {
@@ -152,13 +148,8 @@ public class LoginActivity extends GrassrootActivity implements LoginView {
     }
 
     @Override
-    public Observable<ConnectionResult> showConnectionFailedDialog() {
-        return null;
-    }
+    public void showNoConnectionMessage() {
 
-    @Override
-    public Observable<AuthRecoveryResult> showAuthenticationRecoveryDialog() {
-        return null;
     }
 
     @Subscribe
