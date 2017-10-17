@@ -9,15 +9,18 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.CallSuper;
+import android.support.annotation.LayoutRes;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import org.greenrobot.eventbus.EventBus;
@@ -28,6 +31,7 @@ import java.io.IOException;
 import javax.inject.Inject;
 
 import butterknife.BindView;
+import butterknife.ButterKnife;
 import dagger.Lazy;
 import io.reactivex.disposables.CompositeDisposable;
 import za.org.grassroot2.GrassrootApplication;
@@ -40,12 +44,13 @@ import za.org.grassroot2.services.account.AuthConstants;
 import za.org.grassroot2.services.rest.AddTokenInterceptor;
 import za.org.grassroot2.util.AlarmManagerHelper;
 import za.org.grassroot2.util.UserPreference;
+import za.org.grassroot2.util.ViewAnimation;
 import za.org.grassroot2.view.GrassrootView;
 import za.org.grassroot2.view.dialog.NoConnectionDialog;
 
 public abstract class GrassrootActivity extends AppCompatActivity implements GrassrootView {
 
-    private static final String DIALOG_TAG = "dialog";
+    protected static final String DIALOG_TAG = "dialog";
     @Inject public Lazy<AccountManager> accountManagerProvider;
     @Inject public UserPreference       userPreference;
 
@@ -53,18 +58,33 @@ public abstract class GrassrootActivity extends AppCompatActivity implements Gra
     private   Bundle                       authResultBundle = null;
     protected CompositeDisposable          disposables      = new CompositeDisposable();
 
-    @BindView(R.id.progressBar)
-    @Nullable
-    ProgressBar progressBar;
+    @BindView(R.id.progress) @Nullable View progress;
 
     @Override
     protected void onCreate(Bundle icicle) {
         super.onCreate(icicle);
-        ((GrassrootApplication) getApplication()).getAppComponent().plus(getActivityModule()).inject(this);
+        setContentView(R.layout.base_progress_container);
+        setContentLayout(getLayoutResourceId());
+        ButterKnife.bind(this);
+        onInject(getAppComponent().plus(getActivityModule()));
         authResponse = getIntent().getParcelableExtra(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE);
         if (authResponse != null) {
             authResponse.onRequestContinued();
         }
+    }
+
+    @CallSuper
+    protected void onInject(ActivityComponent component) {
+        component.inject(this);
+    }
+
+    @LayoutRes
+    protected abstract int getLayoutResourceId();
+
+    private void setContentLayout(int resId){
+        RelativeLayout parent = (RelativeLayout) findViewById(R.id.main_layout);
+        View v = LayoutInflater.from(this).inflate(resId, parent, false);
+        parent.addView(v);
     }
 
     protected boolean loggedIn() {
@@ -102,18 +122,13 @@ public abstract class GrassrootActivity extends AppCompatActivity implements Gra
     }
 
     @Override
-    public void showSuccessMsg(String message) {
-        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+    public void showSuccessMsg(int successMsg) {
+        Snackbar.make(findViewById(android.R.id.content), successMsg, Toast.LENGTH_SHORT).show();
     }
 
     @Override
-    public void showSuccessMsg(int messageRes) {
-        Toast.makeText(this, messageRes, Toast.LENGTH_SHORT).show();
-    }
-
-    @Override
-    public void showErrorToast(int errorTextRes) {
-        Toast.makeText(this, errorTextRes, Toast.LENGTH_SHORT).show();
+    public void showErrorSnackbar(int stringResId) {
+        Snackbar.make(findViewById(android.R.id.content), stringResId, Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -163,17 +178,17 @@ public abstract class GrassrootActivity extends AppCompatActivity implements Gra
         }
     }
 
+    @Override
     public void showProgressBar() {
-        safeToggleProgressBar(progressBar, true);
+        if (progress!=null) {
+            ViewAnimation.fadeIn(progress);
+        }
     }
 
+    @Override
     public void closeProgressBar() {
-        safeToggleProgressBar(progressBar, false);
-    }
-
-    protected void safeToggleProgressBar(ProgressBar progressBar, boolean shown) {
-        if (progressBar != null) {
-            progressBar.setVisibility(shown ? View.VISIBLE : View.GONE);
+        if (progress!=null) {
+            ViewAnimation.fadeOut(progress);
         }
     }
 
@@ -214,7 +229,7 @@ public abstract class GrassrootActivity extends AppCompatActivity implements Gra
     }
 
     @Subscribe(sticky = true)
-    void tokenRefreshEvent(AddTokenInterceptor.TokenRefreshEvent e) {
+    public void tokenRefreshEvent(AddTokenInterceptor.TokenRefreshEvent e) {
         EventBus.getDefault().removeStickyEvent(e);
         AccountManager accountManager = accountManagerProvider.get();
         final Account[] accounts = accountManager.getAccountsByType(AuthConstants.ACCOUNT_TYPE);

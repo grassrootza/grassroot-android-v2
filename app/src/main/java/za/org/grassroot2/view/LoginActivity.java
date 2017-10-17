@@ -19,6 +19,7 @@ import io.reactivex.annotations.NonNull;
 import za.org.grassroot2.BuildConfig;
 import za.org.grassroot2.GrassrootApplication;
 import za.org.grassroot2.R;
+import za.org.grassroot2.dagger.activity.ActivityComponent;
 import za.org.grassroot2.model.enums.AuthRecoveryResult;
 import za.org.grassroot2.presenter.LoginPresenter;
 import za.org.grassroot2.services.account.AuthConstants;
@@ -41,10 +42,6 @@ public class LoginActivity extends GrassrootActivity implements LoginView {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_login);
-        ButterKnife.bind(this);
-        ((GrassrootApplication) getApplication())
-                .getAppComponent().plus(getActivityModule()).inject(this);
         loginPresenter.attach(LoginActivity.this);
         if (loggedIn()) {
             startActivity(new Intent(this, MainActivity.class));
@@ -83,6 +80,17 @@ public class LoginActivity extends GrassrootActivity implements LoginView {
         if (getIntent().hasExtra(EXTRA_TOKEN_EXPIRED)) {
             Snackbar.make(findViewById(android.R.id.content), R.string.token_expired, Snackbar.LENGTH_LONG).show();
         }
+    }
+
+    @Override
+    protected void onInject(ActivityComponent component) {
+        super.onInject(component);
+        component.inject(this);
+    }
+
+    @Override
+    protected int getLayoutResourceId() {
+        return R.layout.activity_login;
     }
 
     @Override

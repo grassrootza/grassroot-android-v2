@@ -84,10 +84,20 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     }
 
     @Override
-    public void setSyncCompleted() {
+    public boolean isSyncFailed() {
         UserProfile userProfile = databaseService.loadUserProfile();
-        userProfile.setSyncComplete(true);
-        databaseService.storeObject(UserProfile.class, userProfile);
+        return userProfile != null && userProfile.isSyncFailed();
+    }
+
+    @Override
+    public void setSyncState(int status) {
+        UserProfile userProfile = databaseService.loadUserProfile();
+        if (status==UserProfile.SYNC_STATE_FAILED && userProfile.getSyncStatus() != UserProfile.SYNC_STATE_NONE) {
+            return;
+        } else {
+            userProfile.setSyncState(status);
+            databaseService.storeObject(UserProfile.class, userProfile);
+        }
     }
 
     public String getCurrentToken() {

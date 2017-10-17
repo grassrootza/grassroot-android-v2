@@ -101,7 +101,7 @@ public class MainPresenter extends LoggedInViewPresenterImpl<MainView> {
     }
 
     private void showErrorAndReturnToNull() {
-        view.showErrorToast(R.string.error_lwire_alert_not_found);
+        view.showErrorSnackbar(R.string.error_lwire_alert_not_found);
         currentLiveWireAlertUid = null;
         currentMediaFileUid = null;
     }
@@ -156,7 +156,7 @@ public class MainPresenter extends LoggedInViewPresenterImpl<MainView> {
     private void handleMediaError(Throwable throwable) {
         view.closeProgressBar();
         Timber.e(throwable);
-        view.showErrorToast(R.string.error_lwire_alert_media_error);
+        view.showErrorSnackbar(R.string.error_lwire_alert_media_error);
         decideOnNextLiveWireStep();
     }
 
@@ -366,7 +366,7 @@ public class MainPresenter extends LoggedInViewPresenterImpl<MainView> {
                     view.cameraForResult(Uri.parse(mediaFile.getContentProviderPath()), s, TAKE_PHOTO_ACTION);
                 }, throwable -> {
                     Timber.e(throwable, "Error creating file");
-                    view.showErrorToast(R.string.error_file_creation);
+                    view.showErrorSnackbar(R.string.error_file_creation);
                 }));
     }
 
@@ -394,7 +394,7 @@ public class MainPresenter extends LoggedInViewPresenterImpl<MainView> {
             view.launchActivityForResult(videoIntent, TAKE_VIDEO_ACTION);
         } catch (IOException e) {
             Timber.e(e, "Error creating file");
-            view.showErrorToast(R.string.error_file_creation);
+            view.showErrorSnackbar(R.string.error_file_creation);
         }*/
     }
 

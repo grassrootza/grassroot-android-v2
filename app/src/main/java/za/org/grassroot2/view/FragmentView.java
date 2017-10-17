@@ -6,7 +6,7 @@ import io.reactivex.Observable;
  * Created by luke on 2017/08/25.
  */
 
-public interface FragmentView {
+public interface FragmentView extends ProgressBarContainer{
     Observable<Integer> viewCreated();
     void showNoConnectionMessage();
     void handleNoConnection();

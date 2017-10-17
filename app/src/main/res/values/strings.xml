@@ -80,7 +80,7 @@
     <string name="create_a_new_group">CREATE A NEW GROUP</string>
     <string name="no_group_info">You are not part of any group at the moment.</string>
     <string name="sync_problem">Sync failed. Please try to sync once again.</string>
-    <string name="button_invite_members">INVITE MEMBERS</string>
+    <string name="button_add_member">Add Member</string>
     <string name="button_about">ABOUT</string>
     <string name="title_all">ALL</string>
     <string name="title_votes">VOTES</string>
@@ -103,6 +103,13 @@
     <string name="continue_offline">Continue offline</string>
     <string name="retry_connection">Retry connection</string>
     <string name="snackbar_offline">You\'re still offline</string>
+    <string name="contact_book">From Contact Book</string>
+    <string name="manualy">Manualy</string>
+    <string name="add">Add</string>
+    <string name="name">Contact name</string>
+    <string name="contact_number">Contact number</string>
+    <string name="title_pick_contact">Pick Contact</string>
+    <string name="no_contacts">You don\'t have contacts with phone numbers</string>
 
     <plurals name="member_count">
         <item quantity="one">%d member</item>

@@ -16,6 +16,7 @@ import android.view.ViewGroup;
 
 import javax.inject.Inject;
 
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import dagger.Lazy;
@@ -26,12 +27,14 @@ import io.reactivex.functions.Predicate;
 import io.reactivex.subjects.PublishSubject;
 import timber.log.Timber;
 import za.org.grassroot2.GrassrootApplication;
+import za.org.grassroot2.R;
 import za.org.grassroot2.dagger.activity.ActivityComponent;
 import za.org.grassroot2.presenter.fragment.BaseFragmentPresenter;
 import za.org.grassroot2.services.OfflineReceiver;
 import za.org.grassroot2.services.account.AuthConstants;
 import za.org.grassroot2.util.AlarmManagerHelper;
 import za.org.grassroot2.util.UserPreference;
+import za.org.grassroot2.util.ViewAnimation;
 import za.org.grassroot2.view.FragmentView;
 import za.org.grassroot2.view.activity.GrassrootActivity;
 import za.org.grassroot2.view.dialog.NoConnectionDialog;
@@ -50,6 +53,7 @@ public abstract class GrassrootFragment extends Fragment implements FragmentView
     protected PublishSubject<Integer> lifecyclePublisher = PublishSubject.create();
     protected CompositeDisposable disposables = new CompositeDisposable();
 
+    View progress;
     @Inject        UserPreference       userPreference;
     @Inject public Lazy<AccountManager> accountManagerProvider;
 
@@ -80,6 +84,7 @@ public abstract class GrassrootFragment extends Fragment implements FragmentView
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(getLayoutResourceId() , container, false);
         unbinder = ButterKnife.bind(this, v);
+        progress = getActivity().findViewById(R.id.progress);
         return v;
     }
 
@@ -124,5 +129,19 @@ public abstract class GrassrootFragment extends Fragment implements FragmentView
     protected boolean loggedIn() {
         Account[] accounts = accountManagerProvider.get().getAccountsByType(AuthConstants.ACCOUNT_TYPE);
         return accounts.length != 0 && !TextUtils.isEmpty(accountManagerProvider.get().getUserData(accounts[0], AuthConstants.USER_DATA_LOGGED_IN));
+    }
+
+    @Override
+    public void showProgressBar() {
+        if (progress!=null) {
+            ViewAnimation.fadeIn(progress);
+        }
+    }
+
+    @Override
+    public void closeProgressBar() {
+        if (progress!=null) {
+            ViewAnimation.fadeOut(progress);
+        }
     }
 }

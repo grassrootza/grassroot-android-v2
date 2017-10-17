@@ -12,6 +12,8 @@ import java.util.Map;
 import javax.inject.Inject;
 
 import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
@@ -21,13 +23,16 @@ import timber.log.Timber;
 import za.org.grassroot2.database.DatabaseService;
 import za.org.grassroot2.model.Group;
 import za.org.grassroot2.model.MediaFile;
+import za.org.grassroot2.model.RequestMapper;
 import za.org.grassroot2.model.UploadResult;
 import za.org.grassroot2.model.alert.LiveWireAlert;
+import za.org.grassroot2.model.contact.Contact;
 import za.org.grassroot2.model.enums.GrassrootEntityType;
 import za.org.grassroot2.model.exception.EntityAlreadyUploadingException;
 import za.org.grassroot2.model.exception.ServerErrorException;
 import za.org.grassroot2.model.network.EntityForDownload;
 import za.org.grassroot2.model.network.EntityForUpload;
+import za.org.grassroot2.model.request.MemberRequestObject;
 import za.org.grassroot2.model.task.Task;
 import za.org.grassroot2.services.rest.GrassrootUserApi;
 import za.org.grassroot2.services.rest.RestResponse;
@@ -104,6 +109,15 @@ public class NetworkServiceImpl implements NetworkService {
         return grassrootUserApi
                 .fetchUserTasksMinimumInfo(currentUserUid, databaseService.getAllTasksLastChangedTimestamp())
                 .doOnError(Timber::e);
+    }
+
+    @Override
+    public Observable<Response<Void>> inviteContactsToGroup(String groupId, List<Contact> contacts) {
+        List<MemberRequestObject> body = new ArrayList<>();
+        for (Contact c : contacts) {
+            body.add(RequestMapper.map(c));
+        }
+        return grassrootUserApi.addMembersToGroup(currentUserUid, groupId, body).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
     }
 
     @Override

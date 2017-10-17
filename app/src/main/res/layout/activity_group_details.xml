@@ -74,7 +74,7 @@
                         android:layout_weight="1"
                         android:background="@null"
                         android:drawableTop="@drawable/ic_add_circle_primary_24dp"
-                        android:text="@string/button_invite_members"
+                        android:text="@string/button_add_member"
                         android:textColor="@color/colorPrimary" />
 
                     <Button
@@ -116,7 +116,7 @@
     <android.support.v4.view.ViewPager
         android:id="@+id/contentPager"
         android:layout_width="match_parent"
-        android:background="@color/default_backgrond_grey"
+        android:background="@color/default_background_grey"
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 

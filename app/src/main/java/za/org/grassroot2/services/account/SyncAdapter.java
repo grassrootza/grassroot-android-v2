@@ -25,6 +25,7 @@ import timber.log.Timber;
 import za.org.grassroot2.GrassrootApplication;
 import za.org.grassroot2.database.DatabaseService;
 import za.org.grassroot2.model.Group;
+import za.org.grassroot2.model.UserProfile;
 import za.org.grassroot2.model.enums.GrassrootEntityType;
 import za.org.grassroot2.model.exception.ServerUnreachableException;
 import za.org.grassroot2.model.network.EntityForDownload;
@@ -92,12 +93,16 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
                 uids.put(t.getUid(), t.getType().name());
             }
             return networkService.getTasksByUids(uids);
-        }).subscribe(tasksFull -> databaseService.storeTasks(tasksFull), throwable -> handleSyncError(syncResult, throwable));
-        userDetailsService.setSyncCompleted();
-        EventBus.getDefault().postSticky(new SyncCompletedEvent());
+        }).subscribe(tasksFull -> {
+            databaseService.storeTasks(tasksFull);
+            userDetailsService.setSyncState(UserProfile.SYNC_STATE_COMPLETED);
+            EventBus.getDefault().postSticky(new SyncCompletedEvent());
+        }, throwable -> handleSyncError(syncResult, throwable));
     }
 
     private void handleSyncError(SyncResult syncResult, Throwable throwable) {
+        userDetailsService.setSyncState(UserProfile.SYNC_STATE_FAILED);
+        EventBus.getDefault().postSticky(new SyncCompletedEvent());
         throwable.printStackTrace();
         if (throwable instanceof IOException || throwable instanceof ServerUnreachableException) {
             Timber.e(throwable, "Error synchronizing!");

@@ -1,5 +1,6 @@
 package za.org.grassroot2.view.activity;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -15,21 +16,29 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.github.florent37.viewtooltip.ViewTooltip;
+import com.tbruyelle.rxpermissions2.RxPermissions;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.inject.Inject;
 
 import butterknife.BindView;
-import butterknife.ButterKnife;
+import butterknife.OnClick;
 import za.org.grassroot2.R;
+import za.org.grassroot2.dagger.activity.ActivityComponent;
 import za.org.grassroot2.model.Group;
+import za.org.grassroot2.model.contact.Contact;
 import za.org.grassroot2.model.enums.GrassrootEntityType;
 import za.org.grassroot2.presenter.GroupDetailsPresenter;
 import za.org.grassroot2.view.adapter.GenericViewPagerAdapter;
+import za.org.grassroot2.view.dialog.AddMemberDialog;
 import za.org.grassroot2.view.fragment.GroupTasksFragment;
 
 public class GroupDetailsActivity extends GrassrootActivity implements GroupDetailsPresenter.GroupDetailsView {
 
-    private static final String EXTRA_GROUP_UID = "group_uid";
+    private static final String EXTRA_GROUP_UID       = "group_uid";
+    private static final int REQUEST_PICK_CONTACTS = 1;
 
     @BindView(R.id.tabs)              TabLayout               tabs;
     @BindView(R.id.collapsingToolbar) CollapsingToolbarLayout collapsingToolbar;
@@ -42,23 +51,64 @@ public class GroupDetailsActivity extends GrassrootActivity implements GroupDeta
     private                           String                  groupUid;
 
     @Inject GroupDetailsPresenter presenter;
+    @Inject RxPermissions         rxPermissions;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_group_details);
-        ButterKnife.bind(this);
-        getAppComponent().plus(getActivityModule()).inject(this);
         groupUid = getIntent().getStringExtra(EXTRA_GROUP_UID);
         initView();
         presenter.attach(this);
-        presenter.loadData(groupUid);
+        presenter.init(groupUid);
+        presenter.loadData();
+    }
+
+    @Override
+    protected void onInject(ActivityComponent component) {
+        super.onInject(component);
+        component.inject(this);
+    }
+
+    @Override
+    protected int getLayoutResourceId() {
+        return R.layout.activity_group_details;
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
         presenter.detach();
+    }
+
+    @OnClick(R.id.inviteMembers)
+    void inviteMember() {
+        displayInviteDialog();
+    }
+
+    private void displayInviteDialog() {
+        AddMemberDialog df = AddMemberDialog.newInstance(AddMemberDialog.TYPE_PICK);
+        df.setAddMemberDialogListener(new AddMemberDialog.AddMemberDialogListener() {
+            @Override
+            public void contactBook() {
+                rxPermissions.request(Manifest.permission.READ_CONTACTS).subscribe(result -> {
+                    if (result) {
+                        PickContactActivity.startForResult(GroupDetailsActivity.this, REQUEST_PICK_CONTACTS);
+                    }
+                }, Throwable::printStackTrace);
+            }
+
+            @Override
+            public void manual() {
+                showFillDialog();
+            }
+        });
+        df.show(getSupportFragmentManager(), DIALOG_TAG);
+    }
+
+    private void showFillDialog() {
+        AddMemberDialog df = AddMemberDialog.newInstance(AddMemberDialog.TYPE_INSERT_MANUAL);
+        df.setContactListener((name, phone) -> presenter.inviteContact(name, phone));
+        df.show(getSupportFragmentManager(), DIALOG_TAG);
     }
 
     private void initView() {
@@ -92,6 +142,14 @@ public class GroupDetailsActivity extends GrassrootActivity implements GroupDeta
         Intent intent = new Intent(activity, GroupDetailsActivity.class);
         intent.putExtra(EXTRA_GROUP_UID, groupUid);
         activity.startActivity(intent);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == REQUEST_PICK_CONTACTS && resultCode == RESULT_OK) {
+            List<Contact> contacts = (ArrayList<Contact>) data.getSerializableExtra(PickContactActivity.EXTRA_CONTACTS);
+            presenter.inviteContacts(contacts);
+        }
     }
 
     @Override

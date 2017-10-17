@@ -46,8 +46,6 @@ public class MainActivity extends LoggedInActivity implements MainView {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        ButterKnife.bind(this);
         ((GrassrootApplication) getApplication())
                 .getAppComponent().plus(getActivityModule()).inject(this);
 
@@ -67,6 +65,11 @@ public class MainActivity extends LoggedInActivity implements MainView {
                 .add(R.id.main_frag_holder, fragment)
                 .commit();
         DashboardActivity.start(this);
+    }
+
+    @Override
+    protected int getLayoutResourceId() {
+        return R.layout.activity_main;
     }
 
     @Override

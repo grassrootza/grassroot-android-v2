@@ -1,5 +1,5 @@
 #
-# generated on 2017/10/09 08:35:23
+# generated on 2017/10/16 09:28:38
 #
 # --table-start--
 dataClass=za.org.grassroot2.model.alert.LiveWireAlert
@@ -381,7 +381,7 @@ fieldName=displayName
 fieldName=systemRole
 # --field-end--
 # --field-start--
-fieldName=syncComplete
+fieldName=syncStatus
 # --field-end--
 # --table-fields-end--
 # --table-end--

@@ -1,18 +1,19 @@
 package za.org.grassroot2.presenter;
 
-import android.accounts.AccountManager;
-
 import org.greenrobot.eventbus.EventBus;
+
+import java.util.Collections;
+import java.util.List;
 
 import javax.inject.Inject;
 
-import dagger.Lazy;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
+import za.org.grassroot2.R;
 import za.org.grassroot2.database.DatabaseService;
 import za.org.grassroot2.model.Group;
+import za.org.grassroot2.model.contact.Contact;
 import za.org.grassroot2.services.NetworkService;
-import za.org.grassroot2.util.UserPreference;
 import za.org.grassroot2.view.GrassrootView;
 
 
@@ -20,6 +21,7 @@ public class GroupDetailsPresenter extends BasePresenter<GroupDetailsPresenter.G
 
     private DatabaseService databaseService;
     private NetworkService  networkService;
+    private String          groupUid;
 
     @Inject
     public GroupDetailsPresenter(DatabaseService service, NetworkService networkService) {
@@ -27,7 +29,11 @@ public class GroupDetailsPresenter extends BasePresenter<GroupDetailsPresenter.G
         this.networkService = networkService;
     }
 
-    public void loadData(String groupUid) {
+    public void init(String groupUid) {
+        this.groupUid = groupUid;
+    }
+
+    public void loadData() {
         disposableOnDetach(databaseService.load(Group.class, groupUid).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(group -> {
             if (view != null) {
                 view.render(group);
@@ -42,6 +48,24 @@ public class GroupDetailsPresenter extends BasePresenter<GroupDetailsPresenter.G
             }
         }, this::handleNetworkConnectionError));
 
+    }
+
+    public void inviteContacts(List<Contact> contacts) {
+        view.showProgressBar();
+        networkService.inviteContactsToGroup(groupUid, contacts).subscribe(voidResponse -> {
+            view.closeProgressBar();
+            if (voidResponse.isSuccessful()) {
+            } else {
+                view.showErrorSnackbar(R.string.error_permission_denied);
+            }
+        }, this::handleNetworkUploadError);
+    }
+
+    public void inviteContact(String name, String phone) {
+        Contact c = new Contact();
+        c.setDisplayName(name);
+        c.setPhoneNumber(phone);
+        inviteContacts(Collections.singletonList(c));
     }
 
     public interface GroupDetailsView extends GrassrootView {
