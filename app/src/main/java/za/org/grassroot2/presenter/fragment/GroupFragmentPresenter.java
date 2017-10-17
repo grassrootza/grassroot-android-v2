@@ -55,7 +55,7 @@ public class GroupFragmentPresenter extends BaseFragmentPresenter<GroupFragmentP
     }
 
     private void loadGroups() {
-        List<Group> groups = databaseService.loadObjects(Group.class);
+        List<Group> groups = databaseService.loadGroupsSorted();
         if (groups.isEmpty() && !firstSyncNotCompleted) {
             view.closeProgressBar();
             view.renderEmpty();

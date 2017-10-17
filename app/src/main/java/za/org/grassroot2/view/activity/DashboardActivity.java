@@ -11,6 +11,7 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import za.org.grassroot2.R;
+import za.org.grassroot2.dagger.activity.ActivityComponent;
 import za.org.grassroot2.view.fragment.GroupsFragment;
 
 public class DashboardActivity extends GrassrootActivity {
@@ -60,6 +61,9 @@ public class DashboardActivity extends GrassrootActivity {
     protected int getLayoutResourceId() {
         return R.layout.activity_dashboard;
     }
+
+    @Override
+    protected void onInject(ActivityComponent component) {}
 
     public static void start(Activity activity) {
         activity.startActivity(new Intent(activity, DashboardActivity.class));

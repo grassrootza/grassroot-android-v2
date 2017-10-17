@@ -1,5 +1,6 @@
 package za.org.grassroot2.view.fragment;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
@@ -19,12 +20,11 @@ import javax.inject.Inject;
 import butterknife.BindView;
 import butterknife.OnClick;
 import io.reactivex.Observable;
-import za.org.grassroot2.GrassrootApplication;
 import za.org.grassroot2.R;
 import za.org.grassroot2.dagger.activity.ActivityComponent;
 import za.org.grassroot2.model.Group;
 import za.org.grassroot2.presenter.fragment.GroupFragmentPresenter;
-import za.org.grassroot2.view.activity.GrassrootActivity;
+import za.org.grassroot2.view.activity.CreateActionActivity;
 import za.org.grassroot2.view.activity.GroupDetailsActivity;
 import za.org.grassroot2.view.adapter.GroupsAdapter;
 
@@ -119,7 +119,7 @@ public class GroupsFragment extends GrassrootFragment implements GroupFragmentPr
 
     @OnClick(R.id.fab)
     public void fabClick() {
-
+        CreateActionActivity.start(getActivity(), null);
     }
 
     private void displayEmptyLayout() {

@@ -129,4 +129,28 @@ public class Meeting implements Task {
     public String getCallerName() {
         return callerName;
     }
+
+    public void setParentUid(String parentUid) {
+        this.parentUid = parentUid;
+    }
+
+    public void setSubject(String subject) {
+        this.subject = subject;
+    }
+
+    public void setCreatedDateTimeMillis(long createdDateTimeMillis) {
+        this.createdDateTimeMillis = createdDateTimeMillis;
+    }
+
+    public void setMeetingDateTimeMillis(long meetingDateTimeMillis) {
+        this.meetingDateTimeMillis = meetingDateTimeMillis;
+    }
+
+    public void setLocationDescription(String locationDescription) {
+        this.locationDescription = locationDescription;
+    }
+
+    public String getLocationDescription() {
+        return locationDescription;
+    }
 }

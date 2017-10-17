@@ -110,6 +110,34 @@
     <string name="contact_number">Contact number</string>
     <string name="title_pick_contact">Pick Contact</string>
     <string name="no_contacts">You don\'t have contacts with phone numbers</string>
+    <string name="dictate_your_action">Dictate your action</string>
+    <string name="call_a_meeting">Call a meeting</string>
+    <string name="take_a_vote">Take a vote</string>
+    <string name="create_to_do">Create To-do</string>
+    <string name="select_a_group">Select a group</string>
+    <string name="hint_group_name">Search By Group name</string>
+    <string name="what_is_it_about">What is it about?</string>
+    <string name="cancel">CANCEL</string>
+    <string name="next">NEXT</string>
+    <string name="info_meeting_subject">Type in a short sentence the subject of this meeting.</string>
+    <string name="info_meeting_location">Type in location of this meeting.</string>
+    <string name="hint_meeting_subject">Meeting subject</string>
+    <string name="hint_meeting_location">Meeting location</string>
+    <string name="when_would_it_happen">When would it happen?</string>
+    <string name="hint_meeting_date_time">Meeting date and time</string>
+    <string name="pick_from_calendar">Or pick from the calendar</string>
+    <string name="hint_meeting_date_time_example">Example: Next Monday at 5pm</string>
+    <string name="title_confirm_date">Are these correct?</string>
+    <string name="no_try_again">NO, TRY AGAIN</string>
+    <string name="yes">YES</string>
+    <string name="at">At</string>
+    <string name="meeting_called">Meeting called!</string>
+    <string name="ok">OK</string>
+    <string name="where_will_it_happen">Where will it happen?</string>
+    <plurals name="notification_sent">
+        <item quantity="one">A notification has been sent to %d member.</item>
+        <item quantity="other">A notification has been sent to all %d members.</item>
+    </plurals>
 
     <plurals name="member_count">
         <item quantity="one">%d member</item>

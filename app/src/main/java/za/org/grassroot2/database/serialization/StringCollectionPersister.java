@@ -52,12 +52,12 @@ public class StringCollectionPersister extends StringType {
 
     @Override
     public Object javaToSqlArg(FieldType fieldType, Object javaObject) throws SQLException {
-        return javaObject == null ? javaObject : gson.toJson(javaObject);
+        return javaObject == null ? null : gson.toJson(javaObject);
     }
 
     @Override
     public Object resultToSqlArg(FieldType fieldType, DatabaseResults results, int columnPos) throws SQLException {
-        return super.resultToSqlArg(fieldType, results, columnPos);
+        return results.getString(columnPos);
     }
 
     @Override

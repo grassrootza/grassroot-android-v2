@@ -33,7 +33,7 @@ public interface GrassrootUserApi {
     // Send a media file to the server for storage
     @Multipart
     @POST("/api/media/store/{userUid}")
-    Call<RestResponse<String>> sendMediaFile(@Path("userUid") String userUid,
+    Observable<Response<RestResponse<String>>> sendMediaFile(@Path("userUid") String userUid,
                                  @Query("imageKey") String fileUid,
                                  @Query("mediaFunction") String function,
                                  @Query("mimeType") String mimeType,
@@ -41,7 +41,7 @@ public interface GrassrootUserApi {
 
     // Create a LiveWire alert
     @POST("/api/livewire/create/{userUid}")
-    Call<RestResponse<String>> createLiveWireAlert(@Path("userUid") String userUid,
+    Observable<Response<RestResponse<String>>> createLiveWireAlert(@Path("userUid") String userUid,
                                      @Query("headline") String headline,
                                      @Query("description") String description,
                                      @Query("type") String type,
@@ -63,5 +63,16 @@ public interface GrassrootUserApi {
 
     @POST("/api/group/modify/members/add/{userUid}/{groupUid}")
     Observable<Response<Void>> addMembersToGroup(@Path("userUid") String userId, @Path("groupUid") String groupId, @Body List<MemberRequestObject> request);
+
+    @GET("/api/language/parse/datetime/text")
+    Observable<Long> getTimestampForTextDate(@Query("text") String text);
+
+    @POST("/api/task/create/meeting/{userUid}/{parentType}/{parentUid}")
+    Observable<Task> createTask(@Path("parentType") String parentType,
+                                          @Path("userUid") String userUid,
+                                          @Path("parentUid") String parentUid,
+                                          @Query("subject") String subject,
+                                          @Query("location") String location,
+                                          @Query("dateTimeEpochMillis") long created);
 
 }

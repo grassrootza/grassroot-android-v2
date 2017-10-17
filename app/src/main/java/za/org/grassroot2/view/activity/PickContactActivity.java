@@ -52,7 +52,6 @@ public class PickContactActivity extends GrassrootActivity implements PickContac
 
     @Override
     protected void onInject(ActivityComponent component) {
-        super.onInject(component);
         component.inject(this);
     }
 

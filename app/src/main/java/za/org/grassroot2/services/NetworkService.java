@@ -32,6 +32,8 @@ public interface NetworkService {
     <E extends EntityForDownload> Observable<List<E>> downloadAllChangedOrNewEntities(GrassrootEntityType entityType, boolean forceFullRefresh);
     Observable<List<Group>> downloadAllChangedOrNewGroups();
 
+    Observable<Long> getTimestampForText(String date);
+
     Observable<List<Task>> downloadTaskMinimumInfo();
 
     Observable<Response<Void>> inviteContactsToGroup(String groupId, List<Contact> contacts);
@@ -39,4 +41,6 @@ public interface NetworkService {
     Observable<List<Task>> getTasksForGroup(String groupId);
 
     Observable<List<Task>> getTasksByUids(Map<String, String> uids);
+
+    Flowable<Resource<Task>> createTask(Task t);
 }

@@ -4,13 +4,16 @@ import com.google.gson.annotations.SerializedName;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
+import java.io.Serializable;
+import java.util.List;
 import java.util.UUID;
 
+import za.org.grassroot2.database.serialization.StringCollectionPersister;
 import za.org.grassroot2.model.enums.GrassrootEntityType;
 import za.org.grassroot2.model.network.EntityForDownload;
 
 @DatabaseTable(tableName = "groups")
-public class Group implements EntityForDownload, SelectableItem {
+public class Group implements EntityForDownload, SelectableItem, Serializable {
 
     /*
     Central, highly important entity, so a few notes:
@@ -52,8 +55,9 @@ public class Group implements EntityForDownload, SelectableItem {
     private long lastActionOrChange = 0;
 
     @DatabaseField
-    @SerializedName("permissions")
-    private String permissions;
+    @SerializedName("userPermissions")
+    private List<String> permissions;
+
 
     public Group() {
     }
@@ -100,14 +104,6 @@ public class Group implements EntityForDownload, SelectableItem {
         this.userRole = userRole;
     }
 
-    public String getPermissions() {
-        return permissions;
-    }
-
-    public void setPermissions(String permissions) {
-        this.permissions = permissions;
-    }
-
     public long getLastActionOrChange() {
         return lastActionOrChange;
     }
@@ -134,5 +130,13 @@ public class Group implements EntityForDownload, SelectableItem {
                 // ", userRole='" + userRole + '\'' +
                 ", lastTimeChangedServer=" + lastTimeChangedServer +
                 '}';
+    }
+
+    public List<String> getPermissions() {
+        return permissions;
+    }
+
+    public void setPermissions(List<String> permissions) {
+        this.permissions = permissions;
     }
 }

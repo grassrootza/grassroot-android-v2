@@ -13,7 +13,7 @@ apply plugin: 'io.fabric'
 
 android {
     compileSdkVersion 25
-    buildToolsVersion "25.0.3"
+    buildToolsVersion '26.0.2'
     defaultConfig {
         applicationId "za.org.grassroot2"
         minSdkVersion 9
