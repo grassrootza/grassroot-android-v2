@@ -1,10 +1,11 @@
 package za.org.grassroot2;
 
 import android.app.Application;
-import android.os.Debug;
 
+import com.crashlytics.android.Crashlytics;
 import com.facebook.stetho.Stetho;
 
+import io.fabric.sdk.android.Fabric;
 import timber.log.Timber;
 import za.org.grassroot2.dagger.AppComponent;
 import za.org.grassroot2.dagger.AppModule;
@@ -26,6 +27,7 @@ public class GrassrootApplication extends Application {
         appComponent = initDagger(this);
         initTimber();
         Stetho.initializeWithDefaults(this);
+        Fabric.with(this, new Crashlytics());
     }
 
     private void initTimber() {

@@ -46,7 +46,6 @@ public class DatabaseServiceTest extends TestCase{
         assertEquals(profile.getDisplayName(), "Johnas");
     }
 
-
     @org.junit.Test
     public void loadGroup() throws Exception {
         Group g = createGroup(UUID.randomUUID().toString());
@@ -104,7 +103,7 @@ public class DatabaseServiceTest extends TestCase{
     private Group createGroup(String name) {
         Group g = new Group();
         g.setName(name);
-        g.setUid(UUID.randomUUID());
+        g.setUid(UUID.randomUUID().toString());
         g.setMemberCount(10);
         g.setUserRole("Admin");
         g.setLastActionOrChange(System.currentTimeMillis());
