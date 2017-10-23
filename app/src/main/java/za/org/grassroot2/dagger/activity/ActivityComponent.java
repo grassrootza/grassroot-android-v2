@@ -1,15 +1,19 @@
 package za.org.grassroot2.dagger.activity;
 
 import dagger.Subcomponent;
-import za.org.grassroot2.view.LoginActivity;
+import za.org.grassroot2.view.activity.CreateActionActivity;
+import za.org.grassroot2.view.activity.LoginActivity;
 import za.org.grassroot2.view.activity.GrassrootActivity;
 import za.org.grassroot2.view.activity.GroupDetailsActivity;
 import za.org.grassroot2.view.activity.MainActivity;
 import za.org.grassroot2.view.activity.PickContactActivity;
 import za.org.grassroot2.view.fragment.GrassrootFragment;
+import za.org.grassroot2.view.fragment.GroupSelectionFragment;
 import za.org.grassroot2.view.fragment.GroupTasksFragment;
 import za.org.grassroot2.view.fragment.GroupsFragment;
 import za.org.grassroot2.view.fragment.ItemSelectionFragment;
+import za.org.grassroot2.view.fragment.MeetingCalledFragment;
+import za.org.grassroot2.view.fragment.MeetingDateFragment;
 import za.org.grassroot2.view.fragment.SingleTextMultiButtonFragment;
 
 /**
@@ -29,4 +33,8 @@ public interface ActivityComponent {
     void inject(GroupTasksFragment fragment);
     void inject(GrassrootFragment grassrootFragment);
     void inject(PickContactActivity activity);
+    void inject(GroupSelectionFragment fragment);
+    void inject(MeetingDateFragment fragment);
+    void inject(CreateActionActivity activity);
+    void inject(MeetingCalledFragment fragment);
 }

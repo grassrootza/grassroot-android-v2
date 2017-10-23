@@ -28,6 +28,10 @@ public interface DatabaseService {
 
     <E> List<E> loadObjects(Class<E> clazz);
 
+    List<Group> loadGroupsSorted();
+
+    <E> List<E> loadObjectsByName(Class<E> clazz, String nameQuery);
+
     Single<List<Task>> loadTasksForGroup(String groupUid, GrassrootEntityType type);
 
     // write and read methods (can only be called within an observable on background thread)

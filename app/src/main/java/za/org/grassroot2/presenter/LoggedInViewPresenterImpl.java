@@ -7,7 +7,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 import za.org.grassroot2.services.UserDetailsService;
 import za.org.grassroot2.view.GrassrootView;
-import za.org.grassroot2.view.LoginActivity;
+import za.org.grassroot2.view.activity.LoginActivity;
 
 /**
  * Created by luke on 2017/08/09.

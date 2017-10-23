@@ -17,6 +17,7 @@ import za.org.grassroot2.presenter.LoginPresenter;
 import za.org.grassroot2.presenter.MainPresenter;
 import za.org.grassroot2.presenter.PickContactPresenter;
 import za.org.grassroot2.presenter.fragment.GroupFragmentPresenter;
+import za.org.grassroot2.presenter.fragment.GroupSelectionPresenter;
 import za.org.grassroot2.presenter.fragment.SingleTextMultiButtonPresenter;
 import za.org.grassroot2.services.LiveWireService;
 import za.org.grassroot2.services.LiveWireServiceImpl;

@@ -66,17 +66,19 @@ public abstract class GrassrootActivity extends AppCompatActivity implements Gra
         setContentView(R.layout.base_progress_container);
         setContentLayout(getLayoutResourceId());
         ButterKnife.bind(this);
-        onInject(getAppComponent().plus(getActivityModule()));
+        getActivityComponent().inject(this);
+        onInject(getActivityComponent());
         authResponse = getIntent().getParcelableExtra(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE);
         if (authResponse != null) {
             authResponse.onRequestContinued();
         }
     }
 
-    @CallSuper
-    protected void onInject(ActivityComponent component) {
-        component.inject(this);
+    private ActivityComponent getActivityComponent() {
+        return getAppComponent().plus(getActivityModule());
     }
+
+    protected abstract void onInject(ActivityComponent component);
 
     @LayoutRes
     protected abstract int getLayoutResourceId();
@@ -171,7 +173,7 @@ public abstract class GrassrootActivity extends AppCompatActivity implements Gra
 
     @Override
     public void closeKeyboard() {
-        View view = this.getCurrentFocus();
+        View view = getCurrentFocus();
         if (view != null) {
             InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
             imm.hideSoftInputFromWindow(view.getWindowToken(), 0);

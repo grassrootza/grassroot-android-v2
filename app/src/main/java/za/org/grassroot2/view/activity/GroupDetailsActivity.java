@@ -11,6 +11,7 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.widget.Toolbar;
 import android.view.Gravity;
 import android.view.Menu;
+import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -60,12 +61,16 @@ public class GroupDetailsActivity extends GrassrootActivity implements GroupDeta
         initView();
         presenter.attach(this);
         presenter.init(groupUid);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
         presenter.loadData();
     }
 
     @Override
     protected void onInject(ActivityComponent component) {
-        super.onInject(component);
         component.inject(this);
     }
 
@@ -83,6 +88,11 @@ public class GroupDetailsActivity extends GrassrootActivity implements GroupDeta
     @OnClick(R.id.inviteMembers)
     void inviteMember() {
         displayInviteDialog();
+    }
+
+    @OnClick(R.id.fab)
+    void fabClick() {
+        CreateActionActivity.start(getActivity(), groupUid);
     }
 
     private void displayInviteDialog() {
@@ -169,5 +179,10 @@ public class GroupDetailsActivity extends GrassrootActivity implements GroupDeta
                 .corner(10).autoHide(true, 2000).padding(10, 10, 10, 10).align(ViewTooltip.ALIGN.CENTER)
                 .position(ViewTooltip.Position.LEFT).text(R.string.info_group_create_item).setTextGravity(Gravity.CENTER)
                 .show();
+    }
+
+    @Override
+    public void displayFab() {
+        fab.setVisibility(View.VISIBLE);
     }
 }

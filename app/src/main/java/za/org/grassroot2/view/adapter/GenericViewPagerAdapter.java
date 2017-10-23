@@ -29,6 +29,7 @@ public class GenericViewPagerAdapter extends FragmentStatePagerAdapter {
     public void addFragment(Fragment fragment, String title) {
         adapterFragmentList.add(fragment);
         adapterTitleList.add(title);
+        notifyDataSetChanged();
     }
 
     @Override
@@ -36,5 +37,15 @@ public class GenericViewPagerAdapter extends FragmentStatePagerAdapter {
         return adapterTitleList.get(position);
     }
 
+    @Override
+    public int getItemPosition(Object object) {
+        int index = adapterFragmentList.indexOf(object);
+        return index == -1 ?  POSITION_NONE :index;
+    }
 
+    public void removeLast() {
+        adapterFragmentList.remove(adapterFragmentList.size()-1);
+        adapterTitleList.remove(adapterTitleList.size()-1);
+        notifyDataSetChanged();
+    }
 }

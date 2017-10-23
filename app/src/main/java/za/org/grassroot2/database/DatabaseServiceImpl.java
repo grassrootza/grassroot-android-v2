@@ -126,6 +126,34 @@ public class DatabaseServiceImpl implements DatabaseService {
     }
 
     @Override
+    public List<Group> loadGroupsSorted() {
+        List<Group> returnList = new ArrayList<>();
+        try {
+            Dao<Group, ?> dao = helper.getDao(Group.class);
+            List<Group> result = dao.queryBuilder().orderBy("lastTimeChangedServer", false).query();
+            returnList.addAll(result);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return returnList;
+    }
+
+
+    @Override
+    public <E> List<E> loadObjectsByName(Class<E> clazz, String nameQuery) {
+        StringBuilder query = new StringBuilder().append("%").append(nameQuery).append("%");
+        List<E> returnList = new ArrayList<>();
+        try {
+            Dao<E, ?> dao = helper.getDao(clazz);
+            List<E> result = dao.queryBuilder().where().like("name", query.toString()).query();
+            returnList.addAll(result);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return returnList;
+    }
+
+    @Override
     public Single<List<Task>> loadTasksForGroup(String groupUid, GrassrootEntityType type) {
         return Single.create(e -> {
             List<Task> returnList = new ArrayList<>();

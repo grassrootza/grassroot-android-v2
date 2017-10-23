@@ -1,23 +1,28 @@
 package za.org.grassroot2.services;
 
+import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
 
+import io.reactivex.BackpressureStrategy;
+import io.reactivex.Flowable;
 import io.reactivex.Observable;
+import io.reactivex.ObservableSource;
 import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
-import retrofit2.Call;
 import retrofit2.Response;
 import timber.log.Timber;
 import za.org.grassroot2.database.DatabaseService;
@@ -33,6 +38,7 @@ import za.org.grassroot2.model.exception.ServerErrorException;
 import za.org.grassroot2.model.network.EntityForDownload;
 import za.org.grassroot2.model.network.EntityForUpload;
 import za.org.grassroot2.model.request.MemberRequestObject;
+import za.org.grassroot2.model.task.Meeting;
 import za.org.grassroot2.model.task.Task;
 import za.org.grassroot2.services.rest.GrassrootUserApi;
 import za.org.grassroot2.services.rest.RestResponse;
@@ -105,6 +111,11 @@ public class NetworkServiceImpl implements NetworkService {
     }
 
     @Override
+    public Observable<Long> getTimestampForText(String date) {
+        return grassrootUserApi.getTimestampForTextDate(date).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
+    }
+
+    @Override
     public Observable<List<Task>> downloadTaskMinimumInfo() {
         return grassrootUserApi
                 .fetchUserTasksMinimumInfo(currentUserUid, databaseService.getAllTasksLastChangedTimestamp())
@@ -142,6 +153,30 @@ public class NetworkServiceImpl implements NetworkService {
                 .doOnError(Timber::e);
     }
 
+    @Override
+    public Flowable<Resource<Task>> createTask(Task t) {
+        return Flowable.create(e -> new ResourceToStore<Task, Task>(t, e) {
+            @Override
+            public Observable<Task> uploadRemote(Task localObject) {
+                Meeting m = (Meeting) localObject;
+                return grassrootUserApi.createTask("GROUP", currentUserUid, t.getParentUid(), m.getName(), m.getLocationDescription(), t.getDeadlineMillis());
+            }
+
+            @Override
+            public void uploadFailed(Task localObject) {
+                //                databaseService.storeTasks(Collections.singletonList(localObject));
+            }
+
+            @Override
+            public void saveResult(Task data) {
+                databaseService.storeTasks(Collections.singletonList(data));
+            }
+        }, BackpressureStrategy.BUFFER);
+//        if (t instanceof Meeting) {
+//            Meeting m = (Meeting) t;
+//            return grassrootUserApi.createTask("GROUP", currentUserUid, t.getParentUid(), m.getName(), m.getLocationDescription(), t.getDeadlineMillis());
+//        }
+    }
 
     private Observable<UploadResult> routeUpload(final EntityForUpload entity, boolean forceUpload) {
         if (entity.isUploading()) {
@@ -177,7 +212,7 @@ public class NetworkServiceImpl implements NetworkService {
     }
 
     private Observable<UploadResult> uploadLiveWireAlert(final LiveWireAlert alert) {
-        final Call<RestResponse<String>> call = grassrootUserApi.createLiveWireAlert(
+        return grassrootUserApi.createLiveWireAlert(
                 currentUserUid,
                 alert.getHeadline(),
                 TextUtils.isEmpty(alert.getDescription()) ? "" : alert.getDescription(), // very temp hack to avoid a redeploy of main platform just to make required (remove in future)
@@ -187,50 +222,51 @@ public class NetworkServiceImpl implements NetworkService {
                 false,
                 0,
                 0,
-                alert.getMediaFileKeys());
-        return executeUploadForUid(alert, call)
-                .concatMap(uploadResult -> {
-                    if (uploadResult.getServerUid() != null) {
-                        alert.setServerUid(uploadResult.getServerUid());
-                        alert.setUnderReview(true);
-                        databaseService.storeObject(LiveWireAlert.class, alert);
-                    }
-                    return Observable.just(uploadResult);
-                });
+                alert.getMediaFileKeys()).flatMap(successHandler(alert)).onErrorResumeNext(resumeHandler(alert)).concatMap(uploadResult -> {
+            if (uploadResult.getServerUid() != null) {
+                alert.setServerUid(uploadResult.getServerUid());
+                alert.setUnderReview(true);
+                databaseService.storeObject(LiveWireAlert.class, alert);
+            }
+            return Observable.just(uploadResult);
+        });
+    }
+
+    @NonNull
+    private Function<Response<RestResponse<String>>, ObservableSource<? extends UploadResult>> successHandler(EntityForUpload alert) {
+        return restResponseResponse -> {
+            if (restResponseResponse.isSuccessful()) {
+                return Observable.just(new UploadResult(alert.getType(), alert.getUid(), restResponseResponse.body().getData()));
+            } else {
+                return Observable.just(new UploadResult(alert.getType(), new ServerErrorException()));
+            }
+        };
+    }
+
+    @NonNull
+    private Function<Throwable, ObservableSource<? extends UploadResult>> resumeHandler(EntityForUpload alert) {
+        return throwable -> {
+            if (throwable instanceof IOException) {
+                return Observable.just(new UploadResult(alert.getType(), new Throwable()));
+            } else {
+                return Observable.just(new UploadResult(alert.getType(), new IllegalArgumentException()));
+            }
+        };
     }
 
     private Observable<UploadResult> uploadMediaFile(final MediaFile mediaFile) {
-        final Call<RestResponse<String>> call = grassrootUserApi.sendMediaFile(
+        return grassrootUserApi.sendMediaFile(
                 currentUserUid,
                 mediaFile.getUid(),
                 mediaFile.getMediaFunction(),
                 mediaFile.getMimeType(),
-                getImageFromPath(mediaFile, "file"));
-        return executeUploadForUid(mediaFile, call)
-                .concatMap(uploadResult -> {
-                    if (uploadResult.getServerUid() != null) {
-                        mediaFile.setSentUpstream(true);
-                        mediaFile.setServerUid(uploadResult.getServerUid());
-                        databaseService.storeObject(MediaFile.class, mediaFile);
-                    }
-                    return Observable.just(uploadResult);
-                });
-    }
-
-    private Observable<UploadResult> executeUploadForUid(final EntityForUpload entity, final Call<RestResponse<String>> networkCall) {
-        return Observable.create(e -> {
-            try {
-                Response<RestResponse<String>> response = networkCall.execute();
-                if (response.isSuccessful()) {
-                    e.onNext(new UploadResult(entity.getType(), entity.getUid(), response.body().getData()));
-                } else {
-                    e.onNext(new UploadResult(entity.getType(), new ServerErrorException()));
-                }
-            } catch (IOException t1) {
-                e.onNext(new UploadResult(entity.getType(), new Throwable()));
-            } catch (NullPointerException t2) {
-                e.onNext(new UploadResult(entity.getType(), new IllegalArgumentException()));
+                getImageFromPath(mediaFile, "file")).flatMap(successHandler(mediaFile)).onErrorResumeNext(resumeHandler(mediaFile)).concatMap(uploadResult -> {
+            if (uploadResult.getServerUid() != null) {
+                mediaFile.setSentUpstream(true);
+                mediaFile.setServerUid(uploadResult.getServerUid());
+                databaseService.storeObject(MediaFile.class, mediaFile);
             }
+            return Observable.just(uploadResult);
         });
     }
 

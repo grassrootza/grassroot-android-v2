@@ -16,7 +16,7 @@ import timber.log.Timber;
 import za.org.grassroot2.GrassrootApplication;
 import za.org.grassroot2.services.UserDetailsService;
 import za.org.grassroot2.services.rest.GrassrootAuthApi;
-import za.org.grassroot2.view.LoginActivity;
+import za.org.grassroot2.view.activity.LoginActivity;
 
 public class AccountAuthenticator extends AbstractAccountAuthenticator {
 

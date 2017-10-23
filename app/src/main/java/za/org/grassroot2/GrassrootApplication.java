@@ -26,8 +26,10 @@ public class GrassrootApplication extends Application {
         super.onCreate();
         appComponent = initDagger(this);
         initTimber();
-        Stetho.initializeWithDefaults(this);
         Fabric.with(this, new Crashlytics());
+        if (BuildConfig.DEBUG) {
+            Stetho.initializeWithDefaults(this);
+        }
     }
 
     private void initTimber() {

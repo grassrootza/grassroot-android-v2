@@ -20,6 +20,7 @@ import io.reactivex.Observable;
 import timber.log.Timber;
 import za.org.grassroot2.GrassrootApplication;
 import za.org.grassroot2.R;
+import za.org.grassroot2.dagger.activity.ActivityComponent;
 import za.org.grassroot2.model.dto.BtnGrouping;
 import za.org.grassroot2.presenter.MainPresenter;
 import za.org.grassroot2.rxbinding.RxViewUtils;
@@ -46,9 +47,6 @@ public class MainActivity extends LoggedInActivity implements MainView {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        ((GrassrootApplication) getApplication())
-                .getAppComponent().plus(getActivityModule()).inject(this);
-
         setActivePresenter(presenter);
         presenter.attach(MainActivity.this);
 
@@ -70,6 +68,11 @@ public class MainActivity extends LoggedInActivity implements MainView {
     @Override
     protected int getLayoutResourceId() {
         return R.layout.activity_main;
+    }
+
+    @Override
+    protected void onInject(ActivityComponent component) {
+        component.inject(this);
     }
 
     @Override

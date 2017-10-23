@@ -13,6 +13,7 @@ import za.org.grassroot2.R;
 import za.org.grassroot2.database.DatabaseService;
 import za.org.grassroot2.model.Group;
 import za.org.grassroot2.model.contact.Contact;
+import za.org.grassroot2.model.util.GroupPermissionChecker;
 import za.org.grassroot2.services.NetworkService;
 import za.org.grassroot2.view.GrassrootView;
 
@@ -36,6 +37,9 @@ public class GroupDetailsPresenter extends BasePresenter<GroupDetailsPresenter.G
     public void loadData() {
         disposableOnDetach(databaseService.load(Group.class, groupUid).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(group -> {
             if (view != null) {
+                if (GroupPermissionChecker.hasCreatePermission(group)) {
+                    view.displayFab();
+                }
                 view.render(group);
             }
         }, Throwable::printStackTrace));
@@ -71,6 +75,7 @@ public class GroupDetailsPresenter extends BasePresenter<GroupDetailsPresenter.G
     public interface GroupDetailsView extends GrassrootView {
         void render(Group group);
         void emptyData();
+        void displayFab();
     }
 
     public static class TasksUpdatedEvent {

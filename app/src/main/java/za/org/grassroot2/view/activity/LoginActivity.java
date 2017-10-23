@@ -1,4 +1,4 @@
-package za.org.grassroot2.view;
+package za.org.grassroot2.view.activity;
 
 import android.accounts.AccountManager;
 import android.app.Activity;
@@ -13,18 +13,14 @@ import org.greenrobot.eventbus.Subscribe;
 
 import javax.inject.Inject;
 
-import butterknife.ButterKnife;
 import io.reactivex.Observable;
 import io.reactivex.annotations.NonNull;
 import za.org.grassroot2.BuildConfig;
-import za.org.grassroot2.GrassrootApplication;
 import za.org.grassroot2.R;
 import za.org.grassroot2.dagger.activity.ActivityComponent;
-import za.org.grassroot2.model.enums.AuthRecoveryResult;
 import za.org.grassroot2.presenter.LoginPresenter;
 import za.org.grassroot2.services.account.AuthConstants;
-import za.org.grassroot2.view.activity.GrassrootActivity;
-import za.org.grassroot2.view.activity.MainActivity;
+import za.org.grassroot2.view.LoginView;
 import za.org.grassroot2.view.fragment.SingleTextInputFragment;
 
 public class LoginActivity extends GrassrootActivity implements LoginView {
@@ -84,7 +80,6 @@ public class LoginActivity extends GrassrootActivity implements LoginView {
 
     @Override
     protected void onInject(ActivityComponent component) {
-        super.onInject(component);
         component.inject(this);
     }
 
