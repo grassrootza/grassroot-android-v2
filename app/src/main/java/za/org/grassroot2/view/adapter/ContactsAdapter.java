@@ -19,6 +19,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import za.org.grassroot2.R;
 import za.org.grassroot2.model.contact.Contact;
+import za.org.grassroot2.util.ContactHelper;
 
 public class ContactsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
@@ -46,10 +47,10 @@ public class ContactsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         notifyDataSetChanged();
     }
 
-    public List<Contact> getSelectedItems() {
-        List<Contact> result = new ArrayList<>();
+    public List<Long> getSelectedItems() {
+        List<Long> result = new ArrayList<>();
         for (int i = 0; i < selectedItems.size(); i++) {
-            result.add(data.get(selectedItems.keyAt(i)));
+            result.add(data.get(selectedItems.keyAt(i)).getId());
         }
         return result;
     }

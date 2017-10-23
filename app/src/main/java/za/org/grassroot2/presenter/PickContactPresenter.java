@@ -1,5 +1,6 @@
 package za.org.grassroot2.presenter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -35,6 +36,14 @@ public class PickContactPresenter extends BasePresenter<PickContactPresenter.Pic
                 view.render(contacts);
             }
         }, Throwable::printStackTrace));
+    }
+
+    public List<Contact> loadContactsForIds(List<Long> selectedItems) {
+        List<Contact> result = new ArrayList<>();
+        for (Long l : selectedItems) {
+            result.add(contactHelper.getContact(l));
+        }
+        return result;
     }
 
     public interface PickContactView extends GrassrootView {

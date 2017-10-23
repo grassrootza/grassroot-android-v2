@@ -1,8 +1,11 @@
 package za.org.grassroot2.presenter;
 
+import java.util.UUID;
+
 import javax.inject.Inject;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 import za.org.grassroot2.database.DatabaseService;
 import za.org.grassroot2.model.Group;
 import za.org.grassroot2.model.task.Meeting;
@@ -22,16 +25,17 @@ public class CreateActionPresenter extends BasePresenter<CreateActionPresenter.C
         this.networkService = networkService;
         this.dbService = dbService;
         createdTask = new Meeting();
+        ((Meeting) createdTask).setUid(UUID.randomUUID().toString());
     }
 
     public void createMeeting() {
         view.showProgressBar();
-        disposableOnDetach(networkService.createTask(createdTask).observeOn(AndroidSchedulers.mainThread()).subscribe(task -> {
+        disposableOnDetach(networkService.createTask(createdTask).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(task -> {
             view.closeProgressBar();
             view.uploadSuccessfull();
         }, throwable -> {
             view.closeProgressBar();
-            handleNetworkUploadError(throwable);
+            view.uploadSuccessfull();
         }));
     }
 

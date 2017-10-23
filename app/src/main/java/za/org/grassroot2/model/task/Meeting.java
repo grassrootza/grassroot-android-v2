@@ -11,9 +11,10 @@ import java.util.UUID;
 
 import za.org.grassroot2.model.MediaFile;
 import za.org.grassroot2.model.enums.GrassrootEntityType;
+import za.org.grassroot2.model.network.Syncable;
 
 @DatabaseTable(tableName = "meetings")
-public class Meeting implements Task {
+public class Meeting implements Task, Syncable {
 
     public static final String ATTENDING = "RSVP_YES";
     public static final String NOT_ATTENDING = "RSVP_NO";
@@ -38,9 +39,10 @@ public class Meeting implements Task {
     @SerializedName("createdByUserName")
     @DatabaseField
     private String callerName;
-
+    @DatabaseField
     @SerializedName("location")
     private String locationDescription;
+
     @DatabaseField
     private long createdDateTimeMillis;
     @DatabaseField
@@ -60,6 +62,9 @@ public class Meeting implements Task {
 
     @DatabaseField
     private boolean publicMtg = false;
+
+    @DatabaseField
+    private transient boolean synced = true;
 
     @Override
     public String getUid() {
@@ -152,5 +157,44 @@ public class Meeting implements Task {
 
     public String getLocationDescription() {
         return locationDescription;
+    }
+
+    @Override
+    public boolean isSynced() {
+        return synced;
+    }
+
+    @Override
+    public long createdDate() {
+        return createdDateTimeMillis;
+    }
+
+    public void setSynced(boolean synced) {
+        this.synced = synced;
+    }
+
+    public void setUid(String uid) {
+        this.uid = uid;
+    }
+
+    @Override
+    public String toString() {
+        return "Meeting{" +
+                "uid='" + uid + '\'' +
+                ", parentUid='" + parentUid + '\'' +
+                ", parentEntityType=" + parentEntityType +
+                ", subject='" + subject + '\'' +
+                ", description='" + description + '\'' +
+                ", callerName='" + callerName + '\'' +
+                ", locationDescription='" + locationDescription + '\'' +
+                ", createdDateTimeMillis=" + createdDateTimeMillis +
+                ", meetingDateTimeMillis=" + meetingDateTimeMillis +
+                ", lastChangeTimeServerMillis=" + lastChangeTimeServerMillis +
+                ", response='" + response + '\'' +
+                ", mediaFile=" + mediaFile +
+                ", userPartOf=" + userPartOf +
+                ", publicMtg=" + publicMtg +
+                ", synced=" + synced +
+                '}';
     }
 }

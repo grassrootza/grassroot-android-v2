@@ -12,6 +12,7 @@ import io.reactivex.schedulers.Schedulers;
 import za.org.grassroot2.R;
 import za.org.grassroot2.database.DatabaseService;
 import za.org.grassroot2.model.Group;
+import za.org.grassroot2.model.RequestMapper;
 import za.org.grassroot2.model.contact.Contact;
 import za.org.grassroot2.model.util.GroupPermissionChecker;
 import za.org.grassroot2.services.NetworkService;
@@ -56,13 +57,13 @@ public class GroupDetailsPresenter extends BasePresenter<GroupDetailsPresenter.G
 
     public void inviteContacts(List<Contact> contacts) {
         view.showProgressBar();
-        networkService.inviteContactsToGroup(groupUid, contacts).subscribe(voidResponse -> {
+        disposableOnDetach(networkService.inviteContactsToGroup(groupUid, RequestMapper.map(groupUid, contacts)).observeOn(AndroidSchedulers.mainThread()).subscribeOn(Schedulers.io()).subscribe(voidResponse -> {
             view.closeProgressBar();
             if (voidResponse.isSuccessful()) {
             } else {
                 view.showErrorSnackbar(R.string.error_permission_denied);
             }
-        }, this::handleNetworkUploadError);
+        }, this::handleNetworkUploadError));
     }
 
     public void inviteContact(String name, String phone) {

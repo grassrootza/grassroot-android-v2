@@ -12,6 +12,8 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import za.org.grassroot2.R;
 import za.org.grassroot2.dagger.activity.ActivityComponent;
+import za.org.grassroot2.services.SyncOfflineDataService;
+import za.org.grassroot2.util.NetworkUtil;
 import za.org.grassroot2.view.fragment.GroupsFragment;
 
 public class DashboardActivity extends GrassrootActivity {
@@ -55,6 +57,9 @@ public class DashboardActivity extends GrassrootActivity {
         super.onCreate(savedInstanceState);
         bottomNavigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
         bottomNavigation.setSelectedItemId(R.id.navigation_groups);
+        if (NetworkUtil.hasInternetAccess(this)) {
+            startService(new Intent(this, SyncOfflineDataService.class));
+        }
     }
 
     @Override

@@ -70,10 +70,11 @@ public class PickContactActivity extends GrassrootActivity implements PickContac
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             default:
-                List<Contact> selectedItems = adapter.getSelectedItems();
+                List<Long> selectedItems = adapter.getSelectedItems();
                 if (!selectedItems.isEmpty()) {
+                    List<Contact> contacts = presenter.loadContactsForIds(selectedItems);
                     Intent data = new Intent();
-                    data.putExtra(EXTRA_CONTACTS, (ArrayList<Contact>)selectedItems);
+                    data.putExtra(EXTRA_CONTACTS, (ArrayList<Contact>)contacts);
                     setResult(RESULT_OK, data);
                     finish();
                 }

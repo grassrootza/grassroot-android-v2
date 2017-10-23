@@ -3,10 +3,13 @@ package za.org.grassroot2.database;
 import java.util.List;
 import java.util.Map;
 
+import io.reactivex.Observable;
 import io.reactivex.Single;
 import za.org.grassroot2.model.Group;
 import za.org.grassroot2.model.UserProfile;
 import za.org.grassroot2.model.enums.GrassrootEntityType;
+import za.org.grassroot2.model.network.Syncable;
+import za.org.grassroot2.model.request.MemberRequest;
 import za.org.grassroot2.model.task.Task;
 
 /**
@@ -48,7 +51,17 @@ public interface DatabaseService {
     // only for debugging
     <E> void listAllEntitesOfType(Class<E> clazz);
 
+    void storeMembersInvites(List<MemberRequest> requests);
+
+    Observable<List<Syncable>> getMemberRequestsToSync();
+
+    Observable<List<Syncable>> getMeetingsToSync();
+
     void storeTasks(List<Task> data);
 
     Map<String,Long> getAllTasksLastChangedTimestamp();
+
+    void delete(MemberRequest r);
+
+    <E> void delete(Class<E> cls, E item);
 }

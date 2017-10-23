@@ -1,5 +1,5 @@
 #
-# generated on 2017/10/19 08:58:37
+# generated on 2017/10/24 08:58:33
 #
 # --table-start--
 dataClass=za.org.grassroot2.model.alert.LiveWireAlert
@@ -105,7 +105,6 @@ fieldName=lastActionOrChange
 # --field-end--
 # --field-start--
 fieldName=permissions
-persisterClass=za.org.grassroot2.database.serialization.StringCollectionPersister
 # --field-end--
 # --table-fields-end--
 # --table-end--
@@ -206,6 +205,38 @@ fieldName=lastTimeChangedServerMillis
 # --table-end--
 #################################
 # --table-start--
+dataClass=za.org.grassroot2.model.request.MemberRequest
+tableName=member_requests
+# --table-fields-start--
+# --field-start--
+fieldName=id
+generatedId=true
+# --field-end--
+# --field-start--
+fieldName=groupUid
+# --field-end--
+# --field-start--
+fieldName=alternateNumbers
+# --field-end--
+# --field-start--
+fieldName=displayName
+# --field-end--
+# --field-start--
+fieldName=emailAddress
+# --field-end--
+# --field-start--
+fieldName=memberMsisdn
+# --field-end--
+# --field-start--
+fieldName=roleName
+# --field-end--
+# --field-start--
+fieldName=createdDate
+# --field-end--
+# --table-fields-end--
+# --table-end--
+#################################
+# --table-start--
 dataClass=za.org.grassroot2.model.task.Meeting
 tableName=meetings
 # --table-fields-start--
@@ -230,6 +261,9 @@ fieldName=description
 fieldName=callerName
 # --field-end--
 # --field-start--
+fieldName=locationDescription
+# --field-end--
+# --field-start--
 fieldName=createdDateTimeMillis
 # --field-end--
 # --field-start--
@@ -250,6 +284,9 @@ fieldName=userPartOf
 # --field-end--
 # --field-start--
 fieldName=publicMtg
+# --field-end--
+# --field-start--
+fieldName=synced
 # --field-end--
 # --table-fields-end--
 # --table-end--
