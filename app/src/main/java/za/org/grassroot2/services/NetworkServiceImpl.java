@@ -13,9 +13,8 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
-import io.reactivex.BackpressureStrategy;
-import io.reactivex.Flowable;
 import io.reactivex.Observable;
+import io.reactivex.ObservableEmitter;
 import io.reactivex.ObservableSource;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.functions.Function;
@@ -28,16 +27,14 @@ import timber.log.Timber;
 import za.org.grassroot2.database.DatabaseService;
 import za.org.grassroot2.model.Group;
 import za.org.grassroot2.model.MediaFile;
-import za.org.grassroot2.model.RequestMapper;
 import za.org.grassroot2.model.UploadResult;
 import za.org.grassroot2.model.alert.LiveWireAlert;
-import za.org.grassroot2.model.contact.Contact;
 import za.org.grassroot2.model.enums.GrassrootEntityType;
 import za.org.grassroot2.model.exception.EntityAlreadyUploadingException;
 import za.org.grassroot2.model.exception.ServerErrorException;
 import za.org.grassroot2.model.network.EntityForDownload;
 import za.org.grassroot2.model.network.EntityForUpload;
-import za.org.grassroot2.model.request.MemberRequestObject;
+import za.org.grassroot2.model.request.MemberRequest;
 import za.org.grassroot2.model.task.Meeting;
 import za.org.grassroot2.model.task.Task;
 import za.org.grassroot2.services.rest.GrassrootUserApi;
@@ -123,12 +120,18 @@ public class NetworkServiceImpl implements NetworkService {
     }
 
     @Override
-    public Observable<Response<Void>> inviteContactsToGroup(String groupId, List<Contact> contacts) {
-        List<MemberRequestObject> body = new ArrayList<>();
-        for (Contact c : contacts) {
-            body.add(RequestMapper.map(c));
-        }
-        return grassrootUserApi.addMembersToGroup(currentUserUid, groupId, body).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
+    public Observable<Response<Void>> inviteContactsToGroup(String groupId, List<MemberRequest> contacts) {
+        return Observable.create((ObservableEmitter<Response<Void>> e) -> new UploadResource<List<MemberRequest>>(contacts, e) {
+            @Override
+            public Observable<Response<Void>> uploadRemote(List<MemberRequest> localObject) {
+                return grassrootUserApi.addMembersToGroup(currentUserUid, groupId, localObject);
+            }
+
+            @Override
+            public void uploadFailed(List<MemberRequest> localObject) {
+                databaseService.storeMembersInvites(localObject);
+            }
+        });
     }
 
     @Override
@@ -154,8 +157,8 @@ public class NetworkServiceImpl implements NetworkService {
     }
 
     @Override
-    public Flowable<Resource<Task>> createTask(Task t) {
-        return Flowable.create(e -> new ResourceToStore<Task, Task>(t, e) {
+    public Observable<Resource<Task>> createTask(Task t) {
+        return Observable.create(e -> new ResourceToStore<Task, Task>(t, e) {
             @Override
             public Observable<Task> uploadRemote(Task localObject) {
                 Meeting m = (Meeting) localObject;
@@ -164,18 +167,16 @@ public class NetworkServiceImpl implements NetworkService {
 
             @Override
             public void uploadFailed(Task localObject) {
-                //                databaseService.storeTasks(Collections.singletonList(localObject));
+                Meeting m = (Meeting) localObject;
+                m.setSynced(false);
+                databaseService.storeTasks(Collections.singletonList(localObject));
             }
 
             @Override
             public void saveResult(Task data) {
                 databaseService.storeTasks(Collections.singletonList(data));
             }
-        }, BackpressureStrategy.BUFFER);
-//        if (t instanceof Meeting) {
-//            Meeting m = (Meeting) t;
-//            return grassrootUserApi.createTask("GROUP", currentUserUid, t.getParentUid(), m.getName(), m.getLocationDescription(), t.getDeadlineMillis());
-//        }
+        });
     }
 
     private Observable<UploadResult> routeUpload(final EntityForUpload entity, boolean forceUpload) {

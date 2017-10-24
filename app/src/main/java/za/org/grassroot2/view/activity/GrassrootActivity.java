@@ -40,6 +40,7 @@ import za.org.grassroot2.dagger.AppComponent;
 import za.org.grassroot2.dagger.activity.ActivityComponent;
 import za.org.grassroot2.dagger.activity.ActivityModule;
 import za.org.grassroot2.services.OfflineReceiver;
+import za.org.grassroot2.services.SyncOfflineDataService;
 import za.org.grassroot2.services.account.AuthConstants;
 import za.org.grassroot2.services.rest.AddTokenInterceptor;
 import za.org.grassroot2.util.AlarmManagerHelper;
@@ -58,7 +59,9 @@ public abstract class GrassrootActivity extends AppCompatActivity implements Gra
     private   Bundle                       authResultBundle = null;
     protected CompositeDisposable          disposables      = new CompositeDisposable();
 
-    @BindView(R.id.progress) @Nullable View progress;
+    @BindView(R.id.progress)
+    @Nullable
+    View progress;
 
     @Override
     protected void onCreate(Bundle icicle) {
@@ -83,7 +86,7 @@ public abstract class GrassrootActivity extends AppCompatActivity implements Gra
     @LayoutRes
     protected abstract int getLayoutResourceId();
 
-    private void setContentLayout(int resId){
+    private void setContentLayout(int resId) {
         RelativeLayout parent = (RelativeLayout) findViewById(R.id.main_layout);
         View v = LayoutInflater.from(this).inflate(resId, parent, false);
         parent.addView(v);
@@ -182,14 +185,14 @@ public abstract class GrassrootActivity extends AppCompatActivity implements Gra
 
     @Override
     public void showProgressBar() {
-        if (progress!=null) {
+        if (progress != null) {
             ViewAnimation.fadeIn(progress);
         }
     }
 
     @Override
     public void closeProgressBar() {
-        if (progress!=null) {
+        if (progress != null) {
             ViewAnimation.fadeOut(progress);
         }
     }
@@ -245,6 +248,11 @@ public abstract class GrassrootActivity extends AppCompatActivity implements Gra
                 e1.printStackTrace();
             }
         }, null);
+    }
+
+    @Subscribe
+    public void notifyItemOutOfSync(SyncOfflineDataService.ObjectOutOfSyncEvent e) {
+        Snackbar.make(findViewById(android.R.id.content), getString(R.string.meeting_out_of_sync, e.syncable.getName()), Snackbar.LENGTH_SHORT).show();
     }
 
     @Override

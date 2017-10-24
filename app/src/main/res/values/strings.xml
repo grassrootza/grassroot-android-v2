@@ -134,6 +134,7 @@
     <string name="meeting_called">Meeting called!</string>
     <string name="ok">OK</string>
     <string name="where_will_it_happen">Where will it happen?</string>
+    <string name="meeting_out_of_sync">Meeting %s start date is in the past.</string>
     <plurals name="notification_sent">
         <item quantity="one">A notification has been sent to %d member.</item>
         <item quantity="other">A notification has been sent to all %d members.</item>

@@ -3,19 +3,24 @@ package za.org.grassroot2.database;
 import android.util.Log;
 
 import com.j256.ormlite.dao.Dao;
+import com.j256.ormlite.stmt.QueryBuilder;
 
+import java.lang.reflect.Member;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import io.reactivex.Observable;
 import io.reactivex.Single;
 import timber.log.Timber;
 import za.org.grassroot2.model.Group;
 import za.org.grassroot2.model.UserProfile;
 import za.org.grassroot2.model.enums.GrassrootEntityType;
 import za.org.grassroot2.model.network.EntityForDownload;
+import za.org.grassroot2.model.network.Syncable;
+import za.org.grassroot2.model.request.MemberRequest;
 import za.org.grassroot2.model.task.Meeting;
 import za.org.grassroot2.model.task.Task;
 import za.org.grassroot2.model.task.Todo;
@@ -269,6 +274,45 @@ public class DatabaseServiceImpl implements DatabaseService {
     }
 
     @Override
+    public void storeMembersInvites(List<MemberRequest> requests) {
+        for (MemberRequest r : requests) {
+            storeObject(MemberRequest.class, r);
+        }
+    }
+
+    @Override
+    public Observable<List<Syncable>> getMemberRequestsToSync() {
+        return Observable.fromCallable(() -> {
+            List<Syncable> returnList = new ArrayList<>();
+            try {
+                Dao<MemberRequest, ?> dao = helper.getDao(MemberRequest.class);
+                List<MemberRequest> result = dao.queryBuilder().orderBy("createdDate", true).query();
+                returnList.addAll(result);
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            return returnList;
+        });
+    }
+
+    @Override
+    public Observable<List<Syncable>> getMeetingsToSync() {
+        return Observable.fromCallable(() -> {
+            List<Syncable> returnList = new ArrayList<>();
+            try {
+                Dao<Meeting, ?> dao = helper.getDao(Meeting.class);
+                QueryBuilder<Meeting, ?> meetingQueryBuilder = dao.queryBuilder();
+                meetingQueryBuilder.where().eq("synced", false);
+                List<Meeting> result = meetingQueryBuilder.orderBy("createdDateTimeMillis", true).query();
+                returnList.addAll(result);
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            return returnList;
+        });
+    }
+
+    @Override
     public void storeTasks(List<Task> data) {
         for (Task t : data) {
             GrassrootEntityType type = t.getType();
@@ -301,5 +345,25 @@ public class DatabaseServiceImpl implements DatabaseService {
             returnMap.put(entityHolder.getUid(), entityHolder.getLastTimeChangedServer());
         }
         return returnMap;
+    }
+
+    @Override
+    public void delete(MemberRequest r) {
+        try {
+            Dao<MemberRequest, ?> dao = helper.getDao(MemberRequest.class);
+            dao.delete(r);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public <E> void delete(Class<E> cls, E item) {
+        try {
+            Dao<E, ?> dao = helper.getDao(cls);
+            dao.delete(item);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 }
