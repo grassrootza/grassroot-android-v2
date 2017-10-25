@@ -42,7 +42,8 @@ public class Vote implements Task {
     private String callerName;
 
     @DatabaseField
-    private long createdDateTimeMillis;
+    @SerializedName("createdDateTimeMillis")
+    private long createdDate;
 
     @DatabaseField
     @SerializedName("deadlineMillis")
@@ -74,6 +75,16 @@ public class Vote implements Task {
     }
 
     @Override
+    public void setParentUid(String uid) {
+        parentUid = uid;
+    }
+
+    @Override
+    public void setUid(String uid) {
+        this.uid = uid;
+    }
+
+    @Override
     public GrassrootEntityType getParentEntityType() {
         return parentEntityType;
     }
@@ -100,7 +111,7 @@ public class Vote implements Task {
 
     @Override
     public Date getCreatedDateTime() {
-        return new Date(createdDateTimeMillis);
+        return new Date(createdDate);
     }
 
     @Override

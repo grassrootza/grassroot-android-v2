@@ -14,7 +14,6 @@ import za.org.grassroot2.dagger.ApplicationContext;
 import za.org.grassroot2.database.DatabaseService;
 import za.org.grassroot2.presenter.GroupDetailsPresenter;
 import za.org.grassroot2.presenter.LoginPresenter;
-import za.org.grassroot2.presenter.MainPresenter;
 import za.org.grassroot2.presenter.PickContactPresenter;
 import za.org.grassroot2.presenter.fragment.GroupFragmentPresenter;
 import za.org.grassroot2.presenter.fragment.GroupSelectionPresenter;
@@ -28,8 +27,6 @@ import za.org.grassroot2.services.UserDetailsService;
 import za.org.grassroot2.services.rest.GrassrootAuthApi;
 import za.org.grassroot2.util.ContactHelper;
 import za.org.grassroot2.util.ImageUtil;
-import za.org.grassroot2.util.StringDescriptionProvider;
-import za.org.grassroot2.util.UserPreference;
 
 /**
  * Created by luke on 2017/08/08.
@@ -66,16 +63,6 @@ public class ActivityModule {
     MediaService provideMediaService(@ApplicationContext Context applicationContext, DatabaseService realmService,
                                      NetworkService networkService, ImageUtil imageUtil) {
         return new MediaServiceImpl(applicationContext, realmService, networkService, imageUtil);
-    }
-
-    @Provides
-    @PerActivity
-    MainPresenter provideMainPresenter(StringDescriptionProvider stringProvider,
-                                       UserDetailsService userDetailsService,
-                                       DatabaseService realmService,
-                                       MediaService mediaService,
-                                       LiveWireService liveWireService) {
-        return new MainPresenter(stringProvider, userDetailsService, realmService, mediaService, liveWireService);
     }
 
     @Provides

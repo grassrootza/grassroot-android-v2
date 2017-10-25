@@ -6,18 +6,30 @@
     android:background="@drawable/white_rounded"
     android:orientation="vertical">
 
+    <TextView
+        android:id="@+id/header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:gravity="center_horizontal"
+        android:lineSpacingExtra="1sp"
+        android:textColor="@color/default_font_color"
+        android:text="@string/header_add_media"
+        android:textSize="20sp"
+        android:textStyle="normal" />
+
     <android.support.v7.widget.RecyclerView
         android:id="@+id/list"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
     <Button
-        android:id="@+id/close"
+        android:id="@+id/skip"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@drawable/primary_bottom_rounded"
         android:fontFamily="sans-serif-medium"
-        android:text="@string/close"
+        android:text="@string/button_skip"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />

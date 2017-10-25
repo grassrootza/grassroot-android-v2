@@ -256,13 +256,16 @@ public class NetworkServiceImpl implements NetworkService {
     }
 
     private Observable<UploadResult> uploadMediaFile(final MediaFile mediaFile) {
+        mediaFile.initUploading();
+        databaseService.storeObject(MediaFile.class, mediaFile);
         return grassrootUserApi.sendMediaFile(
                 currentUserUid,
                 mediaFile.getUid(),
                 mediaFile.getMediaFunction(),
                 mediaFile.getMimeType(),
                 getImageFromPath(mediaFile, "file")).flatMap(successHandler(mediaFile)).onErrorResumeNext(resumeHandler(mediaFile)).concatMap(uploadResult -> {
-            if (uploadResult.getServerUid() != null) {
+            if (uploadResult.getUploadException() == null) {
+                mediaFile.haltUploading(true);
                 mediaFile.setSentUpstream(true);
                 mediaFile.setServerUid(uploadResult.getServerUid());
                 databaseService.storeObject(MediaFile.class, mediaFile);

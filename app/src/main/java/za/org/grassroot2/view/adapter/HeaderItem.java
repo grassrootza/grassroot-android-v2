@@ -44,6 +44,14 @@ public class HeaderItem implements Task {
     }
 
     @Override
+    public void setParentUid(String uid) {
+    }
+
+    @Override
+    public void setUid(String uid) {
+    }
+
+    @Override
     public GrassrootEntityType getParentEntityType() {
         return null;
     }

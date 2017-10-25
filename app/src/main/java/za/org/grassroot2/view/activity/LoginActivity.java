@@ -40,7 +40,7 @@ public class LoginActivity extends GrassrootActivity implements LoginView {
         super.onCreate(savedInstanceState);
         loginPresenter.attach(LoginActivity.this);
         if (loggedIn()) {
-            startActivity(new Intent(this, MainActivity.class));
+            startActivity(new Intent(this, DashboardActivity.class));
             finish();
             return;
         }

@@ -53,9 +53,9 @@ public interface DatabaseService {
 
     void storeMembersInvites(List<MemberRequest> requests);
 
-    Observable<List<Syncable>> getMemberRequestsToSync();
+    Observable<List<MemberRequest>> getMemberRequestsToSync();
 
-    Observable<List<Syncable>> getMeetingsToSync();
+    <E extends Syncable> Observable<List<E>> getObjectsToSync(Class<E> cls);
 
     void storeTasks(List<Task> data);
 

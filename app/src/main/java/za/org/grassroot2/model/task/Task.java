@@ -11,6 +11,8 @@ import za.org.grassroot2.model.network.Syncable;
 public interface Task extends EntityForDownload, SelectableItem {
 
     String getParentUid();
+    void setParentUid(String uid);
+    void setUid(String uid);
     GrassrootEntityType getParentEntityType();
 
     Date getCreatedDateTime();

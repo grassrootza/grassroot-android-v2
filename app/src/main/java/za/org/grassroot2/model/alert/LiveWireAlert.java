@@ -13,6 +13,8 @@ import java.util.UUID;
 import za.org.grassroot2.model.MediaFile;
 import za.org.grassroot2.model.enums.GrassrootEntityType;
 import za.org.grassroot2.model.network.EntityForUpload;
+import za.org.grassroot2.model.network.Syncable;
+import za.org.grassroot2.model.task.Task;
 
 /**
  * Created by luke on 2017/08/15.
@@ -21,7 +23,7 @@ import za.org.grassroot2.model.network.EntityForUpload;
  */
 
 @DatabaseTable(tableName = "livewire_alerts")
-public class LiveWireAlert implements EntityForUpload {
+public class LiveWireAlert implements EntityForUpload, Syncable {
 
     public static final String TYPE_GENERIC = "INSTANT"; // server calls it this, for legacy reasons
     public static final String TYPE_MEETING = "MEETING";
@@ -32,7 +34,7 @@ public class LiveWireAlert implements EntityForUpload {
     private String serverUid;
     @DatabaseField
     private String headline;
-    @DatabaseField(foreign = true)
+    @DatabaseField(foreign = true, foreignAutoRefresh = true)
     private MediaFile mediaFile;
     @DatabaseField
     private String description;
@@ -50,10 +52,14 @@ public class LiveWireAlert implements EntityForUpload {
     private boolean underReview;
     @DatabaseField
     private boolean released;
+    @DatabaseField
+    private transient boolean synced = true;
+    @DatabaseField
+    private transient long createdDate;
 
     public LiveWireAlert() {
-        // for Realm/Dagger
         this.uid = UUID.randomUUID().toString();
+        createdDate = System.currentTimeMillis();
     }
 
     private LiveWireAlert(Builder builder) {
@@ -112,6 +118,24 @@ public class LiveWireAlert implements EntityForUpload {
         } else {
             return null;
         }
+    }
+
+    @Override
+    public boolean isSynced() {
+        return synced;
+    }
+
+    @Override
+    public long createdDate() {
+        return createdDate;
+    }
+
+    public void setCreatedDate(long createdDate) {
+        this.createdDate = createdDate;
+    }
+
+    public void setSynced(boolean synced) {
+        this.synced = synced;
     }
 
     public static final class Builder {

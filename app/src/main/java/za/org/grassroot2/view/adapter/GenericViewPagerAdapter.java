@@ -48,4 +48,12 @@ public class GenericViewPagerAdapter extends FragmentStatePagerAdapter {
         adapterTitleList.remove(adapterTitleList.size()-1);
         notifyDataSetChanged();
     }
+
+    public void removeAllAbove(int currentPosition) {
+        while (currentPosition+1 < adapterFragmentList.size()) {
+            adapterFragmentList.remove(adapterFragmentList.size()-1);
+            adapterTitleList.remove(adapterTitleList.size()-1);
+        }
+        notifyDataSetChanged();
+    }
 }

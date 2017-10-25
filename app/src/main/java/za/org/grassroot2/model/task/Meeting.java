@@ -7,7 +7,6 @@ import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
 import java.util.Date;
-import java.util.UUID;
 
 import za.org.grassroot2.model.MediaFile;
 import za.org.grassroot2.model.enums.GrassrootEntityType;
@@ -44,7 +43,8 @@ public class Meeting implements Task, Syncable {
     private String locationDescription;
 
     @DatabaseField
-    private long createdDateTimeMillis;
+    @SerializedName("createdDate")
+    private long createdDate;
     @DatabaseField
     @SerializedName("deadlineMillis")
     private long meetingDateTimeMillis;
@@ -83,7 +83,7 @@ public class Meeting implements Task, Syncable {
 
     @Override
     public Date getCreatedDateTime() {
-        return new Date(createdDateTimeMillis);
+        return new Date(createdDate);
     }
 
     @Override
@@ -135,6 +135,7 @@ public class Meeting implements Task, Syncable {
         return callerName;
     }
 
+    @Override
     public void setParentUid(String parentUid) {
         this.parentUid = parentUid;
     }
@@ -143,8 +144,8 @@ public class Meeting implements Task, Syncable {
         this.subject = subject;
     }
 
-    public void setCreatedDateTimeMillis(long createdDateTimeMillis) {
-        this.createdDateTimeMillis = createdDateTimeMillis;
+    public void setCreatedDate(long createdDate) {
+        this.createdDate = createdDate;
     }
 
     public void setMeetingDateTimeMillis(long meetingDateTimeMillis) {
@@ -166,13 +167,14 @@ public class Meeting implements Task, Syncable {
 
     @Override
     public long createdDate() {
-        return createdDateTimeMillis;
+        return createdDate;
     }
 
     public void setSynced(boolean synced) {
         this.synced = synced;
     }
 
+    @Override
     public void setUid(String uid) {
         this.uid = uid;
     }
@@ -187,7 +189,7 @@ public class Meeting implements Task, Syncable {
                 ", description='" + description + '\'' +
                 ", callerName='" + callerName + '\'' +
                 ", locationDescription='" + locationDescription + '\'' +
-                ", createdDateTimeMillis=" + createdDateTimeMillis +
+                ", createdDate=" + createdDate +
                 ", meetingDateTimeMillis=" + meetingDateTimeMillis +
                 ", lastChangeTimeServerMillis=" + lastChangeTimeServerMillis +
                 ", response='" + response + '\'' +

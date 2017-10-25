@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="dictate" type="id" />
+    <item name="createLivewireAlert" type="id" />
+    <item name="createTodo" type="id" />
+    <item name="takeVote" type="id" />
+    <item name="callMeeting" type="id" />
+    <item name="photo" type="id" />
+    <item name="video" type="id" />
+    <item name="gallery" type="id" />
+</resources>

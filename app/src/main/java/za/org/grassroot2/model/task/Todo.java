@@ -6,7 +6,6 @@ import com.j256.ormlite.table.DatabaseTable;
 
 import java.util.Date;
 import java.util.List;
-import java.util.UUID;
 
 import za.org.grassroot2.model.MediaFile;
 import za.org.grassroot2.model.enums.GrassrootEntityType;
@@ -45,7 +44,8 @@ public class Todo implements Task {
     private boolean isConfirmed;
 
     @DatabaseField
-    private long createdDateTimeMillis;
+    @SerializedName("createdDateTimeMillis")
+    private long createdDate;
     @DatabaseField
     @SerializedName("deadlineMillis")
     private long deadlineDateTimeMillis;
@@ -81,13 +81,23 @@ public class Todo implements Task {
     }
 
     @Override
+    public void setParentUid(String uid) {
+        parentUid = uid;
+    }
+
+    @Override
+    public void setUid(String uid) {
+        this.uid = uid;
+    }
+
+    @Override
     public GrassrootEntityType getParentEntityType() {
         return parentEntityType;
     }
 
     @Override
     public Date getCreatedDateTime() {
-        return new Date(createdDateTimeMillis);
+        return new Date(createdDate);
     }
 
     @Override

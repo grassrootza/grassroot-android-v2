@@ -5,7 +5,6 @@ import android.util.Log;
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.stmt.QueryBuilder;
 
-import java.lang.reflect.Member;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -67,7 +66,9 @@ public class DatabaseServiceImpl implements DatabaseService {
     public <E> E loadObjectByUid(Class<E> cls, String uid) {
         try {
             Dao<E, ?> dao = helper.getDao(cls);
-            return dao.queryBuilder().where().eq("uid", uid).queryForFirst();
+            E data =  dao.queryBuilder().where().eq("uid", uid).queryForFirst();
+            dao.refresh(data);
+            return data;
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
@@ -281,9 +282,9 @@ public class DatabaseServiceImpl implements DatabaseService {
     }
 
     @Override
-    public Observable<List<Syncable>> getMemberRequestsToSync() {
+    public Observable<List<MemberRequest>> getMemberRequestsToSync() {
         return Observable.fromCallable(() -> {
-            List<Syncable> returnList = new ArrayList<>();
+            List<MemberRequest> returnList = new ArrayList<>();
             try {
                 Dao<MemberRequest, ?> dao = helper.getDao(MemberRequest.class);
                 List<MemberRequest> result = dao.queryBuilder().orderBy("createdDate", true).query();
@@ -296,14 +297,14 @@ public class DatabaseServiceImpl implements DatabaseService {
     }
 
     @Override
-    public Observable<List<Syncable>> getMeetingsToSync() {
+    public <E extends Syncable> Observable<List<E>> getObjectsToSync(Class<E> cls) {
         return Observable.fromCallable(() -> {
-            List<Syncable> returnList = new ArrayList<>();
+            List<E> returnList = new ArrayList<>();
             try {
-                Dao<Meeting, ?> dao = helper.getDao(Meeting.class);
-                QueryBuilder<Meeting, ?> meetingQueryBuilder = dao.queryBuilder();
+                Dao<E, ?> dao = helper.getDao(cls);
+                QueryBuilder<E, ?> meetingQueryBuilder = dao.queryBuilder();
                 meetingQueryBuilder.where().eq("synced", false);
-                List<Meeting> result = meetingQueryBuilder.orderBy("createdDateTimeMillis", true).query();
+                List<E> result = meetingQueryBuilder.orderBy("createdDate", true).query();
                 returnList.addAll(result);
             } catch (SQLException e) {
                 e.printStackTrace();

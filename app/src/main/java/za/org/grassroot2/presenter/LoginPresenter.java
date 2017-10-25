@@ -18,7 +18,7 @@ import za.org.grassroot2.services.rest.GrassrootAuthApi;
 import za.org.grassroot2.services.rest.RestResponse;
 import za.org.grassroot2.view.GrassrootView;
 import za.org.grassroot2.view.LoginView;
-import za.org.grassroot2.view.activity.MainActivity;
+import za.org.grassroot2.view.activity.DashboardActivity;
 
 public class LoginPresenter extends BasePresenter<LoginView> {
     // public static final String PARAM_AUTHTOKEN_TYPE = "auth_token_type";
@@ -128,7 +128,7 @@ public class LoginPresenter extends BasePresenter<LoginView> {
                 .subscribe(userProfile -> {
                     view.closeProgressBar();
                     // need to pass back the JWT to the activity to ensure storage (via setResult)
-                    view.loginSuccessContinue(tokenAndUserDetails.getToken(), MainActivity.class);
+                    view.loginSuccessContinue(tokenAndUserDetails.getToken(), DashboardActivity.class);
                 }, java.lang.Throwable::printStackTrace));
     }
 }
