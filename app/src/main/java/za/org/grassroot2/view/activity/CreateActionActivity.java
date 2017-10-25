@@ -36,6 +36,8 @@ import za.org.grassroot2.view.fragment.MeetingDateFragment;
 
 import static android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
 
+import static android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
+
 public class CreateActionActivity extends GrassrootActivity implements BackNavigationListener, CreateActionPresenter.CreateActionView {
 
     private static final String EXTRA_GROUP_UID      = "groupUid";
