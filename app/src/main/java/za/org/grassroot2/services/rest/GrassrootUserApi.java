@@ -15,7 +15,6 @@ import retrofit2.http.Part;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
 import za.org.grassroot2.model.AroundEntity;
-import za.org.grassroot2.model.AroundItem;
 import za.org.grassroot2.model.Group;
 import za.org.grassroot2.model.alert.LiveWireAlert;
 import za.org.grassroot2.model.request.MemberRequest;
