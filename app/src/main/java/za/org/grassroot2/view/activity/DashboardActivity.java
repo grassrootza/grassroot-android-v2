@@ -46,6 +46,9 @@ public class DashboardActivity extends GrassrootActivity {
             case R.id.navigation_around:
                 pager.setCurrentItem(TAB_AROUND);
                 return true;
+            case R.id.navigation_around:
+                addFragment(AroundMeFragment.newInstance(), AroundMeFragment.class);
+                return true;
         }
         return false;
     };
