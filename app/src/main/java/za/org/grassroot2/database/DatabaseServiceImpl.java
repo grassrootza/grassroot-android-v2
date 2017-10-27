@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import io.reactivex.Maybe;
 import io.reactivex.Observable;
 import io.reactivex.Single;
 import timber.log.Timber;
@@ -51,11 +52,15 @@ public class DatabaseServiceImpl implements DatabaseService {
     }
 
     @Override
-    public <E> Single<E> load(final Class<E> clazz, final String uid) {
-        return Single.create(e -> {
+    public <E> Maybe<E> load(final Class<E> clazz, final String uid) {
+        return Maybe.create(e -> {
             try {
                 Dao<E, ?> dao = helper.getDao(clazz);
-                e.onSuccess(dao.queryBuilder().where().eq("uid", uid).queryForFirst());
+                E result = dao.queryBuilder().where().eq("uid", uid).queryForFirst();
+                if (result != null) {
+                    e.onSuccess(result);
+                }
+                e.onComplete();
             } catch (SQLException ex) {
                 ex.printStackTrace();
             }

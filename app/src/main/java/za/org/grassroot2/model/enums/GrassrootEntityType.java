@@ -18,7 +18,7 @@ public enum GrassrootEntityType {
 
     GROUP_JOIN_REQUEST,
 
-    LIVEWIRE_ALERT,
+    LIVE_WIRE_ALERT,
     SAFETY_ALERT,
 
     MEDIA_FILE

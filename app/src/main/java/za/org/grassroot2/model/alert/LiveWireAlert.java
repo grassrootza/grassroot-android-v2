@@ -10,11 +10,12 @@ import java.util.Collections;
 import java.util.Set;
 import java.util.UUID;
 
+import za.org.grassroot2.model.AroundItem;
+import za.org.grassroot2.model.ExcludeFromSerialization;
 import za.org.grassroot2.model.MediaFile;
 import za.org.grassroot2.model.enums.GrassrootEntityType;
 import za.org.grassroot2.model.network.EntityForUpload;
 import za.org.grassroot2.model.network.Syncable;
-import za.org.grassroot2.model.task.Task;
 
 /**
  * Created by luke on 2017/08/15.
@@ -23,7 +24,7 @@ import za.org.grassroot2.model.task.Task;
  */
 
 @DatabaseTable(tableName = "livewire_alerts")
-public class LiveWireAlert implements EntityForUpload, Syncable {
+public class LiveWireAlert implements EntityForUpload, Syncable, AroundItem {
 
     public static final String TYPE_GENERIC = "INSTANT"; // server calls it this, for legacy reasons
     public static final String TYPE_MEETING = "MEETING";
@@ -57,6 +58,12 @@ public class LiveWireAlert implements EntityForUpload, Syncable {
     @DatabaseField
     private transient long createdDate;
 
+    @ExcludeFromSerialization
+    private double longitude;
+
+    @ExcludeFromSerialization
+    private double latitude;
+
     public LiveWireAlert() {
         this.uid = UUID.randomUUID().toString();
         createdDate = System.currentTimeMillis();
@@ -78,7 +85,7 @@ public class LiveWireAlert implements EntityForUpload, Syncable {
 
     @Override
     public GrassrootEntityType getType() {
-        return GrassrootEntityType.LIVEWIRE_ALERT;
+        return GrassrootEntityType.LIVE_WIRE_ALERT;
     }
 
     @Override
@@ -136,6 +143,22 @@ public class LiveWireAlert implements EntityForUpload, Syncable {
 
     public void setSynced(boolean synced) {
         this.synced = synced;
+    }
+
+    public double getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(double longitude) {
+        this.longitude = longitude;
+    }
+
+    public double getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(double latitude) {
+        this.latitude = latitude;
     }
 
     public static final class Builder {

@@ -1,12 +1,10 @@
 package za.org.grassroot2.dagger.activity;
 
-import android.accounts.AccountManager;
 import android.content.Context;
 import android.support.v7.app.AppCompatActivity;
 
 import com.tbruyelle.rxpermissions2.RxPermissions;
 
-import dagger.Lazy;
 import dagger.Module;
 import dagger.Provides;
 import za.org.grassroot2.dagger.ActivityContext;
@@ -16,10 +14,10 @@ import za.org.grassroot2.presenter.GroupDetailsPresenter;
 import za.org.grassroot2.presenter.LoginPresenter;
 import za.org.grassroot2.presenter.PickContactPresenter;
 import za.org.grassroot2.presenter.fragment.GroupFragmentPresenter;
-import za.org.grassroot2.presenter.fragment.GroupSelectionPresenter;
 import za.org.grassroot2.presenter.fragment.SingleTextMultiButtonPresenter;
 import za.org.grassroot2.services.LiveWireService;
 import za.org.grassroot2.services.LiveWireServiceImpl;
+import za.org.grassroot2.services.LocationManager;
 import za.org.grassroot2.services.MediaService;
 import za.org.grassroot2.services.MediaServiceImpl;
 import za.org.grassroot2.services.NetworkService;
@@ -42,7 +40,7 @@ public class ActivityModule {
 
     @Provides
     @ActivityContext
-    AppCompatActivity activityContext(){
+    AppCompatActivity activityContext() {
         return act;
     }
 
@@ -50,6 +48,12 @@ public class ActivityModule {
     @PerActivity
     RxPermissions providesRxPermission(@ActivityContext AppCompatActivity act) {
         return new RxPermissions(act);
+    }
+
+    @Provides
+    @PerActivity
+    LocationManager providesLocationManager(@ActivityContext AppCompatActivity act) {
+        return new LocationManager(act);
     }
 
     @Provides

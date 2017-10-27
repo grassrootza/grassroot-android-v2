@@ -14,6 +14,7 @@ import za.org.grassroot2.R;
 import za.org.grassroot2.dagger.activity.ActivityComponent;
 import za.org.grassroot2.services.SyncOfflineDataService;
 import za.org.grassroot2.util.NetworkUtil;
+import za.org.grassroot2.view.fragment.AroundMeFragment;
 import za.org.grassroot2.view.fragment.GroupsFragment;
 
 public class DashboardActivity extends GrassrootActivity {
@@ -29,6 +30,9 @@ public class DashboardActivity extends GrassrootActivity {
                 addFragment(GroupsFragment.newInstance(), GroupsFragment.class);
                 return true;
             case R.id.navigation_me:
+                return true;
+            case R.id.navigation_around:
+                addFragment(AroundMeFragment.Companion.newInstance(), AroundMeFragment.class);
                 return true;
         }
         return false;
