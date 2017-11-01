@@ -69,7 +69,7 @@ public interface GrassrootUserApi {
     Observable<Long> getTimestampForTextDate(@Query("text") String text);
 
     @POST("/api/task/create/meeting/{userUid}/{parentType}/{parentUid}")
-    Observable<Task> createTask(@Path("parentType") String parentType,
+    Observable<Response<Task>> createTask(@Path("parentType") String parentType,
                                           @Path("userUid") String userUid,
                                           @Path("parentUid") String parentUid,
                                           @Query("subject") String subject,

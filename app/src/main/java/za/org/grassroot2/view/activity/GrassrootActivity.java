@@ -39,6 +39,7 @@ import za.org.grassroot2.R;
 import za.org.grassroot2.dagger.AppComponent;
 import za.org.grassroot2.dagger.activity.ActivityComponent;
 import za.org.grassroot2.dagger.activity.ActivityModule;
+import za.org.grassroot2.model.task.Meeting;
 import za.org.grassroot2.services.OfflineReceiver;
 import za.org.grassroot2.services.SyncOfflineDataService;
 import za.org.grassroot2.services.account.AuthConstants;
@@ -252,7 +253,9 @@ public abstract class GrassrootActivity extends AppCompatActivity implements Gra
 
     @Subscribe
     public void notifyItemOutOfSync(SyncOfflineDataService.ObjectOutOfSyncEvent e) {
-        Snackbar.make(findViewById(android.R.id.content), getString(R.string.meeting_out_of_sync, e.syncable.getName()), Snackbar.LENGTH_SHORT).show();
+        if (e.syncable instanceof Meeting) {
+            Snackbar.make(findViewById(android.R.id.content), e.msg, Snackbar.LENGTH_LONG).show();
+        }
     }
 
     @Override
