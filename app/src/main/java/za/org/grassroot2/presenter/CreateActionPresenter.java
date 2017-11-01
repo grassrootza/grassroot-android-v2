@@ -1,43 +1,109 @@
 package za.org.grassroot2.presenter;
 
+import android.net.Uri;
+import android.text.TextUtils;
+
+import java.util.AbstractMap;
+import java.util.Map;
 import java.util.UUID;
 
 import javax.inject.Inject;
 
+import io.reactivex.Observable;
+import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
+import timber.log.Timber;
+import za.org.grassroot2.R;
 import za.org.grassroot2.database.DatabaseService;
 import za.org.grassroot2.model.Group;
+import za.org.grassroot2.model.MediaFile;
+import za.org.grassroot2.model.alert.LiveWireAlert;
+import za.org.grassroot2.model.enums.GrassrootEntityType;
 import za.org.grassroot2.model.task.Meeting;
 import za.org.grassroot2.model.task.Task;
+import za.org.grassroot2.services.LiveWireService;
+import za.org.grassroot2.services.MediaService;
 import za.org.grassroot2.services.NetworkService;
 import za.org.grassroot2.view.GrassrootView;
 
 
 public class CreateActionPresenter extends BasePresenter<CreateActionPresenter.CreateActionView> {
 
-    private NetworkService  networkService;
+    public enum ActionType {
+        Meeting, LivewireAlert;
+    }
+
+    private NetworkService networkService;
+
+    private MediaService    mediaService;
     private DatabaseService dbService;
-    private Task            createdTask;
+    private LiveWireService liveWireService;
+
+    private Task          taskToCreate;
+    private String        currentMediaFileUid;
+    private LiveWireAlert liveWireAlert;
 
     @Inject
-    public CreateActionPresenter(NetworkService networkService, DatabaseService dbService) {
+    public CreateActionPresenter(NetworkService networkService, DatabaseService dbService, LiveWireService liveWireService, MediaService mediaService) {
         this.networkService = networkService;
         this.dbService = dbService;
-        createdTask = new Meeting();
-        ((Meeting) createdTask).setUid(UUID.randomUUID().toString());
+        this.liveWireService = liveWireService;
+        this.mediaService = mediaService;
+    }
+
+    public void initTask(ActionType type) {
+        switch (type) {
+            case Meeting:
+                taskToCreate = new Meeting();
+                taskToCreate.setUid(UUID.randomUUID().toString());
+                break;
+            case LivewireAlert:
+                liveWireAlert = new LiveWireAlert();
+                break;
+        }
     }
 
     public void createMeeting() {
         view.showProgressBar();
-        disposableOnDetach(networkService.createTask(createdTask).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(task -> {
+        disposableOnDetach(networkService.createTask(taskToCreate).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(task -> {
             view.closeProgressBar();
-            view.uploadSuccessfull();
+            view.uploadSuccessfull(GrassrootEntityType.MEETING);
         }, throwable -> {
             view.closeProgressBar();
-            view.uploadSuccessfull();
+            view.uploadSuccessfull(GrassrootEntityType.MEETING);
         }));
     }
+
+    public void createAlert() {
+        if (liveWireAlert.areMinimumFieldsComplete()) {
+            view.showProgressBar();
+            liveWireAlert.setComplete(true);
+            liveWireAlert.setMediaFile(dbService.loadObjectByUid(MediaFile.class, currentMediaFileUid));
+            disposableOnDetach(dbService.store(LiveWireAlert.class, liveWireAlert).flatMapObservable(liveWireAlert1 -> networkService.uploadEntity(liveWireAlert1, false)).flatMap(uploadResult -> {
+                if (!TextUtils.isEmpty(uploadResult.getServerUid())) {
+                    liveWireAlert.setServerUid(uploadResult.getServerUid());
+                } else {
+                    liveWireAlert.setSynced(false);
+                }
+                dbService.storeObject(LiveWireAlert.class, liveWireAlert);
+                return Observable.just(uploadResult);
+            }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(uploadResult -> {
+                        view.closeProgressBar();
+                        view.uploadSuccessfull(GrassrootEntityType.LIVEWIRE_ALERT);
+                    }, throwable -> {
+                        view.closeProgressBar();
+                        view.uploadSuccessfull(GrassrootEntityType.LIVEWIRE_ALERT);
+                    }));
+        }
+    }
+
+//    private void handleStorageUploadResult(int result) {
+//        if (result == STORED_UPLOAD_SUCCEEDED) {
+//            view.showSuccessMsg(R.string.done_header);
+//            view.goToDefaultScreen();
+//        }
+//    }
 
     public void verifyGroupPermissions(String groupUid) {
         if (groupUid != null) {
@@ -48,32 +114,129 @@ public class CreateActionPresenter extends BasePresenter<CreateActionPresenter.C
     }
 
     public void setMeetingDate(Long date) {
-        ((Meeting) createdTask).setMeetingDateTimeMillis(date);
-        ((Meeting) createdTask).setCreatedDateTimeMillis(System.currentTimeMillis());
+        ((Meeting) taskToCreate).setMeetingDateTimeMillis(date);
+        ((Meeting) taskToCreate).setCreatedDate(System.currentTimeMillis());
     }
 
     public void setMeetingLocation(String location) {
-        ((Meeting) createdTask).setLocationDescription(location);
+        ((Meeting) taskToCreate).setLocationDescription(location);
     }
 
     public void setSubject(String subject) {
-        ((Meeting) createdTask).setSubject(subject);
+        ((Meeting) taskToCreate).setSubject(subject);
     }
 
     public void setGroupUid(Group group) {
-        ((Meeting) createdTask).setParentUid(group.getUid());
+        if (liveWireAlert != null) {
+            liveWireAlert.setAlertType(LiveWireAlert.TYPE_GENERIC);
+            liveWireAlert.setGroupUid(group.getUid());
+        } else {
+            taskToCreate.setParentUid(group.getUid());
+        }
+    }
+
+    public Single<Map.Entry<String, LiveWireAlert>> getAlertAndGroupName() {
+        return dbService.load(Group.class, liveWireAlert.getGroupUid()).map(group -> new AbstractMap.SimpleEntry<>(group.getName(), liveWireAlert));
+    }
+
+    public void takePhoto() {
+        disposableOnDetach(mediaService.createFileForMedia("image/jpeg", MediaFile.FUNCTION_LIVEWIRE).subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(s -> {
+                    MediaFile mediaFile = dbService.loadObjectByUid(MediaFile.class, s);
+                    Timber.e("mediaFile stored and retrieved, = " + mediaFile);
+                    // for some reason, sometimes it comes back null ...
+                    Timber.d("media URI passed to intent: " + Uri.parse(mediaFile.getContentProviderPath()));
+                    currentMediaFileUid = s;
+                    view.cameraForResult(mediaFile.getContentProviderPath(), s);
+                }, throwable -> {
+                    Timber.e(throwable, "Error creating file");
+                    view.showErrorSnackbar(R.string.error_file_creation);
+                }));
+    }
+
+    public void pickFromGallery() {
+        disposableOnDetach(view.ensureWriteExteralStoragePermission().flatMapSingle(aBoolean -> {
+            if (aBoolean) {
+                return mediaService.createFileForMedia("image/jpeg", MediaFile.FUNCTION_LIVEWIRE);
+            }
+            throw new Exception("Permission not granted");
+        }).subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(s -> {
+                    currentMediaFileUid = s;
+                    view.pickFromGallery();
+                }, Throwable::printStackTrace));
+    }
+
+    public void recordVideo() {
+//        disposableOnDetach(mediaService.createFileForMedia("image/jpeg", MediaFile.FUNCTION_LIVEWIRE).subscribeOn(Schedulers.io())
+//                .observeOn(AndroidSchedulers.mainThread())
+//                .subscribe(s -> {
+//                    MediaFile mediaFile = dbService.loadObjectByUid(MediaFile.class, s);
+//                    Timber.e("mediaFile stored and retrieved, = " + mediaFile);
+//                    // for some reason, sometimes it comes back null ...
+//                    Timber.d("media URI passed to intent: " + Uri.parse(mediaFile.getContentProviderPath()));
+//                    currentMediaFileUid = s;
+//                    view.videoForResult(mediaFile.getContentProviderPath(), s);
+//                }, throwable -> {
+//                    Timber.e(throwable, "Error creating file");
+//                    view.showErrorSnackbar(R.string.error_file_creation);
+//                }));
+    }
+
+    public void setLongDescription(String description) {
+        if (!TextUtils.isEmpty(description)) {
+            liveWireAlert.setDescription(description);
+        }
     }
 
     public Task getTask() {
-        return createdTask;
+        return taskToCreate;
+    }
+
+    public LiveWireAlert getAlert() {
+        return liveWireAlert;
+    }
+
+    public void cameraResult() {
+        disposableOnDetach(mediaService.captureMediaFile(currentMediaFileUid)
+                .doOnError(this::handleMediaError)
+                .subscribe(s -> {
+                    liveWireAlert.setMediaFile(dbService.loadObjectByUid(MediaFile.class, currentMediaFileUid));
+                }));
+    }
+
+    public void handlePickResult(Uri data) {
+        disposableOnDetach(mediaService.storeGalleryFile(currentMediaFileUid, data).subscribeOn(Schedulers.io())
+                .doOnError(this::handleMediaError)
+                .subscribe(s -> liveWireAlert.setMediaFile(dbService.loadObjectByUid(MediaFile.class, currentMediaFileUid)), this::handleMediaError));
+    }
+
+    public void setHeadline(String headline) {
+        liveWireAlert.setHeadline(headline);
+    }
+
+    private void handleMediaError(Throwable throwable) {
+        view.closeProgressBar();
+        Timber.e(throwable);
+        view.showErrorSnackbar(R.string.error_lwire_alert_media_error);
     }
 
     public interface CreateActionView extends GrassrootView {
-        void uploadSuccessfull();
+        Observable<Boolean> ensureWriteExteralStoragePermission();
+
+        void uploadSuccessfull(GrassrootEntityType meeting);
 
         void closeScreen();
 
         void proceedWithRender(Group group);
+
+        void cameraForResult(String contentProviderPath, String s);
+
+        void videoForResult(String contentProviderPath, String s);
+
+        void pickFromGallery();
     }
 
 }

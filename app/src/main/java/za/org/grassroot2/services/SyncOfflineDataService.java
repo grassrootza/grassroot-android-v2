@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.IBinder;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.text.TextUtils;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -15,11 +16,14 @@ import java.util.List;
 import javax.inject.Inject;
 
 import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 import za.org.grassroot2.GrassrootApplication;
 import za.org.grassroot2.database.DatabaseService;
+import za.org.grassroot2.model.alert.LiveWireAlert;
+import za.org.grassroot2.model.enums.GrassrootEntityType;
 import za.org.grassroot2.model.network.Syncable;
 import za.org.grassroot2.model.request.MemberRequest;
 import za.org.grassroot2.model.task.Meeting;
@@ -42,11 +46,16 @@ public class SyncOfflineDataService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        disposabele.add(Observable.zip(dbService.getMeetingsToSync(), dbService.getMemberRequestsToSync(), (syncables, syncables2) -> combineAndSortSyncables(syncables, syncables2)).flatMap(syncables -> {
+        disposabele.add(Observable.zip(dbService.getObjectsToSync(Meeting.class),
+                dbService.getObjectsToSync(LiveWireAlert.class),
+                dbService.getMemberRequestsToSync(),
+                (meetings, alerts, memberRequests) -> combineAndSortSyncables(meetings, alerts, memberRequests)).flatMap(syncables -> {
             for (Syncable syncable : syncables) {
                 Timber.d("Syncing object: %s", syncable.toString());
                 if (syncable instanceof MemberRequest) {
                     handleMemberRequestSync((MemberRequest) syncable);
+                } else if (syncable instanceof LiveWireAlert) {
+                    handleAlertSync((LiveWireAlert) syncable);
                 } else {
                     handleMeetingSync((Meeting) syncable);
                 }
@@ -60,10 +69,23 @@ public class SyncOfflineDataService extends Service {
         return super.onStartCommand(intent, flags, startId);
     }
 
+    private void handleAlertSync(LiveWireAlert syncable) {
+        disposabele.add(networkService.uploadEntity(syncable, false).subscribe(uploadResult -> {
+            if (!TextUtils.isEmpty(uploadResult.getServerUid())) {
+                syncable.setServerUid(uploadResult.getServerUid());
+                syncable.setSynced(true);
+            } else {
+                syncable.setSynced(false);
+            }
+            dbService.storeObject(LiveWireAlert.class, syncable);
+        }, throwable -> throwable.printStackTrace()));
+    }
+
+    @SafeVarargs
     @NonNull
-    private List<Syncable> combineAndSortSyncables(List<Syncable>... args) {
+    private final List<Syncable> combineAndSortSyncables(List<? extends Syncable>... args) {
         List<Syncable> result = new ArrayList<>();
-        for (List<Syncable> l : args) {
+        for (List<? extends Syncable> l : args) {
             result.addAll(l);
         }
         Collections.sort(result, (o1, o2) -> o1.createdDate() > o2.createdDate() ? 1 : (o1.createdDate() < o2.createdDate() ? -1 : 0));

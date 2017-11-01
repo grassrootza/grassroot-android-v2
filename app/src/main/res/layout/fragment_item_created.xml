@@ -9,17 +9,19 @@
     <ImageView
         android:layout_width="88dp"
         android:layout_height="88dp"
-        android:layout_marginTop="43dp"
         android:layout_gravity="center_horizontal"
+        android:layout_marginTop="43dp"
         app:srcCompat="@drawable/ic_allgood_popup" />
 
     <TextView
+        android:id="@+id/title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
         android:layout_marginTop="26dp"
         android:gravity="center_horizontal"
         android:lineSpacingExtra="0sp"
-        android:text="@string/meeting_called"
         android:textColor="@color/default_font_color"
         android:textSize="26sp" />
 

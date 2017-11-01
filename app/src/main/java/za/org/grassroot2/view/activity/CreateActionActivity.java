@@ -1,34 +1,51 @@
 package za.org.grassroot2.view.activity;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.design.widget.Snackbar;
 import android.support.v4.view.ViewPager;
+
+import com.tbruyelle.rxpermissions2.RxPermissions;
 
 import javax.inject.Inject;
 
 import butterknife.BindView;
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 import za.org.grassroot2.R;
 import za.org.grassroot2.dagger.activity.ActivityComponent;
 import za.org.grassroot2.model.Group;
 import za.org.grassroot2.model.GroupPermission;
+import za.org.grassroot2.model.enums.GrassrootEntityType;
 import za.org.grassroot2.presenter.CreateActionPresenter;
 import za.org.grassroot2.view.adapter.GenericViewPagerAdapter;
-import za.org.grassroot2.view.dialog.CreateActionFragment;
+import za.org.grassroot2.view.dialog.MediaPickerFragment;
+import za.org.grassroot2.view.dialog.MultiOptionPickFragment;
+import za.org.grassroot2.view.fragment.ActionSingleInputFragment;
 import za.org.grassroot2.view.fragment.BackNavigationListener;
 import za.org.grassroot2.view.fragment.GroupSelectionFragment;
-import za.org.grassroot2.view.fragment.MeetingCalledFragment;
+import za.org.grassroot2.view.fragment.ItemCreatedFragment;
+import za.org.grassroot2.view.fragment.LivewireConfirmFragment;
 import za.org.grassroot2.view.fragment.MeetingDateConfirmFragment;
 import za.org.grassroot2.view.fragment.MeetingDateFragment;
-import za.org.grassroot2.view.fragment.MeetingSingleInputFragment;
+
+import static android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
 
 public class CreateActionActivity extends GrassrootActivity implements BackNavigationListener, CreateActionPresenter.CreateActionView {
 
-    private static final String EXTRA_GROUP_UID = "groupUid";
+    private static final String EXTRA_GROUP_UID      = "groupUid";
+    private static final int    REQUEST_TAKE_PHOTO   = 1;
+    private static final int    REQUEST_RECORD_VIDEO = 2;
+    private static final int    REQUEST_GALLERY      = 3;
 
-    @BindView(R.id.viewPager) ViewPager               viewPager;
-    @Inject                   CreateActionPresenter   presenter;
+    @BindView(R.id.viewPager) ViewPager             viewPager;
+    @Inject                   CreateActionPresenter presenter;
+    @Inject                   RxPermissions         rxPermission;
 
     private GenericViewPagerAdapter adapter;
     private boolean                 created;
@@ -45,7 +62,7 @@ public class CreateActionActivity extends GrassrootActivity implements BackNavig
         return R.layout.activity_create_action;
     }
 
-    public void nextClick() {
+    public void nextStep() {
         int current = viewPager.getCurrentItem();
         if (current == adapter.getCount() - 1) {
             finish();
@@ -65,15 +82,30 @@ public class CreateActionActivity extends GrassrootActivity implements BackNavig
     public void proceedWithRender(Group group) {
         adapter = new GenericViewPagerAdapter(getSupportFragmentManager());
         addActionTypeFragment(group);
-        if (group == null) {
-            addGroupSelectionFragment();
-        } else {
-            presenter.setGroupUid(group);
-        }
-        addMeetingSubjectFragment();
-        addMeetingLocationFragment();
-        addMeetingDateFragment();
         viewPager.setAdapter(adapter);
+    }
+
+    @Override
+    public void cameraForResult(String contentProviderPath, String s) {
+        Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.parse(contentProviderPath));
+        cameraIntent.putExtra("MY_UID", s);
+        startActivityForResult(cameraIntent, REQUEST_TAKE_PHOTO);
+    }
+
+    @Override
+    public void videoForResult(String contentProviderPath, String s) {
+        Intent cameraIntent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
+        cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.parse(contentProviderPath));
+        cameraIntent.putExtra("MY_UID", s);
+        startActivityForResult(cameraIntent, REQUEST_RECORD_VIDEO);
+    }
+
+    @Override
+    public void pickFromGallery() {
+        Intent intent = new Intent(Intent.ACTION_PICK, EXTERNAL_CONTENT_URI);
+        intent.setType("image/*");
+        startActivityForResult(intent, REQUEST_GALLERY);
     }
 
     @Override
@@ -89,30 +121,53 @@ public class CreateActionActivity extends GrassrootActivity implements BackNavig
             MeetingDateConfirmFragment f = MeetingDateConfirmFragment.newInstance(date);
             disposables.add(f.meetingDateConfirmed().subscribe(aLong -> presenter.createMeeting(), Throwable::printStackTrace));
             adapter.addFragment(f, "");
-            nextClick();
+            nextStep();
             shouldRemoveLast = true;
         }));
         adapter.addFragment(meetingDateFragment, "");
     }
 
     private void addMeetingLocationFragment() {
-        MeetingSingleInputFragment meetingSingleInputFragment = MeetingSingleInputFragment.newInstance(R.string.where_will_it_happen, R.string.info_meeting_location, R.string.hint_meeting_location);
-        disposables.add(meetingSingleInputFragment.locationAdded().subscribe(location -> {
+        ActionSingleInputFragment actionSingleInputFragment = ActionSingleInputFragment.newInstance(R.string.where_will_it_happen, R.string.info_meeting_location, R.string.hint_meeting_location, false);
+        disposables.add(actionSingleInputFragment.inputAdded().subscribe(location -> {
             presenter.setMeetingLocation(location);
-            nextClick();
+            nextStep();
         }));
-        adapter.addFragment(meetingSingleInputFragment, "");
-        viewPager.setAdapter(adapter);
+        adapter.addFragment(actionSingleInputFragment, "");
     }
 
     private void addMeetingSubjectFragment() {
-        MeetingSingleInputFragment meetingSingleInputFragment = MeetingSingleInputFragment.newInstance(R.string.what_is_it_about, R.string.info_meeting_subject, R.string.hint_meeting_subject);
-        disposables.add(meetingSingleInputFragment.locationAdded().subscribe(subject -> {
+        ActionSingleInputFragment actionSingleInputFragment = ActionSingleInputFragment.newInstance(R.string.what_is_it_about, R.string.info_meeting_subject, R.string.hint_meeting_subject, false);
+        disposables.add(actionSingleInputFragment.inputAdded().subscribe(subject -> {
             presenter.setSubject(subject);
-            nextClick();
+            nextStep();
         }));
-        adapter.addFragment(meetingSingleInputFragment, "");
-        viewPager.setAdapter(adapter);
+        adapter.addFragment(actionSingleInputFragment, "");
+    }
+
+    private void addHeadlineFragment() {
+        ActionSingleInputFragment actionSingleInputFragment = ActionSingleInputFragment.newInstance(R.string.what_is_it_about, R.string.info_headline, R.string.hint_headline, false);
+        disposables.add(actionSingleInputFragment.inputAdded().subscribe(headline -> {
+            presenter.setHeadline(headline);
+            nextStep();
+        }));
+        adapter.addFragment(actionSingleInputFragment, "");
+    }
+
+    private void addLongDescriptionFragment() {
+        ActionSingleInputFragment actionSingleInputFragment = ActionSingleInputFragment.newInstance(R.string.long_description, R.string.info_long_description, R.string.hint_description, true);
+        actionSingleInputFragment.setMultiLine(true);
+        disposables.add(actionSingleInputFragment.inputAdded().flatMapSingle(description -> {
+            presenter.setLongDescription(description);
+            return presenter.getAlertAndGroupName();
+        }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(entry -> {
+            LivewireConfirmFragment f = LivewireConfirmFragment.newInstance(entry.getValue(), entry.getKey());
+            adapter.addFragment(f, "");
+            disposables.add(f.livewireAlertConfirmed().subscribe(aLong -> presenter.createAlert(), Throwable::printStackTrace));
+            nextStep();
+            shouldRemoveLast = true;
+        }, Throwable::printStackTrace));
+        adapter.addFragment(actionSingleInputFragment, "");
     }
 
     private void addGroupSelectionFragment() {
@@ -120,7 +175,7 @@ public class CreateActionActivity extends GrassrootActivity implements BackNavig
         disposables.add(fragment.itemSelection().subscribe(group -> {
             if (group.getPermissions().contains(GroupPermission.CREATE_GROUP_MEETING)) {
                 presenter.setGroupUid(group);
-                nextClick();
+                nextStep();
             } else {
                 Snackbar.make(findViewById(android.R.id.content), R.string.error_permission_denied, Snackbar.LENGTH_SHORT).show();
                 finish();
@@ -129,16 +184,70 @@ public class CreateActionActivity extends GrassrootActivity implements BackNavig
         adapter.addFragment(fragment, "");
     }
 
+    @Override
+    public Observable<Boolean> ensureWriteExteralStoragePermission() {
+        return rxPermission.request(Manifest.permission.WRITE_EXTERNAL_STORAGE);
+    }
+
     private void addActionTypeFragment(Group group) {
-        CreateActionFragment createActionFragment = CreateActionFragment.get(group);
+        MultiOptionPickFragment createActionFragment = MultiOptionPickFragment.getActionPicker(group);
         disposables.add(createActionFragment.clickAction().subscribe(integer -> {
             switch (integer) {
                 case R.id.callMeeting:
-                    nextClick();
+                    removeAllViewsAboveCurrent();
+                    presenter.initTask(CreateActionPresenter.ActionType.Meeting);
+                    if (group == null) {
+                        addGroupSelectionFragment();
+                    } else {
+                        presenter.setGroupUid(group);
+                    }
+                    addMeetingSubjectFragment();
+                    addMeetingLocationFragment();
+                    addMeetingDateFragment();
+                    nextStep();
+                    break;
+                case R.id.createLivewireAlert:
+                    removeAllViewsAboveCurrent();
+                    presenter.initTask(CreateActionPresenter.ActionType.LivewireAlert);
+                    if (group == null) {
+                        addGroupSelectionFragment();
+                    } else {
+                        presenter.setGroupUid(group);
+                    }
+                    addHeadlineFragment();
+                    addMediaFragment();
+                    addLongDescriptionFragment();
+                    nextStep();
                     break;
             }
         }));
         adapter.addFragment(createActionFragment, "");
+    }
+
+    private void removeAllViewsAboveCurrent() {
+        int current = viewPager.getCurrentItem();
+        adapter.removeAllAbove(current);
+    }
+
+    private void addMediaFragment() {
+        MediaPickerFragment mediaPickerFragment = MediaPickerFragment.getMediaPicker();
+        disposables.add(mediaPickerFragment.clickAction().subscribe(integer -> {
+            switch (integer) {
+                case R.id.photo:
+                    presenter.takePhoto();
+                    break;
+                case R.id.video:
+                    presenter.recordVideo();
+                    break;
+                case R.id.gallery:
+                    presenter.pickFromGallery();
+                    break;
+                case R.id.skip:
+                    nextStep();
+                    break;
+            }
+        }));
+        adapter.addFragment(mediaPickerFragment, "");
     }
 
     @Override
@@ -174,9 +283,21 @@ public class CreateActionActivity extends GrassrootActivity implements BackNavig
     }
 
     @Override
-    public void uploadSuccessfull() {
+    public void uploadSuccessfull(GrassrootEntityType type) {
         created = true;
-        addMeetingCalledFragment();
+        addSuccessFragment(type);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (resultCode == RESULT_OK) {
+            if (requestCode == REQUEST_TAKE_PHOTO) {
+                presenter.cameraResult();
+            } else {
+                presenter.handlePickResult(data.getData());
+            }
+            nextStep();
+        }
     }
 
     @Override
@@ -184,9 +305,15 @@ public class CreateActionActivity extends GrassrootActivity implements BackNavig
         finish();
     }
 
-    private void addMeetingCalledFragment() {
-        MeetingCalledFragment f = MeetingCalledFragment.get(presenter.getTask().getParentUid());
+    private void addSuccessFragment(GrassrootEntityType type) {
+        ItemCreatedFragment f;
+        if (type == GrassrootEntityType.MEETING) {
+            f = ItemCreatedFragment.get(presenter.getTask().getParentUid(), type);
+        } else {
+            f = ItemCreatedFragment.get(presenter.getAlert().getGroupUid(), type);
+        }
         adapter.addFragment(f, "");
-        nextClick();
+        nextStep();
     }
+
 }

@@ -8,6 +8,7 @@ import java.util.UUID;
 
 import za.org.grassroot2.model.enums.GrassrootEntityType;
 import za.org.grassroot2.model.network.EntityForUpload;
+import za.org.grassroot2.model.network.Syncable;
 
 /**
  * Created by luke on 2017/08/15.
@@ -15,7 +16,7 @@ import za.org.grassroot2.model.network.EntityForUpload;
  */
 
 @DatabaseTable(tableName = "media_files")
-public class MediaFile implements EntityForUpload {
+public class MediaFile implements EntityForUpload, Syncable {
 
     public static final String FUNCTION_LIVEWIRE = "LIVEWIRE_MEDIA";
 
@@ -44,6 +45,9 @@ public class MediaFile implements EntityForUpload {
     private String mediaFunction;
     @DatabaseField
     private String upstreamBucket; // will be set by server, and allows us to retrieve later, if we need (key will always be userUid + localUid)
+
+    @DatabaseField
+    private transient long createdDate;
 
     public MediaFile() {
         this.uid = UUID.randomUUID().toString();
@@ -166,5 +170,19 @@ public class MediaFile implements EntityForUpload {
     @Override
     public ArrayList<EntityForUpload> priorEntitiesToUpload() {
         return null;
+    }
+
+    @Override
+    public boolean isSynced() {
+        return sentUpstream;
+    }
+
+    @Override
+    public long createdDate() {
+        return createdDate;
+    }
+
+    public void setCreatedDate(long createdDate) {
+        this.createdDate = createdDate;
     }
 }

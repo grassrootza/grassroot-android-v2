@@ -58,12 +58,15 @@ public class LiveWireServiceImpl implements LiveWireService {
         return databaseService.store(LiveWireAlert.class, LiveWireAlert.newBuilder()
                 .headline(headline)
                 .build())
-                .map(new Function<LiveWireAlert, String>() {
-                    @Override
-                    public String apply(@NonNull LiveWireAlert liveWireAlert) throws Exception {
-                        return liveWireAlert.getUid().toString();
-                    }
-                });
+                .map(liveWireAlert -> liveWireAlert.getUid().toString());
+    }
+
+    @Override
+    public Single<String> initiateAlertWithGroupUid(final String groupUid) {
+        return databaseService.store(LiveWireAlert.class, LiveWireAlert.newBuilder()
+                .groupUid(groupUid)
+                .build())
+                .map(liveWireAlert -> liveWireAlert.getUid().toString());
     }
 
     @Override
@@ -87,14 +90,11 @@ public class LiveWireServiceImpl implements LiveWireService {
 
     @Override
     public Single<String> updateAlertHeadline(final String alertUid, final String headline) {
-        return Single.create(new SingleOnSubscribe<String>() {
-            @Override
-            public void subscribe(@NonNull SingleEmitter<String> e) throws Exception {
-                final LiveWireAlert alert = loadAlertToEdit(alertUid);
-                alert.setHeadline(headline);
-                databaseService.storeObject(LiveWireAlert.class, alert);
-                e.onSuccess(alertUid);
-            }
+        return Single.create(e -> {
+            final LiveWireAlert alert = loadAlertToEdit(alertUid);
+            alert.setHeadline(headline);
+            databaseService.storeObject(LiveWireAlert.class, alert);
+            e.onSuccess(alertUid);
         });
     }
 

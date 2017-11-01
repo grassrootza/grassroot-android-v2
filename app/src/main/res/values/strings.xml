@@ -45,9 +45,9 @@
 
     <string name="lwire_confirm_header">Confirmed?</string>
     <string name="lwire_confirm_text_media">Issuing a LiveWire alert with headline \'%1$s\', about
-    group %2$s, with a %3$s attached. Confirmed?</string>
+    group %2$s, with a media attached.</string>
     <string name="lwire_confirm_text_no_media">Issuing a LiveWire alert with headline \'%1$s\',
-    about group %2$s. No media attached. Confirmed?</string>
+    about group %2$s. No media attached.</string>
 
     <string name="done_header">Done!</string>
     <string name="lwire_alert_sent">The LiveWire alert has been sent. What next?</string>
@@ -135,6 +135,13 @@
     <string name="ok">OK</string>
     <string name="where_will_it_happen">Where will it happen?</string>
     <string name="meeting_out_of_sync">Meeting %s start date is in the past.</string>
+    <string name="create_livewire_alert">Create LiveWire alert</string>
+    <string name="info_headline">Please write a headline for the alert</string>
+    <string name="hint_headline">Headline</string>
+    <string name="header_add_media">Add media?</string>
+    <string name="long_description">Long description?</string>
+    <string name="info_long_description">Enter longer description</string>
+    <string name="hint_description">Description</string>
     <plurals name="notification_sent">
         <item quantity="one">A notification has been sent to %d member.</item>
         <item quantity="other">A notification has been sent to all %d members.</item>

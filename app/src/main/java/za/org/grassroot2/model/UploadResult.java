@@ -14,6 +14,11 @@ public class UploadResult {
     private final String localUid;
     private final String serverUid;
     private final EntityForUpload returnedEntity;
+
+    public Throwable getUploadException() {
+        return uploadException;
+    }
+
     private final Throwable uploadException;
 
     public UploadResult(final GrassrootEntityType entityType, final String localUid, final String serverUid) {
@@ -47,6 +52,8 @@ public class UploadResult {
     public String getServerUid() {
         return serverUid;
     }
+
+
 
     public EntityForUpload getReturnedEntity() {
         return returnedEntity;

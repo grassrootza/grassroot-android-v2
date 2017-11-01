@@ -64,7 +64,9 @@ public class MediaServiceImpl implements MediaService {
                         FILEPROVIDER_AUTHORITY,
                         imageFile);
                 Timber.d("taking image, URI = " + imageUri);
-                MediaFile createdFile = databaseService.storeObject(MediaFile.class, new MediaFile(imageUri.toString(), imageFile.getAbsolutePath(), mimeType, mediaFunction));
+                MediaFile toSave = new MediaFile(imageUri.toString(), imageFile.getAbsolutePath(), mimeType, mediaFunction);
+                toSave.setCompressOnSend(true);
+                MediaFile createdFile = databaseService.storeObject(MediaFile.class, toSave);
                 Timber.d("created media file = " + createdFile);
                 final String createdUid = createdFile.getUid();
                 e.onSuccess(createdUid);
@@ -90,27 +92,20 @@ public class MediaServiceImpl implements MediaService {
     }
 
     @Override
-    public Single<String> captureMediaFile(final String mediaFileUid, final boolean uploadNow) {
+    public Single<String> captureMediaFile(final String mediaFileUid) {
         return Single.create(e -> {
             MediaFile mediaFile = databaseService.loadObjectByUid(MediaFile.class, mediaFileUid);
             mediaFile.setReadyToUpload(true);
-            if (mediaFile.isCompressOnSend()) {
+            if (mediaFile.getMimeType().startsWith("image") && mediaFile.isCompressOnSend()) {
                 imageUtil.resizeImageFile(mediaFile.getAbsolutePath(), mediaFile.getAbsolutePath(), DESIRED_COMPRESSED_WIDTH, DESIRED_COMPRESSED_HEIGHT);
             }
             e.onSuccess("DONE");
-            if (uploadNow) {
-                Timber.i("okay, trying to upload media file");
-                networkService.uploadEntity(mediaFile, true)
-                        .subscribeOn(Schedulers.io())
-                        .subscribe();
-            }
             MediaScannerConnection.scanFile(applicationContext, new String[] { mediaFile.getAbsolutePath() }, new String[] {mediaFile.getMimeType()}, (path, uri) -> Timber.d(path, uri.toString()));
-//            triggerMediaScan(mediaFile.getAbsolutePath());
         });
     }
 
     @Override
-    public Single<String> storeGalleryFile(final String mediaFileUid, final Uri fileUri, final boolean uploadNow) {
+    public Single<String> storeGalleryFile(final String mediaFileUid, final Uri fileUri) {
         return Single.create(e -> {
             final MediaFile mediaFile = databaseService.loadObjectByUid(MediaFile.class, mediaFileUid);
             String localFileName = getLocalFileNameFromURI(fileUri);
@@ -124,40 +119,7 @@ public class MediaServiceImpl implements MediaService {
             mediaFile.setReadyToUpload(true);
             e.onSuccess("DONE");
             databaseService.storeObject(MediaFile.class, mediaFile);
-            if (uploadNow) {
-                networkService.uploadEntity(mediaFile, true)
-                        .subscribeOn(Schedulers.io())
-                        .subscribe();
-            }
         });
-    }
-
-    // todo: this doesn't work but Android has, being Android, managed to regress badly
-    // the FileProvider mechanism is catastrophic, and makes it a real pain to expose
-    // images to the gallery. Images are recorded but do not show up. Ah well.
-    private void triggerMediaScan(final String filePath) {
-        Timber.d("triggering media scan for file path: " + filePath);
-        File f = new File(filePath);
-        Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(f));
-        applicationContext.sendBroadcast(mediaScanIntent);
-    }
-
-    @Override
-    public void loadImageIntoView(Uri imageUri, ImageView view) {
-        // redo the below with Picasso, just warehousing for now
-
-        /*String[] filePathColumn = {MediaStore.Images.Media.DATA};
-
-        Cursor cursor = getContentResolver().query(selectedImage, filePathColumn, null, null, null);
-        assert cursor != null;
-        cursor.moveToFirst();
-
-        int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
-        mediaPath = cursor.getString(columnIndex);
-        imageView.setImageBitmap(BitmapFactory.decodeFile(mediaPath));
-        // Set the Image in ImageView for Previewing the Media
-
-        cursor.close();*/
     }
 
     private String getLocalFileNameFromURI(final Uri selectedImage) {
