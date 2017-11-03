@@ -17,14 +17,10 @@ import java.util.List;
 import javax.inject.Inject;
 
 import butterknife.BindView;
-import timber.log.Timber;
-import za.org.grassroot2.GrassrootApplication;
 import za.org.grassroot2.R;
 import za.org.grassroot2.dagger.activity.ActivityComponent;
-import za.org.grassroot2.dagger.user.ApiModule;
 import za.org.grassroot2.model.SelectableItem;
 import za.org.grassroot2.presenter.fragment.ItemSelectionFragmentPresenter;
-import za.org.grassroot2.view.activity.GrassrootActivity;
 import za.org.grassroot2.view.adapter.ItemSelectionAdapter;
 
 public class ItemSelectionFragment extends GrassrootFragment implements ItemSelectionFragmentPresenter.ItemSelectionFragmentView {

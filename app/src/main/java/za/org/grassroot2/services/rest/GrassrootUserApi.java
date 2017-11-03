@@ -80,15 +80,7 @@ public interface GrassrootUserApi {
     Observable<List<LiveWireAlert>> getAlertsAround(@Path("userUid") String userUid,
                                                 @Query("longitude") double longitude,
                                                 @Query("latitude") double latitude,
-                                                @Query("radiusMetres") int radius,
-                                                @Query("createdByMe") String createdByMe);
-
-    @GET("/api/location/all/groups/{userUid}")
-    Observable<LiveWireAlert> getGroupsAround(@Path("userUid") String userUid,
-                                                @Query("longitude") double longitude,
-                                                @Query("latitude") double latitude,
-                                                @Query("radiusMetres") int radius,
-                                                @Query("createdByMe") String createdByMe);
+                                                @Query("radiusMetres") int radius);
 
     @GET("/api/location/all/{userUid}")
     Observable<List<AroundEntity>> getAllAround(@Path("userUid") String userUid,

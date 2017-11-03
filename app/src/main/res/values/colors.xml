@@ -21,4 +21,6 @@
     <color name="group_saerch_input">#adadad</color>
     <color name="light_red">#e65555</color>
     <color name="light_blue">#5ac2dd</color>
+    <color name="light_grey_2">#a8a8a8</color>
+    <color name="light_green2">#d7f4dd</color>
 </resources>

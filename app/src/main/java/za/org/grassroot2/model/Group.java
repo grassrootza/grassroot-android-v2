@@ -6,9 +6,7 @@ import com.j256.ormlite.table.DatabaseTable;
 
 import java.io.Serializable;
 import java.util.List;
-import java.util.UUID;
 
-import za.org.grassroot2.database.serialization.StringCollectionPersister;
 import za.org.grassroot2.model.enums.GrassrootEntityType;
 import za.org.grassroot2.model.network.EntityForDownload;
 

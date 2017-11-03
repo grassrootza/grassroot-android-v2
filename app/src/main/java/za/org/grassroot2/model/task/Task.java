@@ -1,14 +1,13 @@
 package za.org.grassroot2.model.task;
 
 import java.util.Date;
-import java.util.UUID;
 
+import za.org.grassroot2.model.HomeFeedItem;
 import za.org.grassroot2.model.SelectableItem;
 import za.org.grassroot2.model.enums.GrassrootEntityType;
 import za.org.grassroot2.model.network.EntityForDownload;
-import za.org.grassroot2.model.network.Syncable;
 
-public interface Task extends EntityForDownload, SelectableItem {
+public interface Task extends EntityForDownload, SelectableItem, HomeFeedItem {
 
     String getParentUid();
     void setParentUid(String uid);

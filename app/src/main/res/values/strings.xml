@@ -91,6 +91,7 @@
     <string name="text_view">VIEW</string>
     <string name="text_group_header">CURRENT AND UPCOMING ACTIONS</string>
     <string name="text_todo_title"><b>%1$s</b> created to-do item <b>\"%2$s\"</b></string>
+    <string name="home_text_todo_title">&lt;b>%1$s&lt;/b> created To-Do:</string>
     <string name="text_empty_group_items">Nothing happening in your Group just yet</string>
     <string name="text_vote">VOTE</string>
     <string name="text_vote_title"><b>%1$s</b> started a vote:\n\"%2$s\"</string>
@@ -151,6 +152,15 @@
     <string name="invite_failed">Sorry, group invite for \'%s\' failed</string>
     <string name="meeting_failed">Sorry, meeting \'%s\' creation failed</string>
     <string name="alert_failed">Sorry, alert \'%s\' creation failed</string>
+    <string name="hint_saerch">Create an action, search for something</string>
+    <string name="ignore">IGNORE</string>
+    <string name="decline">DECLINE</string>
+    <string name="accept">ACCEPT</string>
+    <string name="home_meeting_title">&lt;b>%s&lt;/b> has invited you to</string>
+    <string name="happenig_now">is happening near you soon.</string>
+    <string name="home_vote_title">&lt;b>%s&lt;/b> has called a vote:</string>
+    <string name="home_alert_title">&lt;b>%s&lt;/b> has triggered a safety alert</string>
+    <string name="home_quote_subtitle">&lt;b>\"%s\"&lt;/b></string>
     <plurals name="notification_sent">
         <item quantity="one">A notification has been sent to %d member.</item>
         <item quantity="other">A notification has been sent to all %d members.</item>

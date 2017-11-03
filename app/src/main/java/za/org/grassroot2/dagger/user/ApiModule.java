@@ -3,11 +3,6 @@ package za.org.grassroot2.dagger.user;
 import android.accounts.AccountManager;
 import android.content.Context;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-
-import javax.inject.Named;
-
 import dagger.Module;
 import dagger.Provides;
 import okhttp3.OkHttpClient;
@@ -18,11 +13,9 @@ import za.org.grassroot2.BuildConfig;
 import za.org.grassroot2.dagger.ApplicationContext;
 import za.org.grassroot2.dagger.Authorized;
 import za.org.grassroot2.database.DatabaseService;
-import za.org.grassroot2.model.task.Task;
 import za.org.grassroot2.services.NetworkService;
 import za.org.grassroot2.services.NetworkServiceImpl;
 import za.org.grassroot2.services.UserDetailsService;
-import za.org.grassroot2.services.deserializer.TaskDeserlializer;
 import za.org.grassroot2.services.rest.AddTokenInterceptor;
 import za.org.grassroot2.services.rest.GrassrootUserApi;
 import za.org.grassroot2.util.UserPreference;

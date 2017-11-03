@@ -13,6 +13,7 @@ public enum GrassrootEntityType {
 
     TASK,
     MEETING,
+    PUBLIC_MEETING,
     VOTE,
     TODO,
 

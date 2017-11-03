@@ -10,15 +10,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.List;
 
 import butterknife.BindView;
-import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.reactivex.Observable;
 import io.reactivex.subjects.PublishSubject;
@@ -27,7 +24,6 @@ import za.org.grassroot2.dagger.activity.ActivityComponent;
 import za.org.grassroot2.model.Group;
 import za.org.grassroot2.model.dto.ActionOption;
 import za.org.grassroot2.model.util.GroupPermissionChecker;
-import za.org.grassroot2.rxbinding.RxView;
 import za.org.grassroot2.view.adapter.OptionAdapter;
 import za.org.grassroot2.view.fragment.GrassrootFragment;
 
