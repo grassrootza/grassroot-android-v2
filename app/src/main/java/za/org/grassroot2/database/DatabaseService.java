@@ -3,6 +3,7 @@ package za.org.grassroot2.database;
 import java.util.List;
 import java.util.Map;
 
+import io.reactivex.Maybe;
 import io.reactivex.Observable;
 import io.reactivex.Single;
 import za.org.grassroot2.model.Group;
@@ -22,7 +23,7 @@ public interface DatabaseService {
     // read methods
     UserProfile loadUserProfile();
 
-    <E> Single<E> load(Class<E> clazz, String uid);
+    <E> Maybe<E> load(Class<E> clazz, String uid);
     <E> E loadObjectByUid(Class<E> cls, String uid);
     Group loadGroup(String uid);
     <E> Map<String, Long> loadExistingObjectsWithLastChangeTime(Class<E> clazz);

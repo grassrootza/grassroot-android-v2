@@ -1,14 +1,14 @@
 package za.org.grassroot2.dagger;
 
+import com.google.gson.ExclusionStrategy;
+import com.google.gson.FieldAttributes;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import java.security.cert.CertificateException;
 
 import javax.inject.Singleton;
-import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSession;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
@@ -20,20 +20,33 @@ import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Converter;
 import retrofit2.converter.gson.GsonConverterFactory;
 import za.org.grassroot2.BuildConfig;
+import za.org.grassroot2.model.AroundItem;
+import za.org.grassroot2.model.ExcludeFromSerialization;
 import za.org.grassroot2.model.task.Task;
+import za.org.grassroot2.services.deserializer.AroundResponseDeserializer;
 import za.org.grassroot2.services.deserializer.TaskDeserlializer;
 import za.org.grassroot2.services.rest.CommonErrorHandlerInterceptor;
 
-/**
- * Created by luke on 2017/08/08.
- */
 @Module
 public class NetworkModule {
 
     @Provides
     @Singleton
     Converter.Factory provideGsonConverter() {
-        Gson gson = new GsonBuilder().registerTypeAdapter(Task.class, new TaskDeserlializer()).create();
+        Gson gson = new GsonBuilder().registerTypeAdapter(Task.class, new TaskDeserlializer())
+                .registerTypeAdapter(AroundItem.class, new AroundResponseDeserializer())
+                .addSerializationExclusionStrategy(new ExclusionStrategy() {
+                    @Override
+                    public boolean shouldSkipField(FieldAttributes f) {
+                        return f.getAnnotation(ExcludeFromSerialization.class) != null;
+                    }
+
+                    @Override
+                    public boolean shouldSkipClass(Class<?> clazz) {
+                        return false;
+                    }
+                })
+                .create();
         return GsonConverterFactory
                 .create(gson);
     }

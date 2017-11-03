@@ -3,7 +3,10 @@ package za.org.grassroot2.util;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.drawable.Drawable;
 import android.media.ExifInterface;
+import android.support.v4.util.LruCache;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -14,9 +17,18 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
+import za.org.grassroot2.R;
+
 public class ImageUtil {
 
     private final Context context;
+
+    private LruCache<Integer, Bitmap> cache = new LruCache<Integer, Bitmap>((int) (Runtime.getRuntime().maxMemory()/1024 / 10)) {
+        @Override
+        protected int sizeOf(Integer key, Bitmap value) {
+            return value.getRowBytes() * value.getHeight() / 1024;
+        }
+    };
 
     @Inject
     public ImageUtil(Context c) {
@@ -53,6 +65,21 @@ public class ImageUtil {
             }
         }
         return filePath;
+    }
+
+    public Bitmap drawableToBitmap(int drawableRes) {
+        Bitmap cached = cache.get(drawableRes);
+        if (cached != null) {
+            return cached;
+        } else {
+            Drawable d = context.getResources().getDrawable(drawableRes);
+            Bitmap b = Bitmap.createBitmap(d.getIntrinsicWidth(), d.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+            Canvas c = new Canvas(b);
+            d.setBounds(0, 0, c.getWidth(), c.getHeight());
+            d.draw(c);
+            cache.put(drawableRes, b);
+            return b;
+        }
     }
 
     private void saveExifAttributesToNewFile(String dst, HashMap<String, String> attrs) throws IOException {

@@ -30,10 +30,11 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent">
 
-                <de.hdodenhof.circleimageview.CircleImageView
+                <com.makeramen.roundedimageview.RoundedImageView
                     android:id="@+id/image"
                     android:layout_width="56dp"
                     android:layout_height="56dp"
+                    app:riv_corner_radius="28dp"
                     android:src="@color/image_placeholder_color" />
 
                 <TextView

@@ -5,8 +5,10 @@ import java.util.Map;
 
 import io.reactivex.Observable;
 import retrofit2.Response;
+import za.org.grassroot2.model.AroundEntity;
 import za.org.grassroot2.model.Group;
 import za.org.grassroot2.model.UploadResult;
+import za.org.grassroot2.model.alert.LiveWireAlert;
 import za.org.grassroot2.model.enums.GrassrootEntityType;
 import za.org.grassroot2.model.network.EntityForDownload;
 import za.org.grassroot2.model.network.EntityForUpload;
@@ -42,4 +44,8 @@ public interface NetworkService {
     Observable<List<Task>> getTasksByUids(Map<String, String> uids);
 
     Observable<Resource<Task>> createTask(Task t);
+
+    Observable<List<LiveWireAlert>> getAlertsAround(double longitude, double latitude, int radius, String createdByMe);
+
+    Observable<List<AroundEntity>> getAllAround(double longitude, double latitude, int radius);
 }

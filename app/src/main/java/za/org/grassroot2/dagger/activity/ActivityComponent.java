@@ -6,6 +6,7 @@ import za.org.grassroot2.view.activity.LoginActivity;
 import za.org.grassroot2.view.activity.GrassrootActivity;
 import za.org.grassroot2.view.activity.GroupDetailsActivity;
 import za.org.grassroot2.view.activity.PickContactActivity;
+import za.org.grassroot2.view.fragment.AroundMeFragment;
 import za.org.grassroot2.view.fragment.GrassrootFragment;
 import za.org.grassroot2.view.fragment.GroupSelectionFragment;
 import za.org.grassroot2.view.fragment.GroupTasksFragment;
@@ -35,4 +36,5 @@ public interface ActivityComponent {
     void inject(MeetingDateFragment fragment);
     void inject(CreateActionActivity activity);
     void inject(ItemCreatedFragment fragment);
+    void inject(AroundMeFragment fragment);
 }

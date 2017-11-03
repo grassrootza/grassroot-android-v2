@@ -8,12 +8,14 @@ import com.j256.ormlite.table.DatabaseTable;
 
 import java.util.Date;
 
+import za.org.grassroot2.model.AroundItem;
+import za.org.grassroot2.model.ExcludeFromSerialization;
 import za.org.grassroot2.model.MediaFile;
 import za.org.grassroot2.model.enums.GrassrootEntityType;
 import za.org.grassroot2.model.network.Syncable;
 
 @DatabaseTable(tableName = "meetings")
-public class Meeting implements Task, Syncable {
+public class Meeting implements Task, Syncable, AroundItem {
 
     public static final String ATTENDING = "RSVP_YES";
     public static final String NOT_ATTENDING = "RSVP_NO";
@@ -65,6 +67,12 @@ public class Meeting implements Task, Syncable {
 
     @DatabaseField
     private transient boolean synced = true;
+
+    @ExcludeFromSerialization
+    private double longitude;
+
+    @ExcludeFromSerialization
+    private double latitude;
 
     @Override
     public String getUid() {
@@ -198,5 +206,21 @@ public class Meeting implements Task, Syncable {
                 ", publicMtg=" + publicMtg +
                 ", synced=" + synced +
                 '}';
+    }
+
+    public double getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(double longitude) {
+        this.longitude = longitude;
+    }
+
+    public double getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(double latitude) {
+        this.latitude = latitude;
     }
 }

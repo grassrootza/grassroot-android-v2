@@ -9,6 +9,7 @@ import java.util.UUID;
 
 import javax.inject.Inject;
 
+import io.reactivex.Maybe;
 import io.reactivex.Observable;
 import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -90,10 +91,10 @@ public class CreateActionPresenter extends BasePresenter<CreateActionPresenter.C
                 return Observable.just(uploadResult);
             }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(uploadResult -> {
                         view.closeProgressBar();
-                        view.uploadSuccessfull(GrassrootEntityType.LIVEWIRE_ALERT);
+                        view.uploadSuccessfull(GrassrootEntityType.LIVE_WIRE_ALERT);
                     }, throwable -> {
                         view.closeProgressBar();
-                        view.uploadSuccessfull(GrassrootEntityType.LIVEWIRE_ALERT);
+                        view.uploadSuccessfull(GrassrootEntityType.LIVE_WIRE_ALERT);
                     }));
         }
     }
@@ -135,7 +136,7 @@ public class CreateActionPresenter extends BasePresenter<CreateActionPresenter.C
         }
     }
 
-    public Single<Map.Entry<String, LiveWireAlert>> getAlertAndGroupName() {
+    public Maybe<Map.Entry<String, LiveWireAlert>> getAlertAndGroupName() {
         return dbService.load(Group.class, liveWireAlert.getGroupUid()).map(group -> new AbstractMap.SimpleEntry<>(group.getName(), liveWireAlert));
     }
 

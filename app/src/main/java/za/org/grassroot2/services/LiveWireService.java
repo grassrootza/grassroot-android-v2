@@ -1,5 +1,6 @@
 package za.org.grassroot2.services;
 
+import io.reactivex.Maybe;
 import io.reactivex.Observable;
 import io.reactivex.Single;
 import za.org.grassroot2.model.alert.LiveWireAlert;
@@ -15,7 +16,7 @@ public interface LiveWireService {
      *
      * @return The UID of the alert entity
      */
-    Single<LiveWireAlert> load(String alertUid);
+    Maybe<LiveWireAlert> load(String alertUid);
 
     Single<String> initiateAlertWithMedia(String mediaFileUid);
 

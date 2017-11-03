@@ -25,6 +25,7 @@ import okhttp3.RequestBody;
 import retrofit2.Response;
 import timber.log.Timber;
 import za.org.grassroot2.database.DatabaseService;
+import za.org.grassroot2.model.AroundEntity;
 import za.org.grassroot2.model.Group;
 import za.org.grassroot2.model.MediaFile;
 import za.org.grassroot2.model.UploadResult;
@@ -191,7 +192,7 @@ public class NetworkServiceImpl implements NetworkService {
                 case MEDIA_FILE:
                     mainEntityUpload = uploadMediaFile((MediaFile) entity);
                     break;
-                case LIVEWIRE_ALERT:
+                case LIVE_WIRE_ALERT:
                     mainEntityUpload = uploadLiveWireAlert((LiveWireAlert) entity);
                     break;
                 default:
@@ -253,6 +254,16 @@ public class NetworkServiceImpl implements NetworkService {
                 return Observable.just(new UploadResult(alert.getType(), new IllegalArgumentException()));
             }
         };
+    }
+
+    @Override
+    public Observable<List<LiveWireAlert>> getAlertsAround(double longitude, double latitude, int radius, String createdByMe) {
+        return grassrootUserApi.getAlertsAround(currentUserUid, longitude, latitude, radius, createdByMe);
+    }
+
+    @Override
+    public Observable<List<AroundEntity>> getAllAround(double longitude, double latitude, int radius) {
+        return grassrootUserApi.getAllAround(currentUserUid, longitude, latitude, radius, "BOTH");
     }
 
     private Observable<UploadResult> uploadMediaFile(final MediaFile mediaFile) {
