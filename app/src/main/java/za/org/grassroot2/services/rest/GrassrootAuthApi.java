@@ -2,7 +2,6 @@ package za.org.grassroot2.services.rest;
 
 import io.reactivex.Observable;
 import io.reactivex.Single;
-import retrofit2.Call;
 import retrofit2.Response;
 import retrofit2.http.GET;
 import retrofit2.http.Path;
@@ -31,5 +30,9 @@ public interface GrassrootAuthApi {
 
     @GET("/api/auth/token/validate")
     Single<RestResponse> validateToken(@Query("token") String token);
+
+    @GET("/api/auth/login-password")
+    Observable<RestResponse<TokenResponse>> login(@Query("phoneNumber") String msisdn,
+                                                  @Query("password") String password);
 
 }
