@@ -134,7 +134,7 @@
     <string name="meeting_called">Meeting called!</string>
     <string name="ok">OK</string>
     <string name="where_will_it_happen">Where will it happen?</string>
-    <string name="meeting_out_of_sync">Meeting %s start date is in the past.</string>
+    <string name="meeting_out_of_sync">Sorry, meeting %s start date is in the past.</string>
     <string name="create_livewire_alert">Create LiveWire alert</string>
     <string name="info_headline">Please write a headline for the alert</string>
     <string name="hint_headline">Headline</string>
@@ -148,6 +148,9 @@
     <string name="livewire_alert">LiveWire alert</string>
     <string name="contact_assistance">CONTACT ASSISTANCE</string>
     <string name="view_meeting">VIEW MEETING</string>
+    <string name="invite_failed">Sorry, group invite for \'%s\' failed</string>
+    <string name="meeting_failed">Sorry, meeting \'%s\' creation failed</string>
+    <string name="alert_failed">Sorry, alert \'%s\' creation failed</string>
     <plurals name="notification_sent">
         <item quantity="one">A notification has been sent to %d member.</item>
         <item quantity="other">A notification has been sent to all %d members.</item>

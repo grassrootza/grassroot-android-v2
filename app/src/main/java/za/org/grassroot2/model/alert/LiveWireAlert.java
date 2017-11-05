@@ -35,7 +35,7 @@ public class LiveWireAlert implements EntityForUpload, Syncable, AroundItem {
     private String serverUid;
     @DatabaseField
     private String headline;
-    @DatabaseField(foreign = true, foreignAutoRefresh = true)
+    @DatabaseField(foreign = true, foreignAutoRefresh = true, columnDefinition = "TEXT REFERENCES media_files(uid) ON DELETE CASCADE")
     private MediaFile mediaFile;
     @DatabaseField
     private String description;

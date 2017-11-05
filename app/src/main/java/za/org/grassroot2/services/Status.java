@@ -5,5 +5,5 @@ package za.org.grassroot2.services;
  */
 
 public enum Status {
-    SUCCESS, ERROR, LOADING
+    SUCCESS, ERROR, LOADING, SERVER_ERROR
 }

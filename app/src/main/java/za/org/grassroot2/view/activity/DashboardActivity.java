@@ -9,7 +9,6 @@ import android.support.v4.app.Fragment;
 import java.util.List;
 
 import butterknife.BindView;
-import butterknife.ButterKnife;
 import za.org.grassroot2.R;
 import za.org.grassroot2.dagger.activity.ActivityComponent;
 import za.org.grassroot2.services.SyncOfflineDataService;

@@ -161,7 +161,7 @@ public class NetworkServiceImpl implements NetworkService {
     public Observable<Resource<Task>> createTask(Task t) {
         return Observable.create(e -> new ResourceToStore<Task, Task>(t, e) {
             @Override
-            public Observable<Task> uploadRemote(Task localObject) {
+            public Observable<Response<Task>> uploadRemote(Task localObject) {
                 Meeting m = (Meeting) localObject;
                 return grassrootUserApi.createTask("GROUP", currentUserUid, t.getParentUid(), m.getName(), m.getLocationDescription(), t.getDeadlineMillis());
             }
@@ -240,18 +240,18 @@ public class NetworkServiceImpl implements NetworkService {
             if (restResponseResponse.isSuccessful()) {
                 return Observable.just(new UploadResult(alert.getType(), alert.getUid(), restResponseResponse.body().getData()));
             } else {
-                return Observable.just(new UploadResult(alert.getType(), new ServerErrorException()));
+                return Observable.just(new UploadResult(alert.getType(), new ServerErrorException(restResponseResponse.code())));
             }
         };
     }
 
     @NonNull
-    private Function<Throwable, ObservableSource<? extends UploadResult>> resumeHandler(EntityForUpload alert) {
+    private Function<Throwable, ObservableSource<? extends UploadResult>> resumeHandler(EntityForUpload entity) {
         return throwable -> {
             if (throwable instanceof IOException) {
-                return Observable.just(new UploadResult(alert.getType(), new Throwable()));
+                return Observable.just(new UploadResult(entity.getType(), new Throwable()));
             } else {
-                return Observable.just(new UploadResult(alert.getType(), new IllegalArgumentException()));
+                return Observable.just(new UploadResult(entity.getType(), new IllegalArgumentException()));
             }
         };
     }
@@ -279,8 +279,10 @@ public class NetworkServiceImpl implements NetworkService {
                 mediaFile.haltUploading(true);
                 mediaFile.setSentUpstream(true);
                 mediaFile.setServerUid(uploadResult.getServerUid());
-                databaseService.storeObject(MediaFile.class, mediaFile);
+            } else {
+                mediaFile.haltUploading(false);
             }
+            databaseService.storeObject(MediaFile.class, mediaFile);
             return Observable.just(uploadResult);
         });
     }

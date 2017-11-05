@@ -15,7 +15,6 @@ import retrofit2.http.Part;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
 import za.org.grassroot2.model.AroundEntity;
-import za.org.grassroot2.model.AroundItem;
 import za.org.grassroot2.model.Group;
 import za.org.grassroot2.model.alert.LiveWireAlert;
 import za.org.grassroot2.model.request.MemberRequest;
@@ -70,7 +69,7 @@ public interface GrassrootUserApi {
     Observable<Long> getTimestampForTextDate(@Query("text") String text);
 
     @POST("/api/task/create/meeting/{userUid}/{parentType}/{parentUid}")
-    Observable<Task> createTask(@Path("parentType") String parentType,
+    Observable<Response<Task>> createTask(@Path("parentType") String parentType,
                                           @Path("userUid") String userUid,
                                           @Path("parentUid") String parentUid,
                                           @Query("subject") String subject,
