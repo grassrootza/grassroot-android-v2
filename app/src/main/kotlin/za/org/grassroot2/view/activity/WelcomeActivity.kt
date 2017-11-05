@@ -5,16 +5,11 @@ import android.os.Bundle
 import kotlinx.android.synthetic.main.activity_welcome.*
 import za.org.grassroot2.R
 import za.org.grassroot2.dagger.activity.ActivityComponent
-import za.org.grassroot2.presenter.WelcomePresenter
-import za.org.grassroot2.view.WelcomeView
-import javax.inject.Inject
 
 
-class WelcomeActivity : GrassrootActivity(), WelcomeView {
+class WelcomeActivity : GrassrootActivity() {
 
 
-    @Inject
-    lateinit var presenter: WelcomePresenter
 
     override fun onInject(component: ActivityComponent) {
         component.inject(this)
@@ -28,7 +23,6 @@ class WelcomeActivity : GrassrootActivity(), WelcomeView {
     override fun onCreate(savedInstanceState: Bundle?) {
 
         super.onCreate(savedInstanceState)
-        presenter.attach(this)
 
         if (loggedIn()) {
             startActivity(Intent(this, DashboardActivity::class.java))
@@ -37,17 +31,17 @@ class WelcomeActivity : GrassrootActivity(), WelcomeView {
         }
 
         createAccBtn.setOnClickListener({
-            presenter.navigateToCreateAccountScreen()
+            val next = Intent(this, RegisterActivity::class.java)
+            startActivity(next)
+            finish()
         })
 
         signInTxt.setOnClickListener({
-            presenter.navigateToLoginScreen()
+            val next = Intent(this, LoginActivity::class.java)
+            startActivity(next)
+            finish()
         })
     }
 
 
-    override fun onDestroy() {
-        super.onDestroy()
-        presenter.detach()
-    }
 }

@@ -12,18 +12,43 @@
 
     <string name="button_next">Next</string>
     <string name="button_skip">Skip</string>
+    <string name="button_finish">Finish</string>
     <string name="button_confirm">Confirm</string>
     <string name="button_modify">Modify</string>
+    <string name="button_start">Start</string>
 
     <!-- Login activity strings -->
     <string name="login_welcome">Welcome to Grassroot</string>
     <string name="login_enter_msisdn">To get started, please enter your phone number</string>
     <string name="login_button_register">New user</string>
+    <string name="login_enter_msisdn_label">Phone number</string>
+    <string name="login_enter_msisdn_hint">South African numbers only</string>
 
     <string name="login_enter_otp_banner">Enter OTP</string>
     <string name="login_enter_otp_string">Now please enter the code SMSd to you</string>
+    <string name="login_enter_otp_label">Enter code</string>
+    <string name="login_enter_otp_hint">6-digit number</string>
 
     <string name="button_login">Login</string>
+
+
+    <string name="register_username_title">What\'s your name?</string>
+    <string name="register_username_subtitle">What people know you by.?</string>
+    <string name="register_username_label">Name</string>
+    <string name="register_username_hint">Sia</string>
+
+    <string name="register_number_title">What\'s your phone number?</string>
+    <string name="register_number_subtitle">You will receive a SMS confirmation code on the next step.</string>
+    <string name="register_number_label">Phone number</string>
+    <string name="register_number_hint">South African numbers only</string>
+
+    <string name="register_otp_title">Please enter the confirmation code</string>
+    <string name="register_otp_subtitle">You should have received a SMS. If not please go back and retry.</string>
+    <string name="register_otp_label">Confirmation code</string>
+    <string name="register_otp_hint">6-digit number</string>
+
+    <string name="register_success_title">All good!</string>
+    <string name="register_success_subtitle">Welcome, %1$s! Your account is now up and running.</string>
 
     <!-- Initial set of main activity strings -->
     <!-- <string name="main_explanation">Hi! What do you want to do? Just start typing, or explore

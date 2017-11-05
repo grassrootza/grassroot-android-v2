@@ -7,6 +7,7 @@ import za.org.grassroot2.view.activity.GroupDetailsActivity;
 import za.org.grassroot2.view.activity.LoginActivity;
 import za.org.grassroot2.view.activity.LoginActivity2;
 import za.org.grassroot2.view.activity.PickContactActivity;
+import za.org.grassroot2.view.activity.RegisterActivity;
 import za.org.grassroot2.view.activity.WelcomeActivity;
 import za.org.grassroot2.view.fragment.GrassrootFragment;
 import za.org.grassroot2.view.fragment.GroupSelectionFragment;
@@ -41,4 +42,6 @@ public interface ActivityComponent {
     void inject(ItemCreatedFragment fragment);
 
     void inject(WelcomeActivity target);
+
+    void inject(RegisterActivity target);
 }

@@ -13,7 +13,7 @@ import za.org.grassroot2.database.DatabaseService;
 import za.org.grassroot2.presenter.GroupDetailsPresenter;
 import za.org.grassroot2.presenter.LoginPresenter;
 import za.org.grassroot2.presenter.PickContactPresenter;
-import za.org.grassroot2.presenter.WelcomePresenter;
+import za.org.grassroot2.presenter.RegistrationPresenter;
 import za.org.grassroot2.presenter.fragment.GroupFragmentPresenter;
 import za.org.grassroot2.presenter.fragment.SingleTextMultiButtonPresenter;
 import za.org.grassroot2.services.LiveWireService;
@@ -99,11 +99,11 @@ public class ActivityModule {
         return new LiveWireServiceImpl(databaseService, networkService);
     }
 
-
     @Provides
     @PerActivity
-    WelcomePresenter provideWelcomePresenter() {
-        return new WelcomePresenter();
+    RegistrationPresenter provideRegistrationPresenter(GrassrootAuthApi grassrootAuthApi,
+                                                       UserDetailsService userDetailsService) {
+        return new RegistrationPresenter(grassrootAuthApi, userDetailsService);
     }
 
 

@@ -7,7 +7,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 import za.org.grassroot2.services.UserDetailsService;
 import za.org.grassroot2.view.GrassrootView;
-import za.org.grassroot2.view.activity.LoginActivity;
+import za.org.grassroot2.view.activity.WelcomeActivity;
 
 /**
  * Created by luke on 2017/08/09.
@@ -39,7 +39,7 @@ public abstract class LoggedInViewPresenterImpl<T extends GrassrootView> extends
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(aBoolean -> {
                     if (aBoolean) {
-                        view.launchActivity(LoginActivity.class, null);
+                        view.launchActivity(WelcomeActivity.class, null);
                     }
                 });
     }

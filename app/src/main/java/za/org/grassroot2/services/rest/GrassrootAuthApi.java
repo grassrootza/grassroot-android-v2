@@ -35,4 +35,12 @@ public interface GrassrootAuthApi {
     Observable<RestResponse<TokenResponse>> login(@Query("phoneNumber") String msisdn,
                                                   @Query("password") String password);
 
+
+    @GET("/api/user/register")
+    Observable<RestResponse<String>> register(@Query("phoneNumber") String phoneNumber, @Query("displayName") String displayName);
+
+    @GET("/api/user/register/verify/{phoneNumber}/{code}")
+    Observable<RestResponse<TokenResponse>> verifyRegistrationCode(@Path("phoneNumber") String phoneNumber, @Path("code") String code);
+
+
 }

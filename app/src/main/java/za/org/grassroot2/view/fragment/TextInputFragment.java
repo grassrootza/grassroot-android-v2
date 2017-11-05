@@ -7,14 +7,8 @@ import android.widget.TextView;
 
 import butterknife.BindView;
 import io.reactivex.Observable;
-import io.reactivex.ObservableSource;
-import io.reactivex.annotations.NonNull;
-import io.reactivex.functions.Function;
-import timber.log.Timber;
 import za.org.grassroot2.R;
-import za.org.grassroot2.model.dto.BtnReturnBundle;
 import za.org.grassroot2.rxbinding.RxTextView;
-import za.org.grassroot2.rxbinding.RxViewUtils;
 import za.org.grassroot2.view.SingleTextView;
 
 /**
@@ -78,6 +72,11 @@ public abstract class TextInputFragment extends GrassrootFragment implements Sin
         if (inputText != null) {
             inputText.setImeOptions(imeOptions);
         }
+    }
+
+    @Override
+    public String getInputValue() {
+        return inputText.getText().toString();
     }
 
     @Override

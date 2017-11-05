@@ -46,7 +46,8 @@ public class LoginActivity extends GrassrootActivity implements LoginView {
         }
         usernameFragment = SingleTextInputFragment.newInstance(R.string.login_welcome,
                 R.string.login_enter_msisdn,
-                R.string.login_button_register,
+                R.string.login_enter_msisdn_label,
+                R.string.login_enter_msisdn_hint,
                 R.string.button_next);
         disposables.add(usernameFragment.viewCreated().subscribe(integer -> {
             loginPresenter.onViewCreated();
@@ -58,8 +59,10 @@ public class LoginActivity extends GrassrootActivity implements LoginView {
 
         otpFragment = SingleTextInputFragment.newInstance(R.string.login_enter_otp_banner,
                 R.string.login_enter_otp_string,
-                R.string.login_button_register,
+                R.string.login_enter_otp_label,
+                R.string.login_enter_otp_hint,
                 R.string.button_login);
+
         disposables.add(otpFragment.viewCreated().subscribe(integer -> {
             otpFragment.toggleNextDoneButton(false);
             otpFragment.toggleBackOtherButton(false);
