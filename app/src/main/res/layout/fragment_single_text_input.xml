@@ -88,7 +88,7 @@
                 style="@style/OneLineLargeTextInput"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-
+                android:lines="1"
                 android:imeOptions="actionDone"
                 android:hint="@string/login_enter_msisdn" />
 

@@ -36,16 +36,19 @@
     <string name="register_username_subtitle">What people know you by.?</string>
     <string name="register_username_label">Name</string>
     <string name="register_username_hint">Sia</string>
+    <string name="register_username_error">Username must have at least one letter</string>
 
     <string name="register_number_title">What\'s your phone number?</string>
     <string name="register_number_subtitle">You will receive a SMS confirmation code on the next step.</string>
     <string name="register_number_label">Phone number</string>
     <string name="register_number_hint">South African numbers only</string>
+    <string name="register_number_error">Please enter valid phone number</string>
 
     <string name="register_otp_title">Please enter the confirmation code</string>
     <string name="register_otp_subtitle">You should have received a SMS. If not please go back and retry.</string>
     <string name="register_otp_label">Confirmation code</string>
     <string name="register_otp_hint">6-digit number</string>
+    <string name="register_otp_error">Please enter 6-digit code</string>
 
     <string name="register_success_title">All good!</string>
     <string name="register_success_subtitle">Welcome, %1$s! Your account is now up and running.</string>
@@ -187,6 +190,9 @@
     </plurals>
 
     <string name="login_failed">Login failed</string>
+    <string name="registration_failed_username_taken">Username is already taken</string>
+    <string name="registration_failed_number_already_registered">User with this number is already registered</string>
+    <string name="registration_failed_invalid_otp">Code verification failed</string>
 
 
 </resources>

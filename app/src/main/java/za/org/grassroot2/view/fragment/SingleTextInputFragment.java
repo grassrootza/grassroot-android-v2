@@ -125,10 +125,11 @@ public class SingleTextInputFragment extends TextInputFragment implements Single
     @Override
     public void toggleBackOtherButton(boolean enabled) {
         backButton.setEnabled(enabled);
+        backButton.setVisibility(enabled ? View.VISIBLE : View.INVISIBLE);
     }
 
 
-    public enum SingleInputTextEventType {DONE, BACK}
+    public enum SingleInputTextEventType {CHANGE, DONE, BACK}
 
     public static class SingleInputTextEvent {
         public final GrassrootFragment source;

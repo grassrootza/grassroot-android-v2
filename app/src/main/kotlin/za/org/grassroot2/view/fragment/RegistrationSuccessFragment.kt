@@ -15,8 +15,10 @@ class RegistrationSuccessFragment : GrassrootFragment() {
 
     override fun onInject(activityComponent: ActivityComponent) {}
 
+    private var successMessage = ""
 
-    override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?,
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         val v = super.onCreateView(inflater, container, savedInstanceState)
         lifecyclePublisher.onNext(GrassrootFragment.ACTION_FRAGMENT_VIEW_CREATED)
@@ -27,8 +29,9 @@ class RegistrationSuccessFragment : GrassrootFragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
-        val nextButtonClicked = RxView
-                .clicks(button_next)
+        val nextButtonClicked = RxView.clicks(button_next)
+
+        success_message.text = this.successMessage
 
         disposables.add(nextButtonClicked.subscribe(
                 { EventBus.getDefault().post(SingleTextInputFragment.SingleInputTextEvent(this, SingleTextInputFragment.SingleInputTextEventType.DONE, "")) },
@@ -43,7 +46,7 @@ class RegistrationSuccessFragment : GrassrootFragment() {
 
 
     fun setMessage(message: String) {
-        activity.success_message.text = message
+        successMessage = message
     }
 
 }

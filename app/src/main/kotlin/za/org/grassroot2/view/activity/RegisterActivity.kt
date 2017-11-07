@@ -2,20 +2,26 @@ package za.org.grassroot2.view.activity
 
 import android.accounts.AccountManager
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.support.v4.app.Fragment
+import android.text.InputType
 import android.text.TextUtils
+import android.view.inputmethod.EditorInfo
+import android.view.inputmethod.InputMethodManager
 import org.greenrobot.eventbus.Subscribe
 import timber.log.Timber
 import za.org.grassroot2.R
 import za.org.grassroot2.dagger.activity.ActivityComponent
+import za.org.grassroot2.model.util.PhoneNumberUtil
 import za.org.grassroot2.presenter.RegistrationPresenter
 import za.org.grassroot2.services.account.AuthConstants
 import za.org.grassroot2.view.RegistrationView
 import za.org.grassroot2.view.fragment.RegistrationSuccessFragment
 import za.org.grassroot2.view.fragment.SingleTextInputFragment
 import javax.inject.Inject
+
 
 class RegisterActivity : GrassrootActivity(), RegistrationView {
 
@@ -72,9 +78,34 @@ class RegisterActivity : GrassrootActivity(), RegistrationView {
                 R.string.register_otp_hint,
                 R.string.button_finish)
 
+
+        disposables.add(userNameFragment.viewCreated().subscribe({ integer ->
+
+            userNameFragment.toggleBackOtherButton(true)
+            userNameFragment.toggleNextDoneButton(false)
+            userNameFragment.setInputType(InputType.TYPE_CLASS_TEXT)
+            userNameFragment.setImeOptions(EditorInfo.IME_ACTION_NEXT)
+            userNameFragment.focusOnInput()
+        }, { throwable -> }))
+
+
+        disposables.add(phoneNumberFragment.viewCreated().subscribe({ integer ->
+            disposables.add(phoneNumberFragment.textInputChanged().subscribe({ currentInput ->
+                phoneNumberFragment.toggleNextDoneButton(PhoneNumberUtil.isPossibleNumber(currentInput))
+            }))
+            phoneNumberFragment.toggleBackOtherButton(true)
+            phoneNumberFragment.toggleNextDoneButton(false)
+            phoneNumberFragment.setInputType(InputType.TYPE_CLASS_PHONE)
+            phoneNumberFragment.setImeOptions(EditorInfo.IME_ACTION_NEXT)
+            phoneNumberFragment.focusOnInput()
+        }, { throwable -> }))
+
         disposables.add(otpFragment.viewCreated().subscribe({ integer ->
-            otpFragment.toggleNextDoneButton(false)
             otpFragment.toggleBackOtherButton(false)
+            otpFragment.toggleNextDoneButton(false)
+            otpFragment.setInputType(InputType.TYPE_CLASS_NUMBER)
+            otpFragment.setImeOptions(EditorInfo.IME_ACTION_DONE)
+            otpFragment.focusOnInput()
             if (!TextUtils.isEmpty(debugOtp)) {
                 otpFragment.setInputDefault(debugOtp)
             }
@@ -122,6 +153,13 @@ class RegisterActivity : GrassrootActivity(), RegistrationView {
         startActivity(intent)
     }
 
+    override fun hideKeyboard() {
+        val view = this.currentFocus
+        if (view != null) {
+            val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            imm.hideSoftInputFromWindow(view.windowToken, 0)
+        }
+    }
 
     private fun swichToStep(fragmentToShow: Fragment) {
         supportFragmentManager.beginTransaction()

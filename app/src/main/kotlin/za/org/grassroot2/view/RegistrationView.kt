@@ -8,5 +8,6 @@ interface RegistrationView : GrassrootView {
     fun switchToOtpInput(otpValue: String)
     fun switchToSuccessScreen(authToken: String)
     fun finishRegistration(authToken: String, nextActivity: Class<*>)
+    fun hideKeyboard()
 
 }

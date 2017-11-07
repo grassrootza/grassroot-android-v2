@@ -11,79 +11,67 @@
     tools:context="za.org.grassroot2.view.fragment.SingleTextInputFragment">
 
 
+
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:gravity="center|bottom"
+        android:layout_weight="0.5">
+
+        <ImageView
+            app:srcCompat="@drawable/ic_allgood_popup"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingBottom="@dimen/padding_std_large" />
+
+        <TextView
+            android:id="@+id/header_text"
+            style="@style/LargeHeader"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:paddingBottom="@dimen/margin_std_large"
+            android:text="@string/register_success_title" />
+
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:orientation="vertical"
         android:gravity="center_horizontal"
-        android:layout_weight="1"
-        android:weightSum="0.9">
+        android:layout_marginLeft="@dimen/margin_std_large"
+        android:layout_marginRight="@dimen/margin_std_large"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="0.5">
 
-        <LinearLayout
-            android:orientation="vertical"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:gravity="center|bottom"
-            android:layout_weight="0.5">
+        <TextView
+            android:id="@+id/success_message"
+            style="@style/LargeBodyText"
+            android:gravity="center"
+            android:textColor="@color/default_font_color"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/margin_std_large"
+            android:paddingLeft="@dimen/padding_std_medium"
+            android:paddingRight="@dimen/padding_std_medium"
+            android:text="@string/register_success_subtitle" />
 
-            <ImageView
-                app:srcCompat="@drawable/ic_allgood_popup"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:paddingBottom="@dimen/padding_std_large" />
-
-            <TextView
-                android:id="@+id/header_text"
-                style="@style/LargeHeader"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:paddingBottom="@dimen/margin_std_large"
-                android:textColor="@color/default_font_color"
-                tools:text="@string/register_success_title" />
-
-        </LinearLayout>
-
-
-        <LinearLayout
-            android:orientation="vertical"
-            android:gravity="center_horizontal"
-            android:layout_marginLeft="@dimen/margin_std_large"
-            android:layout_marginRight="@dimen/margin_std_large"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="0.5">
-
-            <TextView
-                android:id="@+id/success_message"
-                style="@style/LargeBodyText"
-                android:gravity="center"
-                android:textColor="@color/default_font_color"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/margin_std_medium"
-                android:layout_marginLeft="@dimen/margin_std_large"
-                android:layout_marginRight="@dimen/margin_std_large"
-                android:layout_marginBottom="@dimen/padding_std_large"
-                android:paddingLeft="@dimen/padding_std_medium"
-                android:paddingRight="@dimen/padding_std_medium"
-                tools:text="@string/register_success_subtitle" />
-
-            <Button
-                android:id="@+id/button_next"
-                style="@style/DefaultActionButton"
-                android:paddingLeft="45dp"
-                android:paddingRight="45dp"
-                android:paddingTop="11dp"
-                android:paddingBottom="11dp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/button_start" />
-
-        </LinearLayout>
-
+        <Button
+            android:id="@+id/button_next"
+            style="@style/DefaultActionButton"
+            android:paddingLeft="@dimen/padding_std_xlarge"
+            android:paddingRight="@dimen/padding_std_xlarge"
+            android:paddingTop="@dimen/padding_std_medium"
+            android:paddingBottom="@dimen/padding_std_medium"
+            android:layout_margin="@dimen/margin_std_large"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/button_start" />
 
     </LinearLayout>
 
 
 </LinearLayout>
+

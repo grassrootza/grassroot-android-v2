@@ -6,12 +6,14 @@ import za.org.grassroot2.BuildConfig
 import za.org.grassroot2.R
 import za.org.grassroot2.model.TokenResponse
 import za.org.grassroot2.model.UserProfile
+import za.org.grassroot2.model.util.PhoneNumberUtil
 import za.org.grassroot2.services.UserDetailsService
 import za.org.grassroot2.services.rest.GrassrootAuthApi
 import za.org.grassroot2.services.rest.RestResponse
 import za.org.grassroot2.view.RegistrationView
 import za.org.grassroot2.view.activity.DashboardActivity
 import javax.inject.Inject
+
 
 class RegistrationPresenter @Inject constructor(val grassrootAuthApi: GrassrootAuthApi,
                                                 val userDetailsService: UserDetailsService) : BasePresenter<RegistrationView>() {
@@ -23,39 +25,55 @@ class RegistrationPresenter @Inject constructor(val grassrootAuthApi: GrassrootA
     private var authToken: String = ""
 
     fun handleUserNameInput(value: String) {
-        this.userName = value
-        view.switchToPhoneNumberInput()
+        if (value.isNotEmpty()) {
+            this.userName = value
+            view.switchToPhoneNumberInput()
+        } else {
+            view.showErrorSnackbar(R.string.register_username_error)
+            view.hideKeyboard()
+        }
     }
 
     fun handlePhoneNumberInput(value: String) {
-        this.phoneNumber = value
 
-        view.showProgressBar()
-        disposableOnDetach(grassrootAuthApi
-                .register(phoneNumber, userName)
-                .subscribeOn(Schedulers.newThread())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({ stringRestResponse ->
-                    view.closeProgressBar()
-                    view.switchToOtpInput(if (BuildConfig.DEBUG) stringRestResponse.data else "")
-                }) { throwable ->
-                    throwable.printStackTrace()
-                    view.closeProgressBar()
-                    view.showErrorSnackbar(R.string.error_server_unreachable)
-                })
+        if (PhoneNumberUtil.isPossibleNumber(value)) {
+            this.phoneNumber = value
+            view.showProgressBar()
+            disposableOnDetach(grassrootAuthApi
+                    .register(phoneNumber, userName)
+                    .subscribeOn(Schedulers.newThread())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe({ stringRestResponse ->
+                        view.closeProgressBar()
+                        view.switchToOtpInput(if (BuildConfig.DEBUG) stringRestResponse.data else "")
+                    }) { throwable ->
+                        throwable.printStackTrace()
+                        view.closeProgressBar()
+                        view.showErrorSnackbar(R.string.error_server_unreachable)
+                    })
+        } else {
+            view.hideKeyboard()
+            view.showErrorSnackbar(R.string.register_number_error)
+        }
     }
 
     fun handleOtpNumberInput(value: String) {
-        this.otpCode = value
-        view.showProgressBar()
-        disposableOnDetach(grassrootAuthApi
-                .verifyRegistrationCode(phoneNumber, value)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({ this.storeSuccessfulAuthAndProceed(it) }) { throwable ->
-                    view.closeProgressBar()
-                    throwable.printStackTrace()
-                })
+
+        if (value.isNotEmpty() && value.trim().length == 6) {
+            this.otpCode = value
+            view.showProgressBar()
+            disposableOnDetach(grassrootAuthApi
+                    .verifyRegistrationCode(phoneNumber, value)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe({ this.storeSuccessfulAuthAndProceed(it) }) { throwable ->
+                        view.closeProgressBar()
+                        throwable.printStackTrace()
+                    })
+        } else {
+            view.showErrorSnackbar(R.string.register_otp_error)
+            view.hideKeyboard()
+        }
     }
 
     fun finishRegistrationRequested() {
@@ -79,7 +97,7 @@ class RegistrationPresenter @Inject constructor(val grassrootAuthApi: GrassrootA
                     this.userProfile = userProfile
                     this.authToken = authToken
                     view.closeProgressBar()
-                    view.switchToSuccessScreen(tokenAndUserDetails.token)
+                    view.switchToSuccessScreen(tokenAndUserDetails.displayName)
                 }, { it.printStackTrace() })
 
         disposableOnDetach(disposable)
