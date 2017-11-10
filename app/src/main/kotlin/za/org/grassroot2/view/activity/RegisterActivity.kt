@@ -2,14 +2,14 @@ package za.org.grassroot2.view.activity
 
 import android.accounts.AccountManager
 import android.app.Activity
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.text.InputType
+import android.text.InputType.TYPE_CLASS_TEXT
+import android.text.InputType.TYPE_TEXT_VARIATION_PASSWORD
 import android.text.TextUtils
 import android.view.inputmethod.EditorInfo
-import android.view.inputmethod.InputMethodManager
 import org.greenrobot.eventbus.Subscribe
 import timber.log.Timber
 import za.org.grassroot2.R
@@ -27,6 +27,7 @@ class RegisterActivity : GrassrootActivity(), RegistrationView {
 
     private lateinit var userNameFragment: SingleTextInputFragment
     private lateinit var phoneNumberFragment: SingleTextInputFragment
+    private lateinit var passwordFragment: SingleTextInputFragment
     private lateinit var otpFragment: SingleTextInputFragment
     private lateinit var successFragment: RegistrationSuccessFragment
 
@@ -71,6 +72,13 @@ class RegisterActivity : GrassrootActivity(), RegistrationView {
                 R.string.register_number_hint,
                 R.string.button_next)
 
+        passwordFragment = SingleTextInputFragment.newInstance(
+                R.string.register_password_title,
+                R.string.register_password_subtitle,
+                R.string.register_password_label,
+                R.string.register_password_hint,
+                R.string.button_next)
+
         otpFragment = SingleTextInputFragment.newInstance(
                 R.string.register_otp_title,
                 R.string.register_otp_subtitle,
@@ -100,6 +108,17 @@ class RegisterActivity : GrassrootActivity(), RegistrationView {
             phoneNumberFragment.focusOnInput()
         }, { throwable -> }))
 
+
+        disposables.add(passwordFragment.viewCreated().subscribe({ integer ->
+
+            passwordFragment.toggleBackOtherButton(true)
+            passwordFragment.toggleNextDoneButton(false)
+            passwordFragment.setInputType(TYPE_CLASS_TEXT or TYPE_TEXT_VARIATION_PASSWORD)
+            passwordFragment.setImeOptions(EditorInfo.IME_ACTION_NEXT)
+            passwordFragment.focusOnInput()
+        }, { throwable -> }))
+
+
         disposables.add(otpFragment.viewCreated().subscribe({ integer ->
             otpFragment.toggleBackOtherButton(false)
             otpFragment.toggleNextDoneButton(false)
@@ -124,13 +143,14 @@ class RegisterActivity : GrassrootActivity(), RegistrationView {
 
     }
 
-    override fun switchToUserNameInput() {
-        swichToStep(userNameFragment)
-    }
+    override fun switchToUserNameInput() = swichToStep(userNameFragment)
 
-    override fun switchToPhoneNumberInput() {
-        swichToStep(phoneNumberFragment)
-    }
+
+    override fun switchToPhoneNumberInput() = swichToStep(phoneNumberFragment)
+
+
+    override fun switchToPasswordInput() = swichToStep(passwordFragment)
+
 
     override fun switchToOtpInput(otpValue: String) {
         this.debugOtp = otpValue
@@ -140,6 +160,7 @@ class RegisterActivity : GrassrootActivity(), RegistrationView {
     override fun switchToSuccessScreen(userName: String) {
         this.userName = userName
         this.swichToStep(successFragment)
+        hideKeyboard() // on some devices it's not hidden automatically even if imeAction is DONE
     }
 
     override fun finishRegistration(authToken: String, nextActivity: Class<*>) {
@@ -153,13 +174,7 @@ class RegisterActivity : GrassrootActivity(), RegistrationView {
         startActivity(intent)
     }
 
-    override fun hideKeyboard() {
-        val view = this.currentFocus
-        if (view != null) {
-            val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-            imm.hideSoftInputFromWindow(view.windowToken, 0)
-        }
-    }
+
 
     private fun swichToStep(fragmentToShow: Fragment) {
         supportFragmentManager.beginTransaction()
@@ -178,32 +193,21 @@ class RegisterActivity : GrassrootActivity(), RegistrationView {
                 when (e.source) {
                     this.userNameFragment -> presenter.handleUserNameInput(e.value.toString())
                     this.phoneNumberFragment -> presenter.handlePhoneNumberInput(e.value.toString())
+                    this.passwordFragment -> presenter.handlePasswordInput(e.value.toString())
                     this.otpFragment -> presenter.handleOtpNumberInput(e.value.toString())
                     this.successFragment -> presenter.finishRegistrationRequested()
                 }
             }
             SingleTextInputFragment.SingleInputTextEventType.BACK -> {
                 when (e.source) {
-                    this.userNameFragment -> handleUserNameFragmentBack()
-                    this.phoneNumberFragment -> handlePhoneNumberFragmentBack()
-                    this.otpFragment -> handleOtpFragmentBack()
+                    this.phoneNumberFragment -> swichToStep(userNameFragment)
+                    this.passwordFragment -> swichToStep(phoneNumberFragment)
+                    this.otpFragment -> swichToStep(phoneNumberFragment)
                 }
             }
         }
     }
 
-
-    private fun handleUserNameFragmentBack() {
-
-    }
-
-    private fun handlePhoneNumberFragmentBack() {
-        swichToStep(userNameFragment)
-    }
-
-    private fun handleOtpFragmentBack() {
-        swichToStep(phoneNumberFragment)
-    }
 
 
 }

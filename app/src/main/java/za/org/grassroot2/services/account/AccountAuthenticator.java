@@ -17,9 +17,12 @@ import za.org.grassroot2.GrassrootApplication;
 import za.org.grassroot2.services.UserDetailsService;
 import za.org.grassroot2.services.rest.GrassrootAuthApi;
 import za.org.grassroot2.view.activity.LoginActivity;
-import za.org.grassroot2.view.activity.LoginActivity2;
 
 public class AccountAuthenticator extends AbstractAccountAuthenticator {
+
+
+    public String EXTRA_NEW_ACCOUNT = "extra_new_account";
+    public String EXTRA_TOKEN_EXPIRED = "extra_token_expired";
 
     private final Context context;
 
@@ -44,10 +47,10 @@ public class AccountAuthenticator extends AbstractAccountAuthenticator {
     public Bundle addAccount(AccountAuthenticatorResponse accountAuthenticatorResponse, String accountType,
                              String authTokenType, String[] features, Bundle options) throws NetworkErrorException {
         Timber.e("adding an account! inside authenticator, of type: " + accountType);
-        final Intent intent = new Intent(context, LoginActivity2.class);
+        final Intent intent = new Intent(context, LoginActivity.class);
         intent.putExtra(AccountManager.KEY_ACCOUNT_TYPE, accountType);
         intent.putExtra(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE, accountAuthenticatorResponse);
-        intent.putExtra(LoginActivity.EXTRA_NEW_ACCOUNT, true);
+        intent.putExtra(EXTRA_NEW_ACCOUNT, true);
         final Bundle bundle = new Bundle();
         bundle.putParcelable(AccountManager.KEY_INTENT, intent);
         return bundle;
@@ -80,10 +83,10 @@ public class AccountAuthenticator extends AbstractAccountAuthenticator {
                 addTokenToResultBundle(account, response.body().getData(), result);
             } else {
                 userService.logout(false, false).subscribe(aBoolean -> {}, Timber::d);
-                final Intent intent = new Intent(context, LoginActivity2.class);
+                final Intent intent = new Intent(context, LoginActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 intent.putExtra(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE, accountAuthenticatorResponse);
-                intent.putExtra(LoginActivity.EXTRA_TOKEN_EXPIRED, true);
+                intent.putExtra(EXTRA_TOKEN_EXPIRED, true);
                 result.putParcelable(AccountManager.KEY_INTENT, intent);
             }
         }, Timber::e);

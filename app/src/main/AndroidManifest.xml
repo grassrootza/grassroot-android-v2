@@ -40,15 +40,16 @@
 
         <activity
             android:name=".view.activity.RegisterActivity"
-            android:theme="@style/AppTheme.Toolbar"></activity>
-
-        <activity
-            android:name=".view.activity.LoginActivity2"
-            android:theme="@style/AppTheme.Toolbar"></activity>
+            android:theme="@style/AppTheme.Toolbar" />
 
         <activity
             android:name=".view.activity.LoginActivity"
-            android:theme="@style/AppTheme.Toolbar"></activity>
+            android:theme="@style/AppTheme.Toolbar" />
+
+        <activity
+            android:name=".view.activity.ForgotPasswordActivity"
+            android:theme="@style/AppTheme.Toolbar" />
+
 
         <activity android:name=".view.activity.AudioActivity" />
 

@@ -36,11 +36,16 @@ public interface GrassrootAuthApi {
                                                   @Query("password") String password);
 
 
-    @GET("/api/user/register")
-    Observable<RestResponse<String>> register(@Query("phoneNumber") String phoneNumber, @Query("displayName") String displayName);
+    @GET("/api/auth/register")
+    Observable<RestResponse<String>> register(@Query("phoneNumber") String phoneNumber,
+                                              @Query("displayName") String displayName,
+                                              @Query("password") String password);
 
-    @GET("/api/user/register/verify/{phoneNumber}/{code}")
+    @GET("/api/auth/register/verify/{phoneNumber}/{code}")
     Observable<RestResponse<TokenResponse>> verifyRegistrationCode(@Path("phoneNumber") String phoneNumber, @Path("code") String code);
+
+    @GET("/api/auth/forgot-password")
+    Observable<RestResponse<String>> forgotPassword(@Query("phoneNumber") String phoneNumber);
 
 
 }

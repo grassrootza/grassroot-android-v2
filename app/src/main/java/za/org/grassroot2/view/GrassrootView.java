@@ -3,9 +3,6 @@ package za.org.grassroot2.view;
 import android.app.Activity;
 import android.os.Bundle;
 
-import io.reactivex.Observable;
-import za.org.grassroot2.model.enums.AuthRecoveryResult;
-
 public interface GrassrootView extends ProgressBarContainer {
 
     Activity getActivity();
@@ -17,4 +14,6 @@ public interface GrassrootView extends ProgressBarContainer {
     void handleNoConnection();
     void handleNoConnectionUpload();
     void showNoConnectionMessage();
+
+    void hideKeyboard();
 }

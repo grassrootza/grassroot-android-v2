@@ -2,10 +2,10 @@ package za.org.grassroot2.dagger.activity;
 
 import dagger.Subcomponent;
 import za.org.grassroot2.view.activity.CreateActionActivity;
+import za.org.grassroot2.view.activity.ForgotPasswordActivity;
 import za.org.grassroot2.view.activity.GrassrootActivity;
 import za.org.grassroot2.view.activity.GroupDetailsActivity;
 import za.org.grassroot2.view.activity.LoginActivity;
-import za.org.grassroot2.view.activity.LoginActivity2;
 import za.org.grassroot2.view.activity.PickContactActivity;
 import za.org.grassroot2.view.activity.RegisterActivity;
 import za.org.grassroot2.view.activity.WelcomeActivity;
@@ -28,9 +28,8 @@ public interface ActivityComponent {
     void inject(SingleTextMultiButtonFragment fragment);
     void inject(ItemSelectionFragment fragment);
     void inject(GrassrootActivity target);
-    void inject(LoginActivity target);
 
-    void inject(LoginActivity2 target);
+    void inject(LoginActivity target);
     void inject(GroupsFragment fragment);
     void inject(GroupDetailsActivity target);
     void inject(GroupTasksFragment fragment);
@@ -44,4 +43,6 @@ public interface ActivityComponent {
     void inject(WelcomeActivity target);
 
     void inject(RegisterActivity target);
+
+    void inject(ForgotPasswordActivity target);
 }

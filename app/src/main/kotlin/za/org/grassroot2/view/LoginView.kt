@@ -1,6 +1,6 @@
 package za.org.grassroot2.view
 
-interface Login2View : GrassrootView {
+interface LoginView : GrassrootView {
 
     fun toggleSubmitButton(enabled: Boolean)
 

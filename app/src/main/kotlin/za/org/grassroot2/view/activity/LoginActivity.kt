@@ -10,17 +10,19 @@ import kotlinx.android.synthetic.main.activity_login2.*
 import timber.log.Timber
 import za.org.grassroot2.R
 import za.org.grassroot2.dagger.activity.ActivityComponent
-import za.org.grassroot2.presenter.Login2Presenter
+import za.org.grassroot2.presenter.LoginPresenter
 import za.org.grassroot2.rxbinding.RxTextView
 import za.org.grassroot2.services.account.AuthConstants
-import za.org.grassroot2.view.Login2View
+import za.org.grassroot2.view.LoginView
 import javax.inject.Inject
 
-class LoginActivity2 : GrassrootActivity(), Login2View {
+class LoginActivity : GrassrootActivity(), LoginView {
+
+
 
 
     @Inject
-    lateinit var presenter: Login2Presenter
+    lateinit var presenter: LoginPresenter
 
     private lateinit var phoneNumberChangeObserver: Disposable
 
@@ -46,10 +48,21 @@ class LoginActivity2 : GrassrootActivity(), Login2View {
                 { Timber.d(it) }
         )
 
+        val changecPassword = intent.getStringExtra("newPassword")
+        if (changecPassword != null) {
+            passwordTf.setText(changecPassword)
+        }
+
         loginBtn.setOnClickListener({
             val phoneNumber = phoneNumberTf.text.toString()
             val password = passwordTf.text.toString()
             presenter.login(phoneNumber, password)
+        })
+
+        forgotPassword.setOnClickListener({
+            val intent = Intent(this, ForgotPasswordActivity::class.java)
+            finish()
+            startActivity(intent)
         })
     }
 

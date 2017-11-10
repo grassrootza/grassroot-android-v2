@@ -75,7 +75,6 @@
 
             <EditText
                 android:id="@+id/passwordTf"
-                android:text="deedd"
                 android:inputType="textPassword"
                 style="@style/OneLineLargeTextInput"
                 android:imeOptions="actionDone"
@@ -88,9 +87,11 @@
 
 
         <TextView
+            android:id="@+id/forgotPassword"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="14sp"
+            android:layout_margin="@dimen/padding_std_xlarge"
             android:fontFamily="sans-serif-medium"
             android:textStyle="normal"
             android:textColor="#197b2f"

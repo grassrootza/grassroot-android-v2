@@ -9,13 +9,13 @@ import za.org.grassroot2.model.util.PhoneNumberUtil
 import za.org.grassroot2.services.UserDetailsService
 import za.org.grassroot2.services.rest.GrassrootAuthApi
 import za.org.grassroot2.services.rest.RestResponse
-import za.org.grassroot2.view.Login2View
+import za.org.grassroot2.view.LoginView
 import za.org.grassroot2.view.activity.DashboardActivity
 import java.net.ConnectException
 import javax.inject.Inject
 
-class Login2Presenter @Inject constructor(val grassrootAuthApi: GrassrootAuthApi,
-                                          val userDetailsService: UserDetailsService) : BasePresenter<Login2View>() {
+class LoginPresenter @Inject constructor(val grassrootAuthApi: GrassrootAuthApi,
+                                         val userDetailsService: UserDetailsService) : BasePresenter<LoginView>() {
 
     fun validatePhoneNumber(phoneNumber: CharSequence) {
         val numberOk = PhoneNumberUtil.isPossibleNumber(phoneNumber)

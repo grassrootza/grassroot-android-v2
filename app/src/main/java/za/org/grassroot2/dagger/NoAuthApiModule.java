@@ -9,10 +9,6 @@ import retrofit2.Converter;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import za.org.grassroot2.BuildConfig;
-import za.org.grassroot2.dagger.NonAuthorized;
-import za.org.grassroot2.dagger.activity.PerActivity;
-import za.org.grassroot2.presenter.LoginPresenter;
-import za.org.grassroot2.services.UserDetailsService;
 import za.org.grassroot2.services.rest.GrassrootAuthApi;
 
 /**

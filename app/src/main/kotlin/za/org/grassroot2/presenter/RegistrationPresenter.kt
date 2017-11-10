@@ -20,6 +20,7 @@ class RegistrationPresenter @Inject constructor(val grassrootAuthApi: GrassrootA
 
     private var userName: String = ""
     private var phoneNumber: String = ""
+    private var password: String = ""
     private var otpCode: String = ""
     private var userProfile: UserProfile? = null
     private var authToken: String = ""
@@ -38,9 +39,21 @@ class RegistrationPresenter @Inject constructor(val grassrootAuthApi: GrassrootA
 
         if (PhoneNumberUtil.isPossibleNumber(value)) {
             this.phoneNumber = value
+            view.switchToPasswordInput()
+        } else {
+            view.hideKeyboard()
+            view.showErrorSnackbar(R.string.register_number_error)
+        }
+    }
+
+
+    fun handlePasswordInput(value: String) {
+
+        if (value.isNotEmpty() && value.length >= 6) {
+            this.password = value
             view.showProgressBar()
             disposableOnDetach(grassrootAuthApi
-                    .register(phoneNumber, userName)
+                    .register(phoneNumber, userName, password)
                     .subscribeOn(Schedulers.newThread())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe({ stringRestResponse ->
@@ -49,11 +62,12 @@ class RegistrationPresenter @Inject constructor(val grassrootAuthApi: GrassrootA
                     }) { throwable ->
                         throwable.printStackTrace()
                         view.closeProgressBar()
+                        view.hideKeyboard()
                         view.showErrorSnackbar(R.string.error_server_unreachable)
                     })
         } else {
             view.hideKeyboard()
-            view.showErrorSnackbar(R.string.register_number_error)
+            view.showErrorSnackbar(R.string.register_password_error)
         }
     }
 
@@ -68,6 +82,8 @@ class RegistrationPresenter @Inject constructor(val grassrootAuthApi: GrassrootA
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe({ this.storeSuccessfulAuthAndProceed(it) }) { throwable ->
                         view.closeProgressBar()
+                        view.hideKeyboard()
+                        view.showErrorSnackbar(R.string.register_otp_verification_failed)
                         throwable.printStackTrace()
                     })
         } else {
