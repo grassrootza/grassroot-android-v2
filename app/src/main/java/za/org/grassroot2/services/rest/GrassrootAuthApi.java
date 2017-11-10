@@ -44,8 +44,13 @@ public interface GrassrootAuthApi {
     @GET("/api/auth/register/verify/{phoneNumber}/{code}")
     Observable<RestResponse<TokenResponse>> verifyRegistrationCode(@Path("phoneNumber") String phoneNumber, @Path("code") String code);
 
-    @GET("/api/auth/forgot-password")
-    Observable<RestResponse<String>> forgotPassword(@Query("phoneNumber") String phoneNumber);
+    @GET("/api/auth/reset-password-request")
+    Observable<RestResponse<String>> resetPasswordRequest(@Query("phoneNumber") String phoneNumber);
+
+    @GET("/api/auth/reset-password-confirm")
+    Observable<RestResponse<String>> resetPasswordConfirm(@Query("phoneNumber") String phoneNumber,
+                                                          @Query("password") String newPassword,
+                                                          @Query("code") String otpCode);
 
 
 }

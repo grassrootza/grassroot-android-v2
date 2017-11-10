@@ -3,7 +3,10 @@ package za.org.grassroot2.view
 interface ForgottenPasswordView : GrassrootView {
 
 
-    fun passwordChangeSuccess(password: String, nextActivity: Class<*>)
+    fun switchToPhoneNumberInput()
+    fun switchToPasswordInput()
+    fun switchToOtpInput(otpValue: String)
+    fun passwordChangeSuccess(password: String)
 
 
 }

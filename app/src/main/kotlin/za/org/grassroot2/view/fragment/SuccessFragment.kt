@@ -4,18 +4,20 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import kotlinx.android.synthetic.main.fragment_registration_success.*
+import kotlinx.android.synthetic.main.fragment_success.*
 import org.greenrobot.eventbus.EventBus
 import za.org.grassroot2.R
 import za.org.grassroot2.dagger.activity.ActivityComponent
 import za.org.grassroot2.rxbinding.RxView
 
-class RegistrationSuccessFragment : GrassrootFragment() {
+class SuccessFragment : GrassrootFragment() {
 
 
     override fun onInject(activityComponent: ActivityComponent) {}
 
-    private var successMessage = ""
+    private var titleText = ""
+    private var subtitleText = ""
+    private var buttonText = ""
 
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
@@ -31,7 +33,9 @@ class RegistrationSuccessFragment : GrassrootFragment() {
 
         val nextButtonClicked = RxView.clicks(button_next)
 
-        success_message.text = this.successMessage
+        title.text = this.titleText
+        subtitle.text = this.subtitleText
+        button_next.text = this.buttonText
 
         disposables.add(nextButtonClicked.subscribe(
                 { EventBus.getDefault().post(SingleTextInputFragment.SingleInputTextEvent(this, SingleTextInputFragment.SingleInputTextEventType.DONE, "")) },
@@ -41,12 +45,14 @@ class RegistrationSuccessFragment : GrassrootFragment() {
 
 
     override fun getLayoutResourceId(): Int {
-        return R.layout.fragment_registration_success
+        return R.layout.fragment_success
     }
 
 
-    fun setMessage(message: String) {
-        successMessage = message
+    fun setText(titleText: String, subtitleText: String, buttonText: String) {
+        this.titleText = titleText
+        this.subtitleText = subtitleText
+        this.buttonText = buttonText
     }
 
 }

@@ -7,36 +7,72 @@ import za.org.grassroot2.R
 import za.org.grassroot2.services.UserDetailsService
 import za.org.grassroot2.services.rest.GrassrootAuthApi
 import za.org.grassroot2.view.ForgottenPasswordView
-import za.org.grassroot2.view.activity.LoginActivity
 import javax.inject.Inject
 
 class ForgottenPasswordPresenter @Inject constructor(val grassrootAuthApi: GrassrootAuthApi,
                                                      val userDetailsService: UserDetailsService) : BasePresenter<ForgottenPasswordView>() {
 
     private var phoneNumber: String = ""
+    private var newPassword: String = ""
 
 
     fun handlePhoneNumberInput(value: String) {
 
         if (value.isNotEmpty() && value.length >= 6) {
             this.phoneNumber = value
+            view.switchToPasswordInput()
+
+        } else {
+            view.hideKeyboard()
+            view.showErrorSnackbar(R.string.reset_password_number_error)
+        }
+    }
+
+    fun handlePasswordInput(value: String) {
+
+        if (value.isNotEmpty() && value.length >= 6) {
+            this.newPassword = value //store password to variable and get otp
             view.showProgressBar()
             disposableOnDetach(grassrootAuthApi
-                    .forgotPassword(phoneNumber)
+                    .resetPasswordRequest(phoneNumber)
                     .subscribeOn(Schedulers.newThread())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe({ stringRestResponse ->
                         view.closeProgressBar()
-                        view.passwordChangeSuccess(if (BuildConfig.DEBUG) stringRestResponse.data else "", LoginActivity::class.java)
+                        view.switchToOtpInput(if (BuildConfig.DEBUG) stringRestResponse.data else "")
                     }) { throwable ->
                         throwable.printStackTrace()
                         view.closeProgressBar()
                         view.hideKeyboard()
-                        view.showErrorSnackbar(R.string.forgotten_password_change_failed)
+                        view.showErrorSnackbar(R.string.reset_password_request_failed)
                     })
         } else {
             view.hideKeyboard()
-            view.showErrorSnackbar(R.string.register_password_error)
+            view.showErrorSnackbar(R.string.reset_password_password_error)
+        }
+    }
+
+
+    fun handleOtpInput(value: String) {
+
+        if (value.isNotEmpty() && value.length >= 6) {
+            view.showProgressBar()
+            disposableOnDetach(grassrootAuthApi
+                    .resetPasswordConfirm(phoneNumber, newPassword, value)
+                    .subscribeOn(Schedulers.newThread())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe({ stringRestResponse ->
+                        view.closeProgressBar()
+                        view.passwordChangeSuccess(if (BuildConfig.DEBUG) this.newPassword else "")
+                    }) { throwable ->
+                        throwable.printStackTrace()
+                        view.closeProgressBar()
+                        view.hideKeyboard()
+                        view.showErrorSnackbar(R.string.reset_password_otp_verification_failed)
+                    })
+        } else {
+            view.hideKeyboard()
+            view.showErrorSnackbar(R.string.reset_password_otp_error)
         }
     }
 

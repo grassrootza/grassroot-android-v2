@@ -18,8 +18,8 @@ import za.org.grassroot2.model.util.PhoneNumberUtil
 import za.org.grassroot2.presenter.RegistrationPresenter
 import za.org.grassroot2.services.account.AuthConstants
 import za.org.grassroot2.view.RegistrationView
-import za.org.grassroot2.view.fragment.RegistrationSuccessFragment
 import za.org.grassroot2.view.fragment.SingleTextInputFragment
+import za.org.grassroot2.view.fragment.SuccessFragment
 import javax.inject.Inject
 
 
@@ -29,7 +29,7 @@ class RegisterActivity : GrassrootActivity(), RegistrationView {
     private lateinit var phoneNumberFragment: SingleTextInputFragment
     private lateinit var passwordFragment: SingleTextInputFragment
     private lateinit var otpFragment: SingleTextInputFragment
-    private lateinit var successFragment: RegistrationSuccessFragment
+    private lateinit var successFragment: SuccessFragment
 
     private var debugOtp: String = ""
     private var userName: String = ""
@@ -131,10 +131,14 @@ class RegisterActivity : GrassrootActivity(), RegistrationView {
         }, { throwable -> Timber.e(throwable) }))
 
 
-        successFragment = RegistrationSuccessFragment()
+        successFragment = SuccessFragment()
 
         disposables.add(successFragment.viewCreated().subscribe({ integer ->
-            successFragment.setMessage(getString(R.string.register_success_subtitle, this.userName))
+            successFragment.setText(
+                    getString(R.string.register_success_title),
+                    getString(R.string.register_success_subtitle, this.userName),
+                    getString(R.string.button_start)
+            )
         }, { throwable -> Timber.e(throwable) }))
 
 

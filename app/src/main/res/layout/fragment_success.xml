@@ -26,8 +26,9 @@
             android:paddingBottom="@dimen/padding_std_large" />
 
         <TextView
-            android:id="@+id/header_text"
+            android:id="@+id/title"
             style="@style/LargeHeader"
+            android:gravity="center_horizontal"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
@@ -47,7 +48,7 @@
         android:layout_weight="0.5">
 
         <TextView
-            android:id="@+id/success_message"
+            android:id="@+id/subtitle"
             style="@style/LargeBodyText"
             android:gravity="center"
             android:textColor="@color/default_font_color"

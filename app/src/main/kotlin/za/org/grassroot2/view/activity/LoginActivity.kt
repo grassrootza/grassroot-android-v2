@@ -64,6 +64,7 @@ class LoginActivity : GrassrootActivity(), LoginView {
             finish()
             startActivity(intent)
         })
+
     }
 
     override fun toggleSubmitButton(enabled: Boolean) {
