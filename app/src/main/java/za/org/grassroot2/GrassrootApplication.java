@@ -42,9 +42,10 @@ public class GrassrootApplication extends Application {
         super.onCreate();
         appComponent = initDagger(this);
         initTimber();
-        Fabric.with(this, new Crashlytics());
         if (BuildConfig.DEBUG) {
             Stetho.initializeWithDefaults(this);
+        } else {
+            Fabric.with(this, new Crashlytics());
         }
         registerReceiver(connectivityChangeReceiver, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
     }

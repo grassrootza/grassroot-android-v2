@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentActivity;
+import android.support.v7.app.AppCompatActivity;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -31,26 +32,38 @@ public class LocationManager implements GoogleApiClient.ConnectionCallbacks, Goo
     private PublishSubject<Location> locationSubject = PublishSubject.create();
 
     @Inject
-    public LocationManager(FragmentActivity c) {
-        context = c;
+    public LocationManager(AppCompatActivity a) {
+        context = a;
         googleApiClient = new GoogleApiClient.Builder(context)
                 .addApi(LocationServices.API)
                 .addConnectionCallbacks(this)
-                .enableAutoManage(c, this)
+                .addOnConnectionFailedListener(this)
                 .build();
         createOneTimeLocationRequest();
     }
 
     public Observable<Location> getCurrentLocation() {
+        if (googleApiClient.isConnected()) {
+            checkSettingsAndReuqestLocation();
+        } else if (!googleApiClient.isConnected()) {
+            googleApiClient.connect();
+        }
         return locationSubject;
     }
 
     public void disconnect() {
-        googleApiClient.stopAutoManage(context);
+        if (googleApiClient.isConnected()) {
+            LocationServices.FusedLocationApi.removeLocationUpdates(googleApiClient, this);
+            googleApiClient.disconnect();
+        }
     }
 
     @Override
     public void onConnected(@Nullable Bundle bundle) {
+        checkSettingsAndReuqestLocation();
+    }
+
+    private void checkSettingsAndReuqestLocation() {
         LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder()
                 .addLocationRequest(oneTimeLocationRequest);
         PendingResult<LocationSettingsResult> result =
@@ -100,5 +113,6 @@ public class LocationManager implements GoogleApiClient.ConnectionCallbacks, Goo
     @Override
     public void onLocationChanged(Location location) {
         locationSubject.onNext(location);
+        LocationServices.FusedLocationApi.removeLocationUpdates(googleApiClient, this);
     }
 }

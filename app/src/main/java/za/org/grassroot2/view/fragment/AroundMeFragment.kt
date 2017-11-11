@@ -7,6 +7,7 @@ import android.support.v4.app.Fragment
 import android.support.v7.app.AppCompatActivity
 import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import android.widget.TextView
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
@@ -20,6 +21,7 @@ import dagger.Lazy
 import kotlinx.android.synthetic.main.fragment_around_me.*
 import za.org.grassroot2.R
 import za.org.grassroot2.dagger.activity.ActivityComponent
+import za.org.grassroot2.dagger.fragment.FragmentComponent
 import za.org.grassroot2.model.AroundEntity
 import za.org.grassroot2.model.alert.LiveWireAlert
 import za.org.grassroot2.model.enums.GrassrootEntityType
@@ -39,11 +41,15 @@ class AroundMeFragment : GrassrootFragment(), AroundMePresenter.AroundMeView, Go
     private lateinit var googleMap: GoogleMap
 
     override fun onInject(activityComponent: ActivityComponent) {
-        activityComponent.inject(this)
+        get().inject(this)
     }
 
     override fun getLayoutResourceId(): Int {
         return R.layout.fragment_around_me
+    }
+
+    override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        return super.onCreateView(inflater, container, savedInstanceState)
     }
 
     override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
@@ -99,6 +105,7 @@ class AroundMeFragment : GrassrootFragment(), AroundMePresenter.AroundMeView, Go
     }
 
     override fun renderItemsAround(aroundItems: List<AroundEntity>) {
+        googleMap.clear()
         aroundItems.forEach { item ->
             when {
                 item.type == GrassrootEntityType.GROUP -> renderGroupMarker(item)
@@ -142,13 +149,13 @@ class AroundMeFragment : GrassrootFragment(), AroundMePresenter.AroundMeView, Go
                 (v.findViewById(R.id.title) as TextView).text = item.title
                 return v
             }
-            is Meeting -> {
+            GrassrootEntityType.MEETING -> {
                 val v = LayoutInflater.from(activity).inflate(R.layout.marker_meeting, null, false)
                 (v.findViewById(R.id.title) as TextView).text = item.title
                 (v.findViewById(R.id.description) as TextView).text = item.description
                 return v
             }
-            is LiveWireAlert -> {
+            GrassrootEntityType.LIVE_WIRE_ALERT -> {
                 val v = LayoutInflater.from(activity).inflate(R.layout.marker_alert, null, false)
                 (v.findViewById(R.id.name) as TextView).text = item.title
                 return v

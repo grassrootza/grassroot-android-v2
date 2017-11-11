@@ -9,7 +9,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.CallSuper;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
@@ -22,6 +21,8 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
+
+import com.tbruyelle.rxpermissions2.RxPermissions;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -56,6 +57,7 @@ public abstract class GrassrootActivity extends AppCompatActivity implements Gra
     @Inject public Lazy<AccountManager> accountManagerProvider;
     @Inject public UserPreference       userPreference;
 
+
     private   AccountAuthenticatorResponse authResponse     = null;
     private   Bundle                       authResultBundle = null;
     protected CompositeDisposable          disposables      = new CompositeDisposable();
@@ -63,6 +65,7 @@ public abstract class GrassrootActivity extends AppCompatActivity implements Gra
     @BindView(R.id.progress)
     @Nullable
     View progress;
+    private ActivityComponent component;
 
     @Override
     protected void onCreate(Bundle icicle) {
@@ -70,16 +73,12 @@ public abstract class GrassrootActivity extends AppCompatActivity implements Gra
         setContentView(R.layout.base_progress_container);
         setContentLayout(getLayoutResourceId());
         ButterKnife.bind(this);
-        getActivityComponent().inject(this);
-        onInject(getActivityComponent());
+        getComponenet().inject(this);
+        onInject(getComponenet());
         authResponse = getIntent().getParcelableExtra(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE);
         if (authResponse != null) {
             authResponse.onRequestContinued();
         }
-    }
-
-    private ActivityComponent getActivityComponent() {
-        return getAppComponent().plus(getActivityModule());
     }
 
     protected abstract void onInject(ActivityComponent component);
@@ -200,6 +199,13 @@ public abstract class GrassrootActivity extends AppCompatActivity implements Gra
 
     public ActivityModule getActivityModule() {
         return new ActivityModule(this);
+    }
+
+    public ActivityComponent getComponenet() {
+        if (component == null) {
+            component = getAppComponent().plus(getActivityModule());
+        }
+        return component;
     }
 
     public AppComponent getAppComponent() {

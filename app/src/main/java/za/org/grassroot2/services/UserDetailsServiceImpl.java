@@ -92,7 +92,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     @Override
     public void setSyncState(int status) {
         UserProfile userProfile = databaseService.loadUserProfile();
-        if (status==UserProfile.SYNC_STATE_FAILED && userProfile.getSyncStatus() != UserProfile.SYNC_STATE_NONE) {
+        if (status== UserProfile.SYNC_STATE_FAILED && userProfile.getSyncStatus() != UserProfile.SYNC_STATE_NONE) {
             return;
         } else {
             userProfile.setSyncState(status);

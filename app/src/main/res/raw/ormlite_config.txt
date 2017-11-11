@@ -1,5 +1,5 @@
 #
-# generated on 2017/11/01 11:00:58
+# generated on 2017/11/10 04:01:05
 #
 # --table-start--
 dataClass=za.org.grassroot2.model.alert.LiveWireAlert
@@ -44,13 +44,19 @@ fieldName=sending
 fieldName=underReview
 # --field-end--
 # --field-start--
+fieldName=creatingUserName
+# --field-end--
+# --field-start--
 fieldName=released
 # --field-end--
 # --field-start--
-fieldName=synced
+fieldName=ancestorGroupName
 # --field-end--
 # --field-start--
 fieldName=createdDate
+# --field-end--
+# --field-start--
+fieldName=synced
 # --field-end--
 # --table-fields-end--
 # --table-end--
@@ -82,6 +88,44 @@ fieldName=responded
 # --field-end--
 # --field-start--
 fieldName=falseAlarm
+# --field-end--
+# --table-fields-end--
+# --table-end--
+#################################
+# --table-start--
+dataClass=za.org.grassroot2.model.AroundEntity
+tableName=aroundentity
+# --table-fields-start--
+# --field-start--
+fieldName=uid
+id=true
+# --field-end--
+# --field-start--
+fieldName=contactName
+# --field-end--
+# --field-start--
+fieldName=description
+# --field-end--
+# --field-start--
+fieldName=fetchingUserIsMember
+# --field-end--
+# --field-start--
+fieldName=latitude
+# --field-end--
+# --field-start--
+fieldName=longitude
+# --field-end--
+# --field-start--
+fieldName=title
+# --field-end--
+# --field-start--
+fieldName=ancestorGroupName
+# --field-end--
+# --field-start--
+fieldName=createdDate
+# --field-end--
+# --field-start--
+fieldName=type
 # --field-end--
 # --table-fields-end--
 # --table-end--
@@ -279,13 +323,16 @@ fieldName=locationDescription
 fieldName=createdDate
 # --field-end--
 # --field-start--
-fieldName=meetingDateTimeMillis
+fieldName=deadlineMillis
 # --field-end--
 # --field-start--
 fieldName=lastChangeTimeServerMillis
 # --field-end--
 # --field-start--
 fieldName=response
+# --field-end--
+# --field-start--
+fieldName=ancestorGroupName
 # --field-end--
 # --field-start--
 fieldName=mediaFile
@@ -337,10 +384,13 @@ fieldName=isConfirmed
 fieldName=createdDate
 # --field-end--
 # --field-start--
-fieldName=deadlineDateTimeMillis
+fieldName=deadlineMillis
 # --field-end--
 # --field-start--
 fieldName=lastChangeTimeServerMillis
+# --field-end--
+# --field-start--
+fieldName=ancestorGroupName
 # --field-end--
 # --field-start--
 fieldName=assignedMembers
@@ -392,10 +442,13 @@ fieldName=callerName
 fieldName=createdDate
 # --field-end--
 # --field-start--
-fieldName=closingDateTimeMillis
+fieldName=deadlineMillis
 # --field-end--
 # --field-start--
 fieldName=lastChangeTimeServerMillis
+# --field-end--
+# --field-start--
+fieldName=ancestorGroupName
 # --field-end--
 # --field-start--
 fieldName=voteOptions

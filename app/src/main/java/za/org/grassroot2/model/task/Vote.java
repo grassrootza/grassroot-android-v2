@@ -10,6 +10,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
+import za.org.grassroot2.model.HomeFeedItem;
 import za.org.grassroot2.model.MediaFile;
 import za.org.grassroot2.model.enums.GrassrootEntityType;
 
@@ -47,9 +48,12 @@ public class Vote implements Task {
 
     @DatabaseField
     @SerializedName("deadlineMillis")
-    private long closingDateTimeMillis;
+    private long deadlineMillis;
     @DatabaseField
     private long lastChangeTimeServerMillis;
+
+    @DatabaseField
+    private String ancestorGroupName;
 
     @SerializedName("voteResults")
     @DatabaseField
@@ -116,7 +120,17 @@ public class Vote implements Task {
 
     @Override
     public long getDeadlineMillis() {
-        return closingDateTimeMillis;
+        return deadlineMillis;
+    }
+
+    @Override
+    public long date() {
+        return deadlineMillis;
+    }
+
+    @Override
+    public String searchableContent() {
+        return subject + (description != null ? description : "");
     }
 
     @Override
@@ -150,5 +164,13 @@ public class Vote implements Task {
 
     public HashMap<String, Integer> getVoteOptions() {
         return voteOptions;
+    }
+
+    public String getAncestorGroupName() {
+        return ancestorGroupName;
+    }
+
+    public void setAncestorGroupName(String ancestorGroupName) {
+        this.ancestorGroupName = ancestorGroupName;
     }
 }

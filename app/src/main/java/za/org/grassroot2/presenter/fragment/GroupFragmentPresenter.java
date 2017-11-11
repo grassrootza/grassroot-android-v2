@@ -29,26 +29,16 @@ public class GroupFragmentPresenter extends BaseFragmentPresenter<GroupFragmentP
     }
 
     @Override
-    public void attach(GroupFragmentView view) {
-        super.attach(view);
-    }
-
-    @Override
-    public void detach(GroupFragmentView view) {
-        super.detach(view);
-    }
-
-    @Override
     public void onViewCreated() {
         firstSyncNotCompleted = !userDetailsService.isSyncFailed() && !userDetailsService.isSyncCompleted();
         if (userDetailsService.isSyncFailed()) {
-            view.closeProgressBar();
-            view.renderEmptyFailedSync();
+            getView().closeProgressBar();
+            getView().renderEmptyFailedSync();
         } else {
             if (firstSyncNotCompleted) {
-                view.showProgressBar();
+                getView().showProgressBar();
             } else {
-                view.closeProgressBar();
+                getView().closeProgressBar();
             }
             loadGroups();
         }
@@ -57,17 +47,16 @@ public class GroupFragmentPresenter extends BaseFragmentPresenter<GroupFragmentP
     private void loadGroups() {
         List<Group> groups = databaseService.loadGroupsSorted();
         if (groups.isEmpty() && !firstSyncNotCompleted) {
-            view.closeProgressBar();
-            view.renderEmpty();
+            getView().closeProgressBar();
+            getView().renderEmpty();
         } else {
-            view.render(groups);
-            disposableOnDetach(view.itemClick().subscribe(s -> view.openDetails(s), Throwable::printStackTrace));
+            getView().render(groups);
+            disposableOnDetach(getView().itemClick().subscribe(s -> getView().openDetails(s), Throwable::printStackTrace));
         }
     }
 
-    @Subscribe(threadMode = ThreadMode.MAIN, sticky = true)
+    @Subscribe(threadMode = ThreadMode.MAIN)
     public void syncComplete(SyncAdapter.SyncCompletedEvent e) {
-        EventBus.getDefault().removeStickyEvent(SyncAdapter.SyncCompletedEvent.class);
         onViewCreated();
     }
 

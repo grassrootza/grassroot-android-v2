@@ -12,9 +12,6 @@ import za.org.grassroot2.model.AroundItem;
 import za.org.grassroot2.model.Group;
 import za.org.grassroot2.model.enums.GrassrootEntityType;
 import za.org.grassroot2.model.task.Meeting;
-import za.org.grassroot2.model.task.Task;
-import za.org.grassroot2.model.task.Todo;
-import za.org.grassroot2.model.task.Vote;
 
 public class AroundResponseDeserializer implements JsonDeserializer<AroundItem> {
     @Override

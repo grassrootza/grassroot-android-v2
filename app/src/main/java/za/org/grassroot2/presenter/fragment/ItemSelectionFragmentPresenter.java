@@ -26,7 +26,7 @@ public class ItemSelectionFragmentPresenter extends BaseFragmentPresenter<ItemSe
     public void onViewCreated() {
         List<SelectableItem> data = new ArrayList<>();
         data.addAll(databaseService.loadObjects(Group.class));
-        view.renderResults(data);
+        getView().renderResults(data);
     }
 
     public interface ItemSelectionFragmentView extends FragmentView {

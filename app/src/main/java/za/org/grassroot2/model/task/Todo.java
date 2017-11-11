@@ -7,6 +7,7 @@ import com.j256.ormlite.table.DatabaseTable;
 import java.util.Date;
 import java.util.List;
 
+import za.org.grassroot2.model.HomeFeedItem;
 import za.org.grassroot2.model.MediaFile;
 import za.org.grassroot2.model.enums.GrassrootEntityType;
 
@@ -48,9 +49,12 @@ public class Todo implements Task {
     private long createdDate;
     @DatabaseField
     @SerializedName("deadlineMillis")
-    private long deadlineDateTimeMillis;
+    private long deadlineMillis;
     @DatabaseField
     private long lastChangeTimeServerMillis;
+
+    @DatabaseField
+    private String ancestorGroupName;
 
     @DatabaseField
     private List<String> assignedMembers;
@@ -102,7 +106,7 @@ public class Todo implements Task {
 
     @Override
     public long getDeadlineMillis() {
-        return deadlineDateTimeMillis;
+        return deadlineMillis;
     }
 
     @Override
@@ -147,5 +151,23 @@ public class Todo implements Task {
 
     public String getRecorderName() {
         return recorderName;
+    }
+
+    public String getAncestorGroupName() {
+        return ancestorGroupName;
+    }
+
+    public void setAncestorGroupName(String ancestorGroupName) {
+        this.ancestorGroupName = ancestorGroupName;
+    }
+
+    @Override
+    public long date() {
+        return deadlineMillis;
+    }
+
+    @Override
+    public String searchableContent() {
+        return summary + (description != null ? description : "");
     }
 }

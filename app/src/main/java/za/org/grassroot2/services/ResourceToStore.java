@@ -6,7 +6,6 @@ import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
 import io.reactivex.schedulers.Schedulers;
 import retrofit2.Response;
-import za.org.grassroot2.model.task.Task;
 
 public abstract class ResourceToStore<L, R> {
 

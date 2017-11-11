@@ -11,7 +11,7 @@ public class SingleTextMultiButtonPresenter extends BaseFragmentPresenter<Single
 
     @Override
     public void onViewCreated() {
-        disposableOnDetach(view.inputTextDone().subscribe(charSequence -> {
+        disposableOnDetach(getView().inputTextDone().subscribe(charSequence -> {
             EventBus.getDefault().post(new MoveNextWithInputEvent(charSequence.toString()));
         }, Throwable::printStackTrace));
     }

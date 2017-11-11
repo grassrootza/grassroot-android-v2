@@ -5,6 +5,10 @@ import android.support.v7.app.AppCompatActivity;
 
 import com.tbruyelle.rxpermissions2.RxPermissions;
 
+import java.util.ArrayList;
+
+import javax.inject.Singleton;
+
 import dagger.Module;
 import dagger.Provides;
 import za.org.grassroot2.dagger.ActivityContext;
@@ -25,6 +29,7 @@ import za.org.grassroot2.services.UserDetailsService;
 import za.org.grassroot2.services.rest.GrassrootAuthApi;
 import za.org.grassroot2.util.ContactHelper;
 import za.org.grassroot2.util.ImageUtil;
+import za.org.grassroot2.view.adapter.HomeAdapter;
 
 /**
  * Created by luke on 2017/08/08.
@@ -48,12 +53,6 @@ public class ActivityModule {
     @PerActivity
     RxPermissions providesRxPermission(@ActivityContext AppCompatActivity act) {
         return new RxPermissions(act);
-    }
-
-    @Provides
-    @PerActivity
-    LocationManager providesLocationManager(@ActivityContext AppCompatActivity act) {
-        return new LocationManager(act);
     }
 
     @Provides
@@ -103,6 +102,18 @@ public class ActivityModule {
     @PerActivity
     LiveWireService provideLiveWireService(DatabaseService databaseService, NetworkService networkService) {
         return new LiveWireServiceImpl(databaseService, networkService);
+    }
+
+    @Provides
+    @PerActivity
+    HomeAdapter provideHomeAdapter(@ActivityContext AppCompatActivity c) {
+        return new HomeAdapter(c, new ArrayList<>());
+    }
+
+    @Provides
+    @PerActivity
+    LocationManager providesLocationManager(@ActivityContext AppCompatActivity act) {
+        return new LocationManager(act);
     }
 
 }

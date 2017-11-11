@@ -8,8 +8,6 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
-import org.greenrobot.eventbus.EventBus;
-
 import java.util.ArrayList;
 
 import javax.inject.Inject;
@@ -17,18 +15,15 @@ import javax.inject.Inject;
 import butterknife.BindView;
 import io.reactivex.Observable;
 import timber.log.Timber;
-import za.org.grassroot2.GrassrootApplication;
 import za.org.grassroot2.R;
 import za.org.grassroot2.dagger.activity.ActivityComponent;
-import za.org.grassroot2.dagger.user.ApiModule;
+import za.org.grassroot2.dagger.fragment.FragmentComponent;
 import za.org.grassroot2.model.dto.BtnGrouping;
 import za.org.grassroot2.model.dto.BtnParameters;
 import za.org.grassroot2.model.dto.BtnReturnBundle;
 import za.org.grassroot2.presenter.fragment.SingleTextMultiButtonPresenter;
 import za.org.grassroot2.rxbinding.RxView;
 import za.org.grassroot2.rxbinding.RxViewUtils;
-import za.org.grassroot2.view.activity.GrassrootActivity;
-import za.org.grassroot2.view.event.MoveNextWithInputEvent;
 
 /**
  * Created by luke on 2017/08/10.

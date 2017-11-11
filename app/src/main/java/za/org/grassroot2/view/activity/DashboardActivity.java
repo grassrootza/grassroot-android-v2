@@ -10,9 +10,14 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.MenuItem;
 
+import com.tbruyelle.rxpermissions2.RxPermissions;
+
+import javax.inject.Inject;
+
 import butterknife.BindView;
 import za.org.grassroot2.R;
 import za.org.grassroot2.dagger.activity.ActivityComponent;
+import za.org.grassroot2.services.LocationManager;
 import za.org.grassroot2.services.SyncOfflineDataService;
 import za.org.grassroot2.util.NetworkUtil;
 import za.org.grassroot2.view.fragment.AroundMeFragment;
@@ -22,12 +27,14 @@ import za.org.grassroot2.view.fragment.MeFragment;
 
 public class DashboardActivity extends GrassrootActivity {
 
-    public static final int TAB_HOME = 0;
+    public static final int TAB_HOME   = 0;
     public static final int TAB_GROUPS = 1;
     public static final int TAB_AROUND = 2;
-    public static final int TAB_ME = 3;
-    @BindView(R.id.contentPager) ViewPager pager;
+    public static final int TAB_ME     = 3;
+    @BindView(R.id.contentPager) ViewPager            pager;
     @BindView(R.id.navigation)   BottomNavigationView bottomNavigation;
+    @Inject                      RxPermissions        rxPermissions;
+    @Inject                      LocationManager      manager;
 
     private MenuItem menuItem;
 
@@ -55,7 +62,6 @@ public class DashboardActivity extends GrassrootActivity {
         super.onCreate(savedInstanceState);
         pager.setAdapter(new DashboardFragmentAdapter(getSupportFragmentManager()));
         bottomNavigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
-        bottomNavigation.setSelectedItemId(R.id.navigation_groups);
         pager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
@@ -81,7 +87,6 @@ public class DashboardActivity extends GrassrootActivity {
         if (NetworkUtil.hasInternetAccess(this)) {
             startService(new Intent(this, SyncOfflineDataService.class));
         }
-        pager.setCurrentItem(TAB_GROUPS);
     }
 
     @Override
@@ -91,6 +96,7 @@ public class DashboardActivity extends GrassrootActivity {
 
     @Override
     protected void onInject(ActivityComponent component) {
+        component.inject(this);
     }
 
     public static void start(Activity activity) {
@@ -122,5 +128,11 @@ public class DashboardActivity extends GrassrootActivity {
         public int getCount() {
             return 4;
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        manager.disconnect();
     }
 }
