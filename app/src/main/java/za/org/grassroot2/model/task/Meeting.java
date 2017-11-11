@@ -8,12 +8,15 @@ import com.j256.ormlite.table.DatabaseTable;
 
 import java.util.Date;
 
+import za.org.grassroot2.model.AroundItem;
+import za.org.grassroot2.model.ExcludeFromSerialization;
+import za.org.grassroot2.model.HomeFeedItem;
 import za.org.grassroot2.model.MediaFile;
 import za.org.grassroot2.model.enums.GrassrootEntityType;
 import za.org.grassroot2.model.network.Syncable;
 
 @DatabaseTable(tableName = "meetings")
-public class Meeting implements Task, Syncable {
+public class Meeting implements Task, Syncable, AroundItem {
 
     public static final String ATTENDING = "RSVP_YES";
     public static final String NOT_ATTENDING = "RSVP_NO";
@@ -47,12 +50,15 @@ public class Meeting implements Task, Syncable {
     private long createdDate;
     @DatabaseField
     @SerializedName("deadlineMillis")
-    private long meetingDateTimeMillis;
+    private long deadlineMillis;
     @DatabaseField
     private long lastChangeTimeServerMillis;
 
     @DatabaseField
     private String response;
+
+    @DatabaseField
+    private String ancestorGroupName;
 
     @DatabaseField(foreign = true)
     private MediaFile mediaFile;
@@ -65,6 +71,12 @@ public class Meeting implements Task, Syncable {
 
     @DatabaseField
     private transient boolean synced = true;
+
+    @ExcludeFromSerialization
+    private double longitude;
+
+    @ExcludeFromSerialization
+    private double latitude;
 
     @Override
     public String getUid() {
@@ -88,7 +100,7 @@ public class Meeting implements Task, Syncable {
 
     @Override
     public long getDeadlineMillis() {
-        return meetingDateTimeMillis;
+        return deadlineMillis;
     }
 
     @Override
@@ -148,8 +160,8 @@ public class Meeting implements Task, Syncable {
         this.createdDate = createdDate;
     }
 
-    public void setMeetingDateTimeMillis(long meetingDateTimeMillis) {
-        this.meetingDateTimeMillis = meetingDateTimeMillis;
+    public void setDeadlineMillis(long deadlineMillis) {
+        this.deadlineMillis = deadlineMillis;
     }
 
     public void setLocationDescription(String locationDescription) {
@@ -190,7 +202,7 @@ public class Meeting implements Task, Syncable {
                 ", callerName='" + callerName + '\'' +
                 ", locationDescription='" + locationDescription + '\'' +
                 ", createdDate=" + createdDate +
-                ", meetingDateTimeMillis=" + meetingDateTimeMillis +
+                ", deadlineMillis=" + deadlineMillis +
                 ", lastChangeTimeServerMillis=" + lastChangeTimeServerMillis +
                 ", response='" + response + '\'' +
                 ", mediaFile=" + mediaFile +
@@ -198,5 +210,39 @@ public class Meeting implements Task, Syncable {
                 ", publicMtg=" + publicMtg +
                 ", synced=" + synced +
                 '}';
+    }
+
+    public double getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(double longitude) {
+        this.longitude = longitude;
+    }
+
+    public double getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(double latitude) {
+        this.latitude = latitude;
+    }
+
+    public String getAncestorGroupName() {
+        return ancestorGroupName;
+    }
+
+    public void setAncestorGroupName(String ancestorGroupName) {
+        this.ancestorGroupName = ancestorGroupName;
+    }
+
+    @Override
+    public long date() {
+        return deadlineMillis;
+    }
+
+    @Override
+    public String searchableContent() {
+        return subject + (description != null ? description : "");
     }
 }

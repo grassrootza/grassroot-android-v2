@@ -9,8 +9,8 @@ import java.util.UUID;
 
 import javax.inject.Inject;
 
+import io.reactivex.Maybe;
 import io.reactivex.Observable;
-import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
@@ -79,7 +79,9 @@ public class CreateActionPresenter extends BasePresenter<CreateActionPresenter.C
         if (liveWireAlert.areMinimumFieldsComplete()) {
             view.showProgressBar();
             liveWireAlert.setComplete(true);
-            liveWireAlert.setMediaFile(dbService.loadObjectByUid(MediaFile.class, currentMediaFileUid));
+            if (currentMediaFileUid != null) {
+                liveWireAlert.setMediaFile(dbService.loadObjectByUid(MediaFile.class, currentMediaFileUid));
+            }
             disposableOnDetach(dbService.store(LiveWireAlert.class, liveWireAlert).flatMapObservable(liveWireAlert1 -> networkService.uploadEntity(liveWireAlert1, false)).flatMap(uploadResult -> {
                 if (!TextUtils.isEmpty(uploadResult.getServerUid())) {
                     liveWireAlert.setServerUid(uploadResult.getServerUid());
@@ -90,10 +92,10 @@ public class CreateActionPresenter extends BasePresenter<CreateActionPresenter.C
                 return Observable.just(uploadResult);
             }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(uploadResult -> {
                         view.closeProgressBar();
-                        view.uploadSuccessfull(GrassrootEntityType.LIVEWIRE_ALERT);
+                        view.uploadSuccessfull(GrassrootEntityType.LIVE_WIRE_ALERT);
                     }, throwable -> {
                         view.closeProgressBar();
-                        view.uploadSuccessfull(GrassrootEntityType.LIVEWIRE_ALERT);
+                        view.uploadSuccessfull(GrassrootEntityType.LIVE_WIRE_ALERT);
                     }));
         }
     }
@@ -114,7 +116,7 @@ public class CreateActionPresenter extends BasePresenter<CreateActionPresenter.C
     }
 
     public void setMeetingDate(Long date) {
-        ((Meeting) taskToCreate).setMeetingDateTimeMillis(date);
+        ((Meeting) taskToCreate).setDeadlineMillis(date);
         ((Meeting) taskToCreate).setCreatedDate(System.currentTimeMillis());
     }
 
@@ -135,7 +137,7 @@ public class CreateActionPresenter extends BasePresenter<CreateActionPresenter.C
         }
     }
 
-    public Single<Map.Entry<String, LiveWireAlert>> getAlertAndGroupName() {
+    public Maybe<Map.Entry<String, LiveWireAlert>> getAlertAndGroupName() {
         return dbService.load(Group.class, liveWireAlert.getGroupUid()).map(group -> new AbstractMap.SimpleEntry<>(group.getName(), liveWireAlert));
     }
 

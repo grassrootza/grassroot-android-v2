@@ -16,20 +16,18 @@ import android.view.ViewGroup;
 
 import javax.inject.Inject;
 
-import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import dagger.Lazy;
 import io.reactivex.Observable;
-import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.functions.Predicate;
 import io.reactivex.subjects.PublishSubject;
 import timber.log.Timber;
 import za.org.grassroot2.GrassrootApplication;
 import za.org.grassroot2.R;
 import za.org.grassroot2.dagger.activity.ActivityComponent;
-import za.org.grassroot2.presenter.fragment.BaseFragmentPresenter;
+import za.org.grassroot2.dagger.fragment.FragmentComponent;
+import za.org.grassroot2.dagger.fragment.FragmentModule;
 import za.org.grassroot2.services.OfflineReceiver;
 import za.org.grassroot2.services.account.AuthConstants;
 import za.org.grassroot2.util.AlarmManagerHelper;
@@ -56,6 +54,7 @@ public abstract class GrassrootFragment extends Fragment implements FragmentView
     View progress;
     @Inject        UserPreference       userPreference;
     @Inject public Lazy<AccountManager> accountManagerProvider;
+    private FragmentComponent component;
 
     @Override
     public void onAttach(Context context) {
@@ -74,6 +73,7 @@ public abstract class GrassrootFragment extends Fragment implements FragmentView
         super.onDestroyView();
         Timber.i("inside GrassrootFragment onDestroyView");
         disposables.clear();
+        component = null;
         if (this.unbinder != null) {
             unbinder.unbind();
         }
@@ -143,5 +143,12 @@ public abstract class GrassrootFragment extends Fragment implements FragmentView
         if (progress!=null) {
             ViewAnimation.fadeOut(progress);
         }
+    }
+
+    protected FragmentComponent get() {
+        if (component == null) {
+            component = ((GrassrootActivity)getActivity()).getComponenet().plus(new FragmentModule());
+        }
+        return component;
     }
 }

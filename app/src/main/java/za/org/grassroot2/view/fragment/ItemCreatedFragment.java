@@ -68,7 +68,7 @@ public class ItemCreatedFragment extends GrassrootFragment implements ItemCalled
     public void showDescription(Integer memberCount, GrassrootEntityType type) {
         if (type == GrassrootEntityType.MEETING) {
             title.setText(R.string.meeting_called);
-        } else if (type == GrassrootEntityType.LIVEWIRE_ALERT) {
+        } else if (type == GrassrootEntityType.LIVE_WIRE_ALERT) {
             title.setText(R.string.lwire_alert_sent);
         }
         description.setText(getResources().getQuantityString(R.plurals.notification_sent, memberCount, memberCount));

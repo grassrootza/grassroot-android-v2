@@ -17,16 +17,12 @@ import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 
 import butterknife.BindView;
-import io.reactivex.Observable;
-import za.org.grassroot2.GrassrootApplication;
 import za.org.grassroot2.R;
 import za.org.grassroot2.dagger.activity.ActivityComponent;
 import za.org.grassroot2.model.enums.GrassrootEntityType;
 import za.org.grassroot2.model.task.Task;
 import za.org.grassroot2.presenter.fragment.GroupTasksPresenter;
-import za.org.grassroot2.view.activity.GrassrootActivity;
 import za.org.grassroot2.view.adapter.GroupTasksAdapter;
-import za.org.grassroot2.view.adapter.HeaderItem;
 
 public class GroupTasksFragment extends GrassrootFragment implements GroupTasksPresenter.AllFragmentView {
 

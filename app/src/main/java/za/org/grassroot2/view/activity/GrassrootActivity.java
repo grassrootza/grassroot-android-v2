@@ -22,6 +22,8 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
+import com.tbruyelle.rxpermissions2.RxPermissions;
+
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
@@ -38,6 +40,7 @@ import za.org.grassroot2.R;
 import za.org.grassroot2.dagger.AppComponent;
 import za.org.grassroot2.dagger.activity.ActivityComponent;
 import za.org.grassroot2.dagger.activity.ActivityModule;
+import za.org.grassroot2.model.task.Meeting;
 import za.org.grassroot2.services.OfflineReceiver;
 import za.org.grassroot2.services.SyncOfflineDataService;
 import za.org.grassroot2.services.account.AuthConstants;
@@ -54,6 +57,7 @@ public abstract class GrassrootActivity extends AppCompatActivity implements Gra
     @Inject public Lazy<AccountManager> accountManagerProvider;
     @Inject public UserPreference       userPreference;
 
+
     private   AccountAuthenticatorResponse authResponse     = null;
     private   Bundle                       authResultBundle = null;
     protected CompositeDisposable          disposables      = new CompositeDisposable();
@@ -61,6 +65,7 @@ public abstract class GrassrootActivity extends AppCompatActivity implements Gra
     @BindView(R.id.progress)
     @Nullable
     View progress;
+    private ActivityComponent component;
 
     @Override
     protected void onCreate(Bundle icicle) {
@@ -68,16 +73,12 @@ public abstract class GrassrootActivity extends AppCompatActivity implements Gra
         setContentView(R.layout.base_progress_container);
         setContentLayout(getLayoutResourceId());
         ButterKnife.bind(this);
-        getActivityComponent().inject(this);
-        onInject(getActivityComponent());
+        getComponenet().inject(this);
+        onInject(getComponenet());
         authResponse = getIntent().getParcelableExtra(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE);
         if (authResponse != null) {
             authResponse.onRequestContinued();
         }
-    }
-
-    private ActivityComponent getActivityComponent() {
-        return getAppComponent().plus(getActivityModule());
     }
 
     protected abstract void onInject(ActivityComponent component);
@@ -200,6 +201,13 @@ public abstract class GrassrootActivity extends AppCompatActivity implements Gra
         return new ActivityModule(this);
     }
 
+    public ActivityComponent getComponenet() {
+        if (component == null) {
+            component = getAppComponent().plus(getActivityModule());
+        }
+        return component;
+    }
+
     public AppComponent getAppComponent() {
         return ((GrassrootApplication) getApplication()).getAppComponent();
     }
@@ -251,7 +259,9 @@ public abstract class GrassrootActivity extends AppCompatActivity implements Gra
 
     @Subscribe
     public void notifyItemOutOfSync(SyncOfflineDataService.ObjectOutOfSyncEvent e) {
-        Snackbar.make(findViewById(android.R.id.content), getString(R.string.meeting_out_of_sync, e.syncable.getName()), Snackbar.LENGTH_SHORT).show();
+        if (e.syncable instanceof Meeting) {
+            Snackbar.make(findViewById(android.R.id.content), e.msg, Snackbar.LENGTH_LONG).show();
+        }
     }
 
     @Override

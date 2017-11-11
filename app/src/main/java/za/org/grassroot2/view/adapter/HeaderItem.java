@@ -85,4 +85,14 @@ public class HeaderItem implements Task {
     public boolean isPublic() {
         return false;
     }
+
+    @Override
+    public long date() {
+        return 0;
+    }
+
+    @Override
+    public String searchableContent() {
+        return null;
+    }
 }

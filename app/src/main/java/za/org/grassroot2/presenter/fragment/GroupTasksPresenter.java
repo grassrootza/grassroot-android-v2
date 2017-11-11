@@ -33,9 +33,9 @@ public class GroupTasksPresenter extends BaseFragmentPresenter<GroupTasksPresent
         disposableOnDetach(databaseService.loadTasksForGroup(groupUid, type).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(tasks -> {
             if (!tasks.isEmpty()) {
                 Collections.sort(tasks, (o1, o2) -> o1.getDeadlineMillis() < o2.getDeadlineMillis() ? 1 : (o1.getDeadlineMillis() > o2.getDeadlineMillis() ? -1 : 0));
-                view.render(tasks);
+                getView().render(tasks);
             } else {
-                view.empty();
+                getView().empty();
             }
         }, Throwable::printStackTrace));
     }

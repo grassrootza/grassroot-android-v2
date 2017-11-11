@@ -13,12 +13,13 @@ public enum GrassrootEntityType {
 
     TASK,
     MEETING,
+    PUBLIC_MEETING,
     VOTE,
     TODO,
 
     GROUP_JOIN_REQUEST,
 
-    LIVEWIRE_ALERT,
+    LIVE_WIRE_ALERT,
     SAFETY_ALERT,
 
     MEDIA_FILE

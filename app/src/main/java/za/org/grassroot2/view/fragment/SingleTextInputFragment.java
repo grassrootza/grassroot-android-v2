@@ -16,6 +16,7 @@ import butterknife.BindView;
 import io.reactivex.Observable;
 import za.org.grassroot2.R;
 import za.org.grassroot2.dagger.activity.ActivityComponent;
+import za.org.grassroot2.dagger.fragment.FragmentComponent;
 import za.org.grassroot2.rxbinding.RxTextView;
 import za.org.grassroot2.rxbinding.RxView;
 import za.org.grassroot2.rxbinding.RxViewUtils;

@@ -2,6 +2,7 @@ package za.org.grassroot2.model.alert;
 
 import android.text.TextUtils;
 
+import com.google.gson.annotations.SerializedName;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
@@ -10,11 +11,13 @@ import java.util.Collections;
 import java.util.Set;
 import java.util.UUID;
 
+import za.org.grassroot2.model.AroundItem;
+import za.org.grassroot2.model.ExcludeFromSerialization;
+import za.org.grassroot2.model.HomeFeedItem;
 import za.org.grassroot2.model.MediaFile;
 import za.org.grassroot2.model.enums.GrassrootEntityType;
 import za.org.grassroot2.model.network.EntityForUpload;
 import za.org.grassroot2.model.network.Syncable;
-import za.org.grassroot2.model.task.Task;
 
 /**
  * Created by luke on 2017/08/15.
@@ -23,7 +26,7 @@ import za.org.grassroot2.model.task.Task;
  */
 
 @DatabaseTable(tableName = "livewire_alerts")
-public class LiveWireAlert implements EntityForUpload, Syncable {
+public class LiveWireAlert implements EntityForUpload, Syncable, AroundItem, HomeFeedItem {
 
     public static final String TYPE_GENERIC = "INSTANT"; // server calls it this, for legacy reasons
     public static final String TYPE_MEETING = "MEETING";
@@ -34,28 +37,39 @@ public class LiveWireAlert implements EntityForUpload, Syncable {
     private String serverUid;
     @DatabaseField
     private String headline;
-    @DatabaseField(foreign = true, foreignAutoRefresh = true)
+    @DatabaseField(foreign = true, foreignAutoRefresh = true, columnDefinition = "TEXT REFERENCES media_files(uid) ON DELETE CASCADE")
     private MediaFile mediaFile;
     @DatabaseField
-    private String description;
+    private String    description;
     @DatabaseField
-    private String alertType;
+    private String    alertType;
     @DatabaseField
-    private String taskUid;
+    private String    taskUid;
     @DatabaseField
-    private String groupUid;
+    private String    groupUid;
     @DatabaseField
-    private boolean complete;
+    private boolean   complete;
     @DatabaseField
-    private boolean sending;
+    private boolean   sending;
     @DatabaseField
-    private boolean underReview;
+    private boolean   underReview;
     @DatabaseField
-    private boolean released;
+    private String    creatingUserName;
+    @DatabaseField
+    private boolean   released;
+    @DatabaseField
+    private String    ancestorGroupName;
+    @DatabaseField
+    @SerializedName("creationDateMillis")
+    private long      createdDate;
     @DatabaseField
     private transient boolean synced = true;
-    @DatabaseField
-    private transient long createdDate;
+
+    @ExcludeFromSerialization
+    private double longitude;
+
+    @ExcludeFromSerialization
+    private double latitude;
 
     public LiveWireAlert() {
         this.uid = UUID.randomUUID().toString();
@@ -78,7 +92,7 @@ public class LiveWireAlert implements EntityForUpload, Syncable {
 
     @Override
     public GrassrootEntityType getType() {
-        return GrassrootEntityType.LIVEWIRE_ALERT;
+        return GrassrootEntityType.LIVE_WIRE_ALERT;
     }
 
     @Override
@@ -136,6 +150,48 @@ public class LiveWireAlert implements EntityForUpload, Syncable {
 
     public void setSynced(boolean synced) {
         this.synced = synced;
+    }
+
+    public double getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(double longitude) {
+        this.longitude = longitude;
+    }
+
+    public double getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(double latitude) {
+        this.latitude = latitude;
+    }
+
+    @Override
+    public long date() {
+        return createdDate;
+    }
+
+    @Override
+    public String searchableContent() {
+        return headline + (description != null ? description : "");
+    }
+
+    public String getAncestorGroupName() {
+        return ancestorGroupName;
+    }
+
+    public void setAncestorGroupName(String ancestorGroupName) {
+        this.ancestorGroupName = ancestorGroupName;
+    }
+
+    public String getCreatingUserName() {
+        return creatingUserName;
+    }
+
+    public void setCreatingUserName(String creatingUserName) {
+        this.creatingUserName = creatingUserName;
     }
 
     public static final class Builder {

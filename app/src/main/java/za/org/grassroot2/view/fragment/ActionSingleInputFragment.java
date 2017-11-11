@@ -3,7 +3,6 @@ package za.org.grassroot2.view.fragment;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.design.widget.TextInputEditText;
 import android.support.design.widget.TextInputLayout;
 import android.text.InputType;
 import android.view.Gravity;
@@ -78,13 +77,7 @@ public class ActionSingleInputFragment extends GrassrootFragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         inputContainer.setHint(getString(getArguments().getInt(EXTRA_HINT_RES)));
-        if (multiLine) {
-            input.setInputType(InputType.TYPE_TEXT_FLAG_MULTI_LINE);
-            input.setSingleLine(false);
-            input.setGravity(Gravity.LEFT | Gravity.TOP);
-            input.setMaxLines(5);
-            input.setMinLines(5);
-        }
+        setMultilineIfRequired();
         title.setText(getArguments().getInt(EXTRA_TITLE_RES));
         description.setText(getArguments().getInt(EXTRA_DESC_RES));
         if (getArguments().getBoolean(EXTRA_CAN_SKIP, false)) {
@@ -95,6 +88,16 @@ public class ActionSingleInputFragment extends GrassrootFragment {
         RxView.clicks(next).map(o -> input.getText().toString()).subscribe(actionSubject);
         RxTextView.editorActionEvents(input, textViewEditorActionEvent -> textViewEditorActionEvent.actionId() == EditorInfo.IME_ACTION_DONE && input.length() > 3)
                 .map(textViewEditorActionEvent -> input.getText().toString()).subscribe(actionSubject);
+    }
+
+    private void setMultilineIfRequired() {
+        if (multiLine) {
+            input.setInputType(InputType.TYPE_TEXT_FLAG_MULTI_LINE);
+            input.setSingleLine(false);
+            input.setGravity(Gravity.LEFT | Gravity.TOP);
+            input.setMaxLines(5);
+            input.setMinLines(5);
+        }
     }
 
     @Override

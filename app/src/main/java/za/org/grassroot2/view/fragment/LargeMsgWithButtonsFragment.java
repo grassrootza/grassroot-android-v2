@@ -17,7 +17,6 @@ import java.util.ArrayList;
 import butterknife.BindView;
 import io.reactivex.Observable;
 import timber.log.Timber;
-import za.org.grassroot2.GrassrootApplication;
 import za.org.grassroot2.R;
 import za.org.grassroot2.dagger.activity.ActivityComponent;
 import za.org.grassroot2.model.dto.BtnGrouping;

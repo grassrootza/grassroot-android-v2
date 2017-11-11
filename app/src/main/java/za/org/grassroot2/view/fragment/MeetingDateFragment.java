@@ -11,7 +11,6 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 
 import java.util.Calendar;
-import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
@@ -23,6 +22,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.subjects.PublishSubject;
 import za.org.grassroot2.R;
 import za.org.grassroot2.dagger.activity.ActivityComponent;
+import za.org.grassroot2.dagger.fragment.FragmentComponent;
 import za.org.grassroot2.presenter.fragment.MeetingDatePresenter;
 import za.org.grassroot2.rxbinding.RxTextView;
 import za.org.grassroot2.rxbinding.RxView;

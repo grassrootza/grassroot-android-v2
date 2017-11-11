@@ -2,6 +2,7 @@ package za.org.grassroot2.services;
 
 import javax.inject.Inject;
 
+import io.reactivex.Maybe;
 import io.reactivex.Observable;
 import io.reactivex.Single;
 import io.reactivex.SingleEmitter;
@@ -32,7 +33,7 @@ public class LiveWireServiceImpl implements LiveWireService {
     }
 
     @Override
-    public Single<LiveWireAlert> load(final String alertUid) {
+    public Maybe<LiveWireAlert> load(final String alertUid) {
         return databaseService.load(LiveWireAlert.class, alertUid);
     }
 
@@ -58,7 +59,7 @@ public class LiveWireServiceImpl implements LiveWireService {
         return databaseService.store(LiveWireAlert.class, LiveWireAlert.newBuilder()
                 .headline(headline)
                 .build())
-                .map(liveWireAlert -> liveWireAlert.getUid().toString());
+                .map(liveWireAlert -> liveWireAlert.getUid());
     }
 
     @Override

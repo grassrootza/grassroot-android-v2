@@ -31,11 +31,11 @@ public class GroupSelectionPresenter extends BaseFragmentPresenter<GroupSelectio
     public void onViewCreated() {
         List<SelectableItem> data = new ArrayList<>();
         data.addAll(databaseService.loadGroupsSorted());
-        view.renderResults(data);
-        disposableOnDetach(view.searchChanged().debounce(500, TimeUnit.MILLISECONDS).subscribeOn(Schedulers.io()).flatMap(s -> Observable.just(databaseService.loadObjectsByName(Group.class, s))).observeOn(AndroidSchedulers.mainThread()).subscribe(groups -> {
-            view.renderResults(groups);
+        getView().renderResults(data);
+        disposableOnDetach(getView().searchChanged().debounce(500, TimeUnit.MILLISECONDS).subscribeOn(Schedulers.io()).flatMap(s -> Observable.just(databaseService.loadObjectsByName(Group.class, s))).observeOn(AndroidSchedulers.mainThread()).subscribe(groups -> {
+            getView().renderResults(groups);
         }, Throwable::printStackTrace));
-        disposableOnDetach(view.groupClick().subscribe(s -> view.groupSelected(s), Throwable::printStackTrace));
+        disposableOnDetach(getView().groupClick().subscribe(s -> getView().groupSelected(s), Throwable::printStackTrace));
     }
 
     public interface GroupSelectionView extends FragmentView {

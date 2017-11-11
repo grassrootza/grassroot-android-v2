@@ -157,7 +157,7 @@ public class CreateActionActivity extends GrassrootActivity implements BackNavig
     private void addLongDescriptionFragment() {
         ActionSingleInputFragment actionSingleInputFragment = ActionSingleInputFragment.newInstance(R.string.long_description, R.string.info_long_description, R.string.hint_description, true);
         actionSingleInputFragment.setMultiLine(true);
-        disposables.add(actionSingleInputFragment.inputAdded().flatMapSingle(description -> {
+        disposables.add(actionSingleInputFragment.inputAdded().flatMapMaybe(description -> {
             presenter.setLongDescription(description);
             return presenter.getAlertAndGroupName();
         }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(entry -> {

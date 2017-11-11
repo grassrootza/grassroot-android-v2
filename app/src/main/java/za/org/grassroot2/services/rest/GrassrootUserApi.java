@@ -14,7 +14,9 @@ import retrofit2.http.POST;
 import retrofit2.http.Part;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
+import za.org.grassroot2.model.AroundEntity;
 import za.org.grassroot2.model.Group;
+import za.org.grassroot2.model.alert.LiveWireAlert;
 import za.org.grassroot2.model.request.MemberRequest;
 import za.org.grassroot2.model.task.Task;
 
@@ -67,11 +69,24 @@ public interface GrassrootUserApi {
     Observable<Long> getTimestampForTextDate(@Query("text") String text);
 
     @POST("/api/task/create/meeting/{userUid}/{parentType}/{parentUid}")
-    Observable<Task> createTask(@Path("parentType") String parentType,
+    Observable<Response<Task>> createTask(@Path("parentType") String parentType,
                                           @Path("userUid") String userUid,
                                           @Path("parentUid") String parentUid,
                                           @Query("subject") String subject,
                                           @Query("location") String location,
                                           @Query("dateTimeEpochMillis") long created);
+
+    @GET("/api/location/all/alerts/{userUid}")
+    Observable<List<LiveWireAlert>> getAlertsAround(@Path("userUid") String userUid,
+                                                @Query("longitude") double longitude,
+                                                @Query("latitude") double latitude,
+                                                @Query("radiusMetres") int radius);
+
+    @GET("/api/location/all/{userUid}")
+    Observable<List<AroundEntity>> getAllAround(@Path("userUid") String userUid,
+                                                @Query("longitude") double longitude,
+                                                @Query("latitude") double latitude,
+                                                @Query("radiusMetres") int radius,
+                                                @Query("saerchType") String serachType);
 
 }

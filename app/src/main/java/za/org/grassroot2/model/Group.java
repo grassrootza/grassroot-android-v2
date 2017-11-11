@@ -6,14 +6,12 @@ import com.j256.ormlite.table.DatabaseTable;
 
 import java.io.Serializable;
 import java.util.List;
-import java.util.UUID;
 
-import za.org.grassroot2.database.serialization.StringCollectionPersister;
 import za.org.grassroot2.model.enums.GrassrootEntityType;
 import za.org.grassroot2.model.network.EntityForDownload;
 
 @DatabaseTable(tableName = "groups")
-public class Group implements EntityForDownload, SelectableItem, Serializable {
+public class Group implements EntityForDownload, SelectableItem, Serializable, AroundItem {
 
     /*
     Central, highly important entity, so a few notes:
@@ -58,6 +56,11 @@ public class Group implements EntityForDownload, SelectableItem, Serializable {
     @SerializedName("userPermissions")
     private List<String> permissions;
 
+    @ExcludeFromSerialization
+    private double longitude;
+
+    @ExcludeFromSerialization
+    private double latitude;
 
     public Group() {
     }
@@ -138,5 +141,21 @@ public class Group implements EntityForDownload, SelectableItem, Serializable {
 
     public void setPermissions(List<String> permissions) {
         this.permissions = permissions;
+    }
+
+    public double getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(double longitude) {
+        this.longitude = longitude;
+    }
+
+    public double getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(double latitude) {
+        this.latitude = latitude;
     }
 }
