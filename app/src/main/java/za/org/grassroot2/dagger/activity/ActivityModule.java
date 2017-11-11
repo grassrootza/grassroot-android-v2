@@ -7,16 +7,15 @@ import com.tbruyelle.rxpermissions2.RxPermissions;
 
 import java.util.ArrayList;
 
-import javax.inject.Singleton;
-
 import dagger.Module;
 import dagger.Provides;
 import za.org.grassroot2.dagger.ActivityContext;
 import za.org.grassroot2.dagger.ApplicationContext;
 import za.org.grassroot2.database.DatabaseService;
+import za.org.grassroot2.presenter.ForgottenPasswordPresenter;
 import za.org.grassroot2.presenter.GroupDetailsPresenter;
-import za.org.grassroot2.presenter.LoginPresenter;
 import za.org.grassroot2.presenter.PickContactPresenter;
+import za.org.grassroot2.presenter.RegistrationPresenter;
 import za.org.grassroot2.presenter.fragment.GroupFragmentPresenter;
 import za.org.grassroot2.presenter.fragment.SingleTextMultiButtonPresenter;
 import za.org.grassroot2.services.LiveWireService;
@@ -73,12 +72,6 @@ public class ActivityModule {
         return new SingleTextMultiButtonPresenter();
     }
 
-    @Provides
-    @PerActivity
-    LoginPresenter provideLoginPresenter(GrassrootAuthApi grassrootAuthApi,
-                                         UserDetailsService userDetailsService) {
-        return new LoginPresenter(grassrootAuthApi, userDetailsService);
-    }
 
     @Provides
     @PerActivity
@@ -106,8 +99,22 @@ public class ActivityModule {
 
     @Provides
     @PerActivity
+    RegistrationPresenter provideRegistrationPresenter(GrassrootAuthApi grassrootAuthApi,
+                                                       UserDetailsService userDetailsService) {
+        return new RegistrationPresenter(grassrootAuthApi, userDetailsService);
+    }
+
+    @Provides
+    @PerActivity
     HomeAdapter provideHomeAdapter(@ActivityContext AppCompatActivity c) {
         return new HomeAdapter(c, new ArrayList<>());
+    }
+
+    @Provides
+    @PerActivity
+    ForgottenPasswordPresenter provideForgottenPasswordPresenter(GrassrootAuthApi grassrootAuthApi,
+                                                                 UserDetailsService userDetailsService) {
+        return new ForgottenPasswordPresenter(grassrootAuthApi, userDetailsService);
     }
 
     @Provides

@@ -1,0 +1,78 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="10dp"
+    android:gravity="center_vertical"
+    android:background="@android:color/white"
+    android:layout_centerInParent="true"
+    tools:context="za.org.grassroot2.view.fragment.SingleTextInputFragment">
+
+
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:gravity="center|bottom"
+        android:layout_weight="0.5">
+
+        <ImageView
+            app:srcCompat="@drawable/ic_allgood_popup"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingBottom="@dimen/padding_std_large" />
+
+        <TextView
+            android:id="@+id/title"
+            style="@style/LargeHeader"
+            android:gravity="center_horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:paddingBottom="@dimen/margin_std_large"
+            android:text="@string/register_success_title" />
+
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:gravity="center_horizontal"
+        android:layout_marginLeft="@dimen/margin_std_large"
+        android:layout_marginRight="@dimen/margin_std_large"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="0.5">
+
+        <TextView
+            android:id="@+id/subtitle"
+            style="@style/LargeBodyText"
+            android:gravity="center"
+            android:textColor="@color/default_font_color"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/margin_std_large"
+            android:paddingLeft="@dimen/padding_std_medium"
+            android:paddingRight="@dimen/padding_std_medium"
+            android:text="@string/register_success_subtitle" />
+
+        <Button
+            android:id="@+id/button_next"
+            style="@style/DefaultActionButton"
+            android:paddingLeft="@dimen/padding_std_xlarge"
+            android:paddingRight="@dimen/padding_std_xlarge"
+            android:paddingTop="@dimen/padding_std_medium"
+            android:paddingBottom="@dimen/padding_std_medium"
+            android:layout_margin="@dimen/margin_std_large"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/button_start" />
+
+    </LinearLayout>
+
+
+</LinearLayout>
+

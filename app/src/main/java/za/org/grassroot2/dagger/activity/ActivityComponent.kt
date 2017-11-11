@@ -27,6 +27,9 @@ interface ActivityComponent {
     fun inject(fragment: MeetingDateFragment)
     fun inject(activity: CreateActionActivity)
     fun inject(fragment: ItemCreatedFragment)
+    fun inject(activity: WelcomeActivity)
+    fun inject(activity: RegisterActivity)
+    fun inject(activity: ForgotPasswordActivity)
     fun plus(module: FragmentModule) : FragmentComponent
 
 }

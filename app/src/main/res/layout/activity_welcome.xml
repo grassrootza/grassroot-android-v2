@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:background="@android:color/white"
+    android:id="@+id/welcome_frag_holder"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:animateLayoutChanges="true">
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        style="@style/ProgressBarMedium"
+        android:visibility="visible"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal|center_vertical"
+        android:foregroundGravity="center"
+        android:layout_gravity="center" />
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@android:color/white"
+        android:weightSum="0.9"
+        android:orientation="vertical">
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="0.3"
+            android:gravity="bottom|center"
+            android:orientation="vertical">
+
+            <ImageView
+                android:layout_width="261dp"
+                android:layout_height="54dp"
+                android:src="@drawable/horizontal_logo" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="sans-serif-medium"
+                android:gravity="center_horizontal"
+                android:lineSpacingExtra="9sp"
+                android:text="TOOLS FOR A NATION SELF-ORGANIZING"
+                android:textColor="#333333"
+                android:textSize="14sp"
+                android:paddingTop="26dp"
+                android:textStyle="normal" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="0.3"></LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:gravity="center|top"
+            android:orientation="vertical"
+            android:layout_weight="0.3">
+
+            <Button
+                android:id="@+id/createAccBtn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="14sp"
+                android:paddingTop="17dp"
+                android:paddingBottom="17dp"
+                android:paddingLeft="7dp"
+                android:paddingRight="7dp"
+                android:fontFamily="sans-serif-medium"
+                android:textColor="#ffffff"
+                android:gravity="center"
+                android:background="@drawable/btn_primary_default"
+                android:text="Create an account" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="26dp"
+                android:orientation="horizontal"
+                android:gravity="center">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="16sp"
+                    android:fontFamily="sans-serif"
+                    android:textStyle="normal"
+                    android:textColor="#575757"
+                    android:lineSpacingExtra="7sp"
+                    android:gravity="center_horizontal"
+                    android:text="Already have an account?" />
+
+                <TextView
+                    android:id="@+id/signInTxt"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="16sp"
+                    android:fontFamily="sans-serif"
+                    android:textStyle="normal"
+                    android:textColor="@color/colorPrimary"
+                    android:lineSpacingExtra="7sp"
+                    android:gravity="center_horizontal"
+                    android:layout_marginLeft="10dp"
+                    android:text="Sign in HERE" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+
+</FrameLayout>
+
+

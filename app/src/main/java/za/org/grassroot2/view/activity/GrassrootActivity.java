@@ -269,4 +269,11 @@ public abstract class GrassrootActivity extends AppCompatActivity implements Gra
         Snackbar.make(findViewById(android.R.id.content), R.string.snackbar_offline, Snackbar.LENGTH_SHORT).show();
     }
 
+    public void hideKeyboard() {
+        View view = this.getCurrentFocus();
+        if (view != null) {
+            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+        }
+    }
 }

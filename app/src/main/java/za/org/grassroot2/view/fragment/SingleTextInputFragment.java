@@ -6,6 +6,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import org.greenrobot.eventbus.EventBus;
@@ -22,25 +24,32 @@ import za.org.grassroot2.view.SingleInputNextOtherView;
 
 public class SingleTextInputFragment extends TextInputFragment implements SingleInputNextOtherView {
 
-    private static final String BACK_BUTTON_RES = "BACK_BUTTON_RES";
+    private static final String INPUT_LABEL_RES = "INPUT_LABEL_RES";
+    private static final String INPUT_HINT_RES = "INPUT_HINT_RES";
     private static final String NEXT_BUTTON_RES = "NEXT_BUTTON_RES";
 
-    private int backBtnRes;
     private int nextBtnRes;
+    private int inputLabelRes;
+    private int inputHintRes;
 
     @BindView(R.id.explanation_text) TextView explanation;
-    @BindView(R.id.button_back) Button backButton;
+    @BindView(R.id.button_back)
+    ImageButton backButton;
     @BindView(R.id.button_next) Button nextButton;
+    @BindView(R.id.inputLabel)
+    TextView inputLabel;
+    @BindView(R.id.text_input_field)
+    EditText inputField;
 
     public SingleTextInputFragment() {
     }
 
-    public static SingleTextInputFragment newInstance(int headerTextRes, int explanTextRes,
-                                                      int backButtonRes, int nextButtonRes) {
+    public static SingleTextInputFragment newInstance(int headerTextRes, int explanTextRes, int inputLabelRes, int inputHintRes, int nextButtonRes) {
         SingleTextInputFragment fragment = new SingleTextInputFragment();
         Bundle args = new Bundle();
         addStandardArgs(args, headerTextRes, explanTextRes);
-        args.putInt(BACK_BUTTON_RES, backButtonRes);
+        args.putInt(INPUT_LABEL_RES, inputLabelRes);
+        args.putInt(INPUT_HINT_RES, inputHintRes);
         args.putInt(NEXT_BUTTON_RES, nextButtonRes);
         fragment.setArguments(args);
         return fragment;
@@ -51,8 +60,9 @@ public class SingleTextInputFragment extends TextInputFragment implements Single
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             Bundle args = getArguments();
-            backBtnRes = args.getInt(BACK_BUTTON_RES);
             nextBtnRes = args.getInt(NEXT_BUTTON_RES);
+            inputLabelRes = args.getInt(INPUT_LABEL_RES);
+            inputHintRes = args.getInt(INPUT_HINT_RES);
         }
     }
 
@@ -66,8 +76,11 @@ public class SingleTextInputFragment extends TextInputFragment implements Single
         View v = super.onCreateView(inflater, container, savedInstanceState);
         header.setText(headerTextRes);
         explanation.setText(explanTextRes);
-        backButton.setText(backBtnRes);
+
         nextButton.setText(nextBtnRes);
+        inputLabel.setText(inputLabelRes);
+        inputField.setHint(inputHintRes);
+
         lifecyclePublisher.onNext(ACTION_FRAGMENT_VIEW_CREATED);
         return v;
     }
@@ -83,15 +96,21 @@ public class SingleTextInputFragment extends TextInputFragment implements Single
                 .map(integer -> inputText.getText());
         Observable<CharSequence> nextButtonClicked = RxView
                 .clicks(nextButton).map(o -> inputText.getText());
+
         Observable<CharSequence> backClick = RxView.clicks(backButton)
                 .map(o -> inputText.getText());
+
         disposables.add(RxTextView.textChanges(inputText).subscribe(charSequence -> {
             if (charSequence.length()>1) {
                 toggleNextDoneButton(true);
             }
         }, Throwable::printStackTrace));
-        disposables.add(Observable.merge(editTextNext, nextButtonClicked, backClick).subscribe(charSequence ->
-                EventBus.getDefault().post(new SingleInputTextEvent(charSequence)), Throwable::printStackTrace));
+
+        disposables.add(Observable.merge(editTextNext, nextButtonClicked).subscribe(charSequence ->
+                EventBus.getDefault().post(new SingleInputTextEvent(this, SingleInputTextEventType.DONE, charSequence)), Throwable::printStackTrace));
+
+        disposables.add(backClick.subscribe(charSequence ->
+                EventBus.getDefault().post(new SingleInputTextEvent(this, SingleInputTextEventType.BACK, "")), Throwable::printStackTrace));
     }
 
     @Override
@@ -107,13 +126,21 @@ public class SingleTextInputFragment extends TextInputFragment implements Single
     @Override
     public void toggleBackOtherButton(boolean enabled) {
         backButton.setEnabled(enabled);
+        backButton.setVisibility(enabled ? View.VISIBLE : View.INVISIBLE);
     }
 
+
+    public enum SingleInputTextEventType {CHANGE, DONE, BACK}
+
     public static class SingleInputTextEvent {
+        public final GrassrootFragment source;
+        public final SingleInputTextEventType type;
         public final CharSequence value;
 
-        public SingleInputTextEvent(CharSequence charSequence) {
-            this.value = charSequence;
+        public SingleInputTextEvent(GrassrootFragment source, SingleInputTextEventType type, CharSequence value) {
+            this.source = source;
+            this.type = type;
+            this.value = value;
         }
     }
 }
