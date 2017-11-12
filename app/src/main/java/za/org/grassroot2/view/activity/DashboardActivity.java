@@ -23,7 +23,7 @@ import za.org.grassroot2.util.NetworkUtil;
 import za.org.grassroot2.view.fragment.AroundMeFragment;
 import za.org.grassroot2.view.fragment.GroupsFragment;
 import za.org.grassroot2.view.fragment.HomeFragment;
-import za.org.grassroot2.view.fragment.MeFragment;
+import za.org.grassroot2.view.fragment.MyProfileFragment;
 
 public class DashboardActivity extends GrassrootActivity {
 
@@ -119,7 +119,7 @@ public class DashboardActivity extends GrassrootActivity {
                 case TAB_AROUND:
                     return AroundMeFragment.Companion.newInstance();
                 case TAB_ME:
-                    return new MeFragment();
+                    return new MyProfileFragment();
             }
             return null;
         }
