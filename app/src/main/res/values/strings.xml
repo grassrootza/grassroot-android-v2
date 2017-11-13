@@ -16,6 +16,7 @@
     <string name="button_confirm">Confirm</string>
     <string name="button_modify">Modify</string>
     <string name="button_start">Start</string>
+    <string name="button_save">Save</string>
 
     <!-- Login activity strings -->
     <string name="login_welcome">Welcome to Grassroot</string>
@@ -258,6 +259,11 @@
     <string name="post_confirm_text_no_media">Issuing a post with title \'%1$s\', No media attached.</string>
     <string name="speak_now">Speak now</string>
     <string name="activity">ACTIVITY</string>
+
+    <string name="me_change_profile_photo">CHANGE PROFILE PHOTO</string>
+    <string name="me_phone_number">Phone number</string>
+    <string name="me_display_name">Display name</string>
+    <string name="me_email">Email address</string>
 
 
 </resources>

@@ -17,12 +17,22 @@ public class UserProfile {
 
     @DatabaseField(id = true)
     private String uid;
+
     @DatabaseField
     private String msisdn;
+
     @DatabaseField
     private String displayName;
+
+    @DatabaseField
+    private String emailAddress;
+
+    @DatabaseField
+    private String localPhotoPath;
+
     @DatabaseField
     private String systemRole;
+
     @DatabaseField
     private int syncStatus = SYNC_STATE_NONE;
 
