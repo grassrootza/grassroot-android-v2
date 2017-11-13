@@ -89,4 +89,11 @@ public interface GrassrootUserApi {
                                                 @Query("radiusMetres") int radius,
                                                 @Query("saerchType") String serachType);
 
+
+    @Multipart
+    @POST("/api/user/change-profile-img/{userUid}")
+    Observable<Response<RestResponse<String>>> uploadProfilePhoto(@Path("userUid") String userUid,
+                                                                  @Part MultipartBody.Part file);
+
+
 }
