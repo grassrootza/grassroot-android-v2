@@ -244,6 +244,9 @@
     <string name="registration_failed_username_taken">Username is already taken</string>
     <string name="registration_failed_number_already_registered">User with this number is already registered</string>
     <string name="registration_failed_invalid_otp">Code verification failed</string>
+    <string name="createGroup">Create group</string>
+    <string name="takeAction">Take action</string>
+    <string name="dictateMyAction">Dictate my action</string>
 
 
 </resources>

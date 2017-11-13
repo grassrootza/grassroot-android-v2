@@ -92,7 +92,7 @@ public class GroupDetailsActivity extends GrassrootActivity implements GroupDeta
 
     @OnClick(R.id.fab)
     void fabClick() {
-        CreateActionActivity.start(getActivity(), groupUid);
+        CreateActionActivity.Companion.start(getActivity(), groupUid);
     }
 
     private void displayInviteDialog() {

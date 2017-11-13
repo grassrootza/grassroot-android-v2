@@ -83,6 +83,7 @@ public class WrapContentViewPager extends ViewPager {
     public void setCurrentItem(int item, boolean smoothScroll) {
         shouldPlayAnim = true;
         super.setCurrentItem(item, smoothScroll);
+        requestLayout();
     }
 
     public WrapContentViewPager(Context context, AttributeSet attrs) {

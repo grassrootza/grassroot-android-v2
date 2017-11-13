@@ -119,7 +119,7 @@ public class GroupsFragment extends GrassrootFragment implements GroupFragmentPr
 
     @OnClick(R.id.fab)
     public void fabClick() {
-        CreateActionActivity.start(getActivity(), null);
+        CreateActionActivity.Companion.start(getActivity(), null);
     }
 
     private void displayEmptyLayout() {
