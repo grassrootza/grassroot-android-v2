@@ -16,6 +16,7 @@ import za.org.grassroot2.dagger.activity.ActivityComponent
 import za.org.grassroot2.model.HomeFeedItem
 import za.org.grassroot2.presenter.HomePresenter
 import za.org.grassroot2.rxbinding.RxTextView
+import za.org.grassroot2.view.activity.CreateActionActivity
 import za.org.grassroot2.view.adapter.HomeAdapter
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
@@ -56,6 +57,7 @@ class HomeFragment : GrassrootFragment(), HomePresenter.HomeView {
         homeItemList.layoutManager = LinearLayoutManager(activity)
         homeItemList.adapter = adapter
         (activity as AppCompatActivity).setSupportActionBar(toolbar)
+        fab.setOnClickListener({ _ -> CreateActionActivity.startFromHome(activity) })
         toolbar.setTitle(R.string.title_home)
         presenter.onViewCreated()
         presenter.loadHomeItems()

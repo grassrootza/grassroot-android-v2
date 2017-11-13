@@ -8,4 +8,6 @@
     <item name="photo" type="id" />
     <item name="video" type="id" />
     <item name="gallery" type="id" />
+    <item name="createGroup" type="id" />
+    <item name="takeAction" type="id" />
 </resources>

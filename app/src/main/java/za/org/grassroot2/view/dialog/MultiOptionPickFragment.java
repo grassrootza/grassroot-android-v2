@@ -52,6 +52,31 @@ public class MultiOptionPickFragment extends GrassrootFragment {
         return f;
     }
 
+    public static MultiOptionPickFragment getHomeActionPicker() {
+        HashMap<Integer, ActionOption> options = new LinkedHashMap<>();
+        options.put(R.id.createGroup, new ActionOption(R.id.createGroup, R.string.createGroup, R.drawable.ic_mic_24dp));
+        options.put(R.id.takeAction, new ActionOption(R.id.takeAction, R.string.takeAction, R.drawable.ic_mic_24dp));
+        options.put(R.id.dictate, new ActionOption(R.id.dictate, R.string.dictateMyAction, R.drawable.ic_date_range_green_24dp));
+        MultiOptionPickFragment f = new MultiOptionPickFragment();
+        Bundle b = new Bundle();
+        b.putSerializable(EXTRA_OPTIONS, options);
+        f.setArguments(b);
+        return f;
+    }
+
+    public static MultiOptionPickFragment homeTakeActionFragment() {
+        HashMap<Integer, ActionOption> options = new LinkedHashMap<>();
+        options.put(R.id.createLivewireAlert, new ActionOption(R.id.createLivewireAlert, R.string.create_livewire_alert, R.drawable.ic_mic_24dp));
+        options.put(R.id.createTodo, new ActionOption(R.id.createTodo, R.string.create_to_do, R.drawable.ic_format_list_bulleted_24dp));
+        options.put(R.id.takeVote, new ActionOption(R.id.takeVote, R.string.take_a_vote, R.drawable.ic_mic_24dp));
+        options.put(R.id.callMeeting, new ActionOption(R.id.callMeeting, R.string.call_a_meeting, R.drawable.ic_date_range_green_24dp));
+        MultiOptionPickFragment f = new MultiOptionPickFragment();
+        Bundle b = new Bundle();
+        b.putSerializable(EXTRA_OPTIONS, options);
+        f.setArguments(b);
+        return f;
+    }
+
     @Override
     protected void onInject(ActivityComponent activityComponent) {
     }
