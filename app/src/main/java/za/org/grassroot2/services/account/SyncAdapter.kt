@@ -14,7 +14,6 @@ import org.greenrobot.eventbus.EventBus
 import org.json.JSONException
 
 import java.io.IOException
-import java.util.ArrayList
 import java.util.HashMap
 
 import javax.inject.Inject
@@ -27,15 +26,19 @@ import za.org.grassroot2.model.UserProfile
 import za.org.grassroot2.model.enums.GrassrootEntityType
 import za.org.grassroot2.model.exception.ServerUnreachableException
 import za.org.grassroot2.model.network.EntityForDownload
-import za.org.grassroot2.model.task.Task
 import za.org.grassroot2.services.NetworkService
 import za.org.grassroot2.services.UserDetailsService
 
 class SyncAdapter : AbstractThreadedSyncAdapter {
 
-    private var networkService: NetworkService? = null
-    private var databaseService: DatabaseService? = null
-    private var userDetailsService: UserDetailsService? = null
+    lateinit var networkService: NetworkService
+        @Inject set
+
+    lateinit var databaseService: DatabaseService
+        @Inject set
+
+    lateinit var userDetailsService: UserDetailsService
+        @Inject set
 
     constructor(context: Context, autoInitialize: Boolean) : super(context, autoInitialize) {
         initDagger()
@@ -51,22 +54,6 @@ class SyncAdapter : AbstractThreadedSyncAdapter {
         (context.applicationContext as GrassrootApplication).appComponent.inject(this)
     }
 
-    @Inject
-    fun setNetworkService(networkService: NetworkService) {
-        this.networkService = networkService
-    }
-
-    @Inject
-    fun setUserDetailsService(userDetailsService: UserDetailsService) {
-        this.userDetailsService = userDetailsService
-    }
-
-    @Inject
-    fun setDatabaseService(databaseService: DatabaseService) {
-        this.databaseService = databaseService
-    }
-
-
     /**
      * This method is run by the Android framework, on a new Thread, to perform a sync.
      *
@@ -78,27 +65,27 @@ class SyncAdapter : AbstractThreadedSyncAdapter {
      */
     override fun onPerformSync(account: Account, extras: Bundle, authority: String, provider: ContentProviderClient, syncResult: SyncResult) {
         Timber.d("Starting synchronization...")
-        networkService!!.downloadAllChangedOrNewEntities<EntityForDownload>(GrassrootEntityType.GROUP, false)
+        networkService.downloadAllChangedOrNewEntities<EntityForDownload>(GrassrootEntityType.GROUP, false)
                 .subscribe({ entityForDownloads ->
-                    databaseService!!.copyOrUpdateListOfEntities(Group::class.java,
+                    databaseService.copyOrUpdateListOfEntities(Group::class.java,
                             convert(entityForDownloads))
                 }) { throwable -> handleSyncError(syncResult, throwable) }
-        networkService!!.downloadTaskMinimumInfo().flatMap { tasksMin ->
-            databaseService!!.storeTasks(tasksMin)
+        networkService.downloadTaskMinimumInfo().flatMap { tasksMin ->
+            databaseService.storeTasks(tasksMin)
             val uids = HashMap<String, String>()
             for (t in tasksMin) {
                 uids.put(t.uid, t.type.name)
             }
-            networkService!!.getTasksByUids(uids)
+            networkService.getTasksByUids(uids)
         }.subscribe({ tasksFull ->
-            databaseService!!.storeTasks(tasksFull)
-            userDetailsService!!.setSyncState(UserProfile.SYNC_STATE_COMPLETED)
+            databaseService.storeTasks(tasksFull)
+            userDetailsService.setSyncState(UserProfile.SYNC_STATE_COMPLETED)
             EventBus.getDefault().post(SyncCompletedEvent())
         }) { throwable -> handleSyncError(syncResult, throwable) }
     }
 
     private fun handleSyncError(syncResult: SyncResult, throwable: Throwable) {
-        userDetailsService!!.setSyncState(UserProfile.SYNC_STATE_FAILED)
+        userDetailsService.setSyncState(UserProfile.SYNC_STATE_FAILED)
         EventBus.getDefault().postSticky(SyncCompletedEvent())
         throwable.printStackTrace()
         if (throwable is IOException || throwable is ServerUnreachableException) {
@@ -113,14 +100,8 @@ class SyncAdapter : AbstractThreadedSyncAdapter {
         }
     }
 
-    // multiple bounds are not playing nice with the observable, so using this slight hack
-    // todo: figure out and fix multiple bounds on method above
     private fun convert(entityForDownloads: List<EntityForDownload>): List<Group> {
-        val list = ArrayList<Group>()
-        for (e in entityForDownloads) {
-            list.add(e as Group)
-        }
-        return list
+        return entityForDownloads.map { it as Group }
     }
 
     class SyncCompletedEvent

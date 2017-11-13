@@ -19,11 +19,18 @@
 
     </android.support.design.widget.AppBarLayout>
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/groupRecyclerView"
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/refreshLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/groupRecyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+    </android.support.v4.widget.SwipeRefreshLayout>
 
     <LinearLayout
         android:id="@+id/emptyInfoContainer"
@@ -37,12 +44,12 @@
             android:id="@+id/emptyInfo"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:fontFamily="sans-serif"
-            android:gravity="center_horizontal"
+            android:layout_marginBottom="24dp"
             android:layout_marginLeft="44dp"
             android:layout_marginRight="44dp"
+            android:fontFamily="sans-serif"
+            android:gravity="center_horizontal"
             android:lineSpacingExtra="10sp"
-            android:layout_marginBottom="24dp"
             android:text="@string/no_group_info"
             android:textColor="@color/text_grey"
             android:textSize="18sp"

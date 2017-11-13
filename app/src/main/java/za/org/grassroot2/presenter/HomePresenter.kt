@@ -40,7 +40,10 @@ constructor(private val locationManager: LocationManager, private val dbService:
         disposableOnDetach(locationManager.currentLocation.subscribe({ location ->
             loadAlertsAround(l)
             getPublicMeetings(l)
-        }, { t -> t.printStackTrace() }))
+        }, { t ->
+            t.printStackTrace()
+            view.stopRefreshing()
+        }))
     }
 
     private fun getPublicMeetings(location: Location) {
@@ -84,6 +87,7 @@ constructor(private val locationManager: LocationManager, private val dbService:
         homeItems.addAll(currentPublicMeetings)
         homeItems.sortByDescending { homeFeedItem -> homeFeedItem.date() }
         view.render(homeItems)
+        view.stopRefreshing()
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -95,6 +99,7 @@ constructor(private val locationManager: LocationManager, private val dbService:
         fun render(tasks: List<HomeFeedItem>)
         fun searchInputChanged() : Observable<String>
         fun filterData(searchQuery: String)
+        fun stopRefreshing()
     }
 
 }
