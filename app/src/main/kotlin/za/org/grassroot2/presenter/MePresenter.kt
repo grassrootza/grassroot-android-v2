@@ -42,23 +42,25 @@ class MePresenter(private val dbService: DatabaseService,
 
 
     fun takePhoto() {
-        disposableOnDetach(mediaService.createFileForMedia("image/jpeg", MediaFile.FUNCTION_USER_PROFILE_PHOTO).subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({ s ->
-                    val mediaFile = dbService.loadObjectByUid(MediaFile::class.java, s)
-                    Timber.e("mediaFile stored and retrieved, = " + mediaFile!!)
-                    // for some reason, sometimes it comes back null ...
-                    Timber.d("media URI passed to intent: " + Uri.parse(mediaFile.contentProviderPath))
-                    currentMediaFileUid = s
-                    view.cameraForResult(mediaFile.contentProviderPath, s)
-                }, { throwable ->
-                    Timber.e(throwable, "Error creating file")
+        disposableOnDetach(
+                mediaService
+                        .createFileForMedia("image/jpeg", MediaFile.FUNCTION_USER_PROFILE_PHOTO)
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe({ s ->
+                            val mediaFile = dbService.loadObjectByUid(MediaFile::class.java, s)
+                            Timber.e("mediaFile stored and retrieved, = " + mediaFile!!)
+                            // for some reason, sometimes it comes back null ...
+                            Timber.d("media URI passed to intent: " + Uri.parse(mediaFile.contentProviderPath))
+                            currentMediaFileUid = s
+                            view.cameraForResult(mediaFile.contentProviderPath, s)
+                        }, { throwable ->
+                            Timber.e(throwable, "Error creating file")
 //                    view.showErrorSnackbar(R.string.error_file_creation)
-                }))
+                        }))
     }
 
     fun pickFromGallery() {
-
 
         disposableOnDetach(view.ensureWriteExteralStoragePermission().flatMapSingle<String> { aBoolean ->
             if (aBoolean) {
@@ -82,6 +84,8 @@ class MePresenter(private val dbService: DatabaseService,
                 .doOnError({ this.handleMediaError(it) })
                 .subscribe { s ->
                     val mediaFile = dbService.loadObjectByUid(MediaFile::class.java, currentMediaFileUid)
+                    if (mediaFile != null)
+                        uploadProfilePhoto(mediaFile)
                     println("mediaFile: $mediaFile")
                 })
     }

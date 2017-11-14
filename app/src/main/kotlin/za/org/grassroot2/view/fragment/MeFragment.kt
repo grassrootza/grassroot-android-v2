@@ -9,6 +9,8 @@ import android.provider.MediaStore
 import android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI
 import android.support.v4.app.Fragment
 import android.support.v7.app.AppCompatActivity
+import android.support.v7.widget.PopupMenu
+import android.view.View
 import com.squareup.picasso.Picasso
 import com.tbruyelle.rxpermissions2.RxPermissions
 import io.reactivex.Observable
@@ -20,6 +22,7 @@ import za.org.grassroot2.model.UserProfile
 import za.org.grassroot2.presenter.MePresenter
 import za.org.grassroot2.view.MeView
 import javax.inject.Inject
+
 
 class MeFragment : GrassrootFragment(), MeView {
 
@@ -49,17 +52,33 @@ class MeFragment : GrassrootFragment(), MeView {
         (activity as AppCompatActivity).setSupportActionBar(toolbar)
         (activity as AppCompatActivity).supportActionBar!!.setTitle(R.string.title_me)
         profilePhoto.setOnClickListener {
-            presenter.pickFromGallery()
+            showPopup(profilePhoto)
+//            presenter.pickFromGallery()
         }
         changePhoto.setOnClickListener {
-            presenter.pickFromGallery()
+            showPopup(changePhoto)
+//            presenter.pickFromGallery()
         }
         presenter.attach(this)
         presenter.onViewCreated()
     }
 
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent) {
+    fun showPopup(v: View) {
+        val popup = PopupMenu(activity, v)
+        val inflater = popup.menuInflater
+        inflater.inflate(R.menu.change_image_options, popup.menu)
+        popup.setOnMenuItemClickListener { item ->
+            when (item.itemId) {
+                R.id.fromGallery -> presenter.pickFromGallery()
+                R.id.useCamera -> presenter.takePhoto()
+            }
+            true
+        }
+        popup.show()
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (resultCode == Activity.RESULT_OK) {
             if (requestCode == REQUEST_TAKE_PHOTO) {
                 presenter.cameraResult()
