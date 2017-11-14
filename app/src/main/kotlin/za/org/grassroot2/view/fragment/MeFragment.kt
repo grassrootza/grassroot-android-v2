@@ -9,9 +9,11 @@ import android.provider.MediaStore
 import android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI
 import android.support.v4.app.Fragment
 import android.support.v7.app.AppCompatActivity
+import com.squareup.picasso.Picasso
 import com.tbruyelle.rxpermissions2.RxPermissions
 import io.reactivex.Observable
 import kotlinx.android.synthetic.main.fragment_me.*
+import za.org.grassroot2.BuildConfig
 import za.org.grassroot2.R
 import za.org.grassroot2.dagger.activity.ActivityComponent
 import za.org.grassroot2.model.UserProfile
@@ -49,6 +51,9 @@ class MeFragment : GrassrootFragment(), MeView {
         profilePhoto.setOnClickListener {
             presenter.pickFromGallery()
         }
+        changePhoto.setOnClickListener {
+            presenter.pickFromGallery()
+        }
         presenter.attach(this)
         presenter.onViewCreated()
     }
@@ -72,7 +77,25 @@ class MeFragment : GrassrootFragment(), MeView {
     override fun displayUserData(profile: UserProfile) {
         displayNameInput.setText(profile.displayName)
         phoneNumberInput.setText(profile.msisdn)
-//        emailInput.setText(profile.email)
+        loadProfilePic(profile.uid)
+    }
+
+    override fun invalidateProfilePicCache(userUid: String) {
+        val url = BuildConfig.API_BASE + "api/user/profile-image/" + userUid
+        Picasso.with(context).invalidate(url)
+        loadProfilePic(userUid)
+    }
+
+    private fun loadProfilePic(userUid: String) {
+        val url = BuildConfig.API_BASE + "api/user/profile-image/" + userUid
+        Picasso.with(context)
+                .load(url)
+                .resize(50, 50)
+                .placeholder(R.drawable.user)
+                .error(R.drawable.user)
+                .centerCrop()
+                .into(profilePhoto)
+
     }
 
     override fun onDestroyView() {
