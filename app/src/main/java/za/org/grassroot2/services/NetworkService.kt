@@ -8,6 +8,7 @@ import za.org.grassroot2.model.Group
 import za.org.grassroot2.model.UploadResult
 import za.org.grassroot2.model.alert.LiveWireAlert
 import za.org.grassroot2.model.enums.GrassrootEntityType
+import za.org.grassroot2.model.language.NluResponse
 import za.org.grassroot2.model.network.EntityForDownload
 import za.org.grassroot2.model.network.EntityForUpload
 import za.org.grassroot2.model.request.MemberRequest
@@ -47,4 +48,6 @@ interface NetworkService {
     fun getAlertsAround(longitude: Double, latitude: Double, radius: Int): Observable<List<LiveWireAlert>>
 
     fun getAllAround(longitude: Double, latitude: Double, radius: Int): Flowable<Resource<List<AroundEntity>>>
+
+    fun seekIntentInText(text: String): Flowable<NluResponse>
 }

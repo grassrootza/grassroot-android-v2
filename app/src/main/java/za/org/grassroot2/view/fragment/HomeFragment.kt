@@ -7,6 +7,7 @@ import android.support.v7.widget.LinearLayoutManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Filter
 import com.tbruyelle.rxpermissions2.RxPermissions
 import dagger.Lazy
 import io.reactivex.Observable
@@ -31,8 +32,9 @@ class HomeFragment : GrassrootFragment(), HomePresenter.HomeView {
         return RxTextView.textChanges(searchInput).debounce(300, TimeUnit.MILLISECONDS).map { t -> t.toString() }
     }
 
-    override fun filterData(searchQuery: String) {
-        adapter.filter.filter(searchQuery)
+    // todo : convert listener to observable
+    override fun filterData(searchQuery: String, listener: Filter.FilterListener) {
+        adapter.filter.filter(searchQuery, listener)
     }
 
     @Inject internal lateinit var presenter: HomePresenter
@@ -67,6 +69,10 @@ class HomeFragment : GrassrootFragment(), HomePresenter.HomeView {
         refreshLayout.setOnRefreshListener { refreshView() }
         presenter.onViewCreated()
         refreshView()
+    }
+
+    override fun initiateCreateAction(actionToInitiate: Int) {
+        CreateActionActivity.startOnAction(activity, actionToInitiate, null)
     }
 
     private fun refreshView() {

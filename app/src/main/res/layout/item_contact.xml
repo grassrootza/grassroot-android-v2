@@ -1,21 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/root"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@color/white"
     android:gravity="center"
     android:orientation="vertical"
-    android:padding="24dp">
+    android:padding="@dimen/padding_std_large">
 
     <TextView
         android:textSize="20sp"
-        android:layout_marginBottom="8dp"
+        android:layout_marginBottom="@dimen/margin_std_medium"
         android:id="@+id/title"
         android:layout_width="match_parent"
         android:maxLines="1"
         android:layout_height="wrap_content"
-        android:textColor="@color/default_font_color" />
+        android:textColor="@color/colorPrimary"
+        tools:text="Name" />
 
     <TextView
         android:textStyle="bold"
@@ -24,6 +26,7 @@
         android:id="@+id/number"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textColor="@color/default_font_color" />
+        android:textColor="@color/default_font_color"
+        tools:text="Number"/>
 
 </LinearLayout>

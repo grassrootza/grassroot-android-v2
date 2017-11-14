@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import okhttp3.MultipartBody;
 import retrofit2.Response;
@@ -17,6 +18,7 @@ import retrofit2.http.Query;
 import za.org.grassroot2.model.AroundEntity;
 import za.org.grassroot2.model.Group;
 import za.org.grassroot2.model.alert.LiveWireAlert;
+import za.org.grassroot2.model.language.NluResponse;
 import za.org.grassroot2.model.request.MemberRequest;
 import za.org.grassroot2.model.task.Task;
 
@@ -88,5 +90,8 @@ public interface GrassrootUserApi {
                                                 @Query("latitude") double latitude,
                                                 @Query("radiusMetres") int radius,
                                                 @Query("saerchType") String serachType);
+
+    @GET("/api/language/parse/intent")
+    Flowable<NluResponse> seekIntentInText(@Query("text") String text);
 
 }

@@ -13,7 +13,6 @@ import za.org.grassroot2.view.fragment.*
 @Subcomponent(modules = arrayOf(ActivityModule::class))
 interface ActivityComponent {
 
-    fun inject(fragment: SingleTextMultiButtonFragment)
     fun inject(fragment: ItemSelectionFragment)
     fun inject(target: GrassrootActivity)
     fun inject(target: DashboardActivity)
