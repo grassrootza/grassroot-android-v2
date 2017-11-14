@@ -87,6 +87,7 @@ class MePresenter(private val dbService: DatabaseService,
     }
 
     fun handlePickResult(data: Uri) {
+        view.showProgressBar()
         disposableOnDetach(mediaService.storeGalleryFile(currentMediaFileUid, data).subscribeOn(Schedulers.io())
                 .doOnError({ this.handleMediaError(it) })
                 .subscribe(
@@ -111,13 +112,23 @@ class MePresenter(private val dbService: DatabaseService,
         dbService.storeObject(MediaFile::class.java, mediaFile)
 
         val fileMultipart = getFileMultipart(mediaFile, "photo")
-        grassrootUserApi.uploadProfilePhoto(userProfile.uid, fileMultipart).subscribe(
-                { result ->
-                    println("Upload result: $result")
-                },
-                { error ->
-                    println("Upload erorr: $error")
-                }
+        grassrootUserApi.uploadProfilePhoto(userProfile.uid, fileMultipart)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        { result ->
+                            println("Upload result: $result")
+                            view.closeProgressBar()
+                            if (result.isSuccessful) {
+                                view.invalidateProfilePicCache(userProfile.uid)
+                                println(mediaFile.contentProviderPath)
+                            } else
+                                println("Upload result error:" + result.errorBody())
+                        },
+                        { error ->
+                            println("Upload erorr: $error")
+                            view.closeProgressBar()
+                        }
         )
 
 //
