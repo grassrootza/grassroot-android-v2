@@ -22,6 +22,11 @@ import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 class HomeFragment : GrassrootFragment(), HomePresenter.HomeView {
+
+    override fun stopRefreshing() {
+        refreshLayout.isRefreshing = false
+    }
+
     override fun searchInputChanged(): Observable<String> {
         return RxTextView.textChanges(searchInput).debounce(300, TimeUnit.MILLISECONDS).map { t -> t.toString() }
     }
@@ -59,7 +64,12 @@ class HomeFragment : GrassrootFragment(), HomePresenter.HomeView {
         (activity as AppCompatActivity).setSupportActionBar(toolbar)
         fab.setOnClickListener({ _ -> CreateActionActivity.startFromHome(activity) })
         toolbar.setTitle(R.string.title_home)
+        refreshLayout.setOnRefreshListener { refreshView() }
         presenter.onViewCreated()
+        refreshView()
+    }
+
+    private fun refreshView() {
         presenter.loadHomeItems()
         requestLocation()
     }

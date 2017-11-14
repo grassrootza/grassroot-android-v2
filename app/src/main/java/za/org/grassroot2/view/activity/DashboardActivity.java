@@ -115,7 +115,7 @@ public class DashboardActivity extends GrassrootActivity {
                 case TAB_HOME:
                     return new HomeFragment();
                 case TAB_GROUPS:
-                    return GroupsFragment.newInstance();
+                    return GroupsFragment.Companion.newInstance();
                 case TAB_AROUND:
                     return AroundMeFragment.Companion.newInstance();
                 case TAB_ME:

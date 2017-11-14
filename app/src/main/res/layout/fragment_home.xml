@@ -26,9 +26,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="4dp"
-            android:minHeight="48dp"
             android:background="@drawable/white_rounded_2dp"
-            android:gravity="center">
+            android:gravity="center"
+            android:minHeight="48dp">
 
             <ImageView
                 android:layout_width="wrap_content"
@@ -42,9 +42,9 @@
             <EditText
                 android:id="@+id/searchInput"
                 android:layout_width="0dp"
-                android:background="@color/white"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:background="@color/white"
                 android:hint="@string/hint_saerch"
                 android:textColor="@color/light_grey_2"
                 android:textSize="14sp" />
@@ -63,11 +63,19 @@
 
     </android.support.design.widget.AppBarLayout>
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/homeItemList"
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/refreshLayout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/homeItemList"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+    </android.support.v4.widget.SwipeRefreshLayout>
+
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab"
