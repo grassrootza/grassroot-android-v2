@@ -78,6 +78,9 @@
                 android:id="@+id/displayNameInput"
                 style="@style/OneLineLargeTextInput"
                 android:layout_marginTop="@dimen/padding_std_medium"
+                android:imeOptions="actionNext"
+                android:lines="1"
+                android:nextFocusForward="@id/phoneNumberInput"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
 
@@ -105,6 +108,9 @@
             <EditText
                 android:id="@+id/phoneNumberInput"
                 style="@style/OneLineLargeTextInput"
+                android:imeOptions="actionNext"
+                android:lines="1"
+                android:nextFocusForward="@id/emailInput"
                 android:layout_marginTop="@dimen/padding_std_medium"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
@@ -132,6 +138,9 @@
             <EditText
                 android:id="@+id/emailInput"
                 style="@style/OneLineLargeTextInput"
+                android:imeOptions="actionDone"
+                android:lines="1"
+                android:nextFocusForward="@id/saveBtn"
                 android:layout_marginTop="@dimen/padding_std_medium"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
@@ -144,7 +153,8 @@
         </LinearLayout>
 
         <LinearLayout
-            android:visibility="gone"
+            android:id="@+id/submitActions"
+            android:visibility="invisible"
             android:layout_marginTop="@dimen/padding_std_medium"
             android:orientation="vertical"
             android:gravity="center"
@@ -152,6 +162,7 @@
             android:layout_height="match_parent">
 
             <Button
+                android:id="@+id/saveBtn"
                 style="DefaultActionButton"
                 android:text="@string/button_save"
                 android:background="@color/colorPrimary"

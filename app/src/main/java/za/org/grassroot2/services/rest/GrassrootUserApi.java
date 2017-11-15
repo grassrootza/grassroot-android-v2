@@ -16,6 +16,7 @@ import retrofit2.http.Path;
 import retrofit2.http.Query;
 import za.org.grassroot2.model.AroundEntity;
 import za.org.grassroot2.model.Group;
+import za.org.grassroot2.model.TokenResponse;
 import za.org.grassroot2.model.alert.LiveWireAlert;
 import za.org.grassroot2.model.request.MemberRequest;
 import za.org.grassroot2.model.task.Task;
@@ -94,6 +95,15 @@ public interface GrassrootUserApi {
     @POST("/api/user/change-profile-img/{userUid}")
     Observable<Response<RestResponse<String>>> uploadProfilePhoto(@Path("userUid") String userUid,
                                                                   @Part MultipartBody.Part file);
+
+
+    @POST("/api/user/update-profile-data")
+    Observable<RestResponse<TokenResponse>> updateProfileData(
+            @Query("displayName") String displayName,
+            @Query("phoneNumber") String phoneNumber,
+            @Query("email") String email);
+
+
 
 
 }

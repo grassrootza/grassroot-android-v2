@@ -6,6 +6,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import java.security.cert.CertificateException;
+import java.util.concurrent.TimeUnit;
 
 import javax.inject.Singleton;
 import javax.net.ssl.SSLContext;
@@ -76,6 +77,7 @@ public class NetworkModule {
             OkHttpClient.Builder httpClient = new OkHttpClient.Builder()
                     .addInterceptor(loggingInterceptor)
                     .addInterceptor(errorInterceptor); // inbound, checks what server says about auth token
+            httpClient.writeTimeout(5, TimeUnit.MINUTES);
             return httpClient.build();
         }
     }
