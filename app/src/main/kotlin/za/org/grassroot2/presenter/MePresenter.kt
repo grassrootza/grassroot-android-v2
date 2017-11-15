@@ -1,29 +1,20 @@
 package za.org.grassroot2.presenter
 
 import android.net.Uri
-import io.reactivex.Observable
-import io.reactivex.ObservableSource
 import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.functions.Function
 import io.reactivex.schedulers.Schedulers
 import okhttp3.MediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
-import retrofit2.Response
 import timber.log.Timber
 import za.org.grassroot2.database.DatabaseService
 import za.org.grassroot2.model.MediaFile
-import za.org.grassroot2.model.UploadResult
 import za.org.grassroot2.model.UserProfile
-import za.org.grassroot2.model.exception.ServerErrorException
-import za.org.grassroot2.model.network.EntityForUpload
 import za.org.grassroot2.presenter.fragment.BaseFragmentPresenter
 import za.org.grassroot2.services.MediaService
 import za.org.grassroot2.services.rest.GrassrootUserApi
-import za.org.grassroot2.services.rest.RestResponse
 import za.org.grassroot2.view.MeView
 import java.io.File
-import java.io.IOException
 
 class MePresenter(private val dbService: DatabaseService,
                   private val mediaService: MediaService,
@@ -103,6 +94,21 @@ class MePresenter(private val dbService: DatabaseService,
                         { this.handleMediaError(it) }))
     }
 
+    fun updateProfileData(displayName: String, phoneNumber: String, email: String) {
+
+        view.showProgressBar()
+        grassrootUserApi.updateProfileData(displayName, phoneNumber, email)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        { result ->
+                            val authData = result.data
+                            println(authData)
+
+                        }
+                )
+    }
+
     private fun handleMediaError(throwable: Throwable) {
         view.closeProgressBar()
         Timber.e(throwable)
@@ -116,7 +122,9 @@ class MePresenter(private val dbService: DatabaseService,
         dbService.storeObject(MediaFile::class.java, mediaFile)
 
         val fileMultipart = getFileMultipart(mediaFile, "photo")
-        grassrootUserApi.uploadProfilePhoto(userProfile.uid, fileMultipart)
+
+        disposableOnDetach(
+                grassrootUserApi.uploadProfilePhoto(userProfile.uid, fileMultipart)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
@@ -133,6 +141,7 @@ class MePresenter(private val dbService: DatabaseService,
                             println("Upload erorr: $error")
                             view.closeProgressBar()
                         }
+                )
         )
 
 //
@@ -165,25 +174,7 @@ class MePresenter(private val dbService: DatabaseService,
         }
     }
 
-    private fun successHandler(alert: EntityForUpload): io.reactivex.functions.Function<Response<RestResponse<String>>, ObservableSource<out UploadResult>> {
-        return io.reactivex.functions.Function { restResponseResponse ->
-            if (restResponseResponse.isSuccessful) {
-                Observable.just(UploadResult(alert.type, alert.uid, restResponseResponse.body()!!.getData()))
-            } else {
-                Observable.just(UploadResult(alert.type, ServerErrorException(restResponseResponse.code())))
-            }
-        }
-    }
 
-    private fun resumeHandler(entity: EntityForUpload): io.reactivex.functions.Function<Throwable, ObservableSource<out UploadResult>> {
-        return Function { throwable ->
-            if (throwable is IOException) {
-                Observable.just(UploadResult(entity.type, Throwable()))
-            } else {
-                Observable.just(UploadResult(entity.type, IllegalArgumentException()))
-            }
-        }
-    }
 
 
 }

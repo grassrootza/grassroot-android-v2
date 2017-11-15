@@ -10,6 +10,8 @@ import android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI
 import android.support.v4.app.Fragment
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.PopupMenu
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.View
 import com.squareup.picasso.Picasso
 import com.tbruyelle.rxpermissions2.RxPermissions
@@ -47,18 +49,40 @@ class MeFragment : GrassrootFragment(), MeView {
     }
 
 
+    val dataChangeWatcher = object : TextWatcher {
+        override fun afterTextChanged(p0: Editable?) {}
+
+        override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
+
+        override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+            submitActions.visibility = View.VISIBLE
+        }
+    }
+
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         (activity as AppCompatActivity).setSupportActionBar(toolbar)
         (activity as AppCompatActivity).supportActionBar!!.setTitle(R.string.title_me)
         profilePhoto.setOnClickListener {
             showPopup(profilePhoto)
-//            presenter.pickFromGallery()
         }
+
         changePhoto.setOnClickListener {
             showPopup(changePhoto)
-//            presenter.pickFromGallery()
         }
+
+        displayNameInput.addTextChangedListener(dataChangeWatcher)
+        phoneNumberInput.addTextChangedListener(dataChangeWatcher)
+        emailInput.addTextChangedListener(dataChangeWatcher)
+
+        saveBtn.setOnClickListener {
+            presenter.updateProfileData(
+                    displayNameInput.text.toString(),
+                    phoneNumberInput.text.toString(),
+                    emailInput.text.toString()
+            )
+        }
+
         presenter.attach(this)
         presenter.onViewCreated()
     }
@@ -97,6 +121,7 @@ class MeFragment : GrassrootFragment(), MeView {
         displayNameInput.setText(profile.displayName)
         phoneNumberInput.setText(profile.msisdn)
         loadProfilePic(profile.uid)
+        submitActions.visibility = View.INVISIBLE
     }
 
     override fun invalidateProfilePicCache(userUid: String) {
