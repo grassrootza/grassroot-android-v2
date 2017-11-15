@@ -9,6 +9,7 @@ import za.org.grassroot2.model.AroundEntity
 import za.org.grassroot2.model.HomeFeedItem
 import za.org.grassroot2.model.alert.LiveWireAlert
 import za.org.grassroot2.model.enums.GrassrootEntityType
+import za.org.grassroot2.model.task.Meeting
 import za.org.grassroot2.model.task.Task
 import za.org.grassroot2.presenter.fragment.BaseFragmentPresenter
 import za.org.grassroot2.services.LocationManager
@@ -28,6 +29,11 @@ constructor(private val locationManager: LocationManager, private val dbService:
     private var homeItems: MutableList<HomeFeedItem> = mutableListOf()
 
     override fun onViewCreated() {
+        disposableOnDetach(view.listItemClick().subscribe({ m ->
+            if (m is Meeting) {
+                view.openMeetingDetails(m)
+            }
+        }, { t -> t.printStackTrace() }))
         disposableOnDetach(view.searchInputChanged().observeOn(main()).subscribe({ searchQuery ->
             view.filterData(searchQuery)
         }))
@@ -100,6 +106,8 @@ constructor(private val locationManager: LocationManager, private val dbService:
         fun searchInputChanged() : Observable<String>
         fun filterData(searchQuery: String)
         fun stopRefreshing()
+        fun listItemClick() : Observable<HomeFeedItem>
+        fun openMeetingDetails(meeting: Meeting)
     }
 
 }

@@ -1,7 +1,6 @@
 package za.org.grassroot2.services
 
 import android.text.TextUtils
-import android.util.Log
 import io.reactivex.*
 
 import java.io.File
@@ -35,7 +34,6 @@ import za.org.grassroot2.model.task.Meeting
 import za.org.grassroot2.model.task.Task
 import za.org.grassroot2.services.rest.GrassrootUserApi
 import za.org.grassroot2.services.rest.RestResponse
-
 /**
  * Created by luke on 2017/08/16.
  */
@@ -233,9 +231,8 @@ constructor(private val userDetailsService: UserDetailsService,
                     return databaseService.load(AroundEntity::class.java)
                 }
 
-                override fun remote(): Observable<List<AroundEntity>> {
-                    return grassrootUserApi.getAllAround(currentUserUid, longitude, latitude, radius, "BOTH")
-                }
+                override fun remote(): Observable<List<AroundEntity>> =
+                        grassrootUserApi.getAllAround(currentUserUid, longitude, latitude, radius, "BOTH")
 
                 override fun saveResult(data: List<AroundEntity>) {
                     databaseService.deleteAll(AroundEntity::class.java)
@@ -249,6 +246,8 @@ constructor(private val userDetailsService: UserDetailsService,
         }, BackpressureStrategy.BUFFER)
 
     }
+
+    override fun respondToMeeting(meetingUid: String, response: String): Observable<Response<Void>> = grassrootUserApi.respondToMeeting(currentUserUid, meetingUid, response)
 
     private fun uploadMediaFile(mediaFile: MediaFile): Observable<UploadResult> {
         mediaFile.initUploading()
@@ -272,16 +271,17 @@ constructor(private val userDetailsService: UserDetailsService,
     }
 
     private fun getImageFromPath(mediaFile: MediaFile, paramName: String): MultipartBody.Part? {
-        try {
+        return try {
             Timber.i("getting image from path : " + mediaFile.absolutePath)
             val file = File(mediaFile.absolutePath)
             Timber.d("file size : " + file.length() / 1024)
             val requestFile = RequestBody.create(MediaType.parse(mediaFile.mimeType), file)
-            return MultipartBody.Part.createFormData(paramName, file.name, requestFile)
+            MultipartBody.Part.createFormData(paramName, file.name, requestFile)
         } catch (e: Exception) {
             Timber.e(e)
-            return null
+            null
         }
 
     }
 }
+

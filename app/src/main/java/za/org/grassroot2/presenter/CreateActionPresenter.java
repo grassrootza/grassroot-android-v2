@@ -65,19 +65,19 @@ public class CreateActionPresenter extends BasePresenter<CreateActionPresenter.C
     }
 
     public void createMeeting() {
-        view.showProgressBar();
+        getView().showProgressBar();
         disposableOnDetach(networkService.createTask(taskToCreate).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(task -> {
-            view.closeProgressBar();
-            view.uploadSuccessfull(GrassrootEntityType.MEETING);
+            getView().closeProgressBar();
+            getView().uploadSuccessfull(GrassrootEntityType.MEETING);
         }, throwable -> {
-            view.closeProgressBar();
-            view.uploadSuccessfull(GrassrootEntityType.MEETING);
+            getView().closeProgressBar();
+            getView().uploadSuccessfull(GrassrootEntityType.MEETING);
         }));
     }
 
     public void createAlert() {
         if (liveWireAlert.areMinimumFieldsComplete()) {
-            view.showProgressBar();
+            getView().showProgressBar();
             liveWireAlert.setComplete(true);
             if (currentMediaFileUid != null) {
                 liveWireAlert.setMediaFile(dbService.loadObjectByUid(MediaFile.class, currentMediaFileUid));
@@ -91,11 +91,11 @@ public class CreateActionPresenter extends BasePresenter<CreateActionPresenter.C
                 dbService.storeObject(LiveWireAlert.class, liveWireAlert);
                 return Observable.just(uploadResult);
             }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(uploadResult -> {
-                        view.closeProgressBar();
-                        view.uploadSuccessfull(GrassrootEntityType.LIVE_WIRE_ALERT);
+                        getView().closeProgressBar();
+                        getView().uploadSuccessfull(GrassrootEntityType.LIVE_WIRE_ALERT);
                     }, throwable -> {
-                        view.closeProgressBar();
-                        view.uploadSuccessfull(GrassrootEntityType.LIVE_WIRE_ALERT);
+                        getView().closeProgressBar();
+                        getView().uploadSuccessfull(GrassrootEntityType.LIVE_WIRE_ALERT);
                     }));
         }
     }
@@ -109,9 +109,9 @@ public class CreateActionPresenter extends BasePresenter<CreateActionPresenter.C
 
     public void verifyGroupPermissions(String groupUid) {
         if (groupUid != null) {
-            dbService.load(Group.class, groupUid).subscribe(group -> view.proceedWithRender(group), Throwable::printStackTrace);
+            dbService.load(Group.class, groupUid).subscribe(group -> getView().proceedWithRender(group), Throwable::printStackTrace);
         } else {
-            view.proceedWithRender(null);
+            getView().proceedWithRender(null);
         }
     }
 
@@ -150,15 +150,15 @@ public class CreateActionPresenter extends BasePresenter<CreateActionPresenter.C
                     // for some reason, sometimes it comes back null ...
                     Timber.d("media URI passed to intent: " + Uri.parse(mediaFile.getContentProviderPath()));
                     currentMediaFileUid = s;
-                    view.cameraForResult(mediaFile.getContentProviderPath(), s);
+                    getView().cameraForResult(mediaFile.getContentProviderPath(), s);
                 }, throwable -> {
                     Timber.e(throwable, "Error creating file");
-                    view.showErrorSnackbar(R.string.error_file_creation);
+                    getView().showErrorSnackbar(R.string.error_file_creation);
                 }));
     }
 
     public void pickFromGallery() {
-        disposableOnDetach(view.ensureWriteExteralStoragePermission().flatMapSingle(aBoolean -> {
+        disposableOnDetach(getView().ensureWriteExteralStoragePermission().flatMapSingle(aBoolean -> {
             if (aBoolean) {
                 return mediaService.createFileForMedia("image/jpeg", MediaFile.FUNCTION_LIVEWIRE);
             }
@@ -167,7 +167,7 @@ public class CreateActionPresenter extends BasePresenter<CreateActionPresenter.C
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(s -> {
                     currentMediaFileUid = s;
-                    view.pickFromGallery();
+                    getView().pickFromGallery();
                 }, Throwable::printStackTrace));
     }
 
@@ -220,9 +220,9 @@ public class CreateActionPresenter extends BasePresenter<CreateActionPresenter.C
     }
 
     private void handleMediaError(Throwable throwable) {
-        view.closeProgressBar();
+        getView().closeProgressBar();
         Timber.e(throwable);
-        view.showErrorSnackbar(R.string.error_lwire_alert_media_error);
+        getView().showErrorSnackbar(R.string.error_lwire_alert_media_error);
     }
 
     public interface CreateActionView extends GrassrootView {

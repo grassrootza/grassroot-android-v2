@@ -247,6 +247,10 @@
     <string name="createGroup">Create group</string>
     <string name="takeAction">Take action</string>
     <string name="dictateMyAction">Dictate my action</string>
+    <string name="write_post">WRITE A POST</string>
+    <string name="not_going">NOT GOING</string>
+    <string name="maybe">MAYBE</string>
+    <string name="going">GOING</string>
 
 
 </resources>

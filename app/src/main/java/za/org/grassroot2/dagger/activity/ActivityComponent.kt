@@ -30,6 +30,7 @@ interface ActivityComponent {
     fun inject(activity: WelcomeActivity)
     fun inject(activity: RegisterActivity)
     fun inject(activity: ForgotPasswordActivity)
+    fun inject(activity: MeetingDetailsActivity)
     fun plus(module: FragmentModule) : FragmentComponent
 
 }

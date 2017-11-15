@@ -45,22 +45,20 @@ class HomeAdapter @Inject constructor(private val context: Context, private var 
             filteredData = results.values as List<HomeFeedItem>
             notifyDataSetChanged()
         }
-
     }
 
-    private val viewClickSubject = PublishSubject.create<String>()
+    private val viewClickSubject = PublishSubject.create<HomeFeedItem>()
 
-    val viewClickObservable: Observable<String>
+    val viewClickObservable: Observable<HomeFeedItem>
         get() = viewClickSubject
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-        return when (viewType) {
-            VIEW_TYPE_TODO -> HomeViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.item_home, parent, false))
-            VIEW_TYPE_MEETING -> HomeViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.item_home, parent, false))
-            VIEW_TYPE_VOTE -> HomeViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.item_home, parent, false))
-            else -> HomeViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.item_home, parent, false))
-        }
-    }
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder =
+            when (viewType) {
+                VIEW_TYPE_TODO -> HomeViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.item_home, parent, false))
+                VIEW_TYPE_MEETING -> HomeViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.item_home, parent, false))
+                VIEW_TYPE_VOTE -> HomeViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.item_home, parent, false))
+                else -> HomeViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.item_home, parent, false))
+            }
 
     override fun getItemViewType(position: Int): Int {
         val task = filteredData[position]
@@ -119,7 +117,7 @@ class HomeAdapter @Inject constructor(private val context: Context, private var 
         holder.header.text = item.ancestorGroupName
         holder.lastModified.text = LastModifiedFormatter.lastSeen(context, item.deadlineMillis)
         setBackgroundSolidRounded(holder)
-        setupClick(holder.root, item.uid)
+        setupClick(holder.root, item)
         holder.options.visibility = View.GONE
     }
 
@@ -138,7 +136,7 @@ class HomeAdapter @Inject constructor(private val context: Context, private var 
         holder.title.text = context.getHtml(R.string.home_vote_title, item.callerName)
         holder.lastModified.text = LastModifiedFormatter.lastSeen(context, item.deadlineMillis)
         holder.subtitle.text = item.name
-        setupClick(holder.root, item.uid)
+        setupClick(holder.root, item)
     }
 
     private fun setBackground(holder: HomeViewHolder, item: Task) {
@@ -159,18 +157,16 @@ class HomeAdapter @Inject constructor(private val context: Context, private var 
         holder.title.text = context.getHtml(R.string.home_text_todo_title, item.recorderName)
         holder.subtitle.text = context.getHtml(R.string.home_quote_subtitle, item.name)
         holder.lastModified.text = LastModifiedFormatter.lastSeen(context, item.deadlineMillis)
-        setupClick(holder.root, item.uid)
+        setupClick(holder.root, item)
     }
 
-    private fun setupClick(view: View?, uid: String) {
+    private fun setupClick(view: View?, feedItem: HomeFeedItem) {
         RxView.clicks(view!!)
-                .map { _ -> uid }
+                .map { _ -> feedItem }
                 .subscribe(viewClickSubject)
     }
 
-    override fun getItemCount(): Int {
-        return filteredData.size
-    }
+    override fun getItemCount(): Int = filteredData.size
 
     fun setData(tasks: List<HomeFeedItem>) {
         data = tasks

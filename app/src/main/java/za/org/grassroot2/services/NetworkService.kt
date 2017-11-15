@@ -11,6 +11,7 @@ import za.org.grassroot2.model.enums.GrassrootEntityType
 import za.org.grassroot2.model.network.EntityForDownload
 import za.org.grassroot2.model.network.EntityForUpload
 import za.org.grassroot2.model.request.MemberRequest
+import za.org.grassroot2.model.task.Meeting
 import za.org.grassroot2.model.task.Task
 
 /**
@@ -47,4 +48,6 @@ interface NetworkService {
     fun getAlertsAround(longitude: Double, latitude: Double, radius: Int): Observable<List<LiveWireAlert>>
 
     fun getAllAround(longitude: Double, latitude: Double, radius: Int): Flowable<Resource<List<AroundEntity>>>
+
+    fun respondToMeeting(meetingUid: String, response: String): Observable<Response<Void>>
 }

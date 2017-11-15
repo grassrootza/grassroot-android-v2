@@ -100,7 +100,6 @@
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_weight">1</item>
-        <item name="android:fontFamily">sans-serif-medium</item>
         <item name="android:textColor">@color/colorPrimary</item>
         <item name="android:textSize">14sp</item>
         <item name="android:textStyle">normal</item>
@@ -111,7 +110,6 @@
         <item name="android:layout_height">68dp</item>
         <item name="android:background">@null</item>
         <item name="android:drawablePadding">32dp</item>
-        <item name="android:fontFamily">sans-serif-medium</item>
         <item name="android:gravity">center_vertical</item>
         <item name="android:paddingLeft">26dp</item>
         <item name="android:textColor">@color/text_dark_grey</item>
@@ -131,7 +129,6 @@
         <item name="android:layout_weight">1</item>
         <item name="android:background">@drawable/standard_button_selector</item>
         <item name="android:enabled">false</item>
-        <item name="android:fontFamily">sans-serif-medium</item>
     </style>
 
     <style name="CancelButtonStyle">
@@ -140,8 +137,12 @@
         <item name="android:layout_margin">8dp</item>
         <item name="android:layout_weight">1</item>
         <item name="android:background">@null</item>
-        <item name="android:fontFamily">sans-serif-medium</item>
         <item name="android:textColor">@color/colorPrimary</item>
+    </style>
+
+    <style name="ToolbarTitle" parent="TextAppearance.Widget.AppCompat.Toolbar.Title">
+        <item name="android:textSize">23sp</item>
+        <item name="android:textColorPrimary">@color/white</item>
     </style>
 
 </resources>

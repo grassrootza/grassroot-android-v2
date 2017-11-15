@@ -37,11 +37,11 @@ public class GroupDetailsPresenter extends BasePresenter<GroupDetailsPresenter.G
 
     public void loadData() {
         disposableOnDetach(databaseService.load(Group.class, groupUid).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(group -> {
-            if (view != null) {
+            if (getView() != null) {
                 if (GroupPermissionChecker.hasCreatePermission(group)) {
-                    view.displayFab();
+                    getView().displayFab();
                 }
-                view.render(group);
+                getView().render(group);
             }
         }, Throwable::printStackTrace));
         disposableOnDetach(networkService.getTasksForGroup(groupUid).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(tasks -> {
@@ -49,19 +49,19 @@ public class GroupDetailsPresenter extends BasePresenter<GroupDetailsPresenter.G
                 databaseService.storeTasks(tasks);
                 EventBus.getDefault().post(new TasksUpdatedEvent());
             } else {
-                view.emptyData();
+                getView().emptyData();
             }
         }, this::handleNetworkConnectionError));
 
     }
 
     public void inviteContacts(List<Contact> contacts) {
-        view.showProgressBar();
+        getView().showProgressBar();
         disposableOnDetach(networkService.inviteContactsToGroup(groupUid, RequestMapper.map(groupUid, contacts)).observeOn(AndroidSchedulers.mainThread()).subscribeOn(Schedulers.io()).subscribe(voidResponse -> {
-            view.closeProgressBar();
+            getView().closeProgressBar();
             if (voidResponse.isSuccessful()) {
             } else {
-                view.showErrorSnackbar(R.string.error_permission_denied);
+                getView().showErrorSnackbar(R.string.error_permission_denied);
             }
         }, this::handleNetworkUploadError));
     }

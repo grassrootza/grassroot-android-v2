@@ -39,7 +39,7 @@ public abstract class LoggedInViewPresenterImpl<T extends GrassrootView> extends
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(aBoolean -> {
                     if (aBoolean) {
-                        view.launchActivity(WelcomeActivity.class, null);
+                        getView().launchActivity(WelcomeActivity.class, null);
                     }
                 });
     }
