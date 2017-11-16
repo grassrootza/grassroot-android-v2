@@ -91,6 +91,17 @@ public interface GrassrootUserApi {
                                                 @Query("radiusMetres") int radius,
                                                 @Query("saerchType") String serachType);
 
+    @POST("/api/task/respond/meeting/{userUid}/{taskUid}")
+    Observable<Response<Void>> respondToMeeting(@Path("userUid") String userId, @Path("taskUid") String taskUid, @Query("response") String response);
+
+    @Multipart
+    @POST("/api/task/respond/post/{userUid}/{taskType}/{taskUid}")
+    Observable<Response<Void>> uploadPost(@Path("userUid") String userId,
+                                          @Path("taskType") String taskType,
+                                          @Path("taskUid") String taskUid,
+                                          @Query("caption") String title,
+                                          @Part MultipartBody.Part file);
+
     @GET("/api/language/parse/intent")
     Flowable<NluResponse> seekIntentInText(@Query("text") String text);
 

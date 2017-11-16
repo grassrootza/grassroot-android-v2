@@ -34,9 +34,7 @@ class CreateActionActivity : GrassrootActivity(), BackNavigationListener, Create
     private var created: Boolean = false
     private var shouldRemoveLast: Boolean = false
 
-    override fun getLayoutResourceId(): Int {
-        return R.layout.activity_create_action
-    }
+    override fun getLayoutResourceId(): Int = R.layout.activity_create_action
 
     private fun nextStep() {
         val current = viewPager.currentItem

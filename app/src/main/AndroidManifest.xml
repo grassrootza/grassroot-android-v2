@@ -107,7 +107,16 @@
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.Toolbar" />
         <activity
+            android:name=".view.activity.MeetingDetailsActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.Toolbar" />
+        <activity
             android:name=".view.activity.CreateActionActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.AppCompat.Transparent"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name=".view.activity.CreatePostActivity"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.AppCompat.Transparent"
             android:windowSoftInputMode="adjustPan" />

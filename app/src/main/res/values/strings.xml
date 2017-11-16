@@ -98,16 +98,14 @@
     <string name="lwire_headline_title">Headline</string>
     <string name="lwire_media_header">Add media</string>
     <string name="lwire_media_prompt">Do you want to include a photo, video or attachment?</string>
-    <string name="lwire_headline_explan">Okay, next please type in a headline for the alert</string>
+    <string name="lwire_headline_explan">Okay, next please type in a title for the alert</string>
     <string name="lwire_description_header">Longer description</string>
     <string name="lwire_description_hint">Please enter any longer description of the alert, e.g.,
     any article text (please keep it short and simple)</string>
 
     <string name="lwire_confirm_header">Confirmed?</string>
-    <string name="lwire_confirm_text_media">Issuing a LiveWire alert with headline \'%1$s\', about
-    group %2$s, with a media attached.</string>
-    <string name="lwire_confirm_text_no_media">Issuing a LiveWire alert with headline \'%1$s\',
-    about group %2$s. No media attached.</string>
+    <string name="lwire_confirm_text_media">Issuing a LiveWire alert with title \'%1$s\', about group %2$s, with a media attached.</string>
+    <string name="lwire_confirm_text_no_media">Issuing a LiveWire alert with title \'%1$s\', about group %2$s. No media attached.</string>
 
     <string name="done_header">Done!</string>
     <string name="lwire_alert_sent">The LiveWire alert has been sent. What next?</string>
@@ -181,6 +179,7 @@
     <string name="cancel">CANCEL</string>
     <string name="next">NEXT</string>
     <string name="info_meeting_subject">Type in a short sentence the subject of this meeting.</string>
+    <string name="info_post_subject">Type in a short sentence the subject of this post.</string>
     <string name="info_meeting_location">Type in location of this meeting.</string>
     <string name="hint_meeting_subject">Meeting subject</string>
     <string name="hint_meeting_location">Meeting location</string>
@@ -193,11 +192,12 @@
     <string name="yes">YES</string>
     <string name="at">At</string>
     <string name="meeting_called">Meeting called!</string>
+    <string name="post_created">Post created!</string>
     <string name="ok">OK</string>
     <string name="where_will_it_happen">Where will it happen?</string>
     <string name="meeting_out_of_sync">Sorry, meeting %s start date is in the past.</string>
     <string name="create_livewire_alert">Create LiveWire alert</string>
-    <string name="info_headline">Please write a headline for the alert</string>
+    <string name="info_headline">Please write a title for the alert</string>
     <string name="hint_headline">Headline</string>
     <string name="header_add_media">Add media?</string>
     <string name="long_description">Long description?</string>
@@ -247,6 +247,13 @@
     <string name="createGroup">Create group</string>
     <string name="takeAction">Take action</string>
     <string name="dictateMyAction">Dictate my action</string>
+    <string name="write_post">WRITE A POST</string>
+    <string name="not_going">NOT GOING</string>
+    <string name="maybe">MAYBE</string>
+    <string name="going">GOING</string>
+    <string name="hint_post_subject">Post subject</string>
+    <string name="post_confirm_text_media">Issuing a post with title \'%1$s\', with a media attached.</string>
+    <string name="post_confirm_text_no_media">Issuing a post with title \'%1$s\', No media attached.</string>
 
 
 </resources>

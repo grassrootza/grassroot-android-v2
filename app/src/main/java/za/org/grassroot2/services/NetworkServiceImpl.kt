@@ -1,16 +1,8 @@
 package za.org.grassroot2.services
 
 import android.text.TextUtils
-import android.util.Log
 import io.reactivex.*
-
-import java.io.File
-import java.io.IOException
-import java.util.ArrayList
-import java.util.HashMap
-
-import javax.inject.Inject
-
+import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.functions.Function
 import io.reactivex.schedulers.Schedulers
@@ -36,6 +28,10 @@ import za.org.grassroot2.model.task.Meeting
 import za.org.grassroot2.model.task.Task
 import za.org.grassroot2.services.rest.GrassrootUserApi
 import za.org.grassroot2.services.rest.RestResponse
+import java.io.File
+import java.io.IOException
+import java.util.*
+import javax.inject.Inject
 
 /**
  * Created by luke on 2017/08/16.
@@ -238,9 +234,8 @@ constructor(private val userDetailsService: UserDetailsService,
                     return databaseService.load(AroundEntity::class.java)
                 }
 
-                override fun remote(): Observable<List<AroundEntity>> {
-                    return grassrootUserApi.getAllAround(currentUserUid, longitude, latitude, radius, "BOTH")
-                }
+                override fun remote(): Observable<List<AroundEntity>> =
+                        grassrootUserApi.getAllAround(currentUserUid, longitude, latitude, radius, "BOTH")
 
                 override fun saveResult(data: List<AroundEntity>) {
                     databaseService.deleteAll(AroundEntity::class.java)
@@ -253,6 +248,18 @@ constructor(private val userDetailsService: UserDetailsService,
             }
         }, BackpressureStrategy.BUFFER)
 
+    }
+
+    override fun respondToMeeting(meetingUid: String, response: String): Observable<Response<Void>> = grassrootUserApi.respondToMeeting(currentUserUid, meetingUid, response)
+
+    override fun uploadMeetingPost(meetingUid: String, description: String, mediaFile: MediaFile?): Observable<Response<Void>> {
+        return grassrootUserApi.uploadPost(
+                currentUserUid,
+                "MEETING",
+                meetingUid,
+                description,
+                if (mediaFile != null) getImageFromPath(mediaFile, "image") else null
+        )
     }
 
     private fun uploadMediaFile(mediaFile: MediaFile): Observable<UploadResult> {
@@ -277,16 +284,16 @@ constructor(private val userDetailsService: UserDetailsService,
     }
 
     private fun getImageFromPath(mediaFile: MediaFile, paramName: String): MultipartBody.Part? {
-        try {
+        return try {
             Timber.i("getting image from path : " + mediaFile.absolutePath)
             val file = File(mediaFile.absolutePath)
             Timber.d("file size : " + file.length() / 1024)
             val requestFile = RequestBody.create(MediaType.parse(mediaFile.mimeType), file)
-            return MultipartBody.Part.createFormData(paramName, file.name, requestFile)
+            MultipartBody.Part.createFormData(paramName, file.name, requestFile)
         } catch (e: Exception) {
             Timber.e(e)
-            return null
+            null
         }
-
     }
 }
+

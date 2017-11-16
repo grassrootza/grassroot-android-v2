@@ -18,7 +18,7 @@ public class ItemCalledPresenter extends BaseFragmentPresenter<ItemCalledPresent
     }
 
     public void loadGroupData(String groupUid, GrassrootEntityType type) {
-        disposableOnDetach(databaseService.load(Group.class, groupUid).subscribe(group -> getView().showDescription(group.getMemberCount(), type), Throwable::printStackTrace));
+        disposableOnDetach(databaseService.load(Group.class, groupUid).subscribe(group -> view.showDescription(group.getMemberCount(), type), Throwable::printStackTrace));
     }
 
     @Override

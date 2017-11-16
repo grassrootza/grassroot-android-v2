@@ -22,18 +22,18 @@ public class PickContactPresenter extends BasePresenter<PickContactPresenter.Pic
     }
 
     public void loadContacts() {
-        view.showProgressBar();
+        getView().showProgressBar();
         disposableOnDetach(contactHelper.getAllContactsSimple().subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).flatMap(contacts -> {
-            view.closeProgressBar();
+            getView().closeProgressBar();
             if (contacts.isEmpty()) {
-                view.emptyData();
+                getView().emptyData();
             } else {
-                view.render(contacts);
+                getView().render(contacts);
             }
             return contactHelper.getAllContacts().subscribeOn(Schedulers.io());
         }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(contacts -> {
             if (!contacts.isEmpty()) {
-                view.render(contacts);
+                getView().render(contacts);
             }
         }, Throwable::printStackTrace));
     }

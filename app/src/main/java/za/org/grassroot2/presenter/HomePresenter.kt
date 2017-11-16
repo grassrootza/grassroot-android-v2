@@ -12,15 +12,14 @@ import za.org.grassroot2.model.AroundEntity
 import za.org.grassroot2.model.HomeFeedItem
 import za.org.grassroot2.model.alert.LiveWireAlert
 import za.org.grassroot2.model.enums.GrassrootEntityType
-import za.org.grassroot2.model.language.NluIntent
 import za.org.grassroot2.model.language.NluResponse
+import za.org.grassroot2.model.task.Meeting
 import za.org.grassroot2.model.task.Task
 import za.org.grassroot2.presenter.fragment.BaseFragmentPresenter
 import za.org.grassroot2.services.LocationManager
 import za.org.grassroot2.services.NetworkService
 import za.org.grassroot2.services.account.SyncAdapter
 import za.org.grassroot2.view.FragmentView
-import za.org.grassroot2.view.activity.CreateActionActivity
 import javax.inject.Inject
 
 class HomePresenter @Inject
@@ -36,6 +35,11 @@ constructor(private val locationManager: LocationManager, private val dbService:
     // todo: make this work via Rx observable instead
     // todo: have some common list of intent beginnings (first static, in time pulled from NLU)
     override fun onViewCreated() {
+        disposableOnDetach(view.listItemClick().subscribe({ m ->
+            if (m is Meeting) {
+                view.openMeetingDetails(m)
+            }
+        }, { t -> t.printStackTrace() }))
         disposableOnDetach(view.searchInputChanged().observeOn(main()).subscribe({ searchQuery ->
             view.filterData(searchQuery, Filter.FilterListener { p0 ->
                 if (p0 == 0 && searchQuery.length >= 3) {
@@ -124,6 +128,8 @@ constructor(private val locationManager: LocationManager, private val dbService:
         fun filterData(searchQuery: String, listener: Filter.FilterListener)
         fun stopRefreshing()
         fun initiateCreateAction(actionToInitiate: Int)
+        fun listItemClick() : Observable<HomeFeedItem>
+        fun openMeetingDetails(meeting: Meeting)
     }
 
 }
