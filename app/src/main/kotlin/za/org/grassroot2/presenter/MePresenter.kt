@@ -105,7 +105,8 @@ class MePresenter(private val dbService: DatabaseService,
                             val authData = result.data
                             println(authData)
 
-                        }
+                        },
+                        { Timber.e(it) }
                 )
     }
 
@@ -124,7 +125,7 @@ class MePresenter(private val dbService: DatabaseService,
         val fileMultipart = getFileMultipart(mediaFile, "photo")
 
         disposableOnDetach(
-                grassrootUserApi.uploadProfilePhoto(userProfile.uid, fileMultipart)
+                grassrootUserApi.uploadProfilePhoto(fileMultipart)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
