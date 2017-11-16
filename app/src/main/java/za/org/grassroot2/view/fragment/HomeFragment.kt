@@ -14,9 +14,11 @@ import kotlinx.android.synthetic.main.fragment_home.*
 import za.org.grassroot2.R
 import za.org.grassroot2.dagger.activity.ActivityComponent
 import za.org.grassroot2.model.HomeFeedItem
+import za.org.grassroot2.model.task.Meeting
 import za.org.grassroot2.presenter.HomePresenter
 import za.org.grassroot2.rxbinding.RxTextView
 import za.org.grassroot2.view.activity.CreateActionActivity
+import za.org.grassroot2.view.activity.MeetingDetailsActivity
 import za.org.grassroot2.view.adapter.HomeAdapter
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
@@ -27,9 +29,9 @@ class HomeFragment : GrassrootFragment(), HomePresenter.HomeView {
         refreshLayout.isRefreshing = false
     }
 
-    override fun searchInputChanged(): Observable<String> {
-        return RxTextView.textChanges(searchInput).debounce(300, TimeUnit.MILLISECONDS).map { t -> t.toString() }
-    }
+    override fun searchInputChanged(): Observable<String> =
+         RxTextView.textChanges(searchInput).debounce(300, TimeUnit.MILLISECONDS).map { t -> t.toString() }
+
 
     override fun filterData(searchQuery: String) {
         adapter.filter.filter(searchQuery)
@@ -86,5 +88,11 @@ class HomeFragment : GrassrootFragment(), HomePresenter.HomeView {
 
     override fun render(tasks: List<HomeFeedItem>) {
         adapter.setData(tasks)
+    }
+
+    override fun listItemClick(): Observable<HomeFeedItem> = adapter.viewClickObservable
+
+    override fun openMeetingDetails(meeting: Meeting) {
+        MeetingDetailsActivity.start(activity, meeting.uid)
     }
 }

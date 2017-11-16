@@ -49,12 +49,8 @@ abstract class BaseFragmentPresenter<T : FragmentView> {
         view.handleNoConnectionUpload()
     }
 
-    fun io(): Scheduler {
-        return Schedulers.io()
-    }
+    fun io(): Scheduler = Schedulers.io()
 
-    fun main(): Scheduler {
-        return AndroidSchedulers.mainThread()
-    }
+    fun main(): Scheduler = AndroidSchedulers.mainThread()
 
 }

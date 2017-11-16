@@ -18,8 +18,9 @@ import za.org.grassroot2.model.network.Syncable;
 @DatabaseTable(tableName = "meetings")
 public class Meeting implements Task, Syncable, AroundItem {
 
-    public static final String ATTENDING = "RSVP_YES";
-    public static final String NOT_ATTENDING = "RSVP_NO";
+    public static final String RSVP_YES = "YES";
+    public static final String RSVP_MAYBE = "MAYBE";
+    public static final String RSVP_NO = "NO";
 
     @DatabaseField(id = true)
     @SerializedName("taskUid")
@@ -53,6 +54,14 @@ public class Meeting implements Task, Syncable, AroundItem {
     private long deadlineMillis;
     @DatabaseField
     private long lastChangeTimeServerMillis;
+
+    public String getResponse() {
+        return response;
+    }
+
+    public void setResponse(String response) {
+        this.response = response;
+    }
 
     @DatabaseField
     private String response;

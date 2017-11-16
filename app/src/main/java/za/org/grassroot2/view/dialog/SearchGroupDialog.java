@@ -38,7 +38,7 @@ public class SearchGroupDialog extends DialogFragment {
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        View v = LayoutInflater.from(getActivity()).inflate(R.layout.fragment_create_action, null, false);
+        View v = LayoutInflater.from(getActivity()).inflate(R.layout.fragment_multi_option_pick, null, false);
         View.OnClickListener clickListener = v1 -> {
             dismiss();
             actionSubject.onNext(v1.getId());
