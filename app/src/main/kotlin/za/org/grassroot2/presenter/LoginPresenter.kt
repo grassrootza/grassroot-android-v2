@@ -6,6 +6,7 @@ import timber.log.Timber
 import za.org.grassroot2.R
 import za.org.grassroot2.model.TokenResponse
 import za.org.grassroot2.model.util.PhoneNumberUtil
+import za.org.grassroot2.presenter.activity.BasePresenter
 import za.org.grassroot2.services.UserDetailsService
 import za.org.grassroot2.services.rest.GrassrootAuthApi
 import za.org.grassroot2.services.rest.RestResponse

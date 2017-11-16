@@ -2,7 +2,9 @@ package za.org.grassroot2.view.activity;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -12,9 +14,12 @@ import android.view.MenuItem;
 
 import com.tbruyelle.rxpermissions2.RxPermissions;
 
+import java.io.File;
+
 import javax.inject.Inject;
 
 import butterknife.BindView;
+import retrofit2.http.Url;
 import za.org.grassroot2.R;
 import za.org.grassroot2.dagger.activity.ActivityComponent;
 import za.org.grassroot2.services.LocationManager;

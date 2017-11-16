@@ -21,12 +21,9 @@ import dagger.Lazy
 import kotlinx.android.synthetic.main.fragment_around_me.*
 import za.org.grassroot2.R
 import za.org.grassroot2.dagger.activity.ActivityComponent
-import za.org.grassroot2.dagger.fragment.FragmentComponent
 import za.org.grassroot2.model.AroundEntity
-import za.org.grassroot2.model.alert.LiveWireAlert
 import za.org.grassroot2.model.enums.GrassrootEntityType
-import za.org.grassroot2.model.task.Meeting
-import za.org.grassroot2.presenter.AroundMePresenter
+import za.org.grassroot2.presenter.fragment.AroundMePresenter
 import za.org.grassroot2.util.ImageUtil
 import za.org.grassroot2.view.activity.GroupDetailsActivity
 import javax.inject.Inject

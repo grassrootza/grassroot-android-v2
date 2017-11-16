@@ -12,10 +12,7 @@ import okhttp3.RequestBody
 import retrofit2.Response
 import timber.log.Timber
 import za.org.grassroot2.database.DatabaseService
-import za.org.grassroot2.model.AroundEntity
-import za.org.grassroot2.model.Group
-import za.org.grassroot2.model.MediaFile
-import za.org.grassroot2.model.UploadResult
+import za.org.grassroot2.model.*
 import za.org.grassroot2.model.alert.LiveWireAlert
 import za.org.grassroot2.model.enums.GrassrootEntityType
 import za.org.grassroot2.model.exception.EntityAlreadyUploadingException
@@ -73,10 +70,7 @@ constructor(private val userDetailsService: UserDetailsService,
                 }
                 .concatMap { groups ->
                     Timber.e("getting group info for remainder")
-                    val changedUids = ArrayList<String>()
-                    for (i in groups.indices) {
-                        changedUids.add(groups[i].uid)
-                    }
+                    val changedUids = groups.indices.map { groups[it].uid }
                     grassrootUserApi.fetchGroupsInfo(currentUserUid, changedUids)
                 }
                 .doOnError({ Timber.e(it) })
@@ -99,9 +93,8 @@ constructor(private val userDetailsService: UserDetailsService,
     override fun inviteContactsToGroup(groupId: String, contacts: List<MemberRequest>): Observable<Response<Void>> {
         return Observable.create { e: ObservableEmitter<Response<Void>> ->
             object : UploadResource<List<MemberRequest>>(contacts, e) {
-                override fun uploadRemote(localObject: List<MemberRequest>): Observable<Response<Void>> {
-                    return grassrootUserApi.addMembersToGroup(currentUserUid, groupId, localObject)
-                }
+                override fun uploadRemote(localObject: List<MemberRequest>): Observable<Response<Void>> =
+                        grassrootUserApi.addMembersToGroup(currentUserUid, groupId, localObject)
 
                 override fun uploadFailed(localObject: List<MemberRequest>) {
                     databaseService.storeMembersInvites(localObject)
@@ -253,9 +246,12 @@ constructor(private val userDetailsService: UserDetailsService,
                 "MEETING",
                 meetingUid,
                 description,
-                if (mediaFile != null) getImageFromPath(mediaFile, "image") else null
+                if (mediaFile != null) getFileFromPath(mediaFile, "image") else null
         )
     }
+
+    override fun uploadSpeech(sampleRate: Int, parseForIntent: Boolean, filePath: String): Observable<Response<Void>> =
+            grassrootUserApi.uploadSpeech(sampleRate, parseForIntent, getFileFromPath(filePath, "file"))
 
     private fun uploadMediaFile(mediaFile: MediaFile): Observable<UploadResult> {
         mediaFile.initUploading()
@@ -265,7 +261,7 @@ constructor(private val userDetailsService: UserDetailsService,
                 mediaFile.uid,
                 mediaFile.mediaFunction,
                 mediaFile.mimeType,
-                getImageFromPath(mediaFile, "file")).flatMap(successHandler(mediaFile)).onErrorResumeNext(resumeHandler(mediaFile)).concatMap { uploadResult ->
+                getFileFromPath(mediaFile, "file")).flatMap(successHandler(mediaFile)).onErrorResumeNext(resumeHandler(mediaFile)).concatMap { uploadResult ->
             if (uploadResult.uploadException == null) {
                 mediaFile.haltUploading(true)
                 mediaFile.isSentUpstream = true
@@ -278,12 +274,47 @@ constructor(private val userDetailsService: UserDetailsService,
         }
     }
 
-    private fun getImageFromPath(mediaFile: MediaFile, paramName: String): MultipartBody.Part? {
+    override fun getMeetingPosts(taskUid: String): Flowable<Resource<List<Post>>> {
+        return Flowable.create({ e ->
+            object : NetworkResource<List<Post>, List<Post>>(e) {
+
+                override fun local(): Maybe<List<Post>> = databaseService.getMeetings(taskUid)
+
+                override fun remote(): Observable<List<Post>> =
+                        grassrootUserApi.getPostsForTask(currentUserUid, "MEETING", taskUid)
+
+                override fun saveResult(data: List<Post>) {
+                    val meeting = databaseService.loadObjectByUid(Meeting::class.javaObjectType, taskUid)
+                    databaseService.storePosts(meeting!!, data)
+                }
+
+                override fun shouldFetch(): Boolean = true
+
+            }
+        }, BackpressureStrategy.BUFFER)
+
+    }
+
+
+    private fun getFileFromPath(mediaFile: MediaFile, paramName: String): MultipartBody.Part? {
         return try {
             Timber.i("getting image from path : " + mediaFile.absolutePath)
             val file = File(mediaFile.absolutePath)
             Timber.d("file size : " + file.length() / 1024)
             val requestFile = RequestBody.create(MediaType.parse(mediaFile.mimeType), file)
+            MultipartBody.Part.createFormData(paramName, file.name, requestFile)
+        } catch (e: Exception) {
+            Timber.e(e)
+            null
+        }
+    }
+
+    private fun getFileFromPath(filePath: String, paramName: String): MultipartBody.Part? {
+        return try {
+            Timber.i("getting image from path : " + filePath)
+            val file = File(filePath)
+            Timber.d("file size : " + file.length() / 1024)
+            val requestFile = RequestBody.create(MediaType.parse(""), file)
             MultipartBody.Part.createFormData(paramName, file.name, requestFile)
         } catch (e: Exception) {
             Timber.e(e)

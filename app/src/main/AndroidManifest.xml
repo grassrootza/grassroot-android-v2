@@ -26,7 +26,6 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-
         <activity
             android:name=".view.activity.WelcomeActivity"
             android:label="@string/app_name"
@@ -37,22 +36,15 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
-
         <activity
             android:name=".view.activity.RegisterActivity"
             android:theme="@style/AppTheme.Toolbar" />
-
         <activity
             android:name=".view.activity.LoginActivity"
             android:theme="@style/AppTheme.Toolbar" />
-
         <activity
             android:name=".view.activity.ForgotPasswordActivity"
             android:theme="@style/AppTheme.Toolbar" />
-
-
-        <activity android:name=".view.activity.AudioActivity" />
 
         <service
             android:name=".services.account.GrassrootAuthService"
@@ -95,8 +87,8 @@
         <activity
             android:name=".view.activity.DashboardActivity"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="stateHidden"
-            android:theme="@style/AppTheme.Toolbar" />
+            android:theme="@style/AppTheme.Toolbar"
+            android:windowSoftInputMode="stateHidden" />
         <activity
             android:name=".view.activity.PickContactActivity"
             android:label="@string/title_pick_contact"
@@ -135,8 +127,15 @@
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyCPBqy5hn3J12YkOGFnpVsIjB5VfGuVoF0"/>
+            android:value="AIzaSyCPBqy5hn3J12YkOGFnpVsIjB5VfGuVoF0" />
 
+        <activity android:name=".view.activity.RecordAudioActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.AppCompat.Transparent" />
+
+        <activity android:name=".view.activity.RecordVideoActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.AppCompat.FullScreen" />
     </application>
 
 </manifest>
