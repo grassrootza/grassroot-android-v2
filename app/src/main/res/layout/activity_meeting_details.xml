@@ -214,7 +214,7 @@
                 android:gravity="center_horizontal">
 
                 <Button
-                    android:id="@+id/writePost"
+                    android:id="@+id/writePostButton"
                     android:layout_width="198dp"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/margin_std_large"

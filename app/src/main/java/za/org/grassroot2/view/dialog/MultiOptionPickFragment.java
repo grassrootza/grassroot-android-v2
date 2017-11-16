@@ -83,7 +83,7 @@ public class MultiOptionPickFragment extends GrassrootFragment {
 
     @Override
     public int getLayoutResourceId() {
-        return R.layout.fragment_create_action;
+        return R.layout.fragment_multi_option_pick;
     }
 
     public Observable<Integer> clickAction() {

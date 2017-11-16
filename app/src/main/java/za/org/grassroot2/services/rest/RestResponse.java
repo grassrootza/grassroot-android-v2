@@ -2,6 +2,10 @@ package za.org.grassroot2.services.rest;
 
 import com.google.gson.annotations.SerializedName;
 
+import okhttp3.MediaType;
+import okhttp3.ResponseBody;
+import retrofit2.Response;
+
 public class RestResponse<T> {
 
     protected String status;
@@ -41,5 +45,9 @@ public class RestResponse<T> {
 
     public void setData(T data) {
         this.data = data;
+    }
+
+    public static Response<Void> errorResponse() {
+        return Response.error(500, ResponseBody.create(MediaType.parse("text/plain"), ""));
     }
 }

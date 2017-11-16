@@ -4,28 +4,21 @@ import android.Manifest
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import android.view.Gravity
+import android.text.TextUtils
 import android.view.Menu
 import android.view.View
-import com.github.florent37.viewtooltip.ViewTooltip
 import com.tbruyelle.rxpermissions2.RxPermissions
 import kotlinx.android.synthetic.main.activity_meeting_details.*
-import kotlinx.android.synthetic.main.activity_meeting_details.view.*
-import kotlinx.android.synthetic.main.marker_group.view.*
 import za.org.grassroot2.R
 import za.org.grassroot2.dagger.activity.ActivityComponent
-import za.org.grassroot2.extensions.getColorCompat
-import za.org.grassroot2.model.Group
-import za.org.grassroot2.model.contact.Contact
 import za.org.grassroot2.model.enums.GrassrootEntityType
 import za.org.grassroot2.model.task.Meeting
-import za.org.grassroot2.presenter.GroupDetailsPresenter
 import za.org.grassroot2.presenter.MeetingDetailsPresenter
 import za.org.grassroot2.util.DateFormatter
 import za.org.grassroot2.view.adapter.GenericViewPagerAdapter
 import za.org.grassroot2.view.dialog.AddMemberDialog
+import za.org.grassroot2.view.dialog.OptionPickDialog
 import za.org.grassroot2.view.fragment.GroupTasksFragment
-import java.util.ArrayList
 import javax.inject.Inject
 
 class MeetingDetailsActivity : GrassrootActivity(), MeetingDetailsPresenter.MeetingDetailsView {
@@ -41,6 +34,24 @@ class MeetingDetailsActivity : GrassrootActivity(), MeetingDetailsPresenter.Meet
         initView()
         presenter.attach(this)
         presenter.init(meetingUid!!)
+        meetingStatusText.setOnClickListener {
+            val attendenceDialog = OptionPickDialog.attendenceChoiceDialog()
+            disposables.add(attendenceDialog.clickAction().subscribe( { clickId ->
+                attendenceDialog.dismiss()
+                when (clickId) {
+                    R.id.optionGoing -> presenter.respondToMeeting(meetingUid!!, Meeting.RSVP_YES)
+                    R.id.optionMaybe -> presenter.respondToMeeting(meetingUid!!, Meeting.RSVP_MAYBE)
+                    else -> presenter.respondToMeeting(meetingUid!!, Meeting.RSVP_NO)
+                }
+            }, {t -> t.printStackTrace() }))
+            attendenceDialog.show(supportFragmentManager, "")
+        }
+        fab.setOnClickListener { writePost() }
+        writePostButton.setOnClickListener { writePost() }
+    }
+
+    private fun writePost() {
+        CreatePostActivity.start(this, presenter.meeting.uid, presenter.meeting.parentUid)
     }
 
     override fun onResume() {
@@ -106,19 +117,15 @@ class MeetingDetailsActivity : GrassrootActivity(), MeetingDetailsPresenter.Meet
         return super.onCreateOptionsMenu(menu)
     }
 
-    override fun emptyData() {
-        ViewTooltip.on(fab)
-                .color(getColorCompat(R.color.light_green))
-                .corner(10).autoHide(true, 2000).padding(10, 10, 10, 10).align(ViewTooltip.ALIGN.CENTER)
-                .position(ViewTooltip.Position.LEFT).text(R.string.info_group_create_item).setTextGravity(Gravity.CENTER)
-                .show()
-    }
-
     override fun render(meeting: Meeting) {
         meetingTitle.text = meeting.name
-        meetingDescription.text = meeting.description
         meetingLocation.text = meeting.locationDescription
         meeting.deadlineMillis?.let { meetingDate.text = DateFormatter.formatMeetingDate(it) }
+        renderDescription(meeting)
+        renderResponseSection(meeting)
+    }
+
+    private fun renderResponseSection(meeting: Meeting) {
         if (meeting.hasResponded()) {
             meetingStatusText.visibility = View.VISIBLE
             when (meeting.response) {
@@ -137,9 +144,18 @@ class MeetingDetailsActivity : GrassrootActivity(), MeetingDetailsPresenter.Meet
             }
             optionContainer.visibility = View.GONE
         } else {
-            optionGoing.setOnClickListener({ _ -> presenter.respondToMeeting(meeting.uid, Meeting.RSVP_YES)})
-            optionMaybe.setOnClickListener({ _ -> presenter.respondToMeeting(meeting.uid, Meeting.RSVP_MAYBE)})
-            optionNotGoing.setOnClickListener({ _ -> presenter.respondToMeeting(meeting.uid, Meeting.RSVP_NO)})
+            optionGoing.setOnClickListener({ _ -> presenter.respondToMeeting(meeting.uid, Meeting.RSVP_YES) })
+            optionMaybe.setOnClickListener({ _ -> presenter.respondToMeeting(meeting.uid, Meeting.RSVP_MAYBE) })
+            optionNotGoing.setOnClickListener({ _ -> presenter.respondToMeeting(meeting.uid, Meeting.RSVP_NO) })
+        }
+    }
+
+    private fun renderDescription(meeting: Meeting) {
+        if (TextUtils.isEmpty(meeting.description)) {
+            meetingDescription.visibility = View.GONE
+        } else {
+            meetingDescription.visibility = View.VISIBLE
+            meetingDescription.text = meeting.description
         }
     }
 

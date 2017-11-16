@@ -32,6 +32,7 @@ class HomeFragment : GrassrootFragment(), HomePresenter.HomeView {
     override fun searchInputChanged(): Observable<String> =
          RxTextView.textChanges(searchInput).debounce(300, TimeUnit.MILLISECONDS).map { t -> t.toString() }
 
+
     override fun filterData(searchQuery: String) {
         adapter.filter.filter(searchQuery)
     }

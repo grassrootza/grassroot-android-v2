@@ -2,14 +2,7 @@ package za.org.grassroot2.services
 
 import android.text.TextUtils
 import io.reactivex.*
-
-import java.io.File
-import java.io.IOException
-import java.util.ArrayList
-import java.util.HashMap
-
-import javax.inject.Inject
-
+import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.functions.Function
 import io.reactivex.schedulers.Schedulers
@@ -34,6 +27,11 @@ import za.org.grassroot2.model.task.Meeting
 import za.org.grassroot2.model.task.Task
 import za.org.grassroot2.services.rest.GrassrootUserApi
 import za.org.grassroot2.services.rest.RestResponse
+import java.io.File
+import java.io.IOException
+import java.util.*
+import javax.inject.Inject
+
 /**
  * Created by luke on 2017/08/16.
  */
@@ -249,6 +247,16 @@ constructor(private val userDetailsService: UserDetailsService,
 
     override fun respondToMeeting(meetingUid: String, response: String): Observable<Response<Void>> = grassrootUserApi.respondToMeeting(currentUserUid, meetingUid, response)
 
+    override fun uploadMeetingPost(meetingUid: String, description: String, mediaFile: MediaFile?): Observable<Response<Void>> {
+        return grassrootUserApi.uploadPost(
+                currentUserUid,
+                "MEETING",
+                meetingUid,
+                description,
+                if (mediaFile != null) getImageFromPath(mediaFile, "image") else null
+        )
+    }
+
     private fun uploadMediaFile(mediaFile: MediaFile): Observable<UploadResult> {
         mediaFile.initUploading()
         databaseService.storeObject(MediaFile::class.java, mediaFile)
@@ -281,7 +289,6 @@ constructor(private val userDetailsService: UserDetailsService,
             Timber.e(e)
             null
         }
-
     }
 }
 

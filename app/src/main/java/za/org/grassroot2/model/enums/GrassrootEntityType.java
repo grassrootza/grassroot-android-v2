@@ -17,6 +17,8 @@ public enum GrassrootEntityType {
     VOTE,
     TODO,
 
+    POST,
+
     GROUP_JOIN_REQUEST,
 
     LIVE_WIRE_ALERT,
