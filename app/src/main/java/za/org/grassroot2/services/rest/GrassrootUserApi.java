@@ -92,12 +92,11 @@ public interface GrassrootUserApi {
 
 
     @Multipart
-    @POST("/api/user/change-profile-img/{userUid}")
-    Observable<Response<RestResponse<String>>> uploadProfilePhoto(@Path("userUid") String userUid,
-                                                                  @Part MultipartBody.Part file);
+    @POST("/api/user/profile/image/change")
+    Observable<Response<RestResponse<String>>> uploadProfilePhoto(@Part MultipartBody.Part file);
 
 
-    @POST("/api/user/update-profile-data")
+    @POST("/api/user/profile/data/update")
     Observable<RestResponse<TokenResponse>> updateProfileData(
             @Query("displayName") String displayName,
             @Query("phoneNumber") String phoneNumber,
