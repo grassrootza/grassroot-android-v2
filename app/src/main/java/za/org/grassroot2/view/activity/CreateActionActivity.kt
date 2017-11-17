@@ -185,17 +185,7 @@ class CreateActionActivity : GrassrootActivity(), BackNavigationListener, Create
                     RecordAudioActivity.start(this, REQUEST_DICTATE)
                 }
                 R.id.callMeeting -> {
-                    removeAllViewsAboveCurrent()
-                    presenter.initTask(CreateActionPresenter.ActionType.Meeting)
-                    if (group == null) {
-                        addGroupSelectionFragment()
-                    } else {
-                        presenter.setGroupUid(group)
-                    }
-                    addMeetingSubjectFragment()
-                    addMeetingLocationFragment()
-                    addMeetingDateFragment()
-                    nextStep()
+                    launchMeetingSequence(group)
                 }
                 R.id.createLivewireAlert -> {
                     removeAllViewsAboveCurrent()
@@ -213,6 +203,20 @@ class CreateActionActivity : GrassrootActivity(), BackNavigationListener, Create
             }
         })
         adapter.addFragment(fragment, "")
+    }
+
+    private fun launchMeetingSequence(group: Group?) {
+        removeAllViewsAboveCurrent()
+        presenter.initTask(CreateActionPresenter.ActionType.Meeting)
+        if (group == null) {
+            addGroupSelectionFragment()
+        } else {
+            presenter.setGroupUid(group)
+        }
+        addMeetingSubjectFragment()
+        addMeetingLocationFragment()
+        addMeetingDateFragment()
+        nextStep()
     }
 
     private fun removeAllViewsAboveCurrent() {
@@ -303,6 +307,8 @@ class CreateActionActivity : GrassrootActivity(), BackNavigationListener, Create
 
         private val EXTRA_GROUP_UID = "groupUid"
         private val EXTRA_FROM_HOME = "from_home"
+        private val EXTRA_START_ON_ACTION = "start_on_action"
+
         private val REQUEST_TAKE_PHOTO = 1
         private val REQUEST_RECORD_VIDEO = 2
         private val REQUEST_GALLERY = 3
@@ -320,6 +326,14 @@ class CreateActionActivity : GrassrootActivity(), BackNavigationListener, Create
             i.putExtra(EXTRA_FROM_HOME, true)
             c.startActivity(i)
         }
+
+        fun startOnAction(c: Context, action: Int, groupUid: String?) {
+            val i = Intent(c, CreateActionActivity::class.java)
+            i.putExtra(EXTRA_START_ON_ACTION, action)
+            i.putExtra(groupUid, groupUid)
+            c.startActivity(i)
+        }
+
     }
 
 }

@@ -9,23 +9,22 @@ import android.widget.Filter
 import android.widget.Filterable
 import android.widget.ImageView
 import android.widget.TextView
-
 import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.item_home.view.*
 import za.org.grassroot2.R
-import za.org.grassroot2.model.alert.LiveWireAlert
-import za.org.grassroot2.model.enums.GrassrootEntityType
-import za.org.grassroot2.rxbinding.RxView
-import za.org.grassroot2.util.LastModifiedFormatter
 import za.org.grassroot2.extensions.getColorCompat
 import za.org.grassroot2.extensions.getHtml
 import za.org.grassroot2.model.AroundEntity
 import za.org.grassroot2.model.HomeFeedItem
+import za.org.grassroot2.model.alert.LiveWireAlert
+import za.org.grassroot2.model.enums.GrassrootEntityType
 import za.org.grassroot2.model.task.Meeting
 import za.org.grassroot2.model.task.Task
 import za.org.grassroot2.model.task.Todo
 import za.org.grassroot2.model.task.Vote
+import za.org.grassroot2.rxbinding.RxView
+import za.org.grassroot2.util.LastModifiedFormatter
 import javax.inject.Inject
 
 class HomeAdapter @Inject constructor(private val context: Context, private var data: List<HomeFeedItem>) : RecyclerView.Adapter<RecyclerView.ViewHolder>(), Filterable {

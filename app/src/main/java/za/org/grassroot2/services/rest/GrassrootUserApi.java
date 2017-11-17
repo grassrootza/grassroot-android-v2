@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import okhttp3.MultipartBody;
 import retrofit2.Response;
@@ -18,6 +19,7 @@ import za.org.grassroot2.model.AroundEntity;
 import za.org.grassroot2.model.Group;
 import za.org.grassroot2.model.Post;
 import za.org.grassroot2.model.alert.LiveWireAlert;
+import za.org.grassroot2.model.language.NluResponse;
 import za.org.grassroot2.model.request.MemberRequest;
 import za.org.grassroot2.model.task.Task;
 
@@ -100,6 +102,9 @@ public interface GrassrootUserApi {
                                           @Path("taskUid") String taskUid,
                                           @Query("caption") String title,
                                           @Part MultipartBody.Part file);
+
+    @GET("/api/language/parse/intent")
+    Flowable<NluResponse> seekIntentInText(@Query("text") String text);
 
     @Multipart
     @POST("/api/language/parse/speech")

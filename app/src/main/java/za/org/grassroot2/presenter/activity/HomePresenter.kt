@@ -4,11 +4,13 @@ import android.location.Location
 import io.reactivex.Observable
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
+import za.org.grassroot2.R
 import za.org.grassroot2.database.DatabaseService
 import za.org.grassroot2.model.AroundEntity
 import za.org.grassroot2.model.HomeFeedItem
 import za.org.grassroot2.model.alert.LiveWireAlert
 import za.org.grassroot2.model.enums.GrassrootEntityType
+import za.org.grassroot2.model.language.NluResponse
 import za.org.grassroot2.model.task.Meeting
 import za.org.grassroot2.model.task.Task
 import za.org.grassroot2.presenter.fragment.BaseFragmentPresenter
@@ -37,6 +39,18 @@ constructor(private val locationManager: LocationManager, private val dbService:
         disposableOnDetach(view.searchInputChanged().observeOn(main()).subscribe({ searchQuery ->
             view.filterData(searchQuery)
         }))
+        disposableOnDetach(view.searchInputDone().observeOn(main()).subscribe({ searchQuery ->
+            seekIntentInSearch(searchQuery)
+        }))
+    }
+
+    private fun seekIntentInSearch(inputText: String) {
+        disposableOnDetach(networkService.seekIntentInText(inputText).observeOn(main()).subscribeOn(io()).subscribe({ t: NluResponse? ->
+            if (t?.intent != null && t.intent.getActionEquivalent() != R.id.unknownIntent) {
+                // note : consider a prompt that gives user chance to confirm this is what they want
+                view.initiateCreateAction(t.intent.getActionEquivalent())
+            }
+        }, { t -> t.printStackTrace() }))
     }
 
     fun getAlertsAround() {
@@ -104,8 +118,10 @@ constructor(private val locationManager: LocationManager, private val dbService:
     interface HomeView : FragmentView {
         fun render(tasks: List<HomeFeedItem>)
         fun searchInputChanged() : Observable<String>
+        fun searchInputDone() : Observable<String>
         fun filterData(searchQuery: String)
         fun stopRefreshing()
+        fun initiateCreateAction(actionToInitiate: Int)
         fun listItemClick() : Observable<HomeFeedItem>
         fun openMeetingDetails(meeting: Meeting)
     }

@@ -7,10 +7,12 @@ import android.support.v7.widget.LinearLayoutManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.EditorInfo
 import com.tbruyelle.rxpermissions2.RxPermissions
 import dagger.Lazy
 import io.reactivex.Observable
 import kotlinx.android.synthetic.main.fragment_home.*
+import timber.log.Timber
 import za.org.grassroot2.R
 import za.org.grassroot2.dagger.activity.ActivityComponent
 import za.org.grassroot2.model.HomeFeedItem
@@ -32,6 +34,10 @@ class HomeFragment : GrassrootFragment(), HomePresenter.HomeView {
     override fun searchInputChanged(): Observable<String> =
          RxTextView.textChanges(searchInput).debounce(300, TimeUnit.MILLISECONDS).map { t -> t.toString() }
 
+    override fun searchInputDone(): Observable<String> = RxTextView
+            .editorActionEvents(searchInput)
+            .filter { event -> event.actionId() == EditorInfo.IME_ACTION_DONE && searchInput.length() > 3}
+            .map { event -> searchInput.text.toString() }
 
     override fun filterData(searchQuery: String) {
         adapter.filter.filter(searchQuery)
@@ -69,6 +75,11 @@ class HomeFragment : GrassrootFragment(), HomePresenter.HomeView {
         refreshLayout.setOnRefreshListener { refreshView() }
         presenter.onViewCreated()
         refreshView()
+    }
+
+    override fun initiateCreateAction(actionToInitiate: Int) {
+        Timber.d("initiating create action activity, with actionToInitiate ... " + actionToInitiate)
+        CreateActionActivity.startOnAction(activity, actionToInitiate, null)
     }
 
     private fun refreshView() {

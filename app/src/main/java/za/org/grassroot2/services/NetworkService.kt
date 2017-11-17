@@ -6,6 +6,7 @@ import retrofit2.Response
 import za.org.grassroot2.model.*
 import za.org.grassroot2.model.alert.LiveWireAlert
 import za.org.grassroot2.model.enums.GrassrootEntityType
+import za.org.grassroot2.model.language.NluResponse
 import za.org.grassroot2.model.network.EntityForDownload
 import za.org.grassroot2.model.network.EntityForUpload
 import za.org.grassroot2.model.request.MemberRequest
@@ -49,6 +50,8 @@ interface NetworkService {
     fun respondToMeeting(meetingUid: String, response: String): Observable<Response<Void>>
 
     fun uploadMeetingPost(meetingUid: String, description: String, mediaFile: MediaFile?): Observable<Response<Void>>
+
+    fun seekIntentInText(text: String): Flowable<NluResponse>
 
     fun uploadSpeech(sampleRate: Int, parseForIntent: Boolean, filePath: String): Observable<Response<Void>>
 
