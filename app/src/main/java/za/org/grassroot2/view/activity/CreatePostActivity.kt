@@ -13,7 +13,7 @@ import kotlinx.android.synthetic.main.activity_create_action.*
 import za.org.grassroot2.R
 import za.org.grassroot2.dagger.activity.ActivityComponent
 import za.org.grassroot2.model.enums.GrassrootEntityType
-import za.org.grassroot2.presenter.CreatePostPresenter
+import za.org.grassroot2.presenter.activity.CreatePostPresenter
 import za.org.grassroot2.view.adapter.GenericViewPagerAdapter
 import za.org.grassroot2.view.dialog.MediaPickerFragment
 import za.org.grassroot2.view.fragment.ActionSingleInputFragment
@@ -97,15 +97,12 @@ class CreatePostActivity : GrassrootActivity(), BackNavigationListener, CreatePo
     }
 
     private fun addMediaFragment() {
-        val mediaPickerFragment = MediaPickerFragment.getMediaPicker()
+        val mediaPickerFragment = MediaPickerFragment.get(false)
         disposables.add(mediaPickerFragment.clickAction().subscribe { integer ->
             when (integer) {
                 R.id.photo -> presenter.takePhoto()
                 R.id.video -> {}
                 R.id.gallery -> presenter.pickFromGallery()
-                R.id.skip -> {
-                    displayConfirmFragment()
-                }
             }
         })
         adapter.addFragment(mediaPickerFragment, "")

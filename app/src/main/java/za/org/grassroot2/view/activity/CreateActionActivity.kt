@@ -18,7 +18,7 @@ import za.org.grassroot2.dagger.activity.ActivityComponent
 import za.org.grassroot2.model.Group
 import za.org.grassroot2.model.GroupPermission
 import za.org.grassroot2.model.enums.GrassrootEntityType
-import za.org.grassroot2.presenter.CreateActionPresenter
+import za.org.grassroot2.presenter.activity.CreateActionPresenter
 import za.org.grassroot2.view.adapter.GenericViewPagerAdapter
 import za.org.grassroot2.view.dialog.MediaPickerFragment
 import za.org.grassroot2.view.dialog.MultiOptionPickFragment
@@ -68,6 +68,7 @@ class CreateActionActivity : GrassrootActivity(), BackNavigationListener, Create
                     nextStep()
                 }
                 R.id.dictate -> {
+                    RecordAudioActivity.start(this, REQUEST_DICTATE)
                 }
             }
         })
@@ -150,7 +151,7 @@ class CreateActionActivity : GrassrootActivity(), BackNavigationListener, Create
             presenter.setLongDescription(description)
             presenter.alertAndGroupName
         }.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe({ entry ->
-            val f = LivewireConfirmFragment.newInstance(entry.value, entry.key)
+            val f = LivewireConfirmFragment.newInstance(entry.second, entry.first)
             adapter.addFragment(f, "")
             disposables.add(f.livewireAlertConfirmed().subscribe({ _ -> presenter.createAlert() }, { it.printStackTrace() }))
             nextStep()
@@ -180,6 +181,9 @@ class CreateActionActivity : GrassrootActivity(), BackNavigationListener, Create
     private fun addActionFragment(fragment: MultiOptionPickFragment, group: Group?) {
         disposables.add(fragment.clickAction().subscribe { integer ->
             when (integer) {
+                R.id.dictate -> {
+                    RecordAudioActivity.start(this, REQUEST_DICTATE)
+                }
                 R.id.callMeeting -> {
                     launchMeetingSequence(group)
                 }
@@ -221,11 +225,17 @@ class CreateActionActivity : GrassrootActivity(), BackNavigationListener, Create
     }
 
     private fun addMediaFragment() {
-        val mediaPickerFragment = MediaPickerFragment.getMediaPicker()
+        val mediaPickerFragment = MediaPickerFragment.get()
         disposables.add(mediaPickerFragment.clickAction().subscribe { integer ->
             when (integer) {
                 R.id.photo -> presenter.takePhoto()
-                R.id.video -> presenter.recordVideo()
+                R.id.video -> {
+                    val takeVideoIntent = Intent(MediaStore.ACTION_VIDEO_CAPTURE)
+                    if (takeVideoIntent.resolveActivity(packageManager) != null) {
+                        startActivityForResult(takeVideoIntent, REQUEST_RECORD_VIDEO)
+                    }
+                }
+                R.id.audio -> RecordAudioActivity.start(this, REQUEST_RECORD_AUDIO)
                 R.id.gallery -> presenter.pickFromGallery()
                 R.id.skip -> nextStep()
             }
@@ -268,10 +278,12 @@ class CreateActionActivity : GrassrootActivity(), BackNavigationListener, Create
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent) {
         if (resultCode == RESULT_OK) {
-            if (requestCode == REQUEST_TAKE_PHOTO) {
-                presenter.cameraResult()
-            } else {
-                presenter.handlePickResult(data.data)
+            when (requestCode) {
+                REQUEST_TAKE_PHOTO -> presenter.cameraResult()
+                REQUEST_RECORD_AUDIO -> presenter.handleAudio(data.data)
+                REQUEST_RECORD_VIDEO -> presenter.handleVideo(data.data)
+                REQUEST_DICTATE -> presenter.handleSpeech(data.data)
+                else -> presenter.handlePickResult(data.data)
             }
             nextStep()
         }
@@ -283,9 +295,9 @@ class CreateActionActivity : GrassrootActivity(), BackNavigationListener, Create
 
     private fun addSuccessFragment(type: GrassrootEntityType) {
         val f: ItemCreatedFragment = if (type == GrassrootEntityType.MEETING) {
-            ItemCreatedFragment.get(presenter.task.parentUid, type)
+            ItemCreatedFragment.get(presenter.task!!.parentUid, type)
         } else {
-            ItemCreatedFragment.get(presenter.alert.groupUid, type)
+            ItemCreatedFragment.get(presenter.alert!!.groupUid, type)
         }
         adapter.addFragment(f, "")
         nextStep()
@@ -300,6 +312,8 @@ class CreateActionActivity : GrassrootActivity(), BackNavigationListener, Create
         private val REQUEST_TAKE_PHOTO = 1
         private val REQUEST_RECORD_VIDEO = 2
         private val REQUEST_GALLERY = 3
+        private val REQUEST_RECORD_AUDIO = 4
+        private val REQUEST_DICTATE = 5
 
         fun start(c: Context, groupUid: String?) {
             val i = Intent(c, CreateActionActivity::class.java)

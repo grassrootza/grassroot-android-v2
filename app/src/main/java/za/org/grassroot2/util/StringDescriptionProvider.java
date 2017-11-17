@@ -21,20 +21,20 @@ public class StringDescriptionProvider {
         context = c;
     }
 
-    public String getLivewireMediaPrompt() {
-        return context.getString(R.string.lwire_media_prompt);
-    }
-
-    public String getLivewireConfirmTextMedia(String headline, String groupName, String mediaType) {
-        return context.getString(R.string.lwire_confirm_text_media, headline, groupName, mediaType);
-    }
-
-    public String getLivewireConfirmNoMedia(String headline, String groupName) {
-        return context.getString(R.string.lwire_confirm_text_no_media, headline, groupName);
-    }
-
-    public boolean isEmpty(String s) {
-        return TextUtils.isEmpty(s);
-    }
+//    public String getLivewireMediaPrompt() {
+//        return context.getString(R.string.lwire_media_prompt);
+//    }
+//
+//    public String getLivewireConfirmTextMedia(String headline, String groupName, String mediaType) {
+//        return context.getString(R.string.lwire_confirm_text_media, headline, groupName, mediaType);
+//    }
+//
+//    public String getLivewireConfirmNoMedia(String headline, String groupName) {
+//        return context.getString(R.string.lwire_confirm_text_no_media, headline, groupName);
+//    }
+//
+//    public boolean isEmpty(String s) {
+//        return TextUtils.isEmpty(s);
+//    }
 
 }

@@ -31,6 +31,7 @@ interface ActivityComponent {
     fun inject(activity: ForgotPasswordActivity)
     fun inject(activity: MeetingDetailsActivity)
     fun inject(activity: CreatePostActivity)
+    fun inject(activity: RecordAudioActivity)
     fun plus(module: FragmentModule) : FragmentComponent
 
 }

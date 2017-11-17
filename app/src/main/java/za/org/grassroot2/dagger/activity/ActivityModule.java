@@ -13,8 +13,8 @@ import za.org.grassroot2.dagger.ActivityContext;
 import za.org.grassroot2.dagger.ApplicationContext;
 import za.org.grassroot2.database.DatabaseService;
 import za.org.grassroot2.presenter.ForgottenPasswordPresenter;
-import za.org.grassroot2.presenter.GroupDetailsPresenter;
-import za.org.grassroot2.presenter.PickContactPresenter;
+import za.org.grassroot2.presenter.activity.GroupDetailsPresenter;
+import za.org.grassroot2.presenter.activity.PickContactPresenter;
 import za.org.grassroot2.presenter.RegistrationPresenter;
 import za.org.grassroot2.presenter.fragment.GroupFragmentPresenter;
 import za.org.grassroot2.presenter.fragment.SingleTextMultiButtonPresenter;
@@ -28,7 +28,9 @@ import za.org.grassroot2.services.UserDetailsService;
 import za.org.grassroot2.services.rest.GrassrootAuthApi;
 import za.org.grassroot2.util.ContactHelper;
 import za.org.grassroot2.util.ImageUtil;
+import za.org.grassroot2.util.MediaRecorderWrapper;
 import za.org.grassroot2.view.adapter.HomeAdapter;
+import za.org.grassroot2.view.adapter.PostAdapter;
 
 /**
  * Created by luke on 2017/08/08.
@@ -63,8 +65,8 @@ public class ActivityModule {
     @Provides
     @PerActivity
     MediaService provideMediaService(@ApplicationContext Context applicationContext, DatabaseService realmService,
-                                     NetworkService networkService, ImageUtil imageUtil) {
-        return new MediaServiceImpl(applicationContext, realmService, networkService, imageUtil);
+                                     ImageUtil imageUtil) {
+        return new MediaServiceImpl(applicationContext, realmService, imageUtil);
     }
 
     @Provides
@@ -112,6 +114,12 @@ public class ActivityModule {
 
     @Provides
     @PerActivity
+    PostAdapter providePostAdapter(@ActivityContext AppCompatActivity c) {
+        return new PostAdapter(c, new ArrayList<>());
+    }
+
+    @Provides
+    @PerActivity
     ForgottenPasswordPresenter provideForgottenPasswordPresenter(GrassrootAuthApi grassrootAuthApi,
                                                                  UserDetailsService userDetailsService) {
         return new ForgottenPasswordPresenter(grassrootAuthApi, userDetailsService);
@@ -121,6 +129,12 @@ public class ActivityModule {
     @PerActivity
     LocationManager providesLocationManager(@ActivityContext AppCompatActivity act) {
         return new LocationManager(act);
+    }
+
+    @Provides
+    @PerActivity
+    MediaRecorderWrapper providesMediaRecorderWrapper(@ActivityContext AppCompatActivity act) {
+        return new MediaRecorderWrapper(act);
     }
 
 }

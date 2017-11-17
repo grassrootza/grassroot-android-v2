@@ -1,5 +1,5 @@
 #
-# generated on 2017/11/16 08:52:02
+# generated on 2017/11/17 03:43:35
 #
 # --table-start--
 dataClass=za.org.grassroot2.model.alert.LiveWireAlert
@@ -207,6 +207,66 @@ fieldName=createdDate
 # --table-end--
 #################################
 # --table-start--
+dataClass=za.org.grassroot2.model.Post
+tableName=posts
+# --table-fields-start--
+# --field-start--
+fieldName=actionLogType
+# --field-end--
+# --field-start--
+fieldName=analyzed
+# --field-end--
+# --field-start--
+fieldName=bucket
+# --field-end--
+# --field-start--
+fieldName=caption
+# --field-end--
+# --field-start--
+fieldName=countModified
+# --field-end--
+# --field-start--
+fieldName=creationTime
+# --field-end--
+# --field-start--
+fieldName=key
+id=true
+# --field-end--
+# --field-start--
+fieldName=latitude
+# --field-end--
+# --field-start--
+fieldName=longitude
+# --field-end--
+# --field-start--
+fieldName=md5
+# --field-end--
+# --field-start--
+fieldName=numberFaces
+# --field-end--
+# --field-start--
+fieldName=revisedFaces
+# --field-end--
+# --field-start--
+fieldName=storageTime
+# --field-end--
+# --field-start--
+fieldName=taskUid
+# --field-end--
+# --field-start--
+fieldName=userDisplayName
+# --field-end--
+# --field-start--
+fieldName=userPhoneNumber
+# --field-end--
+# --field-start--
+fieldName=meeting
+foreign=true
+# --field-end--
+# --table-fields-end--
+# --table-end--
+#################################
+# --table-start--
 dataClass=za.org.grassroot2.model.PublicGroup
 tableName=public_groups
 # --table-fields-start--
@@ -327,6 +387,10 @@ fieldName=deadlineMillis
 # --field-end--
 # --field-start--
 fieldName=lastChangeTimeServerMillis
+# --field-end--
+# --field-start--
+fieldName=posts
+foreignCollection=true
 # --field-end--
 # --field-start--
 fieldName=response

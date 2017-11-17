@@ -21,7 +21,7 @@ import butterknife.BindView;
 import za.org.grassroot2.R;
 import za.org.grassroot2.dagger.activity.ActivityComponent;
 import za.org.grassroot2.model.contact.Contact;
-import za.org.grassroot2.presenter.PickContactPresenter;
+import za.org.grassroot2.presenter.activity.PickContactPresenter;
 import za.org.grassroot2.view.adapter.ContactsAdapter;
 
 public class PickContactActivity extends GrassrootActivity implements PickContactPresenter.PickContactView {

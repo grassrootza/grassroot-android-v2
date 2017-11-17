@@ -4,7 +4,6 @@ import android.Manifest
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import android.support.v7.app.AppCompatActivity
 import android.view.Gravity
 import android.view.Menu
 import android.view.View
@@ -17,7 +16,7 @@ import za.org.grassroot2.extensions.getColorCompat
 import za.org.grassroot2.model.Group
 import za.org.grassroot2.model.contact.Contact
 import za.org.grassroot2.model.enums.GrassrootEntityType
-import za.org.grassroot2.presenter.GroupDetailsPresenter
+import za.org.grassroot2.presenter.activity.GroupDetailsPresenter
 import za.org.grassroot2.view.adapter.GenericViewPagerAdapter
 import za.org.grassroot2.view.dialog.AddMemberDialog
 import za.org.grassroot2.view.fragment.GroupTasksFragment

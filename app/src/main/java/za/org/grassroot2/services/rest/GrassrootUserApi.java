@@ -17,6 +17,7 @@ import retrofit2.http.Path;
 import retrofit2.http.Query;
 import za.org.grassroot2.model.AroundEntity;
 import za.org.grassroot2.model.Group;
+import za.org.grassroot2.model.Post;
 import za.org.grassroot2.model.alert.LiveWireAlert;
 import za.org.grassroot2.model.language.NluResponse;
 import za.org.grassroot2.model.request.MemberRequest;
@@ -104,5 +105,16 @@ public interface GrassrootUserApi {
 
     @GET("/api/language/parse/intent")
     Flowable<NluResponse> seekIntentInText(@Query("text") String text);
+
+    @Multipart
+    @POST("/api/language/parse/speech")
+    Observable<Response<Void>> uploadSpeech(@Query("sampleRate") Integer sampleRate,
+                                          @Query("parseForIntent") boolean parseForIntent,
+                                          @Part MultipartBody.Part file);
+
+    @GET("/api/task/fetch/posts/{userUid}/{taskType}/{taskUid}")
+    Observable<List<Post>> getPostsForTask(@Path("userUid") String userId,
+                                           @Path("taskType") String taskType,
+                                           @Path("taskUid") String taskUid);
 
 }

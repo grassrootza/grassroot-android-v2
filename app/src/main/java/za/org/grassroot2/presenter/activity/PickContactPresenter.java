@@ -1,4 +1,4 @@
-package za.org.grassroot2.presenter;
+package za.org.grassroot2.presenter.activity;
 
 import java.util.ArrayList;
 import java.util.List;

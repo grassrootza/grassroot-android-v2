@@ -4,6 +4,7 @@ import android.Manifest
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.support.v7.widget.LinearLayoutManager
 import android.text.TextUtils
 import android.view.Menu
 import android.view.View
@@ -11,11 +12,13 @@ import com.tbruyelle.rxpermissions2.RxPermissions
 import kotlinx.android.synthetic.main.activity_meeting_details.*
 import za.org.grassroot2.R
 import za.org.grassroot2.dagger.activity.ActivityComponent
+import za.org.grassroot2.model.Post
 import za.org.grassroot2.model.enums.GrassrootEntityType
 import za.org.grassroot2.model.task.Meeting
-import za.org.grassroot2.presenter.MeetingDetailsPresenter
+import za.org.grassroot2.presenter.activity.MeetingDetailsPresenter
 import za.org.grassroot2.util.DateFormatter
 import za.org.grassroot2.view.adapter.GenericViewPagerAdapter
+import za.org.grassroot2.view.adapter.PostAdapter
 import za.org.grassroot2.view.dialog.AddMemberDialog
 import za.org.grassroot2.view.dialog.OptionPickDialog
 import za.org.grassroot2.view.fragment.GroupTasksFragment
@@ -27,6 +30,7 @@ class MeetingDetailsActivity : GrassrootActivity(), MeetingDetailsPresenter.Meet
 
     @Inject lateinit var presenter: MeetingDetailsPresenter
     @Inject lateinit var rxPermissions: RxPermissions
+    @Inject lateinit var postAdapter: PostAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,6 +52,8 @@ class MeetingDetailsActivity : GrassrootActivity(), MeetingDetailsPresenter.Meet
         }
         fab.setOnClickListener { writePost() }
         writePostButton.setOnClickListener { writePost() }
+        posts.adapter = postAdapter
+        posts.layoutManager = LinearLayoutManager(this)
     }
 
     private fun writePost() {
@@ -108,6 +114,7 @@ class MeetingDetailsActivity : GrassrootActivity(), MeetingDetailsPresenter.Meet
 
     private fun initToolbar() {
         setSupportActionBar(toolbar)
+        toolbar.title = ""
         toolbar.setNavigationIcon(R.drawable.ic_arrow_left_white_24dp)
         toolbar.setNavigationOnClickListener { v -> finish() }
     }
@@ -156,6 +163,13 @@ class MeetingDetailsActivity : GrassrootActivity(), MeetingDetailsPresenter.Meet
         } else {
             meetingDescription.visibility = View.VISIBLE
             meetingDescription.text = meeting.description
+        }
+    }
+
+    override fun renderPosts(posts: List<Post>) {
+        if (posts.isNotEmpty()) {
+            listTitle.visibility = View.VISIBLE
+            postAdapter.setData(posts)
         }
     }
 

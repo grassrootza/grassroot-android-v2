@@ -10,5 +10,6 @@
     <item name="gallery" type="id" />
     <item name="createGroup" type="id" />
     <item name="takeAction" type="id" />
+    <item name="audio" type="id" />
     <item name="unknownIntent" type="id" />
 </resources>

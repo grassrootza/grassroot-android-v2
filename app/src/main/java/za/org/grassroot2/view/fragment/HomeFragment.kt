@@ -17,7 +17,7 @@ import za.org.grassroot2.R
 import za.org.grassroot2.dagger.activity.ActivityComponent
 import za.org.grassroot2.model.HomeFeedItem
 import za.org.grassroot2.model.task.Meeting
-import za.org.grassroot2.presenter.HomePresenter
+import za.org.grassroot2.presenter.activity.HomePresenter
 import za.org.grassroot2.rxbinding.RxTextView
 import za.org.grassroot2.view.activity.CreateActionActivity
 import za.org.grassroot2.view.activity.MeetingDetailsActivity

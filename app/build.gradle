@@ -19,7 +19,7 @@ android {
     buildToolsVersion '26.0.2'
     defaultConfig {
         applicationId "za.org.grassroot2"
-        minSdkVersion 9
+        minSdkVersion 10
         targetSdkVersion 25
         versionCode 1
         versionName "2.0"
@@ -92,6 +92,7 @@ dependencies {
     implementation 'com.facebook.stetho:stetho:1.5.0'
     implementation 'com.google.android.gms:play-services-maps:10.0.0'
     implementation 'com.google.android.gms:play-services-location:10.0.0'
+    implementation 'com.github.florent37:camerafragment:1.0.7'
 
     compile('com.crashlytics.sdk.android:crashlytics:2.7.0@aar') {
         transitive = true;

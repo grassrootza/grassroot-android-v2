@@ -1,4 +1,4 @@
-package za.org.grassroot2.presenter
+package za.org.grassroot2.presenter.fragment
 
 import android.location.Location
 import io.reactivex.Flowable
@@ -13,7 +13,6 @@ import io.reactivex.schedulers.Schedulers
 import za.org.grassroot2.database.DatabaseService
 import za.org.grassroot2.model.AroundEntity
 import za.org.grassroot2.model.Group
-import za.org.grassroot2.presenter.fragment.BaseFragmentPresenter
 import za.org.grassroot2.services.LocationManager
 import za.org.grassroot2.services.NetworkService
 import za.org.grassroot2.services.Status

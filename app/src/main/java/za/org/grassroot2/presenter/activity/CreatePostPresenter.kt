@@ -1,4 +1,4 @@
-package za.org.grassroot2.presenter
+package za.org.grassroot2.presenter.activity
 
 import android.net.Uri
 import io.reactivex.Observable
@@ -9,9 +9,7 @@ import retrofit2.Response
 import timber.log.Timber
 import za.org.grassroot2.R
 import za.org.grassroot2.database.DatabaseService
-import za.org.grassroot2.model.Group
 import za.org.grassroot2.model.MediaFile
-import za.org.grassroot2.model.enums.GrassrootEntityType
 import za.org.grassroot2.services.MediaService
 import za.org.grassroot2.services.NetworkService
 import za.org.grassroot2.view.GrassrootView
@@ -55,7 +53,7 @@ constructor(private val networkService: NetworkService, private val dbService: D
     }
 
     fun cameraResult() {
-        disposableOnDetach(mediaService.captureMediaFile(currentMediaFileUid)
+        disposableOnDetach(mediaService.captureMediaFile(currentMediaFileUid!!)
                 .doOnError({ this.handleMediaError(it) })
                 .subscribe { _ ->
                     //                    liveWireAlert.setMediaFile(dbService.loadObjectByUid(MediaFile.class, currentMediaFileUid));
@@ -63,7 +61,7 @@ constructor(private val networkService: NetworkService, private val dbService: D
     }
 
     fun handlePickResult(data: Uri) {
-        disposableOnDetach(mediaService.storeGalleryFile(currentMediaFileUid, data).subscribeOn(Schedulers.io())
+        disposableOnDetach(mediaService.storeGalleryFile(currentMediaFileUid!!, data).subscribeOn(Schedulers.io())
                 .doOnError({ this.handleMediaError(it) })
                 .subscribe({ s -> }, { this.handleMediaError(it) }))
     }

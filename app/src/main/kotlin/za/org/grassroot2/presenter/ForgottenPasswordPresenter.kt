@@ -4,6 +4,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import za.org.grassroot2.BuildConfig
 import za.org.grassroot2.R
+import za.org.grassroot2.presenter.activity.BasePresenter
 import za.org.grassroot2.services.UserDetailsService
 import za.org.grassroot2.services.rest.GrassrootAuthApi
 import za.org.grassroot2.view.ForgottenPasswordView
