@@ -1,4 +1,4 @@
-package za.org.grassroot2.presenter;
+package za.org.grassroot2.presenter.activity;
 
 import retrofit2.Response;
 import za.org.grassroot2.model.exception.AuthenticationInvalidException;

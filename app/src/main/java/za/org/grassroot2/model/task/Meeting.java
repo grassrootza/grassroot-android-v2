@@ -3,7 +3,9 @@ package za.org.grassroot2.model.task;
 import android.text.TextUtils;
 
 import com.google.gson.annotations.SerializedName;
+import com.j256.ormlite.dao.ForeignCollection;
 import com.j256.ormlite.field.DatabaseField;
+import com.j256.ormlite.field.ForeignCollectionField;
 import com.j256.ormlite.table.DatabaseTable;
 
 import java.util.Date;
@@ -12,6 +14,7 @@ import za.org.grassroot2.model.AroundItem;
 import za.org.grassroot2.model.ExcludeFromSerialization;
 import za.org.grassroot2.model.HomeFeedItem;
 import za.org.grassroot2.model.MediaFile;
+import za.org.grassroot2.model.Post;
 import za.org.grassroot2.model.enums.GrassrootEntityType;
 import za.org.grassroot2.model.network.Syncable;
 
@@ -54,6 +57,9 @@ public class Meeting implements Task, Syncable, AroundItem {
     private long deadlineMillis;
     @DatabaseField
     private long lastChangeTimeServerMillis;
+
+    @ForeignCollectionField
+    private ForeignCollection<Post> posts;
 
     public String getResponse() {
         return response;

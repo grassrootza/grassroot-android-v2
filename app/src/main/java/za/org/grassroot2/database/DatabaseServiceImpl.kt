@@ -8,6 +8,7 @@ import io.reactivex.Single
 import timber.log.Timber
 import za.org.grassroot2.model.AroundEntity
 import za.org.grassroot2.model.Group
+import za.org.grassroot2.model.Post
 import za.org.grassroot2.model.UserProfile
 import za.org.grassroot2.model.enums.GrassrootEntityType
 import za.org.grassroot2.model.network.EntityForDownload
@@ -23,6 +24,30 @@ import kotlin.collections.ArrayList
 
 class DatabaseServiceImpl(private val helper: DatabaseHelper) : DatabaseService {
 
+    override fun getMeetings(taskUid: String): Maybe<List<Post>> {
+        return Maybe.create { e ->
+            try {
+                val dao = helper.getDao(Post::class.javaObjectType)
+                val result = dao.queryBuilder().where().eq("meeting_id", taskUid).query()
+                e.onSuccess(result)
+                e.onComplete()
+            } catch (ex: SQLException) {
+                ex.printStackTrace()
+                e.onError(ex)
+            }
+        }
+    }
+
+    override fun storePosts(meeting: Meeting, posts: List<Post>) {
+        try {
+            val dao = helper.getDao(Post::class.javaObjectType)
+            posts.forEach {
+                it.meeting = meeting
+                dao.createOrUpdate(it) }
+        } catch (e: SQLException) {
+            e.printStackTrace()
+        }
+    }
 
     override fun wipeDatabase() {
         helper.clearDatabase()

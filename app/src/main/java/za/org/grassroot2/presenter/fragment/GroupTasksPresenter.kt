@@ -13,7 +13,7 @@ import za.org.grassroot2.database.DatabaseService
 import za.org.grassroot2.model.enums.GrassrootEntityType
 import za.org.grassroot2.model.task.Meeting
 import za.org.grassroot2.model.task.Task
-import za.org.grassroot2.presenter.GroupDetailsPresenter
+import za.org.grassroot2.presenter.activity.GroupDetailsPresenter
 import za.org.grassroot2.view.FragmentView
 
 class GroupTasksPresenter @Inject

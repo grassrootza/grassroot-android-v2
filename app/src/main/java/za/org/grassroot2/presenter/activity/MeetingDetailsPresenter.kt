@@ -1,6 +1,7 @@
-package za.org.grassroot2.presenter
+package za.org.grassroot2.presenter.activity
 
 import za.org.grassroot2.database.DatabaseService
+import za.org.grassroot2.model.Post
 import za.org.grassroot2.model.task.Meeting
 import za.org.grassroot2.services.NetworkService
 import za.org.grassroot2.services.rest.RestResponse
@@ -25,11 +26,15 @@ constructor(private val databaseService: DatabaseService, private val networkSer
             view.render(meeting)
             this.meeting = meeting
         }, { it.printStackTrace() }))
+        disposableOnDetach(networkService.getMeetingPosts(meetingUid!!).subscribeOn(io()).observeOn(main()).subscribe({ resource ->
+            view.renderPosts(resource.data!!)
+        }, { it.printStackTrace() }))
     }
 
 
     interface MeetingDetailsView : GrassrootView {
         fun render(meeting: Meeting)
+        fun renderPosts(posts: List<Post>)
     }
 
     fun respondToMeeting(uid: String, response: String) {

@@ -1,10 +1,9 @@
 package za.org.grassroot2.view.activity;
 
 import android.content.Intent;
-import android.support.v4.app.ActivityCompat;
 
 import timber.log.Timber;
-import za.org.grassroot2.presenter.LoggedInViewPresenter;
+import za.org.grassroot2.presenter.activity.LoggedInViewPresenter;
 import za.org.grassroot2.view.LoggedInView;
 
 /**

@@ -1,4 +1,4 @@
-package za.org.grassroot2.presenter
+package za.org.grassroot2.presenter.activity
 
 import android.location.Location
 import io.reactivex.Observable

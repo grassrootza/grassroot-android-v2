@@ -6,10 +6,12 @@ import io.reactivex.Observable
 import io.reactivex.Single
 import za.org.grassroot2.model.AroundEntity
 import za.org.grassroot2.model.Group
+import za.org.grassroot2.model.Post
 import za.org.grassroot2.model.UserProfile
 import za.org.grassroot2.model.enums.GrassrootEntityType
 import za.org.grassroot2.model.network.Syncable
 import za.org.grassroot2.model.request.MemberRequest
+import za.org.grassroot2.model.task.Meeting
 import za.org.grassroot2.model.task.Task
 
 /**
@@ -67,4 +69,6 @@ interface DatabaseService {
     fun <E> load(clazz: Class<E>): Maybe<List<E>>
     fun <E> deleteAll(cls: Class<E>)
     fun loadPublicMeetings(): Maybe<List<AroundEntity>>
+    fun storePosts(meeting: Meeting, posts: List<Post>)
+    fun getMeetings(taskUid: String): Maybe<List<Post>>
 }

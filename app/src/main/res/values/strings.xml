@@ -221,6 +221,8 @@
     <string name="home_vote_title">&lt;b>%s&lt;/b> has called a vote:</string>
     <string name="home_alert_title">&lt;b>%s&lt;/b> has triggered a safety alert</string>
     <string name="home_quote_subtitle">&lt;b>\"%s\"&lt;/b></string>
+    <string name="post_title">&lt;b>%s&lt;/b> wrote:</string>
+    <string name="post_subtitle">&lt;b>\"%s\"&lt;/b></string>
     <plurals name="notification_sent">
         <item quantity="one">A notification has been sent to %d member.</item>
         <item quantity="other">A notification has been sent to all %d members.</item>
@@ -254,6 +256,8 @@
     <string name="hint_post_subject">Post subject</string>
     <string name="post_confirm_text_media">Issuing a post with title \'%1$s\', with a media attached.</string>
     <string name="post_confirm_text_no_media">Issuing a post with title \'%1$s\', No media attached.</string>
+    <string name="speak_now">Speak now</string>
+    <string name="activity">ACTIVITY</string>
 
 
 </resources>
