@@ -5,7 +5,7 @@ import za.org.grassroot2.R
 /**
  * Created by luke on 2017/11/14.
  */
-class NluIntent(val intentName: String, val confidence: Float) {
+data class NluIntent(val name: String, val confidence: Float) {
 
     companion object {
         const val MEETING_INTENT = "set_meeting"
@@ -14,7 +14,7 @@ class NluIntent(val intentName: String, val confidence: Float) {
     }
 
     fun getActionEquivalent(): Int {
-        when (intentName) {
+        when (name) {
             MEETING_INTENT -> return R.id.callMeeting
             LIVEWIRE_INTENT -> return R.id.createLivewireAlert
             GROUP_CREATE_INTENT -> return R.id.createGroup

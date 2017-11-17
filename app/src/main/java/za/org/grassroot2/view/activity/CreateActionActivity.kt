@@ -317,6 +317,7 @@ class CreateActionActivity : GrassrootActivity(), BackNavigationListener, Create
             val i = Intent(c, CreateActionActivity::class.java)
             i.putExtra(EXTRA_START_ON_ACTION, action)
             i.putExtra(groupUid, groupUid)
+            c.startActivity(i)
         }
 
     }
