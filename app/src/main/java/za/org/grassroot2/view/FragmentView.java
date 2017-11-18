@@ -9,6 +9,8 @@ import io.reactivex.Observable;
 public interface FragmentView extends ProgressBarContainer{
     Observable<Integer> viewCreated();
     void showNoConnectionMessage();
+
+    void showErrorDialog(int errorMsgResId);
     void handleNoConnection();
     void handleNoConnectionUpload();
 }

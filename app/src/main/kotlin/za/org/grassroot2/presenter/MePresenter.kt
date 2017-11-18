@@ -7,17 +7,22 @@ import okhttp3.MediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import timber.log.Timber
+import za.org.grassroot2.R
 import za.org.grassroot2.database.DatabaseService
 import za.org.grassroot2.model.MediaFile
+import za.org.grassroot2.model.TokenResponse
 import za.org.grassroot2.model.UserProfile
 import za.org.grassroot2.presenter.fragment.BaseFragmentPresenter
 import za.org.grassroot2.services.MediaService
+import za.org.grassroot2.services.UserDetailsService
 import za.org.grassroot2.services.rest.GrassrootUserApi
+import za.org.grassroot2.services.rest.RestResponse
 import za.org.grassroot2.view.MeView
 import java.io.File
 
 class MePresenter(private val dbService: DatabaseService,
                   private val mediaService: MediaService,
+                  private val userDetailsService: UserDetailsService,
                   private val grassrootUserApi: GrassrootUserApi) : BaseFragmentPresenter<MeView>() {
 
 
@@ -27,7 +32,7 @@ class MePresenter(private val dbService: DatabaseService,
 
     override fun onViewCreated() {
 
-        this.userProfile = dbService.loadUserProfile()!!
+        this.userProfile = dbService.loadUserProfile()!! //this will thrown NPE if user gets to this screen, and it has no user profile data stored
         view.displayUserData(userProfile)
     }
 
@@ -39,16 +44,16 @@ class MePresenter(private val dbService: DatabaseService,
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe({ s ->
-                            val mediaFile = dbService.loadObjectByUid(MediaFile::class.java, s)
-                            Timber.e("mediaFile stored and retrieved, = " + mediaFile!!)
-                            // for some reason, sometimes it comes back null ...
-                            Timber.d("media URI passed to intent: " + Uri.parse(mediaFile.contentProviderPath))
+                            val mediaFile = dbService.loadObjectByUid(MediaFile::class.java, s)!!
                             currentMediaFileUid = s
                             view.cameraForResult(mediaFile.contentProviderPath, s)
-                        }, { throwable ->
-                            Timber.e(throwable, "Error creating file")
-//                    view.showErrorSnackbar(R.string.error_file_creation)
-                        }))
+                        },
+                                { throwable ->
+                                    view.closeProgressBar()
+                                    view.showErrorDialog(R.string.me_error_updating_photo)
+                                    Timber.e(throwable, "Error creating file")
+                                }
+                        ))
     }
 
     fun pickFromGallery() {
@@ -64,34 +69,49 @@ class MePresenter(private val dbService: DatabaseService,
                             currentMediaFileUid = s
                             view.pickFromGallery()
                         },
-                        { it.printStackTrace() }
+                        {
+                            view.closeProgressBar()
+                            view.showErrorDialog(R.string.me_error_updating_photo)
+                            it.printStackTrace()
+                        }
                 )
         )
     }
 
 
     fun cameraResult() {
-        disposableOnDetach(mediaService.captureMediaFile(currentMediaFileUid)
-                .doOnError({ this.handleMediaError(it) })
-                .subscribe { s ->
-                    val mediaFile = dbService.loadObjectByUid(MediaFile::class.java, currentMediaFileUid)
-                    if (mediaFile != null)
-                        uploadProfilePhoto(mediaFile)
-                    println("mediaFile: $mediaFile")
-                })
-    }
-
-    fun handlePickResult(data: Uri) {
         view.showProgressBar()
-        disposableOnDetach(mediaService.storeGalleryFile(currentMediaFileUid, data).subscribeOn(Schedulers.io())
-                .doOnError({ this.handleMediaError(it) })
+        disposableOnDetach(mediaService.captureMediaFile(currentMediaFileUid)
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
-                        { s ->
+                        {
                             val mediaFile = dbService.loadObjectByUid(MediaFile::class.java, currentMediaFileUid)
                             if (mediaFile != null)
                                 uploadProfilePhoto(mediaFile)
                         },
-                        { this.handleMediaError(it) }))
+                        {
+                            this.handleMediaError(it)
+                        }
+                )
+        )
+    }
+
+    fun handlePickResult(data: Uri) {
+        view.showProgressBar()
+        disposableOnDetach(mediaService.storeGalleryFile(currentMediaFileUid, data)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        {
+                            val mediaFile = dbService.loadObjectByUid(MediaFile::class.java, currentMediaFileUid)
+                            if (mediaFile != null)
+                                uploadProfilePhoto(mediaFile)
+                        },
+                        {
+                            this.handleMediaError(it)
+                        }
+                )
+        )
     }
 
     fun updateProfileData(displayName: String, phoneNumber: String, email: String) {
@@ -102,23 +122,26 @@ class MePresenter(private val dbService: DatabaseService,
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                         { result ->
-                            val authData = result.data
-                            println(authData)
-
+                            storeSuccessfulAuthAndProceed(result)
                         },
-                        { Timber.e(it) }
+                        {
+                            view.closeProgressBar()
+                            view.showErrorDialog(R.string.me_error_updating_data)
+                            Timber.e(it)
+                        }
                 )
     }
 
     private fun handleMediaError(throwable: Throwable) {
         view.closeProgressBar()
+        view.showErrorDialog(R.string.me_error_updating_photo)
+        view.closeProgressBar()
         Timber.e(throwable)
-//        view.showErrorSnackbar(R.string.error_lwire_alert_media_error)
     }
 
 
     private fun uploadProfilePhoto(mediaFile: MediaFile) {
-
+        view.showProgressBar()
         mediaFile.initUploading()
         dbService.storeObject(MediaFile::class.java, mediaFile)
 
@@ -130,49 +153,55 @@ class MePresenter(private val dbService: DatabaseService,
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                         { result ->
-                            println("Upload result: $result")
                             view.closeProgressBar()
                             if (result.isSuccessful) {
                                 view.invalidateProfilePicCache(userProfile.uid)
-                                println(mediaFile.contentProviderPath)
-                            } else
-                                println("Upload result error:" + result.errorBody())
+                            }
                         },
                         { error ->
-                            println("Upload erorr: $error")
                             view.closeProgressBar()
+                            view.showErrorDialog(R.string.me_error_updating_photo)
+                            Timber.e(error)
                         }
                 )
         )
-
-//
-//                .flatMap(successHandler(mediaFile))
-//                .onErrorResumeNext(resumeHandler(mediaFile))
-//                .concatMap { uploadResult ->
-//
-//                    if (uploadResult.uploadException == null) {
-//                        mediaFile.haltUploading(true)
-//                        mediaFile.isSentUpstream = true
-//                        mediaFile.serverUid = uploadResult.serverUid
-//                    } else {
-//                        mediaFile.haltUploading(false)
-//                    }
-//                    dbService.storeObject(MediaFile::class.java, mediaFile)
-//                    Observable.just(uploadResult)
-//                }
     }
 
     private fun getFileMultipart(mediaFile: MediaFile, paramName: String): MultipartBody.Part? {
         return try {
-            Timber.i("getting image from path : " + mediaFile.absolutePath)
             val file = File(mediaFile.absolutePath)
-            Timber.d("file size : " + file.length() / 1024)
             val requestFile = RequestBody.create(MediaType.parse(mediaFile.mimeType), file)
             MultipartBody.Part.createFormData(paramName, file.name, requestFile)
         } catch (e: Exception) {
             Timber.e(e)
             null
         }
+    }
+
+    private fun storeSuccessfulAuthAndProceed(response: RestResponse<TokenResponse>) {
+        val tokenAndUserDetails = response.data
+
+        disposableOnDetach(
+                userDetailsService.storeUserDetails(tokenAndUserDetails.userUid,
+                        tokenAndUserDetails.msisdn,
+                        tokenAndUserDetails.displayName,
+                        tokenAndUserDetails.email,
+                        tokenAndUserDetails.systemRole,
+                        tokenAndUserDetails.token)
+                        .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                { upd ->
+                                    this.userProfile = upd
+                                    view.displayUserData(this.userProfile)
+                                    view.closeProgressBar()
+                                },
+                                {
+                                    view.closeProgressBar()
+                                    view.showErrorDialog(R.string.me_error_updating_data)
+                                    Timber.e(it)
+                                }
+                        )
+        )
     }
 
 

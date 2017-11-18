@@ -31,7 +31,7 @@ public class FragmentModule {
 
     @Provides
     @PerFragment
-    MePresenter provideMePresenter(DatabaseService dbService, MediaService mediaService, GrassrootUserApi grassrootUserApi) {
-        return new MePresenter(dbService, mediaService, grassrootUserApi);
+    MePresenter provideMePresenter(DatabaseService dbService, MediaService mediaService, GrassrootUserApi grassrootUserApi, UserDetailsService userDetailsService) {
+        return new MePresenter(dbService, mediaService, userDetailsService, grassrootUserApi);
     }
 }

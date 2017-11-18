@@ -28,9 +28,6 @@ public class UserProfile {
     private String emailAddress;
 
     @DatabaseField
-    private String localPhotoPath;
-
-    @DatabaseField
     private String systemRole;
 
     @DatabaseField
@@ -39,14 +36,15 @@ public class UserProfile {
     public UserProfile() {
     }
 
-    public UserProfile(String uid, String msisdn, String displayName, String systemRole) {
+    public UserProfile(String uid, String msisdn, String displayName, String emailAddress, String systemRole) {
         this.uid = uid;
         this.msisdn = msisdn;
         this.displayName = displayName;
+        this.emailAddress = emailAddress;
         this.systemRole = systemRole;
     }
 
-    public void updateFields(String uid, String msisdn, String name, String role) {
+    public void updateFields(String uid, String msisdn, String name, String emailAddress, String role) {
         if (!TextUtils.isEmpty(uid)) {
             this.uid = uid;
         }
@@ -55,6 +53,9 @@ public class UserProfile {
         }
         if (!TextUtils.isEmpty(name)) {
             this.displayName = name;
+        }
+        if (!TextUtils.isEmpty(emailAddress)) {
+            this.emailAddress = emailAddress;
         }
         if (!TextUtils.isEmpty(role)) {
             this.systemRole = role;
@@ -83,6 +84,14 @@ public class UserProfile {
 
     public void setDisplayName(String displayName) {
         this.displayName = displayName;
+    }
+
+    public String getEmailAddress() {
+        return emailAddress;
+    }
+
+    public void setEmailAddress(String emailAddress) {
+        this.emailAddress = emailAddress;
     }
 
     public String getSystemRole() {
@@ -115,6 +124,7 @@ public class UserProfile {
                 "uid='" + uid + '\'' +
                 ", msisdn='" + msisdn + '\'' +
                 ", displayName='" + displayName + '\'' +
+                ", email='" + emailAddress + '\'' +
                 ", systemRole='" + systemRole + '\'' +
                 ", syncStatus=" + syncStatus +
                 '}';

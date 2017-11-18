@@ -35,6 +35,7 @@ import za.org.grassroot2.util.UserPreference;
 import za.org.grassroot2.util.ViewAnimation;
 import za.org.grassroot2.view.FragmentView;
 import za.org.grassroot2.view.activity.GrassrootActivity;
+import za.org.grassroot2.view.dialog.GenericErrorDialog;
 import za.org.grassroot2.view.dialog.NoConnectionDialog;
 
 /**
@@ -100,7 +101,16 @@ public abstract class GrassrootFragment extends Fragment implements FragmentView
 
     @Override
     public void showNoConnectionMessage() {
+        ((GrassrootActivity) getActivity()).showNoConnectionMessage();
     }
+
+
+    public void showErrorDialog(int errorMsgResId) {
+        DialogFragment dialog = GenericErrorDialog.newInstance(errorMsgResId);
+        dialog.show(getChildFragmentManager(), DIALOG_TAG);
+    }
+
+
 
     @Override
     public void handleNoConnection() {
