@@ -104,6 +104,7 @@ class RegistrationPresenter @Inject constructor(val grassrootAuthApi: GrassrootA
         val userDetails = userDetailsService.storeUserDetails(tokenAndUserDetails.userUid,
                 tokenAndUserDetails.msisdn,
                 tokenAndUserDetails.displayName,
+                tokenAndUserDetails.email,
                 tokenAndUserDetails.systemRole,
                 tokenAndUserDetails.token)
 

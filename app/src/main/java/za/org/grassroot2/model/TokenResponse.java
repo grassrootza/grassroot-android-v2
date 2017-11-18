@@ -5,6 +5,7 @@ public class TokenResponse {
     private String userUid;
     private String msisdn;
     private String displayName;
+    private String email;
     private String systemRole;
     private String token;
 
@@ -22,6 +23,10 @@ public class TokenResponse {
 
     public String getDisplayName() {
         return displayName;
+    }
+
+    public String getEmail() {
+        return email;
     }
 
     public String getSystemRole() {

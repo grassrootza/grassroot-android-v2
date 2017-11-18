@@ -3,16 +3,20 @@ package za.org.grassroot2.view.fragment
 import android.Manifest
 import android.app.Activity
 import android.content.Intent
+import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
 import android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI
 import android.support.v4.app.Fragment
+import android.support.v4.graphics.drawable.RoundedBitmapDrawable
+import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.PopupMenu
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
+import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
 import com.tbruyelle.rxpermissions2.RxPermissions
 import io.reactivex.Observable
@@ -43,11 +47,6 @@ class MeFragment : GrassrootFragment(), MeView {
         return R.layout.fragment_me
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setHasOptionsMenu(true)
-    }
-
 
     val dataChangeWatcher = object : TextWatcher {
         override fun afterTextChanged(p0: Editable?) {}
@@ -59,10 +58,12 @@ class MeFragment : GrassrootFragment(), MeView {
         }
     }
 
+
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         (activity as AppCompatActivity).setSupportActionBar(toolbar)
         (activity as AppCompatActivity).supportActionBar!!.setTitle(R.string.title_me)
+
         profilePhoto.setOnClickListener {
             showPopup(profilePhoto)
         }
@@ -103,6 +104,7 @@ class MeFragment : GrassrootFragment(), MeView {
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        showProgressBar()
         if (resultCode == Activity.RESULT_OK) {
             if (requestCode == REQUEST_TAKE_PHOTO) {
                 presenter.cameraResult()
@@ -120,6 +122,7 @@ class MeFragment : GrassrootFragment(), MeView {
     override fun displayUserData(profile: UserProfile) {
         displayNameInput.setText(profile.displayName)
         phoneNumberInput.setText(profile.msisdn)
+        emailInput.setText(profile.emailAddress)
         loadProfilePic(profile.uid)
         submitActions.visibility = View.INVISIBLE
     }
@@ -134,11 +137,23 @@ class MeFragment : GrassrootFragment(), MeView {
         val url = BuildConfig.API_BASE + "api/user/profile/image/view/" + userUid
         Picasso.with(context)
                 .load(url)
-                .resize(50, 50)
+                .resizeDimen(R.dimen.profile_photo_width, R.dimen.profile_photo_height)
                 .placeholder(R.drawable.user)
                 .error(R.drawable.user)
                 .centerCrop()
-                .into(profilePhoto)
+                .into(profilePhoto, object : Callback {
+                    override fun onSuccess() {
+                        val imageBitmap = (profilePhoto.drawable as BitmapDrawable).bitmap;
+                        val imageDrawable: RoundedBitmapDrawable = RoundedBitmapDrawableFactory.create(resources, imageBitmap);
+                        imageDrawable.isCircular = true;
+                        imageDrawable.cornerRadius = Math.max(imageBitmap.width, imageBitmap.height) / 2.0f
+                        profilePhoto.setImageDrawable(imageDrawable)
+                    }
+
+                    override fun onError() {
+                        profilePhoto.setImageResource(R.drawable.user)
+                    }
+                })
 
     }
 

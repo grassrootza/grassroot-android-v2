@@ -253,6 +253,8 @@
 
     <string name="me_menu_from_gallery">Choose from gallery</string>
     <string name="me_menu_take_pic">Take picture</string>
+    <string name="me_error_updating_data">Profile data update failed.</string>
+    <string name="me_error_updating_photo">Profile photo update failed.</string>
 
 
 </resources>
