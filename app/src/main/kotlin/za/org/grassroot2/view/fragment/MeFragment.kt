@@ -16,11 +16,17 @@ import android.support.v7.widget.PopupMenu
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
+import android.widget.AdapterView
+import android.widget.AdapterView.OnItemSelectedListener
+import android.widget.ArrayAdapter
 import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
 import com.tbruyelle.rxpermissions2.RxPermissions
 import io.reactivex.Observable
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.fragment_me.*
+import timber.log.Timber
 import za.org.grassroot2.BuildConfig
 import za.org.grassroot2.R
 import za.org.grassroot2.dagger.activity.ActivityComponent
@@ -38,6 +44,9 @@ class MeFragment : GrassrootFragment(), MeView {
     private val REQUEST_TAKE_PHOTO = 1
     private val REQUEST_GALLERY = 2
 
+    private lateinit var languagesAdapter: ArrayAdapter<Language>
+
+    private val dataChangeWatcher = ProfileDataChangeWatcher()
 
     override fun onInject(component: ActivityComponent) {
         get().inject(this)
@@ -48,15 +57,6 @@ class MeFragment : GrassrootFragment(), MeView {
     }
 
 
-    val dataChangeWatcher = object : TextWatcher {
-        override fun afterTextChanged(p0: Editable?) {}
-
-        override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
-
-        override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-            submitActions.visibility = View.VISIBLE
-        }
-    }
 
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -75,17 +75,22 @@ class MeFragment : GrassrootFragment(), MeView {
         displayNameInput.addTextChangedListener(dataChangeWatcher)
         phoneNumberInput.addTextChangedListener(dataChangeWatcher)
         emailInput.addTextChangedListener(dataChangeWatcher)
+        languageInput.onItemSelectedListener = dataChangeWatcher
 
         saveBtn.setOnClickListener {
+            val language = languageInput.selectedItem as Language?
+            val languageCode = language?.code ?: "en"
             presenter.updateProfileData(
                     displayNameInput.text.toString(),
                     phoneNumberInput.text.toString(),
-                    emailInput.text.toString()
+                    emailInput.text.toString(),
+                    languageCode
             )
         }
 
         presenter.attach(this)
         presenter.onViewCreated()
+
     }
 
 
@@ -123,6 +128,29 @@ class MeFragment : GrassrootFragment(), MeView {
         displayNameInput.setText(profile.displayName)
         phoneNumberInput.setText(profile.msisdn)
         emailInput.setText(profile.emailAddress)
+
+        val languageObservable = presenter.getLanguages()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        { languageMap ->
+                            val langaugeList = languageMap.toList().map { Language(it.first, it.second) }
+                            var selectedPosition = 0
+                            for ((index, lang) in langaugeList.withIndex()) {
+                                if (lang.code == profile.languageCode)
+                                    selectedPosition = index
+                            }
+                            languagesAdapter = ArrayAdapter(activity, R.layout.item_language, langaugeList)
+                            languageInput.adapter = languagesAdapter
+                            languageInput.setSelection(selectedPosition)
+                        },
+                        {
+                            Timber.e(it)
+                        }
+                )
+
+        presenter.addDisposableOnDetach(languageObservable)
+
         loadProfilePic(profile.uid)
         submitActions.visibility = View.INVISIBLE
     }
@@ -180,6 +208,32 @@ class MeFragment : GrassrootFragment(), MeView {
     companion object {
         fun newInstance(): Fragment {
             return MeFragment()
+        }
+    }
+
+
+    inner class ProfileDataChangeWatcher : TextWatcher, OnItemSelectedListener {
+        override fun afterTextChanged(p0: Editable?) {}
+
+        override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
+
+        override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+            submitActions.visibility = View.VISIBLE
+        }
+
+        override fun onNothingSelected(p0: AdapterView<*>?) {}
+
+        override fun onItemSelected(p0: AdapterView<*>?, p1: View?, position: Int, p3: Long) {
+            val selectedLanguage = languagesAdapter.getItem(position)
+            if (selectedLanguage == null || !presenter.isCurrentLanguage(selectedLanguage.code))
+                submitActions.visibility = View.VISIBLE
+        }
+    }
+
+
+    class Language(val code: String, val name: String) {
+        override fun toString(): String {
+            return name
         }
     }
 }

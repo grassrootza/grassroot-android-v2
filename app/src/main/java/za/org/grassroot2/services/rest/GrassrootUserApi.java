@@ -72,6 +72,9 @@ public interface GrassrootUserApi {
     @GET("/api/language/parse/datetime/text")
     Observable<Long> getTimestampForTextDate(@Query("text") String text);
 
+    @GET("/api/language/list")
+    Observable<Map<String, String>> fetchLanguages();
+
     @POST("/api/task/create/meeting/{userUid}/{parentType}/{parentUid}")
     Observable<Response<Task>> createTask(@Path("parentType") String parentType,
                                           @Path("userUid") String userUid,
@@ -103,9 +106,8 @@ public interface GrassrootUserApi {
     Observable<RestResponse<TokenResponse>> updateProfileData(
             @Query("displayName") String displayName,
             @Query("phoneNumber") String phoneNumber,
-            @Query("email") String email);
-
-
+            @Query("email") String email,
+            @Query("languageCode") String languageCode);
 
 
     @POST("/api/task/respond/meeting/{userUid}/{taskUid}")

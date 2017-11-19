@@ -28,6 +28,9 @@ public class UserProfile {
     private String emailAddress;
 
     @DatabaseField
+    private String languageCode;
+
+    @DatabaseField
     private String systemRole;
 
     @DatabaseField
@@ -36,15 +39,16 @@ public class UserProfile {
     public UserProfile() {
     }
 
-    public UserProfile(String uid, String msisdn, String displayName, String emailAddress, String systemRole) {
+    public UserProfile(String uid, String msisdn, String displayName, String emailAddress, String languageCode, String systemRole) {
         this.uid = uid;
         this.msisdn = msisdn;
         this.displayName = displayName;
         this.emailAddress = emailAddress;
+        this.languageCode = languageCode;
         this.systemRole = systemRole;
     }
 
-    public void updateFields(String uid, String msisdn, String name, String emailAddress, String role) {
+    public void updateFields(String uid, String msisdn, String name, String emailAddress, String languageCode, String role) {
         if (!TextUtils.isEmpty(uid)) {
             this.uid = uid;
         }
@@ -56,6 +60,9 @@ public class UserProfile {
         }
         if (!TextUtils.isEmpty(emailAddress)) {
             this.emailAddress = emailAddress;
+        }
+        if (!TextUtils.isEmpty(languageCode)) {
+            this.languageCode = languageCode;
         }
         if (!TextUtils.isEmpty(role)) {
             this.systemRole = role;
@@ -94,6 +101,14 @@ public class UserProfile {
         this.emailAddress = emailAddress;
     }
 
+    public String getLanguageCode() {
+        return languageCode;
+    }
+
+    public void setLanguageCode(String languageCode) {
+        this.languageCode = languageCode;
+    }
+
     public String getSystemRole() {
         return systemRole;
     }
@@ -125,6 +140,7 @@ public class UserProfile {
                 ", msisdn='" + msisdn + '\'' +
                 ", displayName='" + displayName + '\'' +
                 ", email='" + emailAddress + '\'' +
+                ", languageCode='" + languageCode + '\'' +
                 ", systemRole='" + systemRole + '\'' +
                 ", syncStatus=" + syncStatus +
                 '}';

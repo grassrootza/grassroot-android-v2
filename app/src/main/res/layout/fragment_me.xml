@@ -34,7 +34,7 @@
             android:orientation="horizontal"
             android:gravity="center_vertical"
             android:paddingBottom="@dimen/padding_std_medium"
-            android:layout_marginBottom="@dimen/margin_std_large"
+            android:layout_marginBottom="@dimen/margin_std_small"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
@@ -58,6 +58,7 @@
         <View
             android:layout_width="match_parent"
             android:background="@color/light_grey"
+            android:layout_marginBottom="@dimen/margin_std_small"
             android:layout_height="1dp" />
 
 
@@ -76,17 +77,17 @@
 
             <EditText
                 android:id="@+id/displayNameInput"
-                style="@style/OneLineLargeTextInput"
-                android:layout_marginTop="@dimen/padding_std_medium"
+                style="@style/MeScreenTextInput"
                 android:imeOptions="actionNext"
                 android:lines="1"
-                android:nextFocusForward="@id/phoneNumberInput"
+                android:nextFocusDown="@id/phoneNumberInput"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
 
             <View
                 android:layout_width="match_parent"
                 android:background="@color/light_grey"
+                android:layout_marginBottom="@dimen/margin_std_small"
                 android:layout_height="1dp" />
 
         </LinearLayout>
@@ -107,16 +108,15 @@
 
             <EditText
                 android:id="@+id/phoneNumberInput"
-                style="@style/OneLineLargeTextInput"
+                style="@style/MeScreenTextInput"
                 android:imeOptions="actionNext"
                 android:lines="1"
-                android:nextFocusForward="@id/emailInput"
-                android:layout_marginTop="@dimen/padding_std_medium"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
 
             <View
                 android:layout_width="match_parent"
+                android:layout_marginBottom="@dimen/margin_std_small"
                 android:background="@color/light_grey"
                 android:layout_height="1dp" />
 
@@ -137,17 +137,47 @@
 
             <EditText
                 android:id="@+id/emailInput"
-                style="@style/OneLineLargeTextInput"
-                android:imeOptions="actionDone"
+                style="@style/MeScreenTextInput"
+                android:imeOptions="actionNext"
                 android:lines="1"
-                android:nextFocusForward="@id/saveBtn"
-                android:layout_marginTop="@dimen/padding_std_medium"
+                android:nextFocusDown="@id/languageInput"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
 
             <View
                 android:layout_width="match_parent"
                 android:background="@color/light_grey"
+                android:layout_marginBottom="@dimen/margin_std_small"
+                android:layout_height="1dp" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_marginTop="@dimen/padding_std_medium"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:gravity="center"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/colorPrimary"
+                android:text="@string/me_language" />
+
+            <Spinner
+                android:id="@+id/languageInput"
+                android:imeOptions="actionDone"
+                android:lines="1"
+                android:nextFocusDown="@id/saveBtn"
+                android:layout_marginTop="@dimen/margin_std_small"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+            <View
+                android:layout_width="match_parent"
+                android:background="@color/light_grey"
+                android:layout_marginBottom="@dimen/margin_std_small"
                 android:layout_height="1dp" />
 
         </LinearLayout>

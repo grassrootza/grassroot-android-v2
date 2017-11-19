@@ -106,6 +106,7 @@ class RegistrationPresenter @Inject constructor(val grassrootAuthApi: GrassrootA
                 tokenAndUserDetails.msisdn,
                 tokenAndUserDetails.displayName,
                 tokenAndUserDetails.email,
+                tokenAndUserDetails.languageCode,
                 tokenAndUserDetails.systemRole,
                 tokenAndUserDetails.token)
 

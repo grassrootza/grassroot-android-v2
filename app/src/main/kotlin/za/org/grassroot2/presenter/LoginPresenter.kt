@@ -44,6 +44,7 @@ class LoginPresenter @Inject constructor(val grassrootAuthApi: GrassrootAuthApi,
                         tokenAndUserDetails.msisdn,
                         tokenAndUserDetails.displayName,
                         tokenAndUserDetails.email,
+                        tokenAndUserDetails.languageCode,
                         tokenAndUserDetails.systemRole,
                         tokenAndUserDetails.token)
                         .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
