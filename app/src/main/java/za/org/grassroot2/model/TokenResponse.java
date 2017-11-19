@@ -6,6 +6,7 @@ public class TokenResponse {
     private String msisdn;
     private String displayName;
     private String email;
+    private String languageCode;
     private String systemRole;
     private String token;
 
@@ -23,6 +24,10 @@ public class TokenResponse {
 
     public String getDisplayName() {
         return displayName;
+    }
+
+    public String getLanguageCode() {
+        return languageCode;
     }
 
     public String getEmail() {

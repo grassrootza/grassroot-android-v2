@@ -15,6 +15,7 @@ public interface UserDetailsService extends GrassrootService {
                                          final String userPhone,
                                          final String userDisplayName,
                                          final String userEmailAddress,
+                                         final String userLanguageCode,
                                          final String userSystemRole,
                                          final String userToken);
 

@@ -1,5 +1,5 @@
 #
-# generated on 2017/11/18 02:19:53
+# generated on 2017/11/19 12:36:39
 #
 # --table-start--
 dataClass=za.org.grassroot2.model.task.Vote
@@ -324,6 +324,9 @@ fieldName=displayName
 # --field-end--
 # --field-start--
 fieldName=emailAddress
+# --field-end--
+# --field-start--
+fieldName=languageCode
 # --field-end--
 # --field-start--
 fieldName=systemRole

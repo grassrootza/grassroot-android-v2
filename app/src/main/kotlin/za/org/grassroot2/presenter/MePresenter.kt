@@ -1,7 +1,9 @@
 package za.org.grassroot2.presenter
 
 import android.net.Uri
+import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import okhttp3.MediaType
 import okhttp3.MultipartBody
@@ -36,6 +38,9 @@ class MePresenter(private val dbService: DatabaseService,
         view.displayUserData(userProfile)
     }
 
+    fun getLanguages(): Observable<Map<String, String>> {
+        return grassrootUserApi.fetchLanguages()
+    }
 
     fun takePhoto() {
         disposableOnDetach(
@@ -114,10 +119,10 @@ class MePresenter(private val dbService: DatabaseService,
         )
     }
 
-    fun updateProfileData(displayName: String, phoneNumber: String, email: String) {
+    fun updateProfileData(displayName: String, phoneNumber: String, email: String, languageCode: String) {
 
         view.showProgressBar()
-        grassrootUserApi.updateProfileData(displayName, phoneNumber, email)
+        grassrootUserApi.updateProfileData(displayName, phoneNumber, email, languageCode)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
@@ -186,6 +191,7 @@ class MePresenter(private val dbService: DatabaseService,
                         tokenAndUserDetails.msisdn,
                         tokenAndUserDetails.displayName,
                         tokenAndUserDetails.email,
+                        tokenAndUserDetails.languageCode,
                         tokenAndUserDetails.systemRole,
                         tokenAndUserDetails.token)
                         .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
@@ -203,6 +209,16 @@ class MePresenter(private val dbService: DatabaseService,
                         )
         )
     }
+
+
+    fun isCurrentLanguage(languageCode: String): Boolean {
+        return userProfile?.languageCode == languageCode
+    }
+
+    fun addDisposableOnDetach(disposable: Disposable) {
+        disposableOnDetach(disposable)
+    }
+
 
 
 

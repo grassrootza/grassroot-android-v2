@@ -250,6 +250,7 @@
     <string name="me_phone_number">Phone number</string>
     <string name="me_display_name">Display name</string>
     <string name="me_email">Email address</string>
+    <string name="me_language">Language</string>
 
     <string name="me_menu_from_gallery">Choose from gallery</string>
     <string name="me_menu_take_pic">Take picture</string>

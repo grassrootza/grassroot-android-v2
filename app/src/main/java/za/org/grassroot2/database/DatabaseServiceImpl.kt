@@ -279,8 +279,8 @@ class DatabaseServiceImpl(private val helper: DatabaseHelper) : DatabaseService 
         return objects
     }
 
-    override fun updateOrCreateUserProfile(userUid: String, userPhone: String, userDisplayName: String, email: String, userSystemRole: String?): UserProfile {
-        val newProfile = UserProfile(userUid, userPhone, userDisplayName, email, userSystemRole)
+    override fun updateOrCreateUserProfile(userUid: String, userPhone: String, userDisplayName: String, email: String, languageCode: String, userSystemRole: String?): UserProfile {
+        val newProfile = UserProfile(userUid, userPhone, userDisplayName, email, languageCode, userSystemRole)
         try {
             val dao = helper.getDao(UserProfile::class.java)
             dao.createOrUpdate(newProfile)
