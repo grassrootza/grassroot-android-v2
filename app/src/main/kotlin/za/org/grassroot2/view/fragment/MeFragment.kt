@@ -156,13 +156,13 @@ class MeFragment : GrassrootFragment(), MeView {
     }
 
     override fun invalidateProfilePicCache(userUid: String) {
-        val url = BuildConfig.API_BASE + "api/user/profile/image/view/" + userUid
+        val url = BuildConfig.API_BASE + "user/profile/image/view/" + userUid
         Picasso.with(context).invalidate(url)
         loadProfilePic(userUid)
     }
 
     private fun loadProfilePic(userUid: String) {
-        val url = BuildConfig.API_BASE + "api/user/profile/image/view/" + userUid
+        val url = BuildConfig.API_BASE + "user/profile/image/view/" + userUid
         Picasso.with(context)
                 .load(url)
                 .resizeDimen(R.dimen.profile_photo_width, R.dimen.profile_photo_height)
