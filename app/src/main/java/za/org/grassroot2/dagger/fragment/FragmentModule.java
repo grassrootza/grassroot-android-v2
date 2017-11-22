@@ -4,7 +4,6 @@ package za.org.grassroot2.dagger.fragment;
 import dagger.Module;
 import dagger.Provides;
 import za.org.grassroot2.database.DatabaseService;
-import za.org.grassroot2.presenter.AroundMePresenter;
 import za.org.grassroot2.presenter.MePresenter;
 import za.org.grassroot2.presenter.fragment.AroundMePresenter;
 import za.org.grassroot2.presenter.fragment.GroupFragmentPresenter;

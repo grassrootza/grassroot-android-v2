@@ -1,7 +1,5 @@
 package za.org.grassroot2.presenter
 
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.net.Uri
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -22,7 +20,6 @@ import za.org.grassroot2.services.UserDetailsService
 import za.org.grassroot2.services.rest.GrassrootUserApi
 import za.org.grassroot2.services.rest.RestResponse
 import za.org.grassroot2.view.MeView
-import java.io.ByteArrayOutputStream
 import java.io.File
 
 class MePresenter(private val dbService: DatabaseService,
@@ -89,7 +86,7 @@ class MePresenter(private val dbService: DatabaseService,
 
     fun cameraResult() {
         view.showProgressBar()
-        disposableOnDetach(mediaService.captureMediaFile(currentMediaFileUid)
+        disposableOnDetach(mediaService.captureMediaFile(currentMediaFileUid, 500, 500)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                         {
@@ -106,7 +103,7 @@ class MePresenter(private val dbService: DatabaseService,
 
     fun handlePickResult(data: Uri) {
         view.showProgressBar()
-        disposableOnDetach(mediaService.storeGalleryFile(currentMediaFileUid, data)
+        disposableOnDetach(mediaService.storeGalleryFile(currentMediaFileUid, data, 500, 500)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
@@ -178,22 +175,7 @@ class MePresenter(private val dbService: DatabaseService,
     private fun getFileMultipart(mediaFile: MediaFile, paramName: String): MultipartBody.Part? {
         return try {
             val file = File(mediaFile.absolutePath)
-            val originalImg = BitmapFactory.decodeFile(mediaFile.absolutePath)
-
-            val targetWidth = 500f
-            val targetHeight = 500f
-            val ratio = minOf(targetWidth / originalImg.width, targetHeight / originalImg.height)
-
-            val scaledImg = Bitmap.createScaledBitmap(
-                    originalImg,
-                    (originalImg.width * ratio).toInt(),
-                    (originalImg.height * ratio).toInt(),
-                    false)
-
-            val bos = ByteArrayOutputStream()
-            scaledImg.compress(Bitmap.CompressFormat.JPEG, 95, bos)
-
-            val requestFile = RequestBody.create(MediaType.parse(mediaFile.mimeType), bos.toByteArray())
+            val requestFile = RequestBody.create(MediaType.parse(mediaFile.mimeType), file)
             MultipartBody.Part.createFormData(paramName, file.name, requestFile)
         } catch (e: Exception) {
             Timber.e(e)
