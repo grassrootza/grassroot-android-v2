@@ -17,6 +17,7 @@ import retrofit2.http.Path;
 import retrofit2.http.Query;
 import za.org.grassroot2.model.AroundEntity;
 import za.org.grassroot2.model.Group;
+import za.org.grassroot2.model.TokenResponse;
 import za.org.grassroot2.model.Post;
 import za.org.grassroot2.model.alert.LiveWireAlert;
 import za.org.grassroot2.model.language.NluResponse;
@@ -71,6 +72,9 @@ public interface GrassrootUserApi {
     @GET("/api/language/parse/datetime/text")
     Observable<Long> getTimestampForTextDate(@Query("text") String text);
 
+    @GET("/api/language/list")
+    Observable<Map<String, String>> fetchLanguages();
+
     @POST("/api/task/create/meeting/{userUid}/{parentType}/{parentUid}")
     Observable<Response<Task>> createTask(@Path("parentType") String parentType,
                                           @Path("userUid") String userUid,
@@ -91,6 +95,20 @@ public interface GrassrootUserApi {
                                                 @Query("latitude") double latitude,
                                                 @Query("radiusMetres") int radius,
                                                 @Query("saerchType") String serachType);
+
+
+    @Multipart
+    @POST("/api/user/profile/image/change")
+    Observable<Response<RestResponse<String>>> uploadProfilePhoto(@Part MultipartBody.Part file);
+
+
+    @POST("/api/user/profile/data/update")
+    Observable<RestResponse<TokenResponse>> updateProfileData(
+            @Query("displayName") String displayName,
+            @Query("phoneNumber") String phoneNumber,
+            @Query("email") String email,
+            @Query("languageCode") String languageCode);
+
 
     @POST("/api/task/respond/meeting/{userUid}/{taskUid}")
     Observable<Response<Void>> respondToMeeting(@Path("userUid") String userId, @Path("taskUid") String taskUid, @Query("response") String response);

@@ -28,8 +28,8 @@ android {
         proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         buildConfigField "int", "databaseVersion", "1"
         buildConfigField "String", "databaseName", "\"grassroot\""
-        buildConfigField "String", "API_BASE", "\"https://app.grassroot.org.za/api/\""
-        buildConfigField "boolean", "USE_UNSAFE_HTTP", "false"
+        buildConfigField "String", "API_BASE", "\"https://staging.grassroot.org.za/api/\""
+        buildConfigField "boolean", "USE_UNSAFE_HTTP", "true"
         vectorDrawables.useSupportLibrary = true
         multiDexEnabled true
     }
@@ -101,6 +101,8 @@ dependencies {
         transitive = true;
     }
 
+    compile 'com.squareup.picasso:picasso:2.5.2'
+
     testCompile 'junit:junit:4.12'
     testCompile 'org.mockito:mockito-core:2.7.22'
     testCompile 'org.robolectric:robolectric:3.3.2'
@@ -112,7 +114,6 @@ dependencies {
     })
     androidTestCompile 'com.android.support.test.espresso:espresso-intents:3.0.1'
     androidTestCompile 'com.android.support.test.espresso:espresso-web:3.0.1'
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
     kapt 'com.jakewharton:butterknife-compiler:8.6.0'
     kapt 'com.google.dagger:dagger-compiler:2.11'
 }

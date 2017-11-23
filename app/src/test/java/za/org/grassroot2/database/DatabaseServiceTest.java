@@ -38,10 +38,10 @@ public class DatabaseServiceTest extends TestCase{
 
     @org.junit.Test
     public void userProfileCRUD() throws Exception {
-        databaseService.updateOrCreateUserProfile(UUID.randomUUID().toString(), "1", "John", "Admin");
+        databaseService.updateOrCreateUserProfile(UUID.randomUUID().toString(), "1", "John", "john@example.com", "en", "Admin");
         UserProfile profile = databaseService.loadUserProfile();
         assertEquals(profile.getDisplayName(), "John");
-        databaseService.updateOrCreateUserProfile(profile.getUid(), "1", "Johnas", "Admin");
+        databaseService.updateOrCreateUserProfile(profile.getUid(), "1", "Johnas", "john@example.com", "en", "Admin");
         profile = databaseService.loadUserProfile();
         assertEquals(profile.getDisplayName(), "Johnas");
     }
@@ -95,7 +95,7 @@ public class DatabaseServiceTest extends TestCase{
 
     @org.junit.Test
     public void removeUserProfile() throws Exception {
-        databaseService.updateOrCreateUserProfile(UUID.randomUUID().toString(), "1", "John", "Admin");
+        databaseService.updateOrCreateUserProfile(UUID.randomUUID().toString(), "1", "John", "john@example.com", "en", "Admin");
         databaseService.removeUserProfile();
         assertNull(databaseService.loadUserProfile());
     }

@@ -19,6 +19,7 @@ import za.org.grassroot2.model.network.Syncable;
 public class MediaFile implements EntityForUpload, Syncable {
 
     public static final String FUNCTION_LIVEWIRE = "LIVEWIRE_MEDIA";
+    public static final String FUNCTION_USER_PROFILE_PHOTO = "USER_PROFILE_PHOTO";
 
     @DatabaseField(id = true)
     private String uid;

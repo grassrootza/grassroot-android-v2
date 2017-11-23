@@ -1,6 +1,5 @@
 package za.org.grassroot2.database
 
-import io.reactivex.Flowable
 import io.reactivex.Maybe
 import io.reactivex.Observable
 import io.reactivex.Single
@@ -45,8 +44,8 @@ interface DatabaseService {
     fun <E> copyOrUpdateListOfEntities(cls: Class<E>, objects: List<E>): List<E>
 
     //    void executeTransaction(Realm.Transaction transaction);
-    fun updateOrCreateUserProfile(userUid: String, userPhone: String,
-                                  userDisplayName: String, userSystemRole: String?): UserProfile
+    fun updateOrCreateUserProfile(userUid: String, userPhone: String, userDisplayName: String,
+                                  email: String, languageCode: String, userSystemRole: String?): UserProfile
 
     fun removeUserProfile()
 

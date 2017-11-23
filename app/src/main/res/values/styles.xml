@@ -69,6 +69,14 @@
         <item name="android:textColor">@android:color/primary_text_light</item>
     </style>
 
+    <style name="MeScreenTextInput" parent="SingleEditTextInput">
+        <item name="android:padding">@dimen/padding_std_small</item>
+        <item name="android:layout_marginTop">2dp</item>
+        <item name="android:layout_marginBottom">@dimen/margin_std_small</item>
+        <item name="android:singleLine">true</item>
+        <item name="android:textColor">@android:color/primary_text_light</item>
+    </style>
+
     <style name="MultiLineLargeInput">
         <item name="android:textColor">@android:color/primary_text_light</item>
         <item name="android:gravity">top|start</item>
@@ -113,6 +121,16 @@
         <item name="android:gravity">center_vertical</item>
         <item name="android:paddingLeft">26dp</item>
         <item name="android:textColor">@color/text_dark_grey</item>
+    </style>
+
+    <style name="LanguageOption">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:background">@color/white</item>
+        <item name="android:padding">@dimen/padding_std_medium</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:paddingLeft">26dp</item>
+        <item name="android:textColor">@color/grey</item>
     </style>
 
     <style name="StandardInputField">

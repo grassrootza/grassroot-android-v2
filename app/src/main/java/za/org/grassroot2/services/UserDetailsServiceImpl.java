@@ -31,12 +31,14 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     public Single<UserProfile> storeUserDetails(final String userUid,
                                                 final String userPhone,
                                                 final String userDisplayName,
+                                                final String userEmailAddress,
+                                                final String userLanguageCode,
                                                 final String userSystemRole,
                                                 final String userToken) {
         return Single.create(e -> {
             Account account = setAuthToken(userToken);
             Timber.v("stored auth token, number accounts = " + accountManager.getAccountsByType(AuthConstants.ACCOUNT_TYPE).length);
-            UserProfile userProfile = databaseService.updateOrCreateUserProfile(userUid, userPhone, userDisplayName, userSystemRole);
+            UserProfile userProfile = databaseService.updateOrCreateUserProfile(userUid, userPhone, userDisplayName, userEmailAddress, userLanguageCode, userSystemRole);
             setAccountAsSyncable(account);
             e.onSuccess(userProfile);
         });

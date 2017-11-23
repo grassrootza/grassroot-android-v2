@@ -94,7 +94,7 @@ class RegisterActivity : GrassrootActivity(), RegistrationView {
             userNameFragment.setInputType(InputType.TYPE_CLASS_TEXT)
             userNameFragment.setImeOptions(EditorInfo.IME_ACTION_NEXT)
             userNameFragment.focusOnInput()
-        }, { throwable -> }))
+        }, { throwable -> Timber.e(throwable) }))
 
 
         disposables.add(phoneNumberFragment.viewCreated().subscribe({ integer ->

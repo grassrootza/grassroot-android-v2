@@ -1,7 +1,6 @@
 package za.org.grassroot2.database
 
 import android.util.Log
-import io.reactivex.Flowable
 import io.reactivex.Maybe
 import io.reactivex.Observable
 import io.reactivex.Single
@@ -305,8 +304,8 @@ class DatabaseServiceImpl(private val helper: DatabaseHelper) : DatabaseService 
         return objects
     }
 
-    override fun updateOrCreateUserProfile(userUid: String, userPhone: String, userDisplayName: String, userSystemRole: String?): UserProfile {
-        val newProfile = UserProfile(userUid, userPhone, userDisplayName, userSystemRole)
+    override fun updateOrCreateUserProfile(userUid: String, userPhone: String, userDisplayName: String, email: String, languageCode: String, userSystemRole: String?): UserProfile {
+        val newProfile = UserProfile(userUid, userPhone, userDisplayName, email, languageCode, userSystemRole)
         try {
             val dao = helper.getDao(UserProfile::class.java)
             dao.createOrUpdate(newProfile)

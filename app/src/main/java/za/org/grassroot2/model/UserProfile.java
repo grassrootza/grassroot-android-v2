@@ -17,26 +17,38 @@ public class UserProfile {
 
     @DatabaseField(id = true)
     private String uid;
+
     @DatabaseField
     private String msisdn;
+
     @DatabaseField
     private String displayName;
+
+    @DatabaseField
+    private String emailAddress;
+
+    @DatabaseField
+    private String languageCode;
+
     @DatabaseField
     private String systemRole;
+
     @DatabaseField
     private int syncStatus = SYNC_STATE_NONE;
 
     public UserProfile() {
     }
 
-    public UserProfile(String uid, String msisdn, String displayName, String systemRole) {
+    public UserProfile(String uid, String msisdn, String displayName, String emailAddress, String languageCode, String systemRole) {
         this.uid = uid;
         this.msisdn = msisdn;
         this.displayName = displayName;
+        this.emailAddress = emailAddress;
+        this.languageCode = languageCode;
         this.systemRole = systemRole;
     }
 
-    public void updateFields(String uid, String msisdn, String name, String role) {
+    public void updateFields(String uid, String msisdn, String name, String emailAddress, String languageCode, String role) {
         if (!TextUtils.isEmpty(uid)) {
             this.uid = uid;
         }
@@ -45,6 +57,12 @@ public class UserProfile {
         }
         if (!TextUtils.isEmpty(name)) {
             this.displayName = name;
+        }
+        if (!TextUtils.isEmpty(emailAddress)) {
+            this.emailAddress = emailAddress;
+        }
+        if (!TextUtils.isEmpty(languageCode)) {
+            this.languageCode = languageCode;
         }
         if (!TextUtils.isEmpty(role)) {
             this.systemRole = role;
@@ -73,6 +91,22 @@ public class UserProfile {
 
     public void setDisplayName(String displayName) {
         this.displayName = displayName;
+    }
+
+    public String getEmailAddress() {
+        return emailAddress;
+    }
+
+    public void setEmailAddress(String emailAddress) {
+        this.emailAddress = emailAddress;
+    }
+
+    public String getLanguageCode() {
+        return languageCode;
+    }
+
+    public void setLanguageCode(String languageCode) {
+        this.languageCode = languageCode;
     }
 
     public String getSystemRole() {
@@ -105,6 +139,8 @@ public class UserProfile {
                 "uid='" + uid + '\'' +
                 ", msisdn='" + msisdn + '\'' +
                 ", displayName='" + displayName + '\'' +
+                ", email='" + emailAddress + '\'' +
+                ", languageCode='" + languageCode + '\'' +
                 ", systemRole='" + systemRole + '\'' +
                 ", syncStatus=" + syncStatus +
                 '}';

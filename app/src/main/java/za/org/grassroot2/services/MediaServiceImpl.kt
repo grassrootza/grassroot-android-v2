@@ -2,8 +2,6 @@ package za.org.grassroot2.services
 
 import android.content.ContentResolver
 import android.content.Context
-import android.content.Intent
-import android.database.Cursor
 import android.media.MediaScannerConnection
 import android.net.Uri
 import android.os.Environment
@@ -11,23 +9,18 @@ import android.provider.MediaStore
 import android.support.v4.content.FileProvider
 import android.text.TextUtils
 import android.webkit.MimeTypeMap
-import android.widget.ImageView
-
-import java.io.File
-import java.io.IOException
-import java.text.SimpleDateFormat
-import java.util.Date
-
-import javax.inject.Inject
-
 import io.reactivex.Single
-import io.reactivex.schedulers.Schedulers
 import timber.log.Timber
 import za.org.grassroot2.dagger.ApplicationContext
 import za.org.grassroot2.database.DatabaseService
 import za.org.grassroot2.model.MediaFile
 import za.org.grassroot2.model.exception.FailedToCreateMediaFileException
 import za.org.grassroot2.util.ImageUtil
+import java.io.File
+import java.io.IOException
+import java.text.SimpleDateFormat
+import java.util.*
+import javax.inject.Inject
 
 /**
  * Created by luke on 2017/08/11.
@@ -88,24 +81,28 @@ constructor(@param:ApplicationContext private val applicationContext: Context,
         )
     }
 
-    override fun captureMediaFile(mediaFileUid: String): Single<String> {
+    override fun captureMediaFile(mediaFileUid: String, targetImgWidth: Int, targetImgHeight: Int): Single<String> {
         return Single.create { e ->
             val mediaFile = databaseService.loadObjectByUid(MediaFile::class.java, mediaFileUid)
             mediaFile!!.setReadyToUpload(true)
             if (mediaFile.mimeType.startsWith("image") && mediaFile.isCompressOnSend) {
-                imageUtil.resizeImageFile(mediaFile.absolutePath, mediaFile.absolutePath, DESIRED_COMPRESSED_WIDTH, DESIRED_COMPRESSED_HEIGHT)
+                imageUtil.resizeImageFile(mediaFile.absolutePath, mediaFile.absolutePath, targetImgWidth, targetImgHeight)
             }
             e.onSuccess("DONE")
             MediaScannerConnection.scanFile(applicationContext, arrayOf(mediaFile.absolutePath), arrayOf(mediaFile.mimeType)) { path, uri -> Timber.d(path, uri.toString()) }
         }
     }
 
-    override fun storeGalleryFile(mediaFileUid: String, fileUri: Uri): Single<String> {
+    override fun captureMediaFile(mediaFileUid: String): Single<String> {
+        return this.captureMediaFile(mediaFileUid, DESIRED_COMPRESSED_WIDTH, DESIRED_COMPRESSED_HEIGHT)
+    }
+
+    override fun storeGalleryFile(mediaFileUid: String, fileUri: Uri, targetImgWidth: Int, targetImgHeight: Int): Single<String> {
         return Single.create { e ->
             val mediaFile = databaseService.loadObjectByUid(MediaFile::class.java, mediaFileUid)
             val localFileName = getLocalFileNameFromURI(fileUri)
             if (mediaFile!!.isCompressOnSend) {
-                imageUtil.resizeImageFile(localFileName, mediaFile.absolutePath, DESIRED_COMPRESSED_WIDTH, DESIRED_COMPRESSED_HEIGHT)
+                imageUtil.resizeImageFile(localFileName, mediaFile.absolutePath, targetImgWidth, targetImgHeight)
             } else {
                 mediaFile.absolutePath = localFileName
                 mediaFile.contentProviderPath = fileUri.toString()
@@ -115,6 +112,10 @@ constructor(@param:ApplicationContext private val applicationContext: Context,
             e.onSuccess("DONE")
             databaseService.storeObject(MediaFile::class.java, mediaFile)
         }
+    }
+
+    override fun storeGalleryFile(mediaFileUid: String, fileUri: Uri): Single<String> {
+        return this.storeGalleryFile(mediaFileUid, fileUri, DESIRED_COMPRESSED_WIDTH, DESIRED_COMPRESSED_HEIGHT)
     }
 
     private fun getLocalFileNameFromURI(selectedImage: Uri): String? {
