@@ -6,6 +6,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.ConnectivityManager;
+import android.support.multidex.MultiDex;
+import android.support.multidex.MultiDexApplication;
 
 import com.crashlytics.android.Crashlytics;
 import com.facebook.stetho.Stetho;
@@ -18,7 +20,7 @@ import za.org.grassroot2.dagger.DaggerAppComponent;
 import za.org.grassroot2.services.SyncOfflineDataService;
 import za.org.grassroot2.util.NetworkUtil;
 
-public class GrassrootApplication extends Application {
+public class GrassrootApplication extends MultiDexApplication {
 
     private AppComponent appComponent;
 
@@ -35,6 +37,12 @@ public class GrassrootApplication extends Application {
         return DaggerAppComponent.builder()
                 .appModule(new AppModule(application))
                 .build();
+    }
+
+    @Override
+    protected void attachBaseContext(Context base) {
+        super.attachBaseContext(base);
+        MultiDex.install(this);
     }
 
     @Override
