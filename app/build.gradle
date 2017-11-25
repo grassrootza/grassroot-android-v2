@@ -14,6 +14,7 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
 apply plugin: 'com.getkeepsafe.dexcount'
+//apply plugin: 'com.google.gms.google-services'
 
 android {
     compileSdkVersion 25
@@ -28,7 +29,7 @@ android {
         proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         buildConfigField "int", "databaseVersion", "1"
         buildConfigField "String", "databaseName", "\"grassroot\""
-        buildConfigField "String", "API_BASE", "\"https://staging.grassroot.org.za/api/\""
+        buildConfigField "String", "API_BASE", "\"http://192.168.0.100:8080/api/\""
         buildConfigField "boolean", "USE_UNSAFE_HTTP", "true"
         vectorDrawables.useSupportLibrary = true
         multiDexEnabled true
@@ -59,6 +60,11 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
+
+    lintOptions {
+        abortOnError false
+    }
+
 
 }
 
@@ -95,6 +101,7 @@ dependencies {
     implementation 'com.facebook.stetho:stetho:1.5.0'
     implementation 'com.google.android.gms:play-services-maps:10.0.0'
     implementation 'com.google.android.gms:play-services-location:10.0.0'
+    implementation "com.google.android.gms:play-services-gcm:10.0.0"
     implementation 'com.github.florent37:camerafragment:1.0.7'
 
     compile('com.crashlytics.sdk.android:crashlytics:2.7.0@aar') {

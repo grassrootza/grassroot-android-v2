@@ -45,7 +45,7 @@ interface DatabaseService {
 
     //    void executeTransaction(Realm.Transaction transaction);
     fun updateOrCreateUserProfile(userUid: String, userPhone: String, userDisplayName: String,
-                                  email: String, languageCode: String, userSystemRole: String?): UserProfile
+                                  email: String?, languageCode: String, userSystemRole: String?): UserProfile
 
     fun removeUserProfile()
 

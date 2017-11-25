@@ -22,7 +22,8 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
-import com.tbruyelle.rxpermissions2.RxPermissions;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesUtil;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -78,6 +79,18 @@ public abstract class GrassrootActivity extends AppCompatActivity implements Gra
         authResponse = getIntent().getParcelableExtra(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE);
         if (authResponse != null) {
             authResponse.onRequestContinued();
+        }
+
+
+        int resultCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);
+        if (resultCode != ConnectionResult.SUCCESS) {
+            if (GooglePlayServicesUtil.isUserRecoverableError(resultCode)) {
+                //Play Services is not installed/enabled
+                GooglePlayServicesUtil.showErrorNotification(resultCode, this);
+            } else {
+                //This device does not support Play Services
+                showErrorSnackbar(R.string.play_services_unsupported_erorr);
+            }
         }
     }
 
