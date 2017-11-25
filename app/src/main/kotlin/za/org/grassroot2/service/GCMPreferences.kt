@@ -2,6 +2,6 @@ package za.org.grassroot2.service
 
 object GCMPreferences {
 
-    val SENT_TOKEN_TO_SERVER = "sentTokenToServer"
-    val REGISTRATION_COMPLETE = "registrationComplete"
+    const val CURRENT_GCM_TOKEN = "currentGcmToken"
+    const val GCM_REGISTRATION_COMPLETE = "gcmRegistrationComplete"
 }

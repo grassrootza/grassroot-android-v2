@@ -12,7 +12,7 @@ class GCMInstanceIDListenerService : InstanceIDListenerService() {
 
     override fun onTokenRefresh() {
         // Fetch updated Instance ID token and notify our app's server of any changes (if applicable).
-        val intent = Intent(this, RegistrationService::class.java)
+        val intent = Intent(this, GCMRegistrationService::class.java)
         startService(intent)
     }
 }
