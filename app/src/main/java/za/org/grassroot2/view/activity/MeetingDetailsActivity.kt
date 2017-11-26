@@ -175,7 +175,7 @@ class MeetingDetailsActivity : GrassrootActivity(), MeetingDetailsPresenter.Meet
 
     companion object {
 
-        private val EXTRA_MEETING_UID = "group_uid"
+        val EXTRA_MEETING_UID = "group_uid"
         private val REQUEST_PICK_CONTACTS = 1
 
         fun start(activity: Activity, meetingUid: String) {

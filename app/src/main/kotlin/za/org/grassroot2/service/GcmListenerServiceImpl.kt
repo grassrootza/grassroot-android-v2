@@ -9,8 +9,10 @@ import android.os.Bundle
 import android.support.v7.app.NotificationCompat
 import com.google.android.gms.gcm.GcmListenerService
 import timber.log.Timber
+import za.org.grassroot2.GrassrootNotification
 import za.org.grassroot2.R
 import za.org.grassroot2.view.activity.DashboardActivity
+import za.org.grassroot2.view.activity.MeetingDetailsActivity
 
 
 /**
@@ -22,10 +24,10 @@ class GcmListenerServiceImpl : GcmListenerService() {
 
     override fun onMessageReceived(from: String, data: Bundle) {
 
-        val message = data.getString("message")
+        val message = GrassrootNotification.fromBundle(data)
 
         Timber.d("From: " + from)
-        Timber.d("Message: " + message)
+        Timber.d("Message: " + message.text)
 
         if (from.startsWith("/topics/")) {
             // message received from some topic.
@@ -33,34 +35,28 @@ class GcmListenerServiceImpl : GcmListenerService() {
             // normal downstream message.
         }
 
-        // [START_EXCLUDE]
-        /**
-         * Production applications would usually process the message here.
-         * Eg: - Syncing with server.
-         * - Store message in local database.
-         * - Update UI.
-         */
-
-        /**
-         * In some cases it may be useful to show a notification indicating to the user
-         * that a message was received.
-         */
         showNotification(message)
-        // [END_EXCLUDE]
     }
 
 
-    private fun showNotification(message: String) {
-        val intent = Intent(this, DashboardActivity::class.java)
+    private fun showNotification(message: GrassrootNotification) {
+
+        val intent = if (message.entityType == "MEETING") {
+            val int = Intent(this, MeetingDetailsActivity::class.java)
+            int.putExtra(MeetingDetailsActivity.EXTRA_MEETING_UID, message.entytyId)
+        } else
+            Intent(this, DashboardActivity::class.java)
+
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+
         val pendingIntent = PendingIntent.getActivity(this, 0 /* Request code */, intent,
                 PendingIntent.FLAG_ONE_SHOT)
 
         val defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
         val notificationBuilder = NotificationCompat.Builder(this)
-                .setSmallIcon(R.drawable.notification_bg_low)
+                .setSmallIcon(R.drawable.ic_event)
                 .setContentTitle("GCM Message")
-                .setContentText(message)
+                .setContentText(message.text)
                 .setAutoCancel(true)
                 .setSound(defaultSoundUri)
                 .setContentIntent(pendingIntent)
