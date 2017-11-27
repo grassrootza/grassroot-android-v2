@@ -39,11 +39,12 @@ class GcmListenerServiceImpl : GcmListenerService() {
     }
 
 
-    private fun showNotification(message: GrassrootNotification) {
+    private fun showNotification(notification: GrassrootNotification) {
 
-        val intent = if (message.entityType == "MEETING") {
+        val intent = if (notification.entityType == "MEETING") {
             val int = Intent(this, MeetingDetailsActivity::class.java)
-            int.putExtra(MeetingDetailsActivity.EXTRA_MEETING_UID, message.entytyId)
+            int.putExtra(MeetingDetailsActivity.EXTRA_MEETING_UID, notification.entytyId)
+            int.putExtra(MeetingDetailsActivity.TRIGGERED_BY_NOTIFICATION, true)
         } else
             Intent(this, DashboardActivity::class.java)
 
@@ -55,8 +56,8 @@ class GcmListenerServiceImpl : GcmListenerService() {
         val defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
         val notificationBuilder = NotificationCompat.Builder(this)
                 .setSmallIcon(R.drawable.ic_event)
-                .setContentTitle("GCM Message")
-                .setContentText(message.text)
+                .setContentTitle(notification.title)
+                .setContentText(notification.text)
                 .setAutoCancel(true)
                 .setSound(defaultSoundUri)
                 .setContentIntent(pendingIntent)

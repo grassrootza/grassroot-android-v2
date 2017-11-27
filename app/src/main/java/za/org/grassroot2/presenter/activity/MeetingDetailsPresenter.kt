@@ -1,5 +1,6 @@
 package za.org.grassroot2.presenter.activity
 
+import timber.log.Timber
 import za.org.grassroot2.database.DatabaseService
 import za.org.grassroot2.model.Post
 import za.org.grassroot2.model.task.Meeting
@@ -11,10 +12,13 @@ import javax.inject.Inject
 
 class MeetingDetailsPresenter @Inject
 constructor(private val databaseService: DatabaseService, private val networkService: NetworkService) : BasePresenter<MeetingDetailsPresenter.MeetingDetailsView>() {
-    private var meetingUid: String? = null
 
-    fun init(meetingUid: String) {
+    private lateinit var meetingUid: String
+    private var forceSync = false
+
+    fun init(meetingUid: String, forceSync: Boolean) {
         this.meetingUid = meetingUid
+        this.forceSync = forceSync
     }
 
     lateinit var meeting: Meeting
@@ -22,10 +26,37 @@ constructor(private val databaseService: DatabaseService, private val networkSer
 
 
     fun loadData() {
-        disposableOnDetach(databaseService.load(Meeting::class.java, meetingUid!!).subscribeOn(io()).observeOn(main()).subscribe({ meeting ->
-            view.render(meeting)
+
+        if (forceSync) {
+            view.showProgressBar()
+            val meetingUidAndType = mapOf(meetingUid to "MEETING")
+            disposableOnDetach(networkService.getTasksByUids(meetingUidAndType)
+                    .subscribeOn(io()).observeOn(main())
+                    .subscribe(
+                            { tasksFull ->
+                                view.closeProgressBar()
+                                databaseService.storeTasks(tasksFull)
+                                displayData() // data synced with server, display it
+                            },
+                            { throwable ->
+                                view.closeProgressBar()
+                                Timber.e(throwable)
+                                displayData() // sync failed, display local data anyway
+                            }
+                    )
+            )
+        } else displayData()
+
+
+    }
+
+    private fun displayData() {
+        disposableOnDetach(databaseService.load(Meeting::class.java, meetingUid).subscribeOn(io()).observeOn(main()).subscribe({ meeting ->
             this.meeting = meeting
+            view.render(this.meeting)
         }, { it.printStackTrace() }))
+
+
         disposableOnDetach(networkService.getMeetingPosts(meetingUid!!).subscribeOn(io()).observeOn(main()).subscribe({ resource ->
             view.renderPosts(resource.data!!)
         }, { it.printStackTrace() }))
