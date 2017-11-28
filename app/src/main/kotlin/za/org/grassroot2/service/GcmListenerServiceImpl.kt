@@ -7,9 +7,11 @@ import android.content.Intent
 import android.media.RingtoneManager
 import android.os.Bundle
 import android.support.v7.app.NotificationCompat
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.google.android.gms.gcm.GcmListenerService
-import timber.log.Timber
-import za.org.grassroot2.GrassrootNotification
+import za.org.grassroot.messaging.dto.EventNotificationDTO
+import za.org.grassroot.messaging.dto.EventType
+import za.org.grassroot.messaging.dto.MessageDTO
 import za.org.grassroot2.R
 import za.org.grassroot2.view.activity.DashboardActivity
 import za.org.grassroot2.view.activity.MeetingDetailsActivity
@@ -22,12 +24,13 @@ import za.org.grassroot2.view.activity.MeetingDetailsActivity
 class GcmListenerServiceImpl : GcmListenerService() {
 
 
+    private val objectMapper = ObjectMapper()
+
     override fun onMessageReceived(from: String, data: Bundle) {
 
-        val message = GrassrootNotification.fromBundle(data)
+        val msgJson = data.getString("body")
+        val message = objectMapper.readValue(msgJson, MessageDTO::class.java)
 
-        Timber.d("From: " + from)
-        Timber.d("Message: " + message.text)
 
         if (from.startsWith("/topics/")) {
             // message received from some topic.
@@ -39,14 +42,17 @@ class GcmListenerServiceImpl : GcmListenerService() {
     }
 
 
-    private fun showNotification(notification: GrassrootNotification) {
+    private fun showNotification(msg: MessageDTO) {
 
-        val intent = if (notification.entityType == "MEETING") {
-            val int = Intent(this, MeetingDetailsActivity::class.java)
-            int.putExtra(MeetingDetailsActivity.EXTRA_MEETING_UID, notification.entytyId)
-            int.putExtra(MeetingDetailsActivity.TRIGGERED_BY_NOTIFICATION, true)
-        } else
-            Intent(this, DashboardActivity::class.java)
+        val intent =
+                if (msg is EventNotificationDTO && msg.eventType == EventType.MEETING) {
+                    val meetingIntent = Intent(this, MeetingDetailsActivity::class.java)
+                    meetingIntent.putExtra(MeetingDetailsActivity.EXTRA_MEETING_UID, msg.eventUid)
+                    meetingIntent.putExtra(MeetingDetailsActivity.TRIGGERED_BY_NOTIFICATION, true)
+                } else {
+                    val dashboardIntent = Intent(this, DashboardActivity::class.java)
+                    dashboardIntent.putExtra("notificationText", msg.text)
+                }
 
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
 
@@ -56,8 +62,8 @@ class GcmListenerServiceImpl : GcmListenerService() {
         val defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
         val notificationBuilder = NotificationCompat.Builder(this)
                 .setSmallIcon(R.drawable.ic_event)
-                .setContentTitle(notification.title)
-                .setContentText(notification.text)
+                .setContentTitle(msg.title)
+                .setContentText(msg.text)
                 .setAutoCancel(true)
                 .setSound(defaultSoundUri)
                 .setContentIntent(pendingIntent)

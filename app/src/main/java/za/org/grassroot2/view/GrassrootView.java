@@ -5,6 +5,7 @@ import android.os.Bundle;
 
 public interface GrassrootView extends ProgressBarContainer {
 
+
     Activity getActivity();
     void showSuccessMsg(int successMsg);
     void showErrorSnackbar(int errorTextRes);
@@ -14,6 +15,8 @@ public interface GrassrootView extends ProgressBarContainer {
     void handleNoConnection();
     void handleNoConnectionUpload();
     void showNoConnectionMessage();
+
+    void showMessageDialog(String text);
 
     void hideKeyboard();
 }

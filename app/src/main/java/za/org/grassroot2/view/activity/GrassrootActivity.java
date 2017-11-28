@@ -58,6 +58,7 @@ import za.org.grassroot2.util.AlarmManagerHelper;
 import za.org.grassroot2.util.UserPreference;
 import za.org.grassroot2.util.ViewAnimation;
 import za.org.grassroot2.view.GrassrootView;
+import za.org.grassroot2.view.dialog.GenericMessageDialog;
 import za.org.grassroot2.view.dialog.NoConnectionDialog;
 
 public abstract class GrassrootActivity extends AppCompatActivity implements GrassrootView {
@@ -127,6 +128,13 @@ public abstract class GrassrootActivity extends AppCompatActivity implements Gra
     protected boolean loggedIn() {
         Account[] accounts = accountManagerProvider.get().getAccountsByType(AuthConstants.ACCOUNT_TYPE);
         return accounts.length != 0 && !TextUtils.isEmpty(accountManagerProvider.get().getUserData(accounts[0], AuthConstants.USER_DATA_LOGGED_IN));
+    }
+
+
+    @Override
+    public void showMessageDialog(String text) {
+        DialogFragment dialog = GenericMessageDialog.newInstance(text);
+        dialog.show(getSupportFragmentManager(), DIALOG_TAG);
     }
 
     @Override
