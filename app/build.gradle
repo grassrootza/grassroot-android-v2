@@ -14,7 +14,6 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
 apply plugin: 'com.getkeepsafe.dexcount'
-//apply plugin: 'com.google.gms.google-services'
 
 android {
     compileSdkVersion 25
@@ -29,7 +28,7 @@ android {
         proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         buildConfigField "int", "databaseVersion", "1"
         buildConfigField "String", "databaseName", "\"grassroot\""
-        buildConfigField "String", "API_BASE", "\"http://192.168.0.101:8080/api/\""
+        buildConfigField "String", "API_BASE", "\"https://staging.grassroot.org.za/api/\""
         buildConfigField "boolean", "USE_UNSAFE_HTTP", "true"
         vectorDrawables.useSupportLibrary = true
         multiDexEnabled true
