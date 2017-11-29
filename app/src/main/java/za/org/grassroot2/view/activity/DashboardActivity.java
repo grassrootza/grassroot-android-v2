@@ -92,6 +92,7 @@ public class DashboardActivity extends GrassrootActivity {
         if (notificationText != null) {
             showMessageDialog(notificationText);
         }
+
     }
 
     @Override

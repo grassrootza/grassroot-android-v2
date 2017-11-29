@@ -27,13 +27,16 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
+import com.google.android.gms.gcm.GoogleCloudMessaging;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
 import java.io.IOException;
+import java.util.UUID;
 
 import javax.inject.Inject;
 
@@ -42,6 +45,7 @@ import butterknife.ButterKnife;
 import dagger.Lazy;
 import io.reactivex.disposables.CompositeDisposable;
 import timber.log.Timber;
+import za.org.grassroot.messaging.dto.MessageDTO;
 import za.org.grassroot2.GrassrootApplication;
 import za.org.grassroot2.R;
 import za.org.grassroot2.dagger.AppComponent;
@@ -66,6 +70,8 @@ public abstract class GrassrootActivity extends AppCompatActivity implements Gra
     protected static final String DIALOG_TAG = "dialog";
     @Inject public Lazy<AccountManager> accountManagerProvider;
     @Inject public UserPreference       userPreference;
+    @Inject
+    public ObjectMapper jsonMaper;
 
     private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
     private BroadcastReceiver mRegistrationBroadcastReceiver;
@@ -345,5 +351,22 @@ public abstract class GrassrootActivity extends AppCompatActivity implements Gra
             return false;
         }
         return true;
+    }
+
+    @Override
+    public void sendCGMMessage(MessageDTO messageDTO) {
+
+        try {
+            GoogleCloudMessaging gcm = GoogleCloudMessaging.getInstance(this);
+            Bundle data = new Bundle();
+            String msgJson = jsonMaper.writeValueAsString(messageDTO);
+            data.putString("body", msgJson);
+
+            String id = UUID.randomUUID().toString();
+            String senderId = getString(R.string.gcm_sender_id);
+            gcm.send(senderId + "@gcm.googleapis.com", id, data);
+        } catch (Exception ex) {
+            Timber.e(ex);
+        }
     }
 }

@@ -3,17 +3,16 @@ package za.org.grassroot2.dagger;
 import android.accounts.AccountManager;
 import android.app.Application;
 import android.content.Context;
-import android.support.v7.app.AppCompatActivity;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
-import za.org.grassroot2.dagger.fragment.PerFragment;
 import za.org.grassroot2.database.DatabaseHelper;
 import za.org.grassroot2.database.DatabaseService;
 import za.org.grassroot2.database.DatabaseServiceImpl;
-import za.org.grassroot2.services.LocationManager;
 import za.org.grassroot2.services.UserDetailsService;
 import za.org.grassroot2.services.UserDetailsServiceImpl;
 import za.org.grassroot2.util.ContactHelper;
@@ -80,4 +79,10 @@ public class AppModule {
         return new UserDetailsServiceImpl(accountManager, databaseService);
     }
 
+
+    @Provides
+    @Singleton
+    ObjectMapper provideObjectMapper() {
+        return new ObjectMapper();
+    }
 }
