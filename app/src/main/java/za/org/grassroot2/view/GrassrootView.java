@@ -3,7 +3,10 @@ package za.org.grassroot2.view;
 import android.app.Activity;
 import android.os.Bundle;
 
+import za.org.grassroot.messaging.dto.MessageDTO;
+
 public interface GrassrootView extends ProgressBarContainer {
+
 
     Activity getActivity();
     void showSuccessMsg(int successMsg);
@@ -15,5 +18,9 @@ public interface GrassrootView extends ProgressBarContainer {
     void handleNoConnectionUpload();
     void showNoConnectionMessage();
 
+    void showMessageDialog(String text);
+
     void hideKeyboard();
+
+    void sendCGMMessage(MessageDTO messageDTO);
 }

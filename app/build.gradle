@@ -54,10 +54,17 @@ android {
         maven {
             url 'https://maven.google.com'
         }
+        maven {
+            url  "https://dl.bintray.com/grassrootza/grassroot-messaging"
+        }
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    lintOptions {
+        abortOnError false
     }
 
 }
@@ -95,6 +102,7 @@ dependencies {
     implementation 'com.facebook.stetho:stetho:1.5.0'
     implementation 'com.google.android.gms:play-services-maps:10.0.0'
     implementation 'com.google.android.gms:play-services-location:10.0.0'
+    implementation "com.google.android.gms:play-services-gcm:10.0.0"
     implementation 'com.github.florent37:camerafragment:1.0.7'
 
     compile('com.crashlytics.sdk.android:crashlytics:2.7.0@aar') {
@@ -102,10 +110,14 @@ dependencies {
     }
 
     compile 'com.squareup.picasso:picasso:2.5.2'
+    compile 'za.org.grassroot:grassroot-messaging-dto:1.0.0.8'
+    compile group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: '2.9.2'
+    compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.9.2'
 
     testCompile 'junit:junit:4.12'
     testCompile 'org.mockito:mockito-core:2.7.22'
     testCompile 'org.robolectric:robolectric:3.3.2'
+    testCompile "org.robolectric:shadows-multidex:3.3.2"
     androidTestCompile 'org.mockito:mockito-android:2.7.22'
     androidTestCompile 'com.android.support.test:runner:1.0.1'
     androidTestCompile 'com.android.support.test:rules:1.0.1'

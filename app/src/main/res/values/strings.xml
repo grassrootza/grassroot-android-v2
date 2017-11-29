@@ -1,6 +1,9 @@
 <resources>
     <string name="app_name">Grassroot-Android-v2</string>
 
+    <string name="gcm_sender_id">503331392861</string>
+    <string name="play_services_unsupported_erorr">Your phone doesn\'t support Google play services</string>
+
     <string name="title_login_activity">Login</string>
     <string name="title_main_activity">Grassroot</string>
 

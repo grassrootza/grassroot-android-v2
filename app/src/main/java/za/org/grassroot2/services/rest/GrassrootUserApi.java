@@ -17,8 +17,8 @@ import retrofit2.http.Path;
 import retrofit2.http.Query;
 import za.org.grassroot2.model.AroundEntity;
 import za.org.grassroot2.model.Group;
-import za.org.grassroot2.model.TokenResponse;
 import za.org.grassroot2.model.Post;
+import za.org.grassroot2.model.TokenResponse;
 import za.org.grassroot2.model.alert.LiveWireAlert;
 import za.org.grassroot2.model.language.NluResponse;
 import za.org.grassroot2.model.request.MemberRequest;
@@ -134,5 +134,9 @@ public interface GrassrootUserApi {
     Observable<List<Post>> getPostsForTask(@Path("userUid") String userId,
                                            @Path("taskType") String taskType,
                                            @Path("taskUid") String taskUid);
+
+
+    @GET("/api/gcm/register")
+    Observable<Boolean> registerGCMToken(@Query("gcmToken") String gcmToken);
 
 }

@@ -58,6 +58,7 @@ class LoginPresenter @Inject constructor(val grassrootAuthApi: GrassrootAuthApi,
 
     private fun storeDetailsFailed(it: Throwable) {
         view.closeProgressBar()
+        view.showErrorSnackbar(R.string.login_failed)
         Timber.e(it)
     }
 
