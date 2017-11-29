@@ -117,6 +117,7 @@ dependencies {
     testCompile 'junit:junit:4.12'
     testCompile 'org.mockito:mockito-core:2.7.22'
     testCompile 'org.robolectric:robolectric:3.3.2'
+    testCompile "org.robolectric:shadows-multidex:3.3.2"
     androidTestCompile 'org.mockito:mockito-android:2.7.22'
     androidTestCompile 'com.android.support.test:runner:1.0.1'
     androidTestCompile 'com.android.support.test:rules:1.0.1'
