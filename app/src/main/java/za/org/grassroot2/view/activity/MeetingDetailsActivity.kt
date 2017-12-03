@@ -11,6 +11,7 @@ import android.view.View
 import com.tbruyelle.rxpermissions2.RxPermissions
 import kotlinx.android.synthetic.main.activity_meeting_details.*
 import za.org.grassroot2.R
+import za.org.grassroot2.R.id.*
 import za.org.grassroot2.dagger.activity.ActivityComponent
 import za.org.grassroot2.model.Post
 import za.org.grassroot2.model.enums.GrassrootEntityType

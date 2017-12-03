@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Grassroot-Android-v2</string>
+    <string name="app_name">Grassroot</string>
 
     <string name="title_login_activity">Login</string>
     <string name="title_main_activity">Grassroot</string>
@@ -118,9 +118,9 @@
     <string name="error_permission_denied">Permission denied</string>
     <string name="error_file_creation">Error starting camera, check file space</string>
 
-    <!-- Generic strings for a menu, of sorts -->
-    <string name="main_sync">Sync</string>
-    <string name="main_logout">Logout</string>
+    <!-- String for me screen -->
+    <string name="me_sync_all">Refresh all</string>
+    <string name="me_logout">Logout</string>
 
     <!-- Strings for account preference screen -->
     <string name="sync_on_title">Sync</string>
@@ -155,7 +155,7 @@
     <string name="text_vote">VOTE</string>
     <string name="text_vote_title"><b>%1$s</b> started a vote:\n\"%2$s\"</string>
     <string name="info_invite_group_members">Get this Group going,\ninvite new members!</string>
-    <string name="info_group_create_item">Why not creating\nyour first action? Tap here!</string>
+    <string name="info_group_create_item">Why not create\nyour first action? Tap here!</string>
     <string name="text_old_header">Older</string>
     <string name="token_expired">Your session expired. Please log in again.</string>
     <string name="close">Close</string>

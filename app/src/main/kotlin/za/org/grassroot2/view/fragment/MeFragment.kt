@@ -15,6 +15,9 @@ import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.PopupMenu
 import android.text.Editable
 import android.text.TextWatcher
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.View
 import android.widget.AdapterView
 import android.widget.AdapterView.OnItemSelectedListener
@@ -33,6 +36,7 @@ import za.org.grassroot2.dagger.activity.ActivityComponent
 import za.org.grassroot2.model.UserProfile
 import za.org.grassroot2.presenter.MePresenter
 import za.org.grassroot2.view.MeView
+import za.org.grassroot2.view.activity.WelcomeActivity
 import javax.inject.Inject
 
 
@@ -56,13 +60,13 @@ class MeFragment : GrassrootFragment(), MeView {
         return R.layout.fragment_me
     }
 
-
-
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setHasOptionsMenu(true)
+    }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        (activity as AppCompatActivity).setSupportActionBar(toolbar)
-        (activity as AppCompatActivity).supportActionBar!!.setTitle(R.string.title_me)
 
         profilePhoto.setOnClickListener {
             showPopup(profilePhoto)
@@ -72,6 +76,7 @@ class MeFragment : GrassrootFragment(), MeView {
             showPopup(changePhoto)
         }
 
+        initToolbar()
         displayNameInput.addTextChangedListener(dataChangeWatcher)
         phoneNumberInput.addTextChangedListener(dataChangeWatcher)
         emailInput.addTextChangedListener(dataChangeWatcher)
@@ -90,7 +95,30 @@ class MeFragment : GrassrootFragment(), MeView {
 
         presenter.attach(this)
         presenter.onViewCreated()
+    }
 
+    private fun initToolbar() {
+        (activity as AppCompatActivity).setSupportActionBar(toolbar)
+        (activity as AppCompatActivity).supportActionBar!!.setTitle(R.string.title_me)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        Timber.e("resuming fragment, invalidating options menu")
+        (activity as AppCompatActivity).invalidateOptionsMenu()
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
+        Timber.e("calling on create options menu inside me fragment")
+        inflater?.inflate(R.menu.fragment_me, menu)
+        super.onCreateOptionsMenu(menu, inflater)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+        when (item?.itemId) {
+            R.id.menu_logout -> presenter.logout()
+        }
+        return super.onOptionsItemSelected(item)
     }
 
 
@@ -171,9 +199,9 @@ class MeFragment : GrassrootFragment(), MeView {
                 .centerCrop()
                 .into(profilePhoto, object : Callback {
                     override fun onSuccess() {
-                        val imageBitmap = (profilePhoto.drawable as BitmapDrawable).bitmap;
-                        val imageDrawable: RoundedBitmapDrawable = RoundedBitmapDrawableFactory.create(resources, imageBitmap);
-                        imageDrawable.isCircular = true;
+                        val imageBitmap = (profilePhoto.drawable as BitmapDrawable).bitmap
+                        val imageDrawable: RoundedBitmapDrawable = RoundedBitmapDrawableFactory.create(resources, imageBitmap)
+                        imageDrawable.isCircular = true
                         imageDrawable.cornerRadius = Math.max(imageBitmap.width, imageBitmap.height) / 2.0f
                         profilePhoto.setImageDrawable(imageDrawable)
                     }
@@ -230,10 +258,16 @@ class MeFragment : GrassrootFragment(), MeView {
         }
     }
 
-
     class Language(val code: String, val name: String) {
         override fun toString(): String {
             return name
         }
+    }
+
+    override fun returnToWelcomeActivity() {
+        val intent = Intent(context, WelcomeActivity::class.java)
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        startActivity(intent)
+        activity.finish()
     }
 }

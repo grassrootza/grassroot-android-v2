@@ -50,8 +50,6 @@ constructor(private val userDetailsService: UserDetailsService,
         return routeUpload(entityForUpload, forceEvenIfPriorUploaded)
     }
 
-    // as with below (upload method), know there must be a more RX 'pure' pattern to do this than passing
-    // along the emitter, but I'm struggling to work out what, and defaulting to get work -> get clean
     override fun <E : EntityForDownload> downloadAllChangedOrNewEntities(entityType: GrassrootEntityType, forceFullRefresh: Boolean): Observable<List<E>> {
         Timber.e("user UID = ? " + currentUserUid!!)
         when (entityType) {

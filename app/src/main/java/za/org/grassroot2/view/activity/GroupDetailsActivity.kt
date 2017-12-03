@@ -10,6 +10,7 @@ import android.view.View
 import com.github.florent37.viewtooltip.ViewTooltip
 import com.tbruyelle.rxpermissions2.RxPermissions
 import kotlinx.android.synthetic.main.activity_group_details.*
+import za.org.grassroot2.GroupSettingsActivity
 import za.org.grassroot2.R
 import za.org.grassroot2.dagger.activity.ActivityComponent
 import za.org.grassroot2.extensions.getColorCompat
@@ -35,9 +36,10 @@ class GroupDetailsActivity : GrassrootActivity(), GroupDetailsPresenter.GroupDet
         groupUid = intent.getStringExtra(EXTRA_GROUP_UID)
         initView()
         presenter.attach(this)
-        presenter.init(groupUid)
+        presenter.init(groupUid!!)
         fab.setOnClickListener { CreateActionActivity.start(activity, groupUid) }
         inviteMembers.setOnClickListener { displayInviteDialog() }
+        about.setOnClickListener { launchGroupSettings() }
     }
 
     override fun onResume() {
@@ -74,6 +76,10 @@ class GroupDetailsActivity : GrassrootActivity(), GroupDetailsPresenter.GroupDet
             }
         })
         df.show(supportFragmentManager, GrassrootActivity.DIALOG_TAG)
+    }
+
+    private fun launchGroupSettings() {
+        GroupSettingsActivity.start(this, groupUid)
     }
 
     private fun showFillDialog() {

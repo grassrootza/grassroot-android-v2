@@ -13,9 +13,10 @@ import za.org.grassroot2.dagger.ActivityContext;
 import za.org.grassroot2.dagger.ApplicationContext;
 import za.org.grassroot2.database.DatabaseService;
 import za.org.grassroot2.presenter.ForgottenPasswordPresenter;
-import za.org.grassroot2.presenter.activity.GroupDetailsPresenter;
-import za.org.grassroot2.presenter.activity.PickContactPresenter;
 import za.org.grassroot2.presenter.RegistrationPresenter;
+import za.org.grassroot2.presenter.activity.GroupDetailsPresenter;
+import za.org.grassroot2.presenter.activity.GroupSettingsPresenter;
+import za.org.grassroot2.presenter.activity.PickContactPresenter;
 import za.org.grassroot2.presenter.fragment.GroupFragmentPresenter;
 import za.org.grassroot2.presenter.fragment.SingleTextMultiButtonPresenter;
 import za.org.grassroot2.services.LiveWireService;
@@ -91,6 +92,12 @@ public class ActivityModule {
     @PerActivity
     PickContactPresenter providePickContactPresenter(ContactHelper helper) {
         return new PickContactPresenter(helper);
+    }
+
+    @Provides
+    @PerActivity
+    GroupSettingsPresenter provideGroupSettingsPresenter(DatabaseService dbService, NetworkService networkService) {
+        return new GroupSettingsPresenter(networkService, dbService);
     }
 
     @Provides

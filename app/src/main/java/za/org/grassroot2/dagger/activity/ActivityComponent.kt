@@ -1,6 +1,7 @@
 package za.org.grassroot2.dagger.activity
 
 import dagger.Subcomponent
+import za.org.grassroot2.GroupSettingsActivity
 import za.org.grassroot2.dagger.fragment.FragmentComponent
 import za.org.grassroot2.dagger.fragment.FragmentModule
 import za.org.grassroot2.view.activity.*
@@ -19,6 +20,7 @@ interface ActivityComponent {
     fun inject(target: LoginActivity)
     fun inject(fragment: GroupsFragment)
     fun inject(target: GroupDetailsActivity)
+    fun inject(target: GroupSettingsActivity)
     fun inject(fragment: GroupTasksFragment)
     fun inject(grassrootFragment: GrassrootFragment)
     fun inject(activity: PickContactActivity)

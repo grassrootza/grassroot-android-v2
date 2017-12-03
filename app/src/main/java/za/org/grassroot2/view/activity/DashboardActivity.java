@@ -2,9 +2,7 @@ package za.org.grassroot2.view.activity;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -12,14 +10,12 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.MenuItem;
 
+import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 import com.tbruyelle.rxpermissions2.RxPermissions;
-
-import java.io.File;
 
 import javax.inject.Inject;
 
 import butterknife.BindView;
-import retrofit2.http.Url;
 import za.org.grassroot2.R;
 import za.org.grassroot2.dagger.activity.ActivityComponent;
 import za.org.grassroot2.services.LocationManager;
@@ -36,10 +32,10 @@ public class DashboardActivity extends GrassrootActivity {
     public static final int TAB_GROUPS = 1;
     public static final int TAB_AROUND = 2;
     public static final int TAB_ME     = 3;
-    @BindView(R.id.contentPager) ViewPager            pager;
-    @BindView(R.id.navigation)   BottomNavigationView bottomNavigation;
-    @Inject                      RxPermissions        rxPermissions;
-    @Inject                      LocationManager      manager;
+    @BindView(R.id.contentPager) ViewPager              pager;
+    @BindView(R.id.navigation)   BottomNavigationViewEx bottomNavigation;
+    @Inject                      RxPermissions          rxPermissions;
+    @Inject                      LocationManager        manager;
 
     private MenuItem menuItem;
 
@@ -67,6 +63,9 @@ public class DashboardActivity extends GrassrootActivity {
         super.onCreate(savedInstanceState);
         pager.setAdapter(new DashboardFragmentAdapter(getSupportFragmentManager()));
         bottomNavigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
+        bottomNavigation.enableAnimation(false);
+        bottomNavigation.enableShiftingMode(false);
+        bottomNavigation.enableItemShiftingMode(false);
         pager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
@@ -124,7 +123,7 @@ public class DashboardActivity extends GrassrootActivity {
                 case TAB_AROUND:
                     return AroundMeFragment.Companion.newInstance();
                 case TAB_ME:
-                    return new MeFragment();
+                    return MeFragment.Companion.newInstance();
             }
             return null;
         }

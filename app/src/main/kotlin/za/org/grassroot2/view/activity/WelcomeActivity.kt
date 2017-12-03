@@ -9,8 +9,6 @@ import za.org.grassroot2.dagger.activity.ActivityComponent
 
 class WelcomeActivity : GrassrootActivity() {
 
-
-
     override fun onInject(component: ActivityComponent) {
         component.inject(this)
     }
