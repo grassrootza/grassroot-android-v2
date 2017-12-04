@@ -1,6 +1,5 @@
 package za.org.grassroot2.view.activity
 
-import android.Manifest
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
@@ -11,18 +10,13 @@ import android.view.View
 import com.tbruyelle.rxpermissions2.RxPermissions
 import kotlinx.android.synthetic.main.activity_meeting_details.*
 import za.org.grassroot2.R
-import za.org.grassroot2.R.id.*
 import za.org.grassroot2.dagger.activity.ActivityComponent
 import za.org.grassroot2.model.Post
-import za.org.grassroot2.model.enums.GrassrootEntityType
 import za.org.grassroot2.model.task.Meeting
 import za.org.grassroot2.presenter.activity.MeetingDetailsPresenter
 import za.org.grassroot2.util.DateFormatter
-import za.org.grassroot2.view.adapter.GenericViewPagerAdapter
 import za.org.grassroot2.view.adapter.PostAdapter
-import za.org.grassroot2.view.dialog.AddMemberDialog
 import za.org.grassroot2.view.dialog.OptionPickDialog
-import za.org.grassroot2.view.fragment.GroupTasksFragment
 import javax.inject.Inject
 
 class MeetingDetailsActivity : GrassrootActivity(), MeetingDetailsPresenter.MeetingDetailsView {
@@ -77,40 +71,8 @@ class MeetingDetailsActivity : GrassrootActivity(), MeetingDetailsPresenter.Meet
         presenter.detach()
     }
 
-    private fun displayInviteDialog() {
-        val df = AddMemberDialog.newInstance(AddMemberDialog.TYPE_PICK)
-        df.setAddMemberDialogListener(object : AddMemberDialog.AddMemberDialogListener {
-            override fun contactBook() {
-                rxPermissions.request(Manifest.permission.READ_CONTACTS).subscribe({ result ->
-                    if (result!!) {
-                        PickContactActivity.startForResult(this@MeetingDetailsActivity, REQUEST_PICK_CONTACTS)
-                    }
-                }, { it.printStackTrace() })
-            }
-
-            override fun manual() {
-                showFillDialog()
-            }
-        })
-        df.show(supportFragmentManager, DIALOG_TAG)
-    }
-
-    private fun showFillDialog() {
-        val df = AddMemberDialog.newInstance(AddMemberDialog.TYPE_INSERT_MANUAL)
-        df.show(supportFragmentManager, DIALOG_TAG)
-    }
-
     private fun initView() {
-        initTabs()
         initToolbar()
-    }
-
-    private fun initTabs() {
-        val adapter = GenericViewPagerAdapter(supportFragmentManager)
-        adapter.addFragment(GroupTasksFragment.newInstance(meetingUid, null), getString(R.string.title_all))
-        adapter.addFragment(GroupTasksFragment.newInstance(meetingUid, GrassrootEntityType.VOTE), getString(R.string.title_votes))
-        adapter.addFragment(GroupTasksFragment.newInstance(meetingUid, GrassrootEntityType.MEETING), getString(R.string.title_meetings))
-        adapter.addFragment(GroupTasksFragment.newInstance(meetingUid, GrassrootEntityType.TODO), getString(R.string.title_todos))
     }
 
     private fun initToolbar() {
@@ -176,8 +138,7 @@ class MeetingDetailsActivity : GrassrootActivity(), MeetingDetailsPresenter.Meet
 
     companion object {
 
-        private val EXTRA_MEETING_UID = "group_uid"
-        private val REQUEST_PICK_CONTACTS = 1
+        private val EXTRA_MEETING_UID = "meeting_uid"
 
         fun start(activity: Activity, meetingUid: String) {
             val intent = Intent(activity, MeetingDetailsActivity::class.java)

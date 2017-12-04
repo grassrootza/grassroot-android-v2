@@ -8,6 +8,7 @@ import za.org.grassroot2.dagger.activity.ActivityComponent
 import za.org.grassroot2.model.Group
 import za.org.grassroot2.presenter.activity.GroupSettingsPresenter
 import za.org.grassroot2.view.activity.GrassrootActivity
+import za.org.grassroot2.view.fragment.GroupAboutFragment
 import javax.inject.Inject
 
 class GroupSettingsActivity : GrassrootActivity(), GroupSettingsPresenter.GroupSettingsView {
@@ -23,6 +24,9 @@ class GroupSettingsActivity : GrassrootActivity(), GroupSettingsPresenter.GroupS
         presenter.attach(this)
         presenter.init(groupUid!!)
         initToolbar()
+        supportFragmentManager.beginTransaction()
+                .add(R.id.fragmentContainer, GroupAboutFragment.newInstance(groupUid!!))
+                .commit()
     }
 
     override fun onResume() {

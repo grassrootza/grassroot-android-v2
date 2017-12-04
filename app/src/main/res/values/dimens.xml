@@ -9,6 +9,7 @@
     <dimen name="text_margin">16dp</dimen>
 
     <!-- padding -->
+    <dimen name="padding_std_edges">28dp</dimen>
     <dimen name="padding_std_xlarge">20dp</dimen>
     <dimen name="padding_std_large">16dp</dimen>
     <dimen name="padding_std_medium">8dp</dimen>
@@ -30,5 +31,8 @@
 
     <dimen name="profile_photo_width">78dp</dimen>
     <dimen name="profile_photo_height">78dp</dimen>
+
+    <dimen name="profile_photo_s_width">48dp</dimen>
+    <dimen name="profile_photo_s_height">48dp</dimen>
 
 </resources>

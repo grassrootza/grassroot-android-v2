@@ -163,8 +163,9 @@
     <string name="continue_offline">Continue offline</string>
     <string name="retry_connection">Retry connection</string>
     <string name="snackbar_offline">You\'re still offline</string>
-    <string name="contact_book">From Contact Book</string>
-    <string name="manualy">Manualy</string>
+    <string name="contact_book">From contact book</string>
+    <string name="manualy">Manual entry</string>
+    <string name="bulk_upload">Bulk upload</string>
     <string name="add">Add</string>
     <string name="name">Contact name</string>
     <string name="contact_number">Contact number</string>
@@ -270,5 +271,10 @@
     <string name="me_menu_take_pic">Take picture</string>
     <string name="me_error_updating_data">Profile data update failed.</string>
     <string name="me_error_updating_photo">Profile photo update failed.</string>
+    <string name="btn_members">Members</string>
+    <string name="btn_leave_group">Leave group</string>
+    <string name="btn_hide_group">Hide group</string>
+    <string name="change_group_photo">Change group photo</string>
+    <string name="group_export">Export group</string>
 
 </resources>
