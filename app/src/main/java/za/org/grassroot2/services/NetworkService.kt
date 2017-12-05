@@ -37,6 +37,10 @@ interface NetworkService {
 
     fun inviteContactsToGroup(groupId: String, contacts: List<MemberRequest>): Observable<Response<Void>>
 
+    fun hideGroup(group: Group): Observable<Boolean>
+
+    fun leaveGroup(group: Group): Observable<Boolean>
+
     fun getTasksForGroup(groupId: String): Observable<List<Task>>
 
     fun getTasksByUids(uids: Map<String, String>): Observable<List<Task>>

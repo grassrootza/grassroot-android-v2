@@ -62,6 +62,10 @@ public class Group implements EntityForDownload, SelectableItem, Serializable, A
     @ExcludeFromSerialization
     private double latitude;
 
+    @DatabaseField(canBeNull = false)
+    @ExcludeFromSerialization
+    private boolean hidden;
+
     public Group() {
     }
 
@@ -117,6 +121,14 @@ public class Group implements EntityForDownload, SelectableItem, Serializable, A
 
     public void setLastActionOrChange(long lastActionOrChange) {
         this.lastActionOrChange = lastActionOrChange;
+    }
+
+    public boolean isHidden() {
+        return hidden;
+    }
+
+    public void setHidden(boolean hidden) {
+        this.hidden = hidden;
     }
 
     @Override

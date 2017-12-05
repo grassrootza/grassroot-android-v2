@@ -1,6 +1,5 @@
 package za.org.grassroot2.services
 
-import android.text.TextUtils
 import io.reactivex.*
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -38,7 +37,6 @@ class NetworkServiceImpl @Inject
 constructor(private val userDetailsService: UserDetailsService,
             private val grassrootUserApi: GrassrootUserApi,
             private val databaseService: DatabaseService) : NetworkService {
-
     private var currentUserUid: String? = null // given frequency of calling/using, best to stash
 
     init {
@@ -104,6 +102,29 @@ constructor(private val userDetailsService: UserDetailsService,
                 }
             }
         }
+    }
+
+    override fun hideGroup(group: Group): Observable<Boolean> {
+        return grassrootUserApi.hideGroup(group.uid)
+                .flatMap({ response -> Observable.just(response.isSuccessful)} )
+                .onErrorResumeNext({ t: Throwable ->
+                    Timber.e(t, "Error hiding group in call to network!")
+                    Observable.just(false)
+                })
+    }
+
+    override fun leaveGroup(group: Group): Observable<Boolean> {
+        return grassrootUserApi.leaveGroup(group.uid)
+                .flatMap({ response ->
+                    if (response.isSuccessful) {
+                        databaseService.removeGroup(group.uid)
+                    }
+                    Observable.just(response.isSuccessful)
+                })
+                .onErrorResumeNext({ throwable: Throwable ->
+                    Timber.e(throwable, "Error leaving group!")
+                    Observable.just(false)
+                });
     }
 
     override fun getTasksForGroup(groupId: String): Observable<List<Task>> {
@@ -177,20 +198,23 @@ constructor(private val userDetailsService: UserDetailsService,
         return grassrootUserApi.createLiveWireAlert(
                 currentUserUid,
                 alert.headline,
-                if (TextUtils.isEmpty(alert.description)) "" else alert.description, // very temp hack to avoid a redeploy of main platform just to make required (remove in future)
+                alert.description,
                 alert.alertType,
                 alert.groupUid,
                 alert.taskUid,
                 false,
                 0.0,
                 0.0,
-                alert.mediaFileKeys).flatMap(successHandler(alert)).onErrorResumeNext(resumeHandler(alert)).concatMap { uploadResult ->
-            if (uploadResult.serverUid != null) {
-                alert.serverUid = uploadResult.serverUid
-                alert.setUnderReview(true)
-                databaseService.storeObject(LiveWireAlert::class.java, alert)
-            }
-            Observable.just(uploadResult)
+                alert.mediaFileKeys)
+            .flatMap(successHandler(alert))
+            .onErrorResumeNext(resumeHandler(alert))
+            .concatMap { uploadResult ->
+                if (uploadResult.serverUid != null) {
+                    alert.serverUid = uploadResult.serverUid
+                    alert.setUnderReview(true)
+                    databaseService.storeObject(LiveWireAlert::class.java, alert)
+                }
+                Observable.just(uploadResult)
         }
     }
 

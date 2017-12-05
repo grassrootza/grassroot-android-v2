@@ -7,6 +7,7 @@ import java.util.Set;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import okhttp3.MultipartBody;
+import okhttp3.ResponseBody;
 import retrofit2.Response;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
@@ -17,8 +18,8 @@ import retrofit2.http.Path;
 import retrofit2.http.Query;
 import za.org.grassroot2.model.AroundEntity;
 import za.org.grassroot2.model.Group;
-import za.org.grassroot2.model.TokenResponse;
 import za.org.grassroot2.model.Post;
+import za.org.grassroot2.model.TokenResponse;
 import za.org.grassroot2.model.alert.LiveWireAlert;
 import za.org.grassroot2.model.language.NluResponse;
 import za.org.grassroot2.model.request.MemberRequest;
@@ -68,6 +69,16 @@ public interface GrassrootUserApi {
 
     @POST("/api/group/modify/members/add/{userUid}/{groupUid}")
     Observable<Response<Void>> addMembersToGroup(@Path("userUid") String userId, @Path("groupUid") String groupId, @Body List<MemberRequest> request);
+
+    @POST("/api/group/membership/hide/{groupUid}")
+    Observable<Response<Void>> hideGroup(@Path("groupUid") String groupUid);
+
+    @POST("/api/group/membership/leave/{groupUid}")
+    Observable<Response<Boolean>> leaveGroup(@Path("groupUid") String groupUid);
+
+    // not bothering to stream since the XLS generated is tiny (< 20kb for large groups)
+    @GET("/api/group/membership/export/{groupUid}")
+    Observable<ResponseBody> exportGroupMembers(@Path("groupUid") String groupUid);
 
     @GET("/api/language/parse/datetime/text")
     Observable<Long> getTimestampForTextDate(@Query("text") String text);
@@ -134,5 +145,7 @@ public interface GrassrootUserApi {
     Observable<List<Post>> getPostsForTask(@Path("userUid") String userId,
                                            @Path("taskType") String taskType,
                                            @Path("taskUid") String taskUid);
+
+
 
 }

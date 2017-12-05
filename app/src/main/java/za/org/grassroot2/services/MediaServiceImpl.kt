@@ -5,7 +5,6 @@ import android.content.Context
 import android.media.MediaScannerConnection
 import android.net.Uri
 import android.os.Environment
-import android.provider.MediaStore
 import android.support.v4.content.FileProvider
 import android.text.TextUtils
 import android.webkit.MimeTypeMap
@@ -15,6 +14,7 @@ import za.org.grassroot2.dagger.ApplicationContext
 import za.org.grassroot2.database.DatabaseService
 import za.org.grassroot2.model.MediaFile
 import za.org.grassroot2.model.exception.FailedToCreateMediaFileException
+import za.org.grassroot2.util.FileUtil
 import za.org.grassroot2.util.ImageUtil
 import java.io.File
 import java.io.IOException
@@ -50,7 +50,7 @@ constructor(@param:ApplicationContext private val applicationContext: Context,
             try {
                 val imageFile = createImageFile(mimeType)
                 val imageUri = FileProvider.getUriForFile(applicationContext,
-                        FILEPROVIDER_AUTHORITY,
+                        FileUtil.FILEPROVIDER_AUTHORITY,
                         imageFile)
                 Timber.d("taking image, URI = " + imageUri)
                 val toSave = MediaFile(imageUri.toString(), imageFile.absolutePath, mimeType, mediaFunction)
@@ -100,7 +100,7 @@ constructor(@param:ApplicationContext private val applicationContext: Context,
     override fun storeGalleryFile(mediaFileUid: String, fileUri: Uri, targetImgWidth: Int, targetImgHeight: Int): Single<String> {
         return Single.create { e ->
             val mediaFile = databaseService.loadObjectByUid(MediaFile::class.java, mediaFileUid)
-            val localFileName = getLocalFileNameFromURI(fileUri)
+            val localFileName = FileUtil.getLocalFileNameFromURI(fileUri, applicationContext)
             if (mediaFile!!.isCompressOnSend) {
                 imageUtil.resizeImageFile(localFileName, mediaFile.absolutePath, targetImgWidth, targetImgHeight)
             } else {
@@ -116,19 +116,6 @@ constructor(@param:ApplicationContext private val applicationContext: Context,
 
     override fun storeGalleryFile(mediaFileUid: String, fileUri: Uri): Single<String> {
         return this.storeGalleryFile(mediaFileUid, fileUri, DESIRED_COMPRESSED_WIDTH, DESIRED_COMPRESSED_HEIGHT)
-    }
-
-    private fun getLocalFileNameFromURI(selectedImage: Uri): String? {
-        var localImagePath: String? = null
-        val filePathColumn = arrayOf(MediaStore.Images.Media.DATA)
-        val cursor = applicationContext.contentResolver.query(selectedImage, filePathColumn, null, null, null)
-        if (cursor != null) {
-            cursor.moveToFirst() // if null, will throw error to subscriber, so check in here would be redundant
-            val columnIndex = cursor.getColumnIndex(filePathColumn[0])
-            localImagePath = cursor.getString(columnIndex)
-            cursor.close()
-        }
-        return localImagePath
     }
 
     private fun getMimeType(uri: Uri): String? {
@@ -155,6 +142,5 @@ constructor(@param:ApplicationContext private val applicationContext: Context,
         private val IMG_TIMESTAMP = SimpleDateFormat("yyyyMMdd_HHmmss")
         val DESIRED_COMPRESSED_WIDTH = 1280
         val DESIRED_COMPRESSED_HEIGHT = 720
-        val FILEPROVIDER_AUTHORITY = "za.org.grassroot2.fileprovider"
     }
 }

@@ -310,7 +310,7 @@ class DatabaseServiceImpl(private val helper: DatabaseHelper) : DatabaseService 
             val dao = helper.getDao(UserProfile::class.java)
             dao.createOrUpdate(newProfile)
         } catch (e: SQLException) {
-            Log.e(TAG, "Error while saving user profile: " + newProfile.toString())
+            Timber.e("Error while saving user profile: " + newProfile.toString())
             e.printStackTrace()
         }
 
@@ -324,7 +324,20 @@ class DatabaseServiceImpl(private val helper: DatabaseHelper) : DatabaseService 
         } catch (e: SQLException) {
             e.printStackTrace()
         }
+    }
 
+    override fun removeGroup(groupUid: String): Boolean {
+        try {
+            val dao = helper.getDao(Group::class.javaObjectType)
+            val deleteBuilder = dao.deleteBuilder()
+            deleteBuilder.where().eq("uid", groupUid)
+            deleteBuilder.delete()
+            return true
+        } catch (ex: SQLException) {
+            Timber.e("Error while deleting group with UID: " + groupUid)
+            ex.printStackTrace()
+            return false
+        }
     }
 
     override fun <E> listAllEntitesOfType(clazz: Class<E>) {
