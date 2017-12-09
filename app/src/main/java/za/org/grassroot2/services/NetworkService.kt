@@ -41,6 +41,8 @@ interface NetworkService {
 
     fun leaveGroup(group: Group): Observable<Boolean>
 
+    fun downloadMembers(group: Group): Observable<ByteArray>
+
     fun getTasksForGroup(groupId: String): Observable<List<Task>>
 
     fun getTasksByUids(uids: Map<String, String>): Observable<List<Task>>

@@ -6,7 +6,6 @@ import dagger.Provides;
 import za.org.grassroot2.database.DatabaseService;
 import za.org.grassroot2.presenter.MePresenter;
 import za.org.grassroot2.presenter.fragment.AroundMePresenter;
-import za.org.grassroot2.presenter.fragment.GroupAboutPresenter;
 import za.org.grassroot2.presenter.fragment.GroupFragmentPresenter;
 import za.org.grassroot2.services.LocationManager;
 import za.org.grassroot2.services.MediaService;

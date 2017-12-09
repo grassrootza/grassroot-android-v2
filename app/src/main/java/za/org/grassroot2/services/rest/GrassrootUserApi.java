@@ -70,15 +70,15 @@ public interface GrassrootUserApi {
     @POST("/api/group/modify/members/add/{userUid}/{groupUid}")
     Observable<Response<Void>> addMembersToGroup(@Path("userUid") String userId, @Path("groupUid") String groupId, @Body List<MemberRequest> request);
 
-    @POST("/api/group/membership/hide/{groupUid}")
+    @POST("/api/group/modify/hide/{groupUid}")
     Observable<Response<Void>> hideGroup(@Path("groupUid") String groupUid);
 
-    @POST("/api/group/membership/leave/{groupUid}")
+    @POST("/api/group/modify/leave/{groupUid}")
     Observable<Response<Boolean>> leaveGroup(@Path("groupUid") String groupUid);
 
     // not bothering to stream since the XLS generated is tiny (< 20kb for large groups)
-    @GET("/api/group/membership/export/{groupUid}")
-    Observable<ResponseBody> exportGroupMembers(@Path("groupUid") String groupUid);
+    @GET("/api/group/fetch/export/{groupUid}")
+    Observable<Response<ResponseBody>> fetchGroupMemberSheet(@Path("groupUid") String groupUid);
 
     @GET("/api/language/parse/datetime/text")
     Observable<Long> getTimestampForTextDate(@Query("text") String text);

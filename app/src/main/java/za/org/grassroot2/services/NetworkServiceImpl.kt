@@ -127,6 +127,12 @@ constructor(private val userDetailsService: UserDetailsService,
                 });
     }
 
+    override fun downloadMembers(group: Group): Observable<ByteArray> {
+        return grassrootUserApi.fetchGroupMemberSheet(group.uid)
+                .filter({ r -> r.isSuccessful })
+                .flatMap { r -> Observable.just(r.body()?.bytes()) } // todo : maybe still throw error if doesn't work (use Resource?)
+    }
+
     override fun getTasksForGroup(groupId: String): Observable<List<Task>> {
         return grassrootUserApi.fetchGroupTasksMinimumInfo(currentUserUid, groupId, databaseService.getTasksLastChangedTimestamp(groupId)).flatMap { listRestResponse ->
             if (true) {

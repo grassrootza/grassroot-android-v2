@@ -115,13 +115,13 @@ public class SyncOfflineDataService extends Service {
             postFailureMessage(syncable);
         }
         Resource<Task> task = networkService.createTask(syncable).blockingFirst();
-        if (task.status == Status.SUCCESS) {
+        if (task.getStatus() == Status.SUCCESS) {
             dbService.delete(Meeting.class, syncable);
-        } else if (task.status == Status.SERVER_ERROR) {
+        } else if (task.getStatus() == Status.SERVER_ERROR) {
             dbService.delete(Meeting.class, syncable);
             postFailureMessage(syncable);
-        } else if (task.status == Status.ERROR){
-            throw new Exception(task.message);
+        } else if (task.getStatus() == Status.ERROR){
+            throw new Exception(task.getMessage());
         }
     }
 

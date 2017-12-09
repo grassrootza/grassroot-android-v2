@@ -1,5 +1,6 @@
 package za.org.grassroot2.presenter.activity
 
+import android.content.Intent
 import android.net.Uri
 import android.os.Environment
 import android.support.v4.content.FileProvider
@@ -62,6 +63,7 @@ constructor(private val networkService: NetworkService, private val dbService: D
         view.showProgressBar()
         networkService.leaveGroup(group!!).subscribeOn(io()).observeOn(main())
                 .subscribe({ b ->
+                    view.closeProgressBar()
                     if (b) {
                         Timber.d("done! user has left group, exit and show toast")
                         view.exitToHome(R.string.group_left_done)
@@ -70,26 +72,35 @@ constructor(private val networkService: NetworkService, private val dbService: D
                         // todo : show some sort of dialog
                     }
                 }, {t ->
+                    view.closeProgressBar()
                     handleNetworkUploadError(t) // todo: check whether to still catch / doOnResume inside network service
                 })
     }
 
     fun exportMembers() {
         view.ensureWriteExteralStoragePermission()
+                .filter { aBoolean -> aBoolean }
+                .flatMap { _ ->
+                    networkService.downloadMembers(group!!)
+                }
+                .flatMapSingle { data -> writeMembersToFile(data) }
+                .subscribeOn(io()).observeOn(main()).subscribe({ uri ->
+            Timber.d("saved the file!")
+            val intent = Intent(Intent.ACTION_VIEW, uri)
+            view.activity.startActivity(intent)
+        }, { Timber.e(it) })
     }
 
-    fun createFileForGroup(): Single<Uri> {
-        return Single.create() { e->
-            try {
-                val xlsFile = createXlsFile();
-                val xlsUri = FileProvider.getUriForFile(view.activity.applicationContext,
-                        FileUtil.FILEPROVIDER_AUTHORITY,
-                        xlsFile)
-                Timber.d("storing XLS in file, URI = " + xlsUri)
-                e.onSuccess(xlsUri)
-            } catch (t: Throwable) {
-                Timber.e(t) // and do something
-            }
+    fun writeMembersToFile(data: ByteArray): Single<Uri> {
+        return Single.create { e->
+            val xlsFile = createXlsFile()
+            Timber.d("XLS file created, here is path: " + xlsFile.absolutePath)
+            xlsFile.writeBytes(data)
+            val xlsUri = FileProvider.getUriForFile(view.activity.applicationContext,
+                    FileUtil.FILEPROVIDER_AUTHORITY,
+                    xlsFile)
+            Timber.d("storing XLS in file, URI = " + xlsUri)
+            e.onSuccess(xlsUri)
         }
     }
 
