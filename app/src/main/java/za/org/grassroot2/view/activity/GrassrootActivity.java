@@ -34,6 +34,7 @@ import com.google.android.gms.gcm.GoogleCloudMessaging;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.util.UUID;
@@ -62,7 +63,9 @@ import za.org.grassroot2.util.AlarmManagerHelper;
 import za.org.grassroot2.util.UserPreference;
 import za.org.grassroot2.util.ViewAnimation;
 import za.org.grassroot2.view.GrassrootView;
+import za.org.grassroot2.view.dialog.GenericErrorDialog;
 import za.org.grassroot2.view.dialog.GenericMessageDialog;
+import za.org.grassroot2.view.dialog.GenericSuccessDialog;
 import za.org.grassroot2.view.dialog.NoConnectionDialog;
 
 public abstract class GrassrootActivity extends AppCompatActivity implements GrassrootView {
@@ -136,7 +139,6 @@ public abstract class GrassrootActivity extends AppCompatActivity implements Gra
         return accounts.length != 0 && !TextUtils.isEmpty(accountManagerProvider.get().getUserData(accounts[0], AuthConstants.USER_DATA_LOGGED_IN));
     }
 
-
     @Override
     public void showMessageDialog(String text) {
         DialogFragment dialog = GenericMessageDialog.newInstance(text);
@@ -173,13 +175,25 @@ public abstract class GrassrootActivity extends AppCompatActivity implements Gra
     }
 
     @Override
-    public void showSuccessMsg(int successMsg) {
+    public void showSuccessSnackbar(int successMsg) {
         Snackbar.make(findViewById(android.R.id.content), successMsg, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void showErrorDialog(int errorMsg) {
+        DialogFragment dialog = GenericErrorDialog.Companion.newInstance(errorMsg);
+        dialog.show(getSupportFragmentManager(), DIALOG_TAG);
     }
 
     @Override
     public void showErrorSnackbar(int stringResId) {
         Snackbar.make(findViewById(android.R.id.content), stringResId, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void showSuccessDialog(int titleRes, @NotNull View.OnClickListener okayListener) {
+        DialogFragment dialog = GenericSuccessDialog.newInstance(titleRes, okayListener);
+        dialog.show(getSupportFragmentManager(), DIALOG_TAG);
     }
 
     @Override
@@ -355,7 +369,6 @@ public abstract class GrassrootActivity extends AppCompatActivity implements Gra
 
     @Override
     public void sendCGMMessage(MessageDTO messageDTO) {
-
         try {
             GoogleCloudMessaging gcm = GoogleCloudMessaging.getInstance(this);
             Bundle data = new Bundle();

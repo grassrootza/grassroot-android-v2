@@ -106,6 +106,9 @@
             android:name=".view.activity.GroupDetailsActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.Toolbar" />
+        <activity android:name=".GroupSettingsActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.Toolbar" />
         <activity
             android:name=".view.activity.MeetingDetailsActivity"
             android:screenOrientation="portrait"
@@ -137,11 +140,12 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyCPBqy5hn3J12YkOGFnpVsIjB5VfGuVoF0" />
 
-        <activity android:name=".view.activity.RecordAudioActivity"
+        <activity
+            android:name=".view.activity.RecordAudioActivity"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.AppCompat.Transparent" />
-
-        <activity android:name=".view.activity.RecordVideoActivity"
+        <activity
+            android:name=".view.activity.RecordVideoActivity"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.AppCompat.FullScreen" />
 

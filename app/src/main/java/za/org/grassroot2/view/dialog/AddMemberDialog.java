@@ -24,6 +24,7 @@ public class AddMemberDialog extends DialogFragment {
     public static final  int    TYPE_PICK          = 0;
     public static final  int    TYPE_INSERT_MANUAL = 1;
     private static final String EXTRA_TYPE         = "type";
+
     private int                     dialogType;
     private AddMemberDialogListener listener;
     private ContactFilledInListener contactListener;
@@ -38,7 +39,6 @@ public class AddMemberDialog extends DialogFragment {
 
     public interface AddMemberDialogListener {
         void contactBook();
-
         void manual();
     }
 

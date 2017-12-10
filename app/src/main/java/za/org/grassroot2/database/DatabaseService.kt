@@ -48,6 +48,7 @@ interface DatabaseService {
                                   email: String?, languageCode: String, userSystemRole: String?): UserProfile
 
     fun removeUserProfile()
+    fun removeGroup(groupUid: String): Boolean
 
     // only for debugging
     fun <E> listAllEntitesOfType(clazz: Class<E>)

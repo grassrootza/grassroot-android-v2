@@ -33,4 +33,5 @@ public class FragmentModule {
     MePresenter provideMePresenter(DatabaseService dbService, MediaService mediaService, GrassrootUserApi grassrootUserApi, UserDetailsService userDetailsService) {
         return new MePresenter(dbService, mediaService, userDetailsService, grassrootUserApi);
     }
+
 }

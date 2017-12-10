@@ -1,22 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    xmlns:tools="http://schemas.android.com/tools"
     android:background="@drawable/white_rounded"
     android:orientation="vertical">
 
+    <TextView
+        android:id="@+id/selectTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fontFamily="sans-serif"
+        android:gravity="center_horizontal"
+        android:padding="@dimen/padding_std_medium"
+        tools:text="Please select something to do:"
+        android:textColor="@color/default_font_color"
+        android:textSize="@dimen/txt_header_4"
+        android:visibility="gone"
+        android:textStyle="normal" />
+
+    <View
+        android:id="@+id/titleSeparator"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:visibility="gone"
+        android:background="@color/default_background_grey" />
+
     <Button
-        android:id="@+id/contactBook"
+        android:id="@+id/buttonOne"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@null"
         android:fontFamily="sans-serif-medium"
-        android:text="@string/contact_book"
-        android:textColor="@color/text_dark_grey"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        tools:text="@string/contact_book"
+        android:textColor="@color/text_dark_grey" />
 
     <View
         android:layout_width="match_parent"
@@ -24,33 +41,30 @@
         android:background="@color/default_background_grey" />
 
     <Button
-        android:id="@+id/manual"
+        android:id="@+id/buttonTwo"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@null"
         android:fontFamily="sans-serif-medium"
-        android:text="@string/manualy"
-        android:textColor="@color/text_dark_grey"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        tools:text="@string/manualy"
+        android:textColor="@color/text_dark_grey" />
 
     <View
+        android:id="@+id/buttonsTwoThreeSeparator"
         android:layout_width="match_parent"
         android:layout_height="1dp"
+        android:visibility="gone"
         android:background="@color/default_background_grey" />
 
     <Button
-        android:id="@+id/bulk"
+        android:id="@+id/buttonThree"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@null"
+        android:visibility="gone"
         android:fontFamily="sans-serif-medium"
-        android:text="@string/bulk_upload"
-        android:textColor="@color/text_dark_grey"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        tools:text="@string/bulk_upload"
+        android:textColor="@color/text_dark_grey" />
 
     <Button
         android:id="@+id/close"
@@ -59,9 +73,6 @@
         android:layout_weight="1"
         android:background="@drawable/primary_bottom_rounded"
         android:fontFamily="sans-serif-medium"
-        android:text="@string/close"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        android:text="@string/close" />
 
 </LinearLayout>

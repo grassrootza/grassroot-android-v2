@@ -8,8 +8,8 @@ interface MeView : FragmentView {
 
     fun displayUserData(profile: UserProfile)
     fun invalidateProfilePicCache(userUid: String)
-
     fun cameraForResult(contentProviderPath: String, s: String)
     fun pickFromGallery()
     fun ensureWriteExteralStoragePermission(): Observable<Boolean>
+    fun returnToWelcomeActivity()
 }

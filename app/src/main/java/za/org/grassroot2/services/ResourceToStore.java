@@ -10,16 +10,16 @@ import retrofit2.Response;
 public abstract class ResourceToStore<L, R> {
 
     public ResourceToStore(L localObject, ObservableEmitter<Resource<L>> emitter) {
-        uploadRemote(localObject).map(Resource::loading).observeOn(Schedulers.io()).subscribeOn(Schedulers.io()).subscribe(r -> {
-            if (r.data.isSuccessful()) {
-                saveResult(r.data.body());
-                emitter.onNext(Resource.success((L) r.data.body()));
+        uploadRemote(localObject).map(Resource.Companion::loading).observeOn(Schedulers.io()).subscribeOn(Schedulers.io()).subscribe(r -> {
+            if (r.getData() != null && r.getData().isSuccessful()) {
+                saveResult(r.getData().body());
+                emitter.onNext(Resource.Companion.success((L) r.getData().body()));
             } else {
-                emitter.onNext(Resource.serverError(r.data.errorBody().string(), null));
+                emitter.onNext(Resource.Companion.serverError(r.getData().errorBody().string(), null));
             }
         }, throwable -> {
             uploadFailed(localObject);
-            emitter.onNext(Resource.error(throwable.getMessage(), localObject));
+            emitter.onNext(Resource.Companion.error(throwable.getMessage(), localObject));
         });
     }
 

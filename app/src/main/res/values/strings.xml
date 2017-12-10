@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Grassroot-Android-v2</string>
+    <string name="app_name">Grassroot</string>
 
     <string name="gcm_sender_id">503331392861</string>
     <string name="play_services_unsupported_erorr">Your phone doesn\'t support Google play services</string>
@@ -121,9 +121,9 @@
     <string name="error_permission_denied">Permission denied</string>
     <string name="error_file_creation">Error starting camera, check file space</string>
 
-    <!-- Generic strings for a menu, of sorts -->
-    <string name="main_sync">Sync</string>
-    <string name="main_logout">Logout</string>
+    <!-- String for me screen -->
+    <string name="me_sync_all">Refresh all</string>
+    <string name="me_logout">Logout</string>
 
     <!-- Strings for account preference screen -->
     <string name="sync_on_title">Sync</string>
@@ -134,8 +134,6 @@
     <string name="title_around">Around me</string>
     <string name="title_me">Me</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="title_groups">Groups</string>
     <string name="or">Or</string>
     <string name="join_an_existing_one">JOIN AN EXISTING ONE</string>
@@ -158,7 +156,7 @@
     <string name="text_vote">VOTE</string>
     <string name="text_vote_title"><b>%1$s</b> started a vote:\n\"%2$s\"</string>
     <string name="info_invite_group_members">Get this Group going,\ninvite new members!</string>
-    <string name="info_group_create_item">Why not creating\nyour first action? Tap here!</string>
+    <string name="info_group_create_item">Why not create\nyour first action? Tap here!</string>
     <string name="text_old_header">Older</string>
     <string name="token_expired">Your session expired. Please log in again.</string>
     <string name="close">Close</string>
@@ -166,8 +164,9 @@
     <string name="continue_offline">Continue offline</string>
     <string name="retry_connection">Retry connection</string>
     <string name="snackbar_offline">You\'re still offline</string>
-    <string name="contact_book">From Contact Book</string>
-    <string name="manualy">Manualy</string>
+    <string name="contact_book">From contact book</string>
+    <string name="manualy">Manual entry</string>
+    <string name="bulk_upload">Bulk upload</string>
     <string name="add">Add</string>
     <string name="name">Contact name</string>
     <string name="contact_number">Contact number</string>
@@ -273,5 +272,22 @@
     <string name="me_menu_take_pic">Take picture</string>
     <string name="me_error_updating_data">Profile data update failed.</string>
     <string name="me_error_updating_photo">Profile photo update failed.</string>
+    <string name="btn_members">Members</string>
+    <string name="btn_leave_group">Leave group</string>
+    <string name="btn_hide_group">Hide group</string>
+    <string name="change_group_photo">Change group photo</string>
+    <string name="group_export">Export group</string>
+
+    <string name="group_hide_done">Done! The group is hidden, but you\''ll still get notifications</string>
+    <string name="group_hide_error">Sorry, there was an error hiding the group. Please try again later.</string>
+    <string name="group_left_done">Done! You won\'t receive anything from that group anymore</string>
+    <string name="group_leaving_error">Sorry, there was an error unsubscribing you from the group</string>
+
+    <string name="group_export_select">File downloaded! What next?</string>
+    <string name="open_file">Try open file</string>
+    <string name="share_file">Share file</string>
+
+    <string name="open_file_no_app">Sorry, you have no app that can open Excel</string>
+    <string name="share_file_no_app">Sorry, you have no app that can share Excel</string>
 
 </resources>

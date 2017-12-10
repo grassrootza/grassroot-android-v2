@@ -56,15 +56,10 @@ constructor(private val databaseService: DatabaseService, private val userDetail
 
     interface GroupFragmentView : FragmentView {
         fun render(groups: List<Group>)
-
         fun renderEmpty()
-
         fun itemClick(): Observable<String>
-
         fun renderEmptyFailedSync()
-
         fun openDetails(groupUid: String)
-
         fun stopRefreshing()
     }
 }

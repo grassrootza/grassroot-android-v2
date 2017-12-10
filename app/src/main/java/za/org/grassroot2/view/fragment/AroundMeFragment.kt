@@ -46,6 +46,7 @@ class AroundMeFragment : GrassrootFragment(), AroundMePresenter.AroundMeView, Go
     }
 
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        setHasOptionsMenu(false)
         return super.onCreateView(inflater, container, savedInstanceState)
     }
 
@@ -76,6 +77,7 @@ class AroundMeFragment : GrassrootFragment(), AroundMePresenter.AroundMeView, Go
     }
 
     private fun initToolbar() {
+        setHasOptionsMenu(false)
         (activity as AppCompatActivity).setSupportActionBar(toolbar)
         (activity as AppCompatActivity).supportActionBar!!.setTitle(R.string.title_around)
     }

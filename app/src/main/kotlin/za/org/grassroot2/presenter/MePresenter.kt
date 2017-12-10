@@ -27,15 +27,21 @@ class MePresenter(private val dbService: DatabaseService,
                   private val userDetailsService: UserDetailsService,
                   private val grassrootUserApi: GrassrootUserApi) : BaseFragmentPresenter<MeView>() {
 
-
     private lateinit var currentMediaFileUid: String
-
     private lateinit var userProfile: UserProfile
 
     override fun onViewCreated() {
-
         this.userProfile = dbService.loadUserProfile()!! //this will thrown NPE if user gets to this screen, and it has no user profile data stored
         view.displayUserData(userProfile)
+    }
+
+    fun logout() {
+        disposableOnDetach(userDetailsService.logout(true, true)
+                .subscribeOn(io())
+                .observeOn(main())
+                .subscribe({ b ->
+                    view.returnToWelcomeActivity()
+                }, { it.printStackTrace() }))
     }
 
     fun getLanguages(): Observable<Map<String, String>> {
@@ -46,8 +52,8 @@ class MePresenter(private val dbService: DatabaseService,
         disposableOnDetach(
                 mediaService
                         .createFileForMedia("image/jpeg", MediaFile.FUNCTION_USER_PROFILE_PHOTO)
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribeOn(io())
+                        .observeOn(main())
                         .subscribe({ s ->
                             val mediaFile = dbService.loadObjectByUid(MediaFile::class.java, s)!!
                             currentMediaFileUid = s
@@ -62,7 +68,6 @@ class MePresenter(private val dbService: DatabaseService,
     }
 
     fun pickFromGallery() {
-
         disposableOnDetach(view.ensureWriteExteralStoragePermission().flatMapSingle<String> { aBoolean ->
             if (aBoolean) {
                 mediaService.createFileForMedia("image/jpeg", MediaFile.FUNCTION_USER_PROFILE_PHOTO)
@@ -82,7 +87,6 @@ class MePresenter(private val dbService: DatabaseService,
                 )
         )
     }
-
 
     fun cameraResult() {
         view.showProgressBar()
@@ -120,7 +124,6 @@ class MePresenter(private val dbService: DatabaseService,
     }
 
     fun updateProfileData(displayName: String, phoneNumber: String, email: String, languageCode: String) {
-
         view.showProgressBar()
         grassrootUserApi.updateProfileData(displayName, phoneNumber, email, languageCode)
                 .subscribeOn(Schedulers.io())
@@ -143,7 +146,6 @@ class MePresenter(private val dbService: DatabaseService,
         view.closeProgressBar()
         Timber.e(throwable)
     }
-
 
     private fun uploadProfilePhoto(mediaFile: MediaFile) {
         view.showProgressBar()
@@ -210,17 +212,12 @@ class MePresenter(private val dbService: DatabaseService,
         )
     }
 
-
     fun isCurrentLanguage(languageCode: String): Boolean {
-        return userProfile?.languageCode == languageCode
+        return userProfile.languageCode == languageCode
     }
 
     fun addDisposableOnDetach(disposable: Disposable) {
         disposableOnDetach(disposable)
     }
-
-
-
-
 
 }

@@ -7,6 +7,7 @@ import java.util.Set;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import okhttp3.MultipartBody;
+import okhttp3.ResponseBody;
 import retrofit2.Response;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
@@ -68,6 +69,16 @@ public interface GrassrootUserApi {
 
     @POST("/api/group/modify/members/add/{userUid}/{groupUid}")
     Observable<Response<Void>> addMembersToGroup(@Path("userUid") String userId, @Path("groupUid") String groupId, @Body List<MemberRequest> request);
+
+    @POST("/api/group/modify/hide/{groupUid}")
+    Observable<Response<Void>> hideGroup(@Path("groupUid") String groupUid);
+
+    @POST("/api/group/modify/leave/{groupUid}")
+    Observable<RestResponse<Boolean>> leaveGroup(@Path("groupUid") String groupUid);
+
+    // not bothering to stream since the XLS generated is tiny (< 20kb for large groups)
+    @GET("/api/group/fetch/export/{groupUid}")
+    Observable<Response<ResponseBody>> fetchGroupMemberSheet(@Path("groupUid") String groupUid);
 
     @GET("/api/language/parse/datetime/text")
     Observable<Long> getTimestampForTextDate(@Query("text") String text);

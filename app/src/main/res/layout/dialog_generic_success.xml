@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- todo: set dialogs somehow so there is width to edge of screen -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:background="@drawable/white_rounded"
+    android:orientation="vertical">
+
+    <ImageView
+        android:layout_width="88dp"
+        android:layout_height="88dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="43dp"
+        app:srcCompat="@drawable/ic_allgood_popup" />
+
+    <TextView
+        android:id="@+id/title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginTop="26dp"
+        android:layout_marginBottom="32dp"
+        android:gravity="center_horizontal"
+        android:lineSpacingExtra="0sp"
+        android:textColor="@color/default_font_color"
+        android:textSize="@dimen/txt_header_2"
+        tools:text="Done! Something successful has transpired" />
+
+    <Button
+        android:id="@+id/okButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/primary_bottom_rounded"
+        android:text="@string/ok"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+</LinearLayout>

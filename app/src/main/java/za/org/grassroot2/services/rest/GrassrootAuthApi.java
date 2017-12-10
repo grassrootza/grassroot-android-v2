@@ -15,15 +15,6 @@ import za.org.grassroot2.model.TokenResponse;
 public interface GrassrootAuthApi {
 
     // Some authentication related methods
-    @GET("/api/user/login/{msisdn}")
-    Observable<RestResponse<String>> requestOtp(@Path("msisdn") String msisdn);
-
-    @GET("/api/auth/login")
-    Observable<RestResponse<TokenResponse>> validateOtp(@Query("phoneNumber") String msisdn,
-                                                        @Query("otp") String otp,
-                                                        @Query("clientType") String clientType,
-                                                        @Query("durationMillis") Long expirationMillis);
-
     @GET("/api/auth/token/refresh")
     Observable<Response<RestResponse<String>>> refreshOtp(@Query("oldToken") String oldToken,
                                                          @Query("durationMillis") Long expiresIn);
