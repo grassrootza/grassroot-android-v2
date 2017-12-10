@@ -116,10 +116,10 @@ constructor(private val userDetailsService: UserDetailsService,
     override fun leaveGroup(group: Group): Observable<Boolean> {
         return grassrootUserApi.leaveGroup(group.uid)
                 .flatMap({ response ->
-                    if (response.isSuccessful) {
+                    if (response.status == "SUCCESS") {
                         databaseService.removeGroup(group.uid)
                     }
-                    Observable.just(response.isSuccessful)
+                    Observable.just(response.status == "SUCCESS")
                 })
                 .onErrorResumeNext({ throwable: Throwable ->
                     Timber.e(throwable, "Error leaving group!")

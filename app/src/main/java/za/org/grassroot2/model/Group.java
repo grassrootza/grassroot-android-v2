@@ -63,8 +63,8 @@ public class Group implements EntityForDownload, SelectableItem, Serializable, A
     private double latitude;
 
     @DatabaseField(canBeNull = false)
-    @ExcludeFromSerialization
-    private boolean hidden;
+    @SerializedName("hidden")
+    private boolean hidden = false;
 
     public Group() {
     }

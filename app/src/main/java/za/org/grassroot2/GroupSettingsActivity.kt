@@ -2,11 +2,14 @@ package za.org.grassroot2
 
 import android.Manifest
 import android.app.Activity
+import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.graphics.drawable.BitmapDrawable
+import android.net.Uri
 import android.os.Bundle
 import android.support.v4.graphics.drawable.RoundedBitmapDrawable
 import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory
+import android.view.View
 import android.widget.Toast
 import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
@@ -19,6 +22,7 @@ import za.org.grassroot2.model.Group
 import za.org.grassroot2.presenter.activity.GroupSettingsPresenter
 import za.org.grassroot2.view.activity.DashboardActivity
 import za.org.grassroot2.view.activity.GrassrootActivity
+import za.org.grassroot2.view.dialog.GenericSelectDialog
 import javax.inject.Inject
 
 class GroupSettingsActivity : GrassrootActivity(), GroupSettingsPresenter.GroupSettingsView {
@@ -91,6 +95,37 @@ class GroupSettingsActivity : GrassrootActivity(), GroupSettingsPresenter.GroupS
         setSupportActionBar(toolbar)
         toolbar.setNavigationIcon(R.drawable.ic_arrow_left_white_24dp)
         toolbar.setNavigationOnClickListener { v -> finish() }
+    }
+
+    override fun selectFileActionDialog(fileUri: Uri) {
+        val dialog = GenericSelectDialog.get(getString(R.string.group_export_select),
+                intArrayOf(R.string.open_file, R.string.share_file),
+                arrayListOf<View.OnClickListener>(
+                        View.OnClickListener { tryOpenExcel(fileUri) },
+                        View.OnClickListener { tryShareExcel(fileUri) }
+                ))
+        dialog.show(supportFragmentManager, DIALOG_TAG)
+    }
+
+    private fun tryOpenExcel(fileUri: Uri) {
+        val intent = Intent(Intent.ACTION_VIEW)
+        intent.setDataAndType(fileUri, "application/vnd.ms-excel")
+        try {
+            startActivity(intent)
+        } catch (e: ActivityNotFoundException) {
+            Toast.makeText(this, R.string.open_file_no_app, Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun tryShareExcel(fileUri: Uri) {
+        val intent = Intent(Intent.ACTION_SEND)
+        intent.putExtra(Intent.EXTRA_STREAM, fileUri)
+        intent.setType("application/vnd.ms-excel")
+        try {
+            startActivity(intent)
+        } catch (e: ActivityNotFoundException) {
+            Toast.makeText(this, R.string.share_file_no_app, Toast.LENGTH_SHORT).show()
+        }
     }
 
     override fun onInject(component: ActivityComponent) {

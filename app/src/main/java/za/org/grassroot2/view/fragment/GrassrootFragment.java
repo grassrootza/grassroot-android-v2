@@ -106,7 +106,7 @@ public abstract class GrassrootFragment extends Fragment implements FragmentView
 
 
     public void showErrorDialog(int errorMsgResId) {
-        DialogFragment dialog = GenericErrorDialog.newInstance(errorMsgResId);
+        DialogFragment dialog = GenericErrorDialog.Companion.newInstance(errorMsgResId);
         dialog.show(getChildFragmentManager(), DIALOG_TAG);
     }
 

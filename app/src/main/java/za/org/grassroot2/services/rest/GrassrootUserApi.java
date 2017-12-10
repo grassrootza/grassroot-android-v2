@@ -74,7 +74,7 @@ public interface GrassrootUserApi {
     Observable<Response<Void>> hideGroup(@Path("groupUid") String groupUid);
 
     @POST("/api/group/modify/leave/{groupUid}")
-    Observable<Response<Boolean>> leaveGroup(@Path("groupUid") String groupUid);
+    Observable<RestResponse<Boolean>> leaveGroup(@Path("groupUid") String groupUid);
 
     // not bothering to stream since the XLS generated is tiny (< 20kb for large groups)
     @GET("/api/group/fetch/export/{groupUid}")

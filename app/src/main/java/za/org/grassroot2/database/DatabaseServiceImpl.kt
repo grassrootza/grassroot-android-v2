@@ -195,7 +195,10 @@ class DatabaseServiceImpl(private val helper: DatabaseHelper) : DatabaseService 
         val returnList = ArrayList<Group>()
         try {
             val dao = helper.getDao(Group::class.javaObjectType)
-            val result = dao.queryBuilder().orderBy("lastTimeChangedServer", false).query()
+            val result = dao.queryBuilder()
+                    .orderBy("lastTimeChangedServer", false)
+                    .where().eq("hidden", false)
+                    .query()
             returnList.addAll(result)
         } catch (e: SQLException) {
             e.printStackTrace()

@@ -274,7 +274,17 @@
     <string name="btn_hide_group">Hide group</string>
     <string name="change_group_photo">Change group photo</string>
     <string name="group_export">Export group</string>
+
     <string name="group_hide_done">Done! The group is hidden, but you\''ll still get notifications</string>
+    <string name="group_hide_error">Sorry, there was an error hiding the group. Please try again later.</string>
     <string name="group_left_done">Done! You won\'t receive anything from that group anymore</string>
+    <string name="group_leaving_error">Sorry, there was an error unsubscribing you from the group</string>
+
+    <string name="group_export_select">File downloaded! What next?</string>
+    <string name="open_file">Try open file</string>
+    <string name="share_file">Share file</string>
+
+    <string name="open_file_no_app">Sorry, you have no app that can open Excel</string>
+    <string name="share_file_no_app">Sorry, you have no app that can share Excel</string>
 
 </resources>

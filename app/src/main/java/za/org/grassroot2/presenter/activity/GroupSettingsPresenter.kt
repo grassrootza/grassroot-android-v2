@@ -1,9 +1,10 @@
 package za.org.grassroot2.presenter.activity
 
-import android.content.Intent
 import android.net.Uri
+import android.os.Bundle
 import android.os.Environment
 import android.support.v4.content.FileProvider
+import android.view.View
 import io.reactivex.Observable
 import io.reactivex.Single
 import timber.log.Timber
@@ -13,6 +14,7 @@ import za.org.grassroot2.model.Group
 import za.org.grassroot2.services.NetworkService
 import za.org.grassroot2.util.FileUtil
 import za.org.grassroot2.view.GrassrootView
+import za.org.grassroot2.view.activity.DashboardActivity
 import java.io.File
 import java.io.IOException
 import java.text.SimpleDateFormat
@@ -46,11 +48,10 @@ constructor(private val networkService: NetworkService, private val dbService: D
                 .flatMapObservable { group -> networkService.hideGroup(group) }.subscribeOn(io()).observeOn(main())
                 .subscribe({ b ->
                     view.closeProgressBar()
-                    if (b) {
-                        Timber.d("done! stored on network too")
-                        // show dialog saying "done", and exit to main screen
-                    } else {
-                        Timber.d("not done! looks like something went wrong storing on server")
+                    when (b) {
+                        true -> view.showSuccessDialog(R.string.group_hide_done,
+                                View.OnClickListener { view.launchActivity(DashboardActivity::class.java, Bundle()) })
+                        else -> view.showErrorDialog(R.string.group_hide_error)
                     }
                 }, { t ->
                     // todo: if network call fails, store it in sync and send it later
@@ -64,12 +65,10 @@ constructor(private val networkService: NetworkService, private val dbService: D
         networkService.leaveGroup(group!!).subscribeOn(io()).observeOn(main())
                 .subscribe({ b ->
                     view.closeProgressBar()
-                    if (b) {
-                        Timber.d("done! user has left group, exit and show toast")
-                        view.exitToHome(R.string.group_left_done)
-                    } else {
-                        Timber.d("error leaving group!")
-                        // todo : show some sort of dialog
+                    when (b) {
+                        true -> view.showSuccessDialog(R.string.group_left_done,
+                                View.OnClickListener { view.launchActivity(DashboardActivity::class.java, Bundle()) })
+                        else -> view.showErrorDialog(R.string.group_leaving_error)
                     }
                 }, {t ->
                     view.closeProgressBar()
@@ -86,12 +85,11 @@ constructor(private val networkService: NetworkService, private val dbService: D
                 .flatMapSingle { data -> writeMembersToFile(data) }
                 .subscribeOn(io()).observeOn(main()).subscribe({ uri ->
             Timber.d("saved the file!")
-            val intent = Intent(Intent.ACTION_VIEW, uri)
-            view.activity.startActivity(intent)
+            view.selectFileActionDialog(uri)
         }, { Timber.e(it) })
     }
 
-    fun writeMembersToFile(data: ByteArray): Single<Uri> {
+    private fun writeMembersToFile(data: ByteArray): Single<Uri> {
         return Single.create { e->
             val xlsFile = createXlsFile()
             Timber.d("XLS file created, here is path: " + xlsFile.absolutePath)
@@ -123,6 +121,7 @@ constructor(private val networkService: NetworkService, private val dbService: D
         fun render(group: Group)
         fun exitToHome(messageToUser: Int)
         fun ensureWriteExteralStoragePermission(): Observable<Boolean>
+        fun selectFileActionDialog(fileUri: Uri);
     }
 
     companion object {
