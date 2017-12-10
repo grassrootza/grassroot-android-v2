@@ -207,7 +207,7 @@ class MeFragment : GrassrootFragment(), MeView {
                     }
 
                     override fun onError() {
-                        profilePhoto.setImageResource(R.drawable.user)
+                        profilePhoto?.setImageResource(R.drawable.user)
                     }
                 })
 

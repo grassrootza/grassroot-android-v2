@@ -17,6 +17,14 @@
     <uses-permission android:name="android.permission.READ_SYNC_SETTINGS" />
     <uses-permission android:name="android.permission.READ_SYNC_STATS" />
 
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
+
+    <permission
+        android:name="za.org.grassroot2.permission.C2D_MESSAGE"
+        android:protectionLevel="signature" />
+    <uses-permission android:name="za.org.grassroot2.permission.C2D_MESSAGE" />
+
     <application
         android:name=".GrassrootApplication"
         android:allowBackup="false"
@@ -140,6 +148,40 @@
             android:name=".view.activity.RecordVideoActivity"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.AppCompat.FullScreen" />
+
+
+        <receiver
+            android:name="com.google.android.gms.gcm.GcmReceiver"
+            android:exported="true"
+            android:permission="com.google.android.c2dm.permission.SEND">
+            <intent-filter>
+                <action android:name="com.google.android.c2dm.intent.RECEIVE" />
+                <action android:name="com.google.android.c2dm.intent.REGISTRATION" />
+                <category android:name="za.org.grassroot2" />
+            </intent-filter>
+        </receiver>
+
+        <service
+            android:name=".service.GcmListenerServiceImpl"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.android.c2dm.intent.RECEIVE" />
+            </intent-filter>
+        </service>
+
+        <service
+            android:name=".service.GCMInstanceIDListenerService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.android.gms.iid.InstanceID" />
+            </intent-filter>
+        </service>
+
+        <service
+            android:name=".service.GCMRegistrationService"
+            android:exported="false"></service>
+
+
     </application>
 
 </manifest>

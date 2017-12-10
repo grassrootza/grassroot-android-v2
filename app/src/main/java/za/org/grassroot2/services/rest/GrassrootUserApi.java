@@ -147,5 +147,7 @@ public interface GrassrootUserApi {
                                            @Path("taskUid") String taskUid);
 
 
+    @GET("/api/gcm/register")
+    Observable<Boolean> registerGCMToken(@Query("gcmToken") String gcmToken);
 
 }

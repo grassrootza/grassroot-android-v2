@@ -29,10 +29,12 @@ class MeetingDetailsActivity : GrassrootActivity(), MeetingDetailsPresenter.Meet
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        val triggeredByNotification = intent.getBooleanExtra(TRIGGERED_BY_NOTIFICATION, false)
         meetingUid = intent.getStringExtra(EXTRA_MEETING_UID)
         initView()
         presenter.attach(this)
-        presenter.init(meetingUid!!)
+        presenter.init(meetingUid!!, triggeredByNotification)
         meetingStatusText.setOnClickListener {
             val attendenceDialog = OptionPickDialog.attendenceChoiceDialog()
             disposables.add(attendenceDialog.clickAction().subscribe( { clickId ->
@@ -138,7 +140,8 @@ class MeetingDetailsActivity : GrassrootActivity(), MeetingDetailsPresenter.Meet
 
     companion object {
 
-        private val EXTRA_MEETING_UID = "meeting_uid"
+        val EXTRA_MEETING_UID = "meeting_uid"
+        val TRIGGERED_BY_NOTIFICATION = "triggered_by_notification"
 
         fun start(activity: Activity, meetingUid: String) {
             val intent = Intent(activity, MeetingDetailsActivity::class.java)

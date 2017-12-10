@@ -91,6 +91,12 @@ public class DashboardActivity extends GrassrootActivity {
         if (NetworkUtil.hasInternetAccess(this)) {
             startService(new Intent(this, SyncOfflineDataService.class));
         }
+
+        String notificationText = getIntent().getStringExtra("notificationText");
+        if (notificationText != null) {
+            showMessageDialog(notificationText);
+        }
+
     }
 
     @Override

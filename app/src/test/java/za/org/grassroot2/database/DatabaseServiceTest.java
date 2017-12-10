@@ -25,7 +25,7 @@ import za.org.grassroot2.model.alert.LiveWireAlert;
 
 @RunWith(RobolectricTestRunner.class)
 @Config(sdk = 25, application = GrassrootApplication.class, manifest = Config.NONE)
-public class DatabaseServiceTest extends TestCase{
+public class DatabaseServiceTest extends TestCase {
 
     private DatabaseService databaseService;
 
@@ -75,15 +75,15 @@ public class DatabaseServiceTest extends TestCase{
         databaseService.storeObject(Group.class, g);
         Map<String, Long> result = databaseService.loadExistingObjectsWithLastChangeTime(Group.class);
         assertEquals(result.size(), 1);
-        assertTrue(result.get(g.getUid())>0);
+        assertTrue(result.get(g.getUid()) > 0);
     }
 
     @org.junit.Test
     public void copyOrUpdateListOfEntities() throws Exception {
         Group g1 = createGroup("Name 1");
         Group g2 = createGroup("Name 2");
-        databaseService.store(Group.class,g1);
-        databaseService.store(Group.class,g1);
+        databaseService.store(Group.class, g1);
+        databaseService.store(Group.class, g1);
         List<Group> items = new ArrayList<>();
         items.add(g1);
         items.add(g2);
