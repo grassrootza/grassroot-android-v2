@@ -107,11 +107,11 @@ dependencies {
     implementation 'com.github.florent37:camerafragment:1.0.7'
 
     compile('com.crashlytics.sdk.android:crashlytics:2.7.0@aar') {
-        transitive = true;
+        transitive = true
     }
 
     compile 'com.squareup.picasso:picasso:2.5.2'
-    compile 'za.org.grassroot:grassroot-messaging-dto:1.0.0.8'
+    compile 'za.org.grassroot:grassroot-messaging-dto:1.0.0.9'
     compile group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: '2.9.3'
     compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.9.3'
 
