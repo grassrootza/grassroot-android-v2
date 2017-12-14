@@ -1,10 +1,13 @@
 package za.org.grassroot2.model.util;
 
 import android.telephony.PhoneNumberUtils;
-import android.util.Log;
+import android.text.TextUtils;
 
+import java.util.Arrays;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import timber.log.Timber;
 
 public final class PhoneNumberFormatter {
 
@@ -29,8 +32,22 @@ public final class PhoneNumberFormatter {
         } else {
             // throwing an error here would be good, but may lead to unintended crashes, and server
             // provides a further line of defence to malformed numbers, so just log and return
-            Log.d(TAG, "error! tried to reformat, couldn't, here is phone number = " + normalizedNumber);
+            Timber.e("error! tried to reformat, couldn't, here is phone number = %s", normalizedNumber);
             return normalizedNumber;
         }
+    }
+
+    // note : this will need to be changed for international format numbers, but using it for now
+    public static String formatNumberForDisplay(String storedNumber, String joinString) {
+        String prefix = "0" + storedNumber.substring(2, 4);
+        String midnumbers, finalnumbers;
+        try {
+            midnumbers = storedNumber.substring(4, 7);
+            finalnumbers = storedNumber.substring(7, 11);
+        } catch (Exception e) { // in case the string doesn't have enough digits ...
+            midnumbers = storedNumber.substring(4);
+            finalnumbers = "";
+        }
+        return TextUtils.join(joinString, Arrays.asList(prefix, midnumbers, finalnumbers));
     }
 }

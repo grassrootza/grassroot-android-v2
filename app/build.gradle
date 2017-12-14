@@ -43,9 +43,9 @@ android {
         stage {
             initWith debug
             minifyEnabled = false
-            // buildConfigField "String", "API_BASE", "\"https://staging.grassroot.org.za/\""
-            buildConfigField "String", "API_BASE", "\"http://10.0.2.2:8080/\""
-            buildConfigField "boolean", "USE_UNSAFE_HTTP", "true"
+            buildConfigField "String", "API_BASE", "\"https://staging.grassroot.org.za/\""
+            // buildConfigField "String", "API_BASE", "\"http://10.0.2.2:8080/\""
+            buildConfigField "boolean", "USE_UNSAFE_HTTP", "false"
         }
     }
     sourceSets {

@@ -40,6 +40,8 @@ class GroupSettingsActivity : GrassrootActivity(), GroupSettingsPresenter.GroupS
         presenter.attach(this)
         presenter.init(groupUid!!)
         initToolbar()
+
+        viewMembers.setOnClickListener { presenter.loadMembers() }
         hideGroup.setOnClickListener { presenter.hideGroup() }
         leaveGroup.setOnClickListener { presenter.leaveGroup() }
         exportGroup.setOnClickListener{ presenter.exportMembers() }

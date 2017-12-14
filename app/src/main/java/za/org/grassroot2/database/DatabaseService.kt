@@ -3,10 +3,7 @@ package za.org.grassroot2.database
 import io.reactivex.Maybe
 import io.reactivex.Observable
 import io.reactivex.Single
-import za.org.grassroot2.model.AroundEntity
-import za.org.grassroot2.model.Group
-import za.org.grassroot2.model.Post
-import za.org.grassroot2.model.UserProfile
+import za.org.grassroot2.model.*
 import za.org.grassroot2.model.enums.GrassrootEntityType
 import za.org.grassroot2.model.network.Syncable
 import za.org.grassroot2.model.request.MemberRequest
@@ -37,8 +34,11 @@ interface DatabaseService {
 
     fun loadTasksForGroup(groupUid: String, type: GrassrootEntityType?): Single<List<Task>>
 
+    fun loadMembersForGroup(groupUid: String): Single<List<Membership>>
+
     // write and read methods (can only be called within an observable on background thread)
     fun <E> store(cls: Class<E>, `object`: E): Single<E>
+
 
     fun <E> storeObject(cls: Class<E>, `object`: E): E
     fun <E> copyOrUpdateListOfEntities(cls: Class<E>, objects: List<E>): List<E>
@@ -49,6 +49,8 @@ interface DatabaseService {
 
     fun removeUserProfile()
     fun removeGroup(groupUid: String): Boolean
+
+    fun storeGroupWithMembers(group: Group): Single<Group>
 
     // only for debugging
     fun <E> listAllEntitesOfType(clazz: Class<E>)

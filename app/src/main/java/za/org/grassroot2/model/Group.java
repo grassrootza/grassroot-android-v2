@@ -2,9 +2,11 @@ package za.org.grassroot2.model;
 
 import com.google.gson.annotations.SerializedName;
 import com.j256.ormlite.field.DatabaseField;
+import com.j256.ormlite.field.ForeignCollectionField;
 import com.j256.ormlite.table.DatabaseTable;
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.List;
 
 import za.org.grassroot2.model.enums.GrassrootEntityType;
@@ -65,6 +67,14 @@ public class Group implements EntityForDownload, SelectableItem, Serializable, A
     @DatabaseField(canBeNull = false)
     @SerializedName("hidden")
     private boolean hidden = false;
+
+    @DatabaseField(canBeNull = false)
+    @SerializedName("pinned")
+    private boolean pinned = false;
+
+    @ForeignCollectionField
+    @SerializedName("members")
+    Collection<Membership> memberships;
 
     public Group() {
     }
@@ -129,6 +139,22 @@ public class Group implements EntityForDownload, SelectableItem, Serializable, A
 
     public void setHidden(boolean hidden) {
         this.hidden = hidden;
+    }
+
+    public boolean isPinned() {
+        return pinned;
+    }
+
+    public void setPinned(boolean pinned) {
+        this.pinned = pinned;
+    }
+
+    public Collection<Membership> getMemberships() {
+        return memberships;
+    }
+
+    public void setMemberships(Collection<Membership> memberships) {
+        this.memberships = memberships;
     }
 
     @Override

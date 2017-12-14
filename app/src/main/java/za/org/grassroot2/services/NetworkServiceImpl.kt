@@ -5,6 +5,7 @@ import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.functions.Function
 import io.reactivex.schedulers.Schedulers
+import io.reactivex.schedulers.Schedulers.io
 import okhttp3.MediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
@@ -62,7 +63,7 @@ constructor(private val userDetailsService: UserDetailsService,
                 .fetchUserGroups(currentUserUid, databaseService.loadExistingObjectsWithLastChangeTime(Group::class.java))
                 .doOnError({ Timber.e(it) })
                 .filter { listRestResponse ->
-                    Timber.e("filtering if group list empty, what does map look like? " + listRestResponse)
+                    Timber.e("filtering if group list empty, what does map look like? %s", listRestResponse)
                     !listRestResponse.isEmpty()
                 }
                 .concatMap { groups ->
@@ -72,7 +73,7 @@ constructor(private val userDetailsService: UserDetailsService,
                 }
                 .doOnError({ Timber.e(it) })
                 .flatMap { listRestResponse ->
-                    Timber.d("alright, here are the full groups back: " + listRestResponse)
+                    Timber.d("alright, here are the full groups back: %s", listRestResponse)
                     Observable.just(listRestResponse)
                 }
     }
@@ -127,10 +128,22 @@ constructor(private val userDetailsService: UserDetailsService,
                 });
     }
 
-    override fun downloadMembers(group: Group): Observable<ByteArray> {
+    override fun downloadMemberFile(group: Group): Observable<ByteArray> {
         return grassrootUserApi.fetchGroupMemberSheet(group.uid)
+                .subscribeOn(io())
                 .filter({ r -> r.isSuccessful })
                 .flatMap { r -> Observable.just(r.body()?.bytes()) } // todo : maybe still throw error if doesn't work (use Resource?)
+    }
+
+    override fun downloadCompleteGroupInfo(groupId: String): Observable<Group> {
+        return grassrootUserApi.fetchFullGroupInfo(Collections.singletonList(groupId))
+                .subscribeOn(io())
+                .flatMap { groups ->
+                    val group = groups[0]
+                    Timber.e("got this group back: $group")
+                    Timber.e("members? ${group?.memberships?.size}")
+                    databaseService.storeGroupWithMembers(group).toObservable()
+                }
     }
 
     override fun getTasksForGroup(groupId: String): Observable<List<Task>> {

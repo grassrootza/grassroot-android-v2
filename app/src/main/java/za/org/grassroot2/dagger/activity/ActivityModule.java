@@ -18,6 +18,7 @@ import za.org.grassroot2.presenter.activity.GroupDetailsPresenter;
 import za.org.grassroot2.presenter.activity.GroupSettingsPresenter;
 import za.org.grassroot2.presenter.activity.PickContactPresenter;
 import za.org.grassroot2.presenter.fragment.GroupFragmentPresenter;
+import za.org.grassroot2.presenter.fragment.MemberListPresenter;
 import za.org.grassroot2.presenter.fragment.SingleTextMultiButtonPresenter;
 import za.org.grassroot2.services.LiveWireService;
 import za.org.grassroot2.services.LiveWireServiceImpl;
@@ -97,6 +98,12 @@ public class ActivityModule {
     @PerActivity
     GroupSettingsPresenter provideGroupSettingsPresenter(DatabaseService dbService, NetworkService networkService) {
         return new GroupSettingsPresenter(networkService, dbService);
+    }
+
+    @Provides
+    @PerActivity
+    MemberListPresenter provideMemberListPresenter(DatabaseService dbService, NetworkService networkService) {
+        return new MemberListPresenter(dbService, networkService);
     }
 
     @Provides

@@ -289,5 +289,14 @@
 
     <string name="open_file_no_app">Sorry, you have no app that can open Excel</string>
     <string name="share_file_no_app">Sorry, you have no app that can share Excel</string>
+    <string name="members_list">List</string>
+    <string name="new_members">New members</string>
+    <string name="members_permissions">Permissions</string>
+    <string name="member_search_hint">Search or filter members</string>
+
+    <string name="member_role_ordinary">Member</string>
+    <string name="member_role_organizer">Organizer</string>
+    <string name="member_role_committee">Committee</string>
+    <string name="member_description_format">%1$s (%2$s)</string>
 
 </resources>

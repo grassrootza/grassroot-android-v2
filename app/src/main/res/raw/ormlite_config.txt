@@ -1,6 +1,40 @@
 #
-# generated on 2017/12/10 02:54:45
+# generated on 2017/12/13 09:51:39
 #
+# --table-start--
+dataClass=za.org.grassroot2.model.Membership
+tableName=memberships
+# --table-fields-start--
+# --field-start--
+fieldName=compositeUid
+id=true
+# --field-end--
+# --field-start--
+fieldName=groupUid
+canBeNull=false
+# --field-end--
+# --field-start--
+fieldName=userUid
+canBeNull=false
+# --field-end--
+# --field-start--
+fieldName=phoneNumber
+# --field-end--
+# --field-start--
+fieldName=emailAddress
+# --field-end--
+# --field-start--
+fieldName=roleName
+# --field-end--
+# --field-start--
+fieldName=displayName
+# --field-end--
+# --field-start--
+fieldName=joinedTimeMillis
+# --field-end--
+# --table-fields-end--
+# --table-end--
+#################################
 # --table-start--
 dataClass=za.org.grassroot2.model.Post
 tableName=posts
@@ -174,6 +208,10 @@ fieldName=permissions
 # --field-end--
 # --field-start--
 fieldName=hidden
+canBeNull=false
+# --field-end--
+# --field-start--
+fieldName=pinned
 canBeNull=false
 # --field-end--
 # --table-fields-end--

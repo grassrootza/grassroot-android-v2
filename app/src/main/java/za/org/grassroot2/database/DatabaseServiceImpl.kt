@@ -5,10 +5,7 @@ import io.reactivex.Maybe
 import io.reactivex.Observable
 import io.reactivex.Single
 import timber.log.Timber
-import za.org.grassroot2.model.AroundEntity
-import za.org.grassroot2.model.Group
-import za.org.grassroot2.model.Post
-import za.org.grassroot2.model.UserProfile
+import za.org.grassroot2.model.*
 import za.org.grassroot2.model.enums.GrassrootEntityType
 import za.org.grassroot2.model.network.EntityForDownload
 import za.org.grassroot2.model.network.Syncable
@@ -207,6 +204,24 @@ class DatabaseServiceImpl(private val helper: DatabaseHelper) : DatabaseService 
         return returnList
     }
 
+    override fun loadMembersForGroup(groupUid: String): Single<List<Membership>> {
+        return Single.create { e->
+            val returnList = ArrayList<Membership>()
+            try {
+                // doing it this way instead of group and get members to avoid handling iterator etc
+                // also note: we don't use order by because we resort programmatically to deal with phone number names
+                val dao = helper.getDao(Membership::class.javaObjectType)
+                val result = dao.queryBuilder()
+                        .where().eq("groupUid", groupUid)
+                        .query()
+                returnList.addAll(result)
+            } catch (e: SQLException) {
+                e.printStackTrace()
+            }
+            e.onSuccess(returnList)
+        }
+    }
+
 
     override fun <E> loadObjectsByName(clazz: Class<E>, nameQuery: String): List<E> {
         val query = StringBuilder().append("%").append(nameQuery).append("%")
@@ -271,7 +286,7 @@ class DatabaseServiceImpl(private val helper: DatabaseHelper) : DatabaseService 
                 val dao = helper.getDao(cls)
                 dao.createOrUpdate(`object`)
             } catch (ex: SQLException) {
-                Log.e(TAG, "Error while saving object: " + `object`.toString())
+                Timber.e("Error while saving object: %s", `object`.toString())
                 ex.printStackTrace()
             }
 
@@ -326,6 +341,23 @@ class DatabaseServiceImpl(private val helper: DatabaseHelper) : DatabaseService 
             dao.deleteBuilder().delete()
         } catch (e: SQLException) {
             e.printStackTrace()
+        }
+    }
+
+    override fun storeGroupWithMembers(group: Group): Single<Group> {
+        return Single.create { e ->
+            try {
+                // todo : ORMLite foreign collection docs not the greatest, so likely a better way to do this, but for now
+                val groupDao = helper.getDao(Group::class.java)
+                groupDao.createOrUpdate(group)
+                val memberDao = helper.getDao(Membership::class.java)
+                memberDao.callBatchTasks({
+                    group.memberships.forEach { memberDao.createOrUpdate(it) }
+                })
+            } catch (ex: SQLException) {
+                Timber.e("Error while saving group %s", group.toString())
+            }
+            e.onSuccess(group)
         }
     }
 

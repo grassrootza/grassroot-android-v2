@@ -10,6 +10,7 @@ public enum GrassrootEntityType {
 
     GROUP,
     PUBLIC_GROUP,
+    MEMBERSHIP,
 
     TASK,
     MEETING,

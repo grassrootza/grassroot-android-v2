@@ -32,6 +32,7 @@ public class DashboardActivity extends GrassrootActivity {
     public static final int TAB_GROUPS = 1;
     public static final int TAB_AROUND = 2;
     public static final int TAB_ME     = 3;
+
     @BindView(R.id.contentPager) ViewPager              pager;
     @BindView(R.id.navigation)   BottomNavigationViewEx bottomNavigation;
     @Inject                      RxPermissions          rxPermissions;
@@ -88,6 +89,7 @@ public class DashboardActivity extends GrassrootActivity {
 
             }
         });
+
         if (NetworkUtil.hasInternetAccess(this)) {
             startService(new Intent(this, SyncOfflineDataService.class));
         }

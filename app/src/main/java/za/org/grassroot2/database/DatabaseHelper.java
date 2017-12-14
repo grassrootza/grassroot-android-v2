@@ -8,6 +8,7 @@ import com.j256.ormlite.android.apptools.OrmLiteSqliteOpenHelper;
 import com.j256.ormlite.field.DataPersisterManager;
 import com.j256.ormlite.support.ConnectionSource;
 
+import timber.log.Timber;
 import za.org.grassroot2.BuildConfig;
 import za.org.grassroot2.R;
 import za.org.grassroot2.database.serialization.HashMapPersister;
@@ -31,12 +32,13 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
         try {
             DatabaseTableHelper.clearTables(connectionSource, TAG);
         } catch (IllegalStateException ignore) {
-            Log.e(TAG, "Ran into issue trying to close the instance.");
+            Timber.e("Ran into issue trying to close the instance.");
         }
     }
 
     @Override
     public void onCreate(SQLiteDatabase db, ConnectionSource connectionSource) {
+        Timber.e("about to set up tables ...");
         DatabaseTableHelper.setUpTables(connectionSource, TAG);
     }
 

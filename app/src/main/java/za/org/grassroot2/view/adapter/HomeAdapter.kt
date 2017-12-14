@@ -27,7 +27,8 @@ import za.org.grassroot2.rxbinding.RxView
 import za.org.grassroot2.util.LastModifiedFormatter
 import javax.inject.Inject
 
-class HomeAdapter @Inject constructor(private val context: Context, private var data: List<HomeFeedItem>) : RecyclerView.Adapter<RecyclerView.ViewHolder>(), Filterable {
+class HomeAdapter @Inject
+constructor(private val context: Context, private var data: List<HomeFeedItem>) : RecyclerView.Adapter<RecyclerView.ViewHolder>(), Filterable {
 
     private var filteredData : List<HomeFeedItem> = data.toList()
 
