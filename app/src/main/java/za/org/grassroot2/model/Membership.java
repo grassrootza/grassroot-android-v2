@@ -87,8 +87,7 @@ public class Membership implements EntityForDownload, SelectableItem, Serializab
     // for filtering
     public boolean containsString(CharSequence constraint) {
         return (displayName != null && displayName.toLowerCase().contains(constraint.toString().toLowerCase()))
-            || (phoneNumber != null && phoneNumber.toLowerCase().contains(constraint.toString().toLowerCase()))
-            || (emailAddress != null && emailAddress.toLowerCase().contains(constraint.toString().toLowerCase()));
+            || (phoneNumber != null && phoneNumber.toLowerCase().contains(constraint.toString().toLowerCase()));
     }
 
     public String getCompositeUid() {

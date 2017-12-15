@@ -35,6 +35,7 @@ interface DatabaseService {
     fun loadTasksForGroup(groupUid: String, type: GrassrootEntityType?): Single<List<Task>>
 
     fun loadMembersForGroup(groupUid: String): Single<List<Membership>>
+    fun loadMemberLogsForGroup(groupUid: String): Single<List<MembershipLog>>
 
     // write and read methods (can only be called within an observable on background thread)
     fun <E> store(cls: Class<E>, `object`: E): Single<E>

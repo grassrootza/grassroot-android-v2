@@ -15,19 +15,19 @@
     <TextView
         android:textSize="@dimen/txt_header_3"
         android:layout_marginBottom="@dimen/margin_std_medium"
-        android:id="@+id/memberName"
+        android:id="@+id/memberChangeType"
         android:layout_width="match_parent"
         android:maxLines="1"
         android:layout_height="wrap_content"
         android:textColor="@color/colorPrimary"
-        tools:text="Group member" />
+        tools:text="Member added" />
 
     <TextView
         android:textSize="@dimen/txt_body_large"
-        android:id="@+id/memberDetails"
+        android:id="@+id/logDetails"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textColor="@color/text_dark_grey"
-        tools:text="Organizer (070 111 2345)"/>
+        tools:text="Some User (070 000 0000) was added by Another User on 15 December 2017"/>
 
 </LinearLayout>

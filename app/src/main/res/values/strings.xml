@@ -299,4 +299,19 @@
     <string name="member_role_committee">Committee</string>
     <string name="member_description_format">%1$s (%2$s)</string>
 
+    <string name="member_log_search">Search member records</string>
+    <string name="member_added_header">New member</string>
+    <string name="member_removed_header">Member left</string>
+    <string name="member_role_changed_header">Role changed</string>
+    <string name="member_change_default_header">Member changed</string>
+
+    <string name="member_added_def_desc">%1$s was added by c%2$s on %3$s</string>
+    <string name="member_added_creation">%1$s was added during group creation on %2$s</string>
+    <string name="member_added_via_join_code">%1$s used group join code on %2$s</string>
+    <string name="member_added_via_campaign">%1$s joined using campaign code on %2$s</string>
+    <string name="member_removed_other">%1$s was removed by %2$s on %3$s</string>
+    <string name="member_removed_self">%1$s left the group on %2$s</string>
+    <string name="member_role_changed_desc">%1$s changed role on %2$s, to %3$s</string>
+    <string name="member_changed_other">A change was made to %1$s on %2$s</string>
+
 </resources>
