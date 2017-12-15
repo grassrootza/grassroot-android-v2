@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/root"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/white"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:padding="@dimen/padding_std_medium">
+
+    <TextView
+        android:textSize="@dimen/txt_header_3"
+        android:layout_marginBottom="@dimen/margin_std_medium"
+        android:id="@+id/memberName"
+        android:layout_width="match_parent"
+        android:maxLines="1"
+        android:layout_height="wrap_content"
+        android:textColor="@color/colorPrimary"
+        tools:text="Group member" />
+
+    <TextView
+        android:maxLines="1"
+        android:textSize="@dimen/txt_body_large"
+        android:id="@+id/memberDetails"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@color/text_dark_grey"
+        tools:text="Organizer (070 111 2345)"/>
+
+</LinearLayout>

@@ -15,6 +15,7 @@ import za.org.grassroot2.services.NetworkService
 import za.org.grassroot2.util.FileUtil
 import za.org.grassroot2.view.GrassrootView
 import za.org.grassroot2.view.activity.DashboardActivity
+import za.org.grassroot2.view.activity.MembersActivity
 import java.io.File
 import java.io.IOException
 import java.text.SimpleDateFormat
@@ -38,7 +39,15 @@ constructor(private val networkService: NetworkService, private val dbService: D
         disposableOnDetach(dbService.load(Group::class.java, groupUid!!).subscribeOn(io()).observeOn(main()).subscribe({ g ->
             group = g
             view.render(g)
+            fetchFullGroupBackground(groupUid!!)
         }, { it.printStackTrace() }))
+    }
+
+    fun fetchFullGroupBackground(groupUid: String) {
+        networkService.downloadCompleteGroupInfo(groupUid).subscribeOn(io()).observeOn(main())
+                .subscribe ({  g ->
+                    Timber.d("Success! fetched group .. ready for member fragment")
+                }, { it.printStackTrace() })
     }
 
     fun hideGroup() {
@@ -77,16 +86,25 @@ constructor(private val networkService: NetworkService, private val dbService: D
     }
 
     fun exportMembers() {
+        Timber.e("starting the calls")
         view.ensureWriteExteralStoragePermission()
                 .filter { aBoolean -> aBoolean }
+                .subscribeOn(io())
                 .flatMap { _ ->
-                    networkService.downloadMembers(group!!)
+                    Timber.e("on main thread still?")
+                    networkService.downloadMemberFile(group!!)
                 }
                 .flatMapSingle { data -> writeMembersToFile(data) }
                 .subscribeOn(io()).observeOn(main()).subscribe({ uri ->
             Timber.d("saved the file!")
             view.selectFileActionDialog(uri)
         }, { Timber.e(it) })
+    }
+
+    fun loadMembers() {
+        val b = Bundle()
+        b.putString(MembersActivity.GROUP_UID_FIELD, groupUid)
+        view.launchActivity(MembersActivity::class.java, b)
     }
 
     private fun writeMembersToFile(data: ByteArray): Single<Uri> {

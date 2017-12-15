@@ -31,6 +31,8 @@ interface NetworkService {
 
     fun downloadAllChangedOrNewGroups(): Observable<List<Group>>
 
+    fun downloadCompleteGroupInfo(groupId: String): Observable<Group>
+
     fun getTimestampForText(date: String): Observable<Long>
 
     fun downloadTaskMinimumInfo(): Observable<List<Task>>
@@ -41,7 +43,7 @@ interface NetworkService {
 
     fun leaveGroup(group: Group): Observable<Boolean>
 
-    fun downloadMembers(group: Group): Observable<ByteArray>
+    fun downloadMemberFile(group: Group): Observable<ByteArray>
 
     fun getTasksForGroup(groupId: String): Observable<List<Task>>
 

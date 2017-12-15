@@ -109,6 +109,10 @@
         <activity android:name=".GroupSettingsActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.Toolbar" />
+        <activity android:name=".view.activity.MembersActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.Toolbar"
+            android:windowSoftInputMode="stateHidden" />
         <activity
             android:name=".view.activity.MeetingDetailsActivity"
             android:screenOrientation="portrait"
@@ -149,7 +153,6 @@
             android:screenOrientation="portrait"
             android:theme="@style/Theme.AppCompat.FullScreen" />
 
-
         <receiver
             android:name="com.google.android.gms.gcm.GcmReceiver"
             android:exported="true"
@@ -179,7 +182,7 @@
 
         <service
             android:name=".service.GCMRegistrationService"
-            android:exported="false"></service>
+            android:exported="false" />
 
 
     </application>

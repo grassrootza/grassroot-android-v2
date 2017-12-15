@@ -36,6 +36,9 @@ public interface GrassrootUserApi {
     Observable<List<Group>> fetchGroupsInfo(@Path("userUid") String userUid,
                                                           @Query("groupUids") List<String> groupUids);
 
+    @GET("/api/group/fetch/full")
+    Observable<List<Group>> fetchFullGroupInfo(@Query("groupUids") List<String> groupUids);
+
     // Send a media file to the server for storage
     @Multipart
     @POST("/api/media/store/{userUid}")
