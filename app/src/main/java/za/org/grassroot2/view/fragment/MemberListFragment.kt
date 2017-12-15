@@ -1,7 +1,6 @@
 package za.org.grassroot2.view.fragment
 
 import android.os.Bundle
-import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.view.Menu
 import android.view.MenuInflater
@@ -45,8 +44,6 @@ class MemberListFragment : GrassrootFragment(), MemberListPresenter.MemberListFr
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        (activity as AppCompatActivity).setSupportActionBar(toolbar)
-        (activity as AppCompatActivity).supportActionBar!!.setTitle(R.string.title_groups)
         // fab.setOnClickListener { CreateActionActivity.start(activity, null) }
         refreshLayout.setOnRefreshListener { presenter.refreshMembers() }
 

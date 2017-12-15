@@ -11,6 +11,7 @@ import za.org.grassroot2.R
 import za.org.grassroot2.dagger.activity.ActivityComponent
 import za.org.grassroot2.view.dialog.GenericMessageDialog
 import za.org.grassroot2.view.fragment.MemberListFragment
+import za.org.grassroot2.view.fragment.MemberListFragment_MembersInjector
 
 /**
  * Created by luke on 2017/12/10.
@@ -69,8 +70,8 @@ class MembersActivity : GrassrootActivity() {
         override fun getItem(position: Int): Fragment {
             return when (position) {
                 TAB_LIST -> MemberListFragment.newInstance(groupUid!!)
-                TAB_HISTORY -> GenericMessageDialog.newInstance("2")
-                TAB_PERMISSIONS -> GenericMessageDialog.newInstance("3")
+                TAB_HISTORY -> MemberListFragment.newInstance(groupUid!!)
+                TAB_PERMISSIONS -> MemberListFragment.newInstance(groupUid!!)
                 else -> GenericMessageDialog.newInstance("Huh")
             }
         }
