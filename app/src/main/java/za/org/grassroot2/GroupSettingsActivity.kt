@@ -16,7 +16,6 @@ import com.squareup.picasso.Picasso
 import com.tbruyelle.rxpermissions2.RxPermissions
 import io.reactivex.Observable
 import kotlinx.android.synthetic.main.activity_group_settings.*
-import timber.log.Timber
 import za.org.grassroot2.dagger.activity.ActivityComponent
 import za.org.grassroot2.model.Group
 import za.org.grassroot2.presenter.activity.GroupSettingsPresenter
@@ -52,11 +51,22 @@ class GroupSettingsActivity : GrassrootActivity(), GroupSettingsPresenter.GroupS
         presenter.loadData()
     }
 
-    override fun render(group: Group) {
-        Timber.e("rendering group ... setting description to: " + group.description)
-        supportActionBar!!.setTitle(group.name)
-        description.text = group.description
+    override fun render(group: Group, lastMonthCount: Long) {
+        supportActionBar!!.title = group.name
+        description.text = if (lastMonthCount > 0)
+            getString(R.string.member_count_recent, group.memberCount, lastMonthCount)
+        else
+            getString(R.string.member_count_basic, group.memberCount)
         loadProfilePic(group.uid)
+        viewMembers.isEnabled = group.hasMembersFetched()
+    }
+
+    override fun membersAvailable(totalMembers: Int, lastMonthCount: Long) {
+        viewMembers.isEnabled = true
+        description.text = if (lastMonthCount > 0)
+            getString(R.string.member_count_recent, totalMembers, lastMonthCount)
+        else
+            getString(R.string.member_count_basic, totalMembers)
     }
 
     private fun loadProfilePic(groupUid: String) {

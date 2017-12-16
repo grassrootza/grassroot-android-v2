@@ -136,12 +136,10 @@ constructor(private val userDetailsService: UserDetailsService,
     }
 
     override fun downloadCompleteGroupInfo(groupId: String): Observable<Group> {
-        return grassrootUserApi.fetchFullGroupInfo(Collections.singletonList(groupId))
+        return grassrootUserApi.fetchFullGroupInfo(groupId)
                 .subscribeOn(io())
-                .flatMap { groups ->
-                    val group = groups[0]
-                    Timber.e("got this group back: $group")
-                    Timber.e("members? ${group?.memberships?.size}")
+                .flatMap { group ->
+                    Timber.d("got this group back: $group, with members: ${group.memberships?.size}")
                     databaseService.storeGroupWithMembers(group).toObservable()
                 }
     }

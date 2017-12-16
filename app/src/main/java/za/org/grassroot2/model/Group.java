@@ -74,7 +74,11 @@ public class Group implements EntityForDownload, SelectableItem, Serializable, A
 
     @ForeignCollectionField
     @SerializedName("members")
-    Collection<Membership> memberships;
+    private Collection<Membership> memberships;
+
+    @ForeignCollectionField
+    @SerializedName("memberHistory")
+    private Collection<MembershipLog> membershipLogs;
 
     public Group() {
     }
@@ -149,12 +153,24 @@ public class Group implements EntityForDownload, SelectableItem, Serializable, A
         this.pinned = pinned;
     }
 
+    public boolean hasMembersFetched() {
+        return memberships != null && !memberships.isEmpty();
+    }
+
     public Collection<Membership> getMemberships() {
         return memberships;
     }
 
     public void setMemberships(Collection<Membership> memberships) {
         this.memberships = memberships;
+    }
+
+    public Collection<MembershipLog> getMembershipLogs() {
+        return membershipLogs;
+    }
+
+    public void setMembershipLogs(Collection<MembershipLog> membershipLogs) {
+        this.membershipLogs = membershipLogs;
     }
 
     @Override

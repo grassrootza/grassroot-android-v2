@@ -38,15 +38,21 @@ constructor(private val networkService: NetworkService, private val dbService: D
     fun loadData() {
         disposableOnDetach(dbService.load(Group::class.java, groupUid!!).subscribeOn(io()).observeOn(main()).subscribe({ g ->
             group = g
-            view.render(g)
+            view.render(g, countMembersLastMonth(g))
             fetchFullGroupBackground(groupUid!!)
         }, { it.printStackTrace() }))
     }
 
-    fun fetchFullGroupBackground(groupUid: String) {
+    private fun countMembersLastMonth(g: Group) : Long {
+        val monthAgoMillis = Date().time - 30L*24*60*60*1000
+        return dbService.countMembersJoinedSince(g.uid, monthAgoMillis)
+    }
+
+    private fun fetchFullGroupBackground(groupUid: String) {
         networkService.downloadCompleteGroupInfo(groupUid).subscribeOn(io()).observeOn(main())
                 .subscribe ({  g ->
                     Timber.d("Success! fetched group .. ready for member fragment")
+                    view.membersAvailable(g.memberCount, countMembersLastMonth(g))
                 }, { it.printStackTrace() })
     }
 
@@ -110,12 +116,12 @@ constructor(private val networkService: NetworkService, private val dbService: D
     private fun writeMembersToFile(data: ByteArray): Single<Uri> {
         return Single.create { e->
             val xlsFile = createXlsFile()
-            Timber.d("XLS file created, here is path: " + xlsFile.absolutePath)
+            Timber.d("XLS file created, here is path: ${xlsFile.absolutePath}")
             xlsFile.writeBytes(data)
             val xlsUri = FileProvider.getUriForFile(view.activity.applicationContext,
                     FileUtil.FILEPROVIDER_AUTHORITY,
                     xlsFile)
-            Timber.d("storing XLS in file, URI = " + xlsUri)
+            Timber.d("storing XLS in file, URI = $xlsUri")
             e.onSuccess(xlsUri)
         }
     }
@@ -136,10 +142,11 @@ constructor(private val networkService: NetworkService, private val dbService: D
     }
 
     interface GroupSettingsView : GrassrootView {
-        fun render(group: Group)
+        fun render(group: Group, lastMonthCount: Long)
+        fun membersAvailable(totalMembers: Int, lastMonthCount: Long)
         fun exitToHome(messageToUser: Int)
         fun ensureWriteExteralStoragePermission(): Observable<Boolean>
-        fun selectFileActionDialog(fileUri: Uri);
+        fun selectFileActionDialog(fileUri: Uri)
     }
 
     companion object {

@@ -222,6 +222,34 @@ class DatabaseServiceImpl(private val helper: DatabaseHelper) : DatabaseService 
         }
     }
 
+    override fun loadMemberLogsForGroup(groupUid: String): Single<List<MembershipLog>> {
+        return Single.create { e ->
+            val returnList = ArrayList<MembershipLog>()
+            try {
+                val dao = helper.getDao(MembershipLog::class.javaObjectType)
+                val result = dao.queryBuilder()
+                        .orderBy("changeDateTimeMillis", false)
+                        .where().eq("groupUid", groupUid)
+                        .query()
+                returnList.addAll(result)
+            } catch (e: SQLException) {
+                e.printStackTrace()
+            }
+            e.onSuccess(returnList)
+        }
+    }
+
+    override fun countMembersJoinedSince(groupUid: String, cutOffDate: Long): Long {
+        try {
+            val dao = helper.getDao(Membership::class.javaObjectType)
+            return dao.queryBuilder()
+                    .where().eq("groupUid", groupUid).and().gt("joinedTimeMillis", cutOffDate)
+                    .countOf()
+        } catch (e: SQLException) {
+            e.printStackTrace()
+            return 0
+        }
+    }
 
     override fun <E> loadObjectsByName(clazz: Class<E>, nameQuery: String): List<E> {
         val query = StringBuilder().append("%").append(nameQuery).append("%")
@@ -351,9 +379,13 @@ class DatabaseServiceImpl(private val helper: DatabaseHelper) : DatabaseService 
                 val groupDao = helper.getDao(Group::class.java)
                 groupDao.createOrUpdate(group)
                 val memberDao = helper.getDao(Membership::class.java)
-                memberDao.callBatchTasks({
-                    group.memberships.forEach { memberDao.createOrUpdate(it) }
-                })
+                memberDao.callBatchTasks{
+                    group.memberships?.forEach { memberDao.createOrUpdate(it) }
+                }
+                val memberLogDao = helper.getDao(MembershipLog::class.java)
+                memberLogDao.callBatchTasks {
+                    group.membershipLogs?.forEach { memberLogDao.createOrUpdate(it) }
+                }
             } catch (ex: SQLException) {
                 Timber.e("Error while saving group %s", group.toString())
             }

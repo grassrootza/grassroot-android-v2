@@ -23,6 +23,7 @@ interface ActivityComponent {
     fun inject(fragment: GroupTasksFragment)
     fun inject(target: GroupSettingsActivity)
     fun inject(target: MemberListFragment)
+    fun inject(target: MemberLogsFragment)
     fun inject(grassrootFragment: GrassrootFragment)
     fun inject(activity: PickContactActivity)
     fun inject(fragment: GroupSelectionFragment)

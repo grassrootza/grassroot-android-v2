@@ -52,11 +52,7 @@ constructor(private val context: Context, private var data: List<Membership>) : 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val member = filteredData[position]
         (holder as MembershipViewHolder).memberName.text = member.name
-        val roleDescription = when(member.roleName) {
-            "ROLE_GROUP_ORGANIZER" -> context.getString(R.string.member_role_organizer)
-            "ROLE_COMMITTEE_MEMBER" -> context.getString(R.string.member_role_committee)
-            else -> context.getString(R.string.member_role_ordinary)
-        }
+        val roleDescription = context.getString(member.roleNameRes)
         holder.memberDetails.text = context.getString(R.string.member_description_format, roleDescription,
                 PhoneNumberFormatter.formatNumberForDisplay(member.phoneNumber, " "))
         RxView.clicks(holder.root).map { _ -> member }.subscribe(viewClickSubject)

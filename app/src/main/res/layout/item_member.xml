@@ -7,7 +7,10 @@
     android:background="@color/white"
     android:gravity="center"
     android:orientation="vertical"
-    android:padding="@dimen/padding_std_medium">
+    android:paddingLeft="12dp"
+    android:paddingRight="12dp"
+    android:paddingTop="@dimen/padding_std_medium"
+    android:paddingBottom="@dimen/padding_std_medium">
 
     <TextView
         android:textSize="@dimen/txt_header_3"
@@ -20,7 +23,6 @@
         tools:text="Group member" />
 
     <TextView
-        android:maxLines="1"
         android:textSize="@dimen/txt_body_large"
         android:id="@+id/memberDetails"
         android:layout_width="match_parent"

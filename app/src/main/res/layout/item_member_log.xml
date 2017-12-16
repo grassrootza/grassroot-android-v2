@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/root"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/white"
+    android:gravity="center"
+    android:orientation="horizontal"
+    android:paddingLeft="@dimen/padding_std_small"
+    android:paddingRight="@dimen/padding_std_small"
+    android:paddingTop="@dimen/padding_std_medium"
+    android:paddingBottom="@dimen/padding_std_medium">
+
+    <ImageView
+        android:id="@+id/logIcon"
+        android:layout_width="@dimen/profile_photo_s_width"
+        android:layout_height="@dimen/profile_photo_s_height"
+        android:foregroundGravity="center"
+        app:srcCompat="@drawable/ic_add_circle_primary_24dp"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingLeft="@dimen/padding_std_medium"
+        android:paddingRight="@dimen/padding_std_medium">
+
+        <TextView
+            android:textSize="@dimen/txt_header_3"
+            android:layout_marginBottom="@dimen/margin_std_small"
+            android:id="@+id/memberChangeType"
+            android:layout_width="match_parent"
+            android:maxLines="1"
+            android:layout_height="wrap_content"
+            android:textColor="@color/colorPrimary"
+            tools:text="Member added" />
+
+        <TextView
+            android:textSize="@dimen/txt_body_large"
+            android:id="@+id/logDetails"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/text_dark_grey"
+            tools:text="Some User (070 000 0000) was added by Another User on 15 December 2017"/>
+
+    </LinearLayout>
+
+</LinearLayout>
