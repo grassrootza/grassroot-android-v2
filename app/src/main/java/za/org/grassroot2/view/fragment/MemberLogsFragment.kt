@@ -44,7 +44,6 @@ class MemberLogsFragment : GrassrootFragment(), MemberLogsPresenter.MemberLogsFr
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        // fab.setOnClickListener { CreateActionActivity.start(activity, null) }
         refreshLayout.setOnRefreshListener { presenter.refreshMembers() }
 
         presenter.init(arguments!![GROUP_UID_EXTRA_FIELD] as String)
@@ -66,6 +65,10 @@ class MemberLogsFragment : GrassrootFragment(), MemberLogsPresenter.MemberLogsFr
         memberRecyclerView.layoutManager = LinearLayoutManager(activity)
         memberLogsAdapter = MemberLogsAdapter(activity, memberLogs)
         memberRecyclerView.adapter = memberLogsAdapter
+    }
+
+    override fun stopRefreshing() {
+        refreshLayout.isRefreshing = false
     }
 
     companion object {

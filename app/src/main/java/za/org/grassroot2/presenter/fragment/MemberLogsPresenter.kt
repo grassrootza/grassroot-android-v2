@@ -26,6 +26,7 @@ constructor(private val databaseService: DatabaseService, private val networkSer
 
     fun refreshMembers() {
         // userDetailsService.requestSync()
+        view.stopRefreshing()
     }
 
     private fun loadMemberLogs() {
@@ -39,5 +40,6 @@ constructor(private val databaseService: DatabaseService, private val networkSer
         fun render(memberLogs: List<MembershipLog>)
         fun searchInputChanged() : Observable<String>
         fun filterData(searchQuery: String)
+        fun stopRefreshing()
     }
 }

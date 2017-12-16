@@ -272,6 +272,10 @@
     <string name="me_menu_take_pic">Take picture</string>
     <string name="me_error_updating_data">Profile data update failed.</string>
     <string name="me_error_updating_photo">Profile photo update failed.</string>
+
+    <string name="member_count_basic">This group has %1$d members</string>
+    <string name="member_count_recent">This group has %1$d members, with %2$d joining in the last month</string>
+
     <string name="btn_members">Members</string>
     <string name="btn_leave_group">Leave group</string>
     <string name="btn_hide_group">Hide group</string>
@@ -305,13 +309,13 @@
     <string name="member_role_changed_header">Role changed</string>
     <string name="member_change_default_header">Member changed</string>
 
-    <string name="member_added_def_desc">%1$s was added by c%2$s on %3$s</string>
+    <string name="member_added_def_desc">%1$s was added by %2$s on %3$s</string>
     <string name="member_added_creation">%1$s was added during group creation on %2$s</string>
     <string name="member_added_via_join_code">%1$s used group join code on %2$s</string>
     <string name="member_added_via_campaign">%1$s joined using campaign code on %2$s</string>
     <string name="member_removed_other">%1$s was removed by %2$s on %3$s</string>
     <string name="member_removed_self">%1$s left the group on %2$s</string>
-    <string name="member_role_changed_desc">%1$s changed role on %2$s, to %3$s</string>
+    <string name="member_role_changed_desc">%1$s changed the role of %2$s to %3$s, on %4$s</string>
     <string name="member_changed_other">A change was made to %1$s on %2$s</string>
 
 </resources>

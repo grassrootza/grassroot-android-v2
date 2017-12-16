@@ -153,6 +153,10 @@ public class Group implements EntityForDownload, SelectableItem, Serializable, A
         this.pinned = pinned;
     }
 
+    public boolean hasMembersFetched() {
+        return memberships != null && !memberships.isEmpty();
+    }
+
     public Collection<Membership> getMemberships() {
         return memberships;
     }

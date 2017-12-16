@@ -63,16 +63,4 @@
 
     </android.support.v4.widget.SwipeRefreshLayout>
 
-    <!-- todo: change to question mark? or add tool titlebar? -->
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/fab"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="end|bottom"
-        android:layout_margin="16dp"
-        app:backgroundTint="@color/colorPrimary"
-        app:layout_anchorGravity="bottom|end"
-        app:layout_behavior="za.org.grassroot2.view.ScrollingFabBehavior"
-        app:srcCompat="@drawable/ic_add_white_24dp" />
-
 </android.support.design.widget.CoordinatorLayout>

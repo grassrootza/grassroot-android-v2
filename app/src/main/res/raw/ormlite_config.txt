@@ -1,5 +1,5 @@
 #
-# generated on 2017/12/13 09:51:39
+# generated on 2017/12/16 08:55:31
 #
 # --table-start--
 dataClass=za.org.grassroot2.model.Membership
@@ -8,6 +8,10 @@ tableName=memberships
 # --field-start--
 fieldName=compositeUid
 id=true
+# --field-end--
+# --field-start--
+fieldName=group
+foreign=true
 # --field-end--
 # --field-start--
 fieldName=groupUid
@@ -213,6 +217,54 @@ canBeNull=false
 # --field-start--
 fieldName=pinned
 canBeNull=false
+# --field-end--
+# --field-start--
+fieldName=memberships
+foreignCollection=true
+# --field-end--
+# --field-start--
+fieldName=membershipLogs
+foreignCollection=true
+# --field-end--
+# --table-fields-end--
+# --table-end--
+#################################
+# --table-start--
+dataClass=za.org.grassroot2.model.MembershipLog
+tableName=membership_logs
+# --table-fields-start--
+# --field-start--
+fieldName=groupLogId
+id=true
+# --field-end--
+# --field-start--
+fieldName=group
+foreign=true
+# --field-end--
+# --field-start--
+fieldName=groupUid
+canBeNull=false
+# --field-end--
+# --field-start--
+fieldName=userUid
+# --field-end--
+# --field-start--
+fieldName=memberName
+# --field-end--
+# --field-start--
+fieldName=roleName
+# --field-end--
+# --field-start--
+fieldName=changeDateTimeMillis
+# --field-end--
+# --field-start--
+fieldName=changeType
+# --field-end--
+# --field-start--
+fieldName=changingUserName
+# --field-end--
+# --field-start--
+fieldName=description
 # --field-end--
 # --table-fields-end--
 # --table-end--

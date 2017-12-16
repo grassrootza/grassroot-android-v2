@@ -8,6 +8,7 @@ import com.j256.ormlite.table.DatabaseTable;
 
 import java.io.Serializable;
 
+import za.org.grassroot2.R;
 import za.org.grassroot2.model.enums.GrassrootEntityType;
 import za.org.grassroot2.model.network.EntityForDownload;
 
@@ -52,6 +53,17 @@ public class Membership implements EntityForDownload, SelectableItem, Serializab
     @DatabaseField
     @SerializedName("joinedDateTimeMillis")
     private long joinedTimeMillis = 0;
+
+    public static int getRoleNameResource(String roleName) {
+        if (TextUtils.isEmpty(roleName)) {
+            return R.string.member_role_ordinary;
+        }
+        switch (roleName) {
+            case "ROLE_GROUP_ORGANIZER": return R.string.member_role_organizer;
+            case "ROLE_COMMITTEE_MEMBER": return R.string.member_role_committee;
+            default: return R.string.member_role_ordinary;
+        }
+    }
 
     public Membership() {
         // for various libraries
@@ -142,6 +154,10 @@ public class Membership implements EntityForDownload, SelectableItem, Serializab
         return roleName;
     }
 
+    public int getRoleNameRes() {
+        return getRoleNameResource(roleName);
+    }
+
     public void setRoleName(String roleName) {
         this.roleName = roleName;
     }
@@ -161,4 +177,5 @@ public class Membership implements EntityForDownload, SelectableItem, Serializab
     public void setJoinedTimeMillis(long joinedTimeMillis) {
         this.joinedTimeMillis = joinedTimeMillis;
     }
+
 }

@@ -239,6 +239,17 @@ class DatabaseServiceImpl(private val helper: DatabaseHelper) : DatabaseService 
         }
     }
 
+    override fun countMembersJoinedSince(groupUid: String, cutOffDate: Long): Long {
+        try {
+            val dao = helper.getDao(Membership::class.javaObjectType)
+            return dao.queryBuilder()
+                    .where().eq("groupUid", groupUid).and().gt("joinedTimeMillis", cutOffDate)
+                    .countOf()
+        } catch (e: SQLException) {
+            e.printStackTrace()
+            return 0
+        }
+    }
 
     override fun <E> loadObjectsByName(clazz: Class<E>, nameQuery: String): List<E> {
         val query = StringBuilder().append("%").append(nameQuery).append("%")

@@ -34,7 +34,7 @@ public class MembershipLog {
     private String roleName;
 
     @DatabaseField
-    @SerializedName("changedDateTimeMillis")
+    @SerializedName("changeDateTimeMillis")
     private long changeDateTimeMillis;
 
     @DatabaseField
