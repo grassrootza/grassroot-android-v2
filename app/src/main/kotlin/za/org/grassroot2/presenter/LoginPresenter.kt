@@ -4,12 +4,12 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import timber.log.Timber
 import za.org.grassroot2.R
-import za.org.grassroot2.model.TokenResponse
+import za.org.grassroot2.model.AuthResponse
+import za.org.grassroot2.model.AuthenticatedUser
 import za.org.grassroot2.model.util.PhoneNumberUtil
 import za.org.grassroot2.presenter.activity.BasePresenter
 import za.org.grassroot2.services.UserDetailsService
 import za.org.grassroot2.services.rest.GrassrootAuthApi
-import za.org.grassroot2.services.rest.RestResponse
 import za.org.grassroot2.view.LoginView
 import za.org.grassroot2.view.activity.DashboardActivity
 import java.net.ConnectException
@@ -36,20 +36,21 @@ class LoginPresenter @Inject constructor(val grassrootAuthApi: GrassrootAuthApi,
     }
 
 
-    private fun storeSuccessfulAuthAndProceed(response: RestResponse<TokenResponse>) {
-        val tokenAndUserDetails = response.data
+    private fun storeSuccessfulAuthAndProceed(response: AuthResponse) {
+
+        val userData = response.user
 
         disposableOnDetach(
-                userDetailsService.storeUserDetails(tokenAndUserDetails.userUid,
-                        tokenAndUserDetails.msisdn,
-                        tokenAndUserDetails.displayName,
-                        tokenAndUserDetails.email,
-                        tokenAndUserDetails.languageCode,
-                        tokenAndUserDetails.systemRole,
-                        tokenAndUserDetails.token)
+                userDetailsService.storeUserDetails(userData.userUid,
+                        userData.msisdn,
+                        userData.displayName,
+                        userData.email,
+                        userData.languageCode,
+                        userData.systemRoleName,
+                        userData.token)
                         .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
-                                { storeDetailSuccess(tokenAndUserDetails) },
+                                { storeDetailSuccess(userData) },
                                 { storeDetailsFailed(it) }
                         )
         )
@@ -62,9 +63,9 @@ class LoginPresenter @Inject constructor(val grassrootAuthApi: GrassrootAuthApi,
         Timber.e(it)
     }
 
-    private fun storeDetailSuccess(tokenAndUserDetails: TokenResponse) {
+    private fun storeDetailSuccess(userData: AuthenticatedUser) {
         view.closeProgressBar()
-        view.loginSuccessContinue(tokenAndUserDetails.token, DashboardActivity::class.java)
+        view.loginSuccessContinue(userData.token, DashboardActivity::class.java)
     }
 
     private fun handleLoginError(it: Throwable) {
