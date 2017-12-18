@@ -68,6 +68,9 @@ public class Vote implements Task {
     @DatabaseField(foreign = true)
     private MediaFile mediaFile;
 
+    @DatabaseField
+    private transient boolean synced = true;
+
     @Override
     public String getUid() {
         return uid;
@@ -147,6 +150,14 @@ public class Vote implements Task {
     public boolean isUserPartOf() {
         // by definition votes are private, hence always true
         return true;
+    }
+
+    public String getVoteResponse() {
+        return voteResponse;
+    }
+
+    public void setVoteResponse(String voteResponse) {
+        this.voteResponse = voteResponse;
     }
 
     @Override

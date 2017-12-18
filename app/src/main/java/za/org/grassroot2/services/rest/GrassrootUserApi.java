@@ -24,6 +24,7 @@ import za.org.grassroot2.model.alert.LiveWireAlert;
 import za.org.grassroot2.model.language.NluResponse;
 import za.org.grassroot2.model.request.MemberRequest;
 import za.org.grassroot2.model.task.Task;
+import za.org.grassroot2.model.task.Vote;
 
 public interface GrassrootUserApi {
 
@@ -126,6 +127,9 @@ public interface GrassrootUserApi {
 
     @POST("/api/task/respond/meeting/{userUid}/{taskUid}")
     Observable<Response<Void>> respondToMeeting(@Path("userUid") String userId, @Path("taskUid") String taskUid, @Query("response") String response);
+
+    @POST("/api/task/respond/vote/{taskUid}")
+    Observable<Response<Vote>> respondToVote(@Path("taskUid") String taskUid, @Query("vote") String vote);
 
     @Multipart
     @POST("/api/task/respond/post/{userUid}/{taskType}/{taskUid}")

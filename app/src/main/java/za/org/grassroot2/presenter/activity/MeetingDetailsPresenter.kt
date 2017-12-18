@@ -26,7 +26,6 @@ constructor(private val databaseService: DatabaseService, private val networkSer
 
 
     fun loadData() {
-
         if (forceSync) {
             view.showProgressBar()
             val meetingUidAndType = mapOf(meetingUid to "MEETING")
@@ -46,8 +45,6 @@ constructor(private val databaseService: DatabaseService, private val networkSer
                     )
             )
         } else displayData()
-
-
     }
 
     private fun displayData() {
@@ -55,7 +52,6 @@ constructor(private val databaseService: DatabaseService, private val networkSer
             this.meeting = meeting
             view.render(this.meeting)
         }, { it.printStackTrace() }))
-
 
         disposableOnDetach(networkService.getMeetingPosts(meetingUid!!).subscribeOn(io()).observeOn(main()).subscribe({ resource ->
             view.renderPosts(resource.data!!)
