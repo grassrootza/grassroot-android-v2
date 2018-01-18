@@ -2,6 +2,7 @@ package za.org.grassroot2.presenter.activity
 
 import timber.log.Timber
 import za.org.grassroot2.database.DatabaseService
+import za.org.grassroot2.model.Post
 import za.org.grassroot2.model.task.Vote
 import za.org.grassroot2.services.NetworkService
 import za.org.grassroot2.view.GrassrootView
@@ -68,7 +69,7 @@ constructor(private val databaseService: DatabaseService, private val networkSer
 
     interface VoteDetailsView : GrassrootView {
         fun render(vote: Vote)
-//        fun renderPosts() todo : decide if we want this
+        fun renderPosts(posts: List<Post>)
     }
 
 }

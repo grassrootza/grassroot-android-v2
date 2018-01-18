@@ -59,7 +59,7 @@ class RegistrationPresenter @Inject constructor(val grassrootAuthApi: GrassrootA
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe({ stringRestResponse ->
                         view.closeProgressBar()
-                        view.switchToOtpInput(if (BuildConfig.DEBUG) stringRestResponse.data else "")
+                        view.switchToOtpInput(if (BuildConfig.DEBUG) stringRestResponse.data!! else "")
                     }) { throwable ->
                         throwable.printStackTrace()
                         view.closeProgressBar()
@@ -99,27 +99,27 @@ class RegistrationPresenter @Inject constructor(val grassrootAuthApi: GrassrootA
 
 
     private fun storeSuccessfulAuthAndProceed(response: RestResponse<TokenResponse>) {
-
         val tokenAndUserDetails = response.data
+        tokenAndUserDetails?.let {
+            val userDetails = userDetailsService.storeUserDetails(tokenAndUserDetails.userUid,
+                    tokenAndUserDetails.msisdn,
+                    tokenAndUserDetails.displayName,
+                    tokenAndUserDetails.email,
+                    tokenAndUserDetails.languageCode,
+                    tokenAndUserDetails.systemRole,
+                    tokenAndUserDetails.token)
 
-        val userDetails = userDetailsService.storeUserDetails(tokenAndUserDetails.userUid,
-                tokenAndUserDetails.msisdn,
-                tokenAndUserDetails.displayName,
-                tokenAndUserDetails.email,
-                tokenAndUserDetails.languageCode,
-                tokenAndUserDetails.systemRole,
-                tokenAndUserDetails.token)
+            val disposable = userDetails
+                    .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
+                    .subscribe({ userProfile ->
+                        this.userProfile = userProfile
+                        this.authToken = authToken
+                        view.closeProgressBar()
+                        view.switchToSuccessScreen(tokenAndUserDetails.displayName)
+                    }, { it.printStackTrace() })
 
-        val disposable = userDetails
-                .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
-                .subscribe({ userProfile ->
-                    this.userProfile = userProfile
-                    this.authToken = authToken
-                    view.closeProgressBar()
-                    view.switchToSuccessScreen(tokenAndUserDetails.displayName)
-                }, { it.printStackTrace() })
-
-        disposableOnDetach(disposable)
+            disposableOnDetach(disposable)
+        }
     }
 
 

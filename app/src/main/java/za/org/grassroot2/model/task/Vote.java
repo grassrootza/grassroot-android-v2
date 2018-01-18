@@ -10,7 +10,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
-import za.org.grassroot2.model.HomeFeedItem;
 import za.org.grassroot2.model.MediaFile;
 import za.org.grassroot2.model.enums.GrassrootEntityType;
 
@@ -184,4 +183,5 @@ public class Vote implements Task {
     public void setAncestorGroupName(String ancestorGroupName) {
         this.ancestorGroupName = ancestorGroupName;
     }
+
 }

@@ -13,6 +13,7 @@ import za.org.grassroot2.database.DatabaseService
 import za.org.grassroot2.model.enums.GrassrootEntityType
 import za.org.grassroot2.model.task.Meeting
 import za.org.grassroot2.model.task.Task
+import za.org.grassroot2.model.task.Vote
 import za.org.grassroot2.presenter.activity.GroupDetailsPresenter
 import za.org.grassroot2.view.FragmentView
 
@@ -44,7 +45,9 @@ constructor() : BaseFragmentPresenter<GroupTasksPresenter.AllFragmentView>() {
 
     private fun taskClick(task: Task) {
         if (task is Meeting) {
-            view.showMeetingDetails(task.getUid())
+            view.showMeetingDetails(task.uid)
+        } else if (task is Vote) {
+            view.showVoteDetails(task.uid)
         }
     }
 
@@ -58,6 +61,7 @@ constructor() : BaseFragmentPresenter<GroupTasksPresenter.AllFragmentView>() {
         fun taskSelected(): Observable<Task>
         fun empty()
         fun showMeetingDetails(uid: String)
+        fun showVoteDetails(uid: String)
     }
 
     @Subscribe

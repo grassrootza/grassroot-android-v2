@@ -58,7 +58,7 @@ class CreateActionActivity : GrassrootActivity(), BackNavigationListener, Create
     }
 
     private fun addHomeActionTypeFragment() {
-        val createActionFragment = MultiOptionPickFragment.getHomeActionPicker()
+        val createActionFragment = MultiOptionPickFragment.homeActionPicker
         disposables.add(createActionFragment.clickAction().subscribe { integer ->
             when (integer) {
                 R.id.createGroup -> {

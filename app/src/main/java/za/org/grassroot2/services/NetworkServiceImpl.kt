@@ -89,7 +89,7 @@ constructor(private val userDetailsService: UserDetailsService,
 
     override fun downloadTaskMinimumInfo(): Observable<List<Task>> {
         return grassrootUserApi
-                .fetchUserTasksMinimumInfo(currentUserUid, databaseService.getAllTasksLastChangedTimestamp())
+                .fetchUserTasksMinimumInfo(databaseService.getAllTasksLastChangedTimestamp())
                 .doOnError({ Timber.e(it) })
     }
 
@@ -152,7 +152,7 @@ constructor(private val userDetailsService: UserDetailsService,
                 for (t in listRestResponse) {
                     uids.put(t.uid, t.type.name)
                 }
-                grassrootUserApi.fetchTasksByUid(currentUserUid, uids)
+                grassrootUserApi.fetchTasksByUid(uids)
             } else {
                 Observable.just(ArrayList<Task>())
             }
@@ -161,7 +161,7 @@ constructor(private val userDetailsService: UserDetailsService,
 
     override fun getTasksByUids(uids: Map<String, String>): Observable<List<Task>> {
         return grassrootUserApi
-                .fetchTasksByUid(currentUserUid, uids)
+                .fetchTasksByUid(uids)
                 .doOnError({ Timber.e(it) })
     }
 

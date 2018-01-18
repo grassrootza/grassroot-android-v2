@@ -24,6 +24,7 @@ import za.org.grassroot2.model.enums.GrassrootEntityType
 import za.org.grassroot2.model.task.Task
 import za.org.grassroot2.presenter.fragment.GroupTasksPresenter
 import za.org.grassroot2.view.activity.MeetingDetailsActivity
+import za.org.grassroot2.view.activity.VoteDetailsActivity
 import za.org.grassroot2.view.adapter.GroupTasksAdapter
 
 class GroupTasksFragment : GrassrootFragment(), GroupTasksPresenter.AllFragmentView {
@@ -62,6 +63,10 @@ class GroupTasksFragment : GrassrootFragment(), GroupTasksPresenter.AllFragmentV
 
     override fun showMeetingDetails(uid: String) {
         MeetingDetailsActivity.start(activity, uid)
+    }
+
+    override fun showVoteDetails(uid: String) {
+        VoteDetailsActivity.start(activity, uid)
     }
 
     override fun render(tasks: List<Task>) {

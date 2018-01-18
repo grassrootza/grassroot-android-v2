@@ -13,6 +13,7 @@ import za.org.grassroot2.model.enums.GrassrootEntityType
 import za.org.grassroot2.model.language.NluResponse
 import za.org.grassroot2.model.task.Meeting
 import za.org.grassroot2.model.task.Task
+import za.org.grassroot2.model.task.Vote
 import za.org.grassroot2.presenter.fragment.BaseFragmentPresenter
 import za.org.grassroot2.services.LocationManager
 import za.org.grassroot2.services.NetworkService
@@ -124,6 +125,7 @@ constructor(private val locationManager: LocationManager, private val dbService:
         fun initiateCreateAction(actionToInitiate: Int)
         fun listItemClick() : Observable<HomeFeedItem>
         fun openMeetingDetails(meeting: Meeting)
+        fun openVoteDetails(vote: Vote)
     }
 
 }

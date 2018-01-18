@@ -2,14 +2,15 @@ package za.org.grassroot2.presenter
 
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
+import retrofit2.Response
 import timber.log.Timber
 import za.org.grassroot2.R
+import za.org.grassroot2.model.AuthorizationResponse
 import za.org.grassroot2.model.TokenResponse
 import za.org.grassroot2.model.util.PhoneNumberUtil
 import za.org.grassroot2.presenter.activity.BasePresenter
 import za.org.grassroot2.services.UserDetailsService
 import za.org.grassroot2.services.rest.GrassrootAuthApi
-import za.org.grassroot2.services.rest.RestResponse
 import za.org.grassroot2.view.LoginView
 import za.org.grassroot2.view.activity.DashboardActivity
 import java.net.ConnectException
@@ -25,20 +26,34 @@ class LoginPresenter @Inject constructor(val grassrootAuthApi: GrassrootAuthApi,
 
 
     fun login(phoneNumber: String, password: String) {
-
+        val username = if (PhoneNumberUtil.isPossibleNumber(phoneNumber))
+            PhoneNumberUtil.convertToMsisdn(phoneNumber) else phoneNumber
         view.showProgressBar()
         disposableOnDetach(grassrootAuthApi
-                .login(phoneNumber, password)
+                .login(username, password)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(this::storeSuccessfulAuthAndProceed, this::handleLoginError)
+                .subscribe(this::routeAuthenticationResponse, this::handleLoginError)
         )
     }
 
+    private fun routeAuthenticationResponse(response: Response<AuthorizationResponse>) {
+        Timber.d("rest response: %s", response.isSuccessful)
+        view.closeProgressBar()
+        if (!response.isSuccessful) {
+            loginFailed()
+        } else {
+            val authResponse = response.body()
+            if ("INVALID_PASSWORD".equals(authResponse?.errorCode)) loginFailed() else
+                authResponse?.let { storeDetails(authResponse.user) }
+        }
+    }
 
-    private fun storeSuccessfulAuthAndProceed(response: RestResponse<TokenResponse>) {
-        val tokenAndUserDetails = response.data
+    private fun loginFailed() {
+        view.showErrorSnackbar(R.string.login_failed) // todo : vary with error
+    }
 
+    private fun storeDetails(tokenAndUserDetails: TokenResponse) {
         disposableOnDetach(
                 userDetailsService.storeUserDetails(tokenAndUserDetails.userUid,
                         tokenAndUserDetails.msisdn,
@@ -68,6 +83,7 @@ class LoginPresenter @Inject constructor(val grassrootAuthApi: GrassrootAuthApi,
     }
 
     private fun handleLoginError(it: Throwable) {
+        Timber.d(it,"error logging in ...");
         view.closeProgressBar()
         if (it is ConnectException)
             view.showNoConnectionMessage()

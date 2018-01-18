@@ -17,6 +17,7 @@ import za.org.grassroot.messaging.dto.MessageDTO
 import za.org.grassroot2.R
 import za.org.grassroot2.view.activity.DashboardActivity
 import za.org.grassroot2.view.activity.MeetingDetailsActivity
+import za.org.grassroot2.view.activity.VoteDetailsActivity
 import java.io.IOException
 import java.util.*
 
@@ -91,6 +92,10 @@ class GcmListenerServiceImpl : GcmListenerService() {
                     val meetingIntent = Intent(this, MeetingDetailsActivity::class.java)
                     meetingIntent.putExtra(MeetingDetailsActivity.EXTRA_MEETING_UID, msg.eventUid)
                     meetingIntent.putExtra(MeetingDetailsActivity.TRIGGERED_BY_NOTIFICATION, true)
+                } else if (msg.eventType == EventType.VOTE) {
+                    val voteIntent = Intent(this, VoteDetailsActivity::class.java)
+                    voteIntent.putExtra(VoteDetailsActivity.EXTRA_VOTE_UID, msg.eventUid)
+                    voteIntent.putExtra(VoteDetailsActivity.TRIGGERED_BY_NOTIFICATION, true)
                 } else {
                     defaultTargetIntent(msg)
                 }
