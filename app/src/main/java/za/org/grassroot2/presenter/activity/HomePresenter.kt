@@ -35,6 +35,8 @@ constructor(private val locationManager: LocationManager, private val dbService:
         disposableOnDetach(view.listItemClick().subscribe({ m ->
             if (m is Meeting) {
                 view.openMeetingDetails(m)
+            } else if (m is Vote) {
+                view.openVoteDetails(m)
             }
         }, { t -> t.printStackTrace() }))
         disposableOnDetach(view.searchInputChanged().observeOn(main()).subscribe({ searchQuery ->

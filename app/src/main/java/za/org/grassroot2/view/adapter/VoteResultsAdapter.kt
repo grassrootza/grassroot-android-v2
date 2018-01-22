@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import kotlinx.android.synthetic.main.item_vote_result.view.*
+import timber.log.Timber
 import za.org.grassroot2.R
 import za.org.grassroot2.model.task.VoteResult
 import javax.inject.Inject
@@ -23,10 +24,12 @@ constructor(private val context: Context, private var data: List<VoteResult>) : 
             VoteResultViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.item_vote_result, parent, false))
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder?, position: Int) {
-        val item = data[position];
-        val resultHolder = holder as VoteResultViewHolder;
-        resultHolder.option.text = item.option;
-        val countString = context.resources.getQuantityString(R.plurals.vote_count, item.voteCount) + " " + context.resources.getString(R.string.vote_percent, item.votePercent);
+        val item = data[position]
+        val resultHolder = holder as VoteResultViewHolder
+        resultHolder.option.text = item.option
+        val countString = context.resources.getQuantityString(R.plurals.vote_count, item.voteCount) + "(" +
+                Math.round(item.votePercent * 100) + ")"
+        Timber.d("count string: %s", countString)
         resultHolder.option.text = countString;
     }
 

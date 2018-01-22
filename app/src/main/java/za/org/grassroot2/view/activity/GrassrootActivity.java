@@ -20,6 +20,7 @@ import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.app.AppCompatDelegate;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -93,6 +94,7 @@ public abstract class GrassrootActivity extends AppCompatActivity implements Gra
     @Override
     protected void onCreate(Bundle icicle) {
         super.onCreate(icicle);
+        AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
         setContentView(R.layout.base_progress_container);
         setContentLayout(getLayoutResourceId());
         ButterKnife.bind(this);
@@ -109,7 +111,7 @@ public abstract class GrassrootActivity extends AppCompatActivity implements Gra
             public void onReceive(Context context, Intent intent) {
                 SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
                 String currentToken = sharedPreferences.getString(GCMPreferences.CURRENT_GCM_TOKEN, null);
-                Timber.i("GCM token check finished. Current token: " + currentToken);
+                Timber.i("GCM token check finished. Current token: %s", currentToken);
                 closeProgressBar();
             }
         };

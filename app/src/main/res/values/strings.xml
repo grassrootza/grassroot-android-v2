@@ -244,7 +244,7 @@
         <item quantity="one">%1$d vote</item>
         <item quantity="other">%1$d votes</item>
     </plurals>
-    <string name="vote_percent">(%1$f\%)</string>
+    <string name="vote_percent">(%1$d\%)</string>
 
     <string name="login_failed">Login failed</string>
     <string name="registration_failed_username_taken">Username is already taken</string>

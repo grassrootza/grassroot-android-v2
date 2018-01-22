@@ -41,8 +41,8 @@ class VoteDetailsActivity : GrassrootActivity(), VoteDetailsPresenter.VoteDetail
         presenter.init(voteUid!!, triggeredByNotification)
 
         //add vote results
-        results.adapter = resultsAdapter
-        results.layoutManager = LinearLayoutManager(this)
+        vote_results.adapter = resultsAdapter
+        vote_results.layoutManager = LinearLayoutManager(this)
 
         // handle posts
         writePostButton.setOnClickListener { writePost() }
@@ -63,7 +63,7 @@ class VoteDetailsActivity : GrassrootActivity(), VoteDetailsPresenter.VoteDetail
         component.inject(this)
     }
 
-    override fun getLayoutResourceId(): Int = R.layout.activity_meeting_details
+    override fun getLayoutResourceId(): Int = R.layout.activity_vote_details
 
     override fun onDestroy() {
         super.onDestroy()

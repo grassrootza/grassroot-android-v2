@@ -24,13 +24,13 @@ android {
         targetSdkVersion 25
         versionCode 1
         versionName "2.0"
+        vectorDrawables.useSupportLibrary = true
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         buildConfigField "int", "databaseVersion", "1"
         buildConfigField "String", "databaseName", "\"grassroot\""
         buildConfigField "String", "API_BASE", "\"https://staging.grassroot.org.za/api/\""
         buildConfigField "boolean", "USE_UNSAFE_HTTP", "true"
-        vectorDrawables.useSupportLibrary = true
         multiDexEnabled true
     }
     buildTypes {
