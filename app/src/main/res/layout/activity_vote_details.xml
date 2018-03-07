@@ -98,9 +98,9 @@
                 android:textSize="@dimen/txt_header_2"
                 android:textAllCaps="false"
                 android:background="@drawable/btn_primary_white"
-                tools:text="Cast your vote"
+                android:text="Cast your vote"
                 android:visibility="visible" />
-
+<!--
             <LinearLayout
                 android:id="@+id/yesNoOptionContainer"
                 android:visibility="gone"
@@ -152,7 +152,7 @@
                     android:textStyle="normal" />
 
             </LinearLayout>
-
+-->
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
