@@ -55,7 +55,7 @@ constructor(private val databaseService: DatabaseService, private val networkSer
 
     fun respondToVote(uid: String, response: String) {
         view.showProgressBar()
-        disposableOnDetach(networkService.respondToMeeting(uid, response).subscribeOn(io()).observeOn(main()).subscribe({ networkResponse ->
+        disposableOnDetach(networkService.respondToVote(uid, response).subscribeOn(io()).observeOn(main()).subscribe({ networkResponse ->
             view.closeProgressBar()
             disposableOnDetach(databaseService.load(Vote::class.javaObjectType, uid).flatMapSingle { vote ->
                 vote.voteResponse = response
