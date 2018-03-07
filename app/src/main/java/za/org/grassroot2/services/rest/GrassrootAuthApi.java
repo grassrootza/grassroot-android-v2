@@ -18,7 +18,7 @@ public interface GrassrootAuthApi {
     // Some authentication related methods
     @GET("/api/auth/token/refresh")
     Observable<Response<RestResponse<String>>> refreshOtp(@Query("oldToken") String oldToken,
-                                                         @Query("durationMillis") Long expiresIn);
+                                                          @Query("durationMillis") Long expiresIn);
 
     @GET("/api/auth/token/validate")
     Single<RestResponse> validateToken(@Query("token") String token);
