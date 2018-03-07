@@ -1,11 +1,14 @@
 package za.org.grassroot2.view.activity
 
 import android.app.Activity
+import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
+import android.support.v7.app.AlertDialog
 import android.support.v7.widget.LinearLayoutManager
 import android.view.Menu
 import android.view.View
+import android.widget.EditText
 import com.tbruyelle.rxpermissions2.RxPermissions
 import kotlinx.android.synthetic.main.activity_vote_details.*
 import timber.log.Timber
@@ -93,30 +96,43 @@ class VoteDetailsActivity : GrassrootActivity(), VoteDetailsPresenter.VoteDetail
     }
 
     private fun renderVoteOptions(vote: Vote) {
-        // todo : adapt this to vote
-//        if (meeting.hasResponded()) {
-//            meetingStatusText.visibility = View.VISIBLE
-//            when (meeting.response) {
-//                Meeting.RSVP_YES -> {
-//                    meetingStatusText.text = getString(R.string.going)
-//                    meetingStatusText.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.ic_attend, 0, 0)
-//                }
-//                Meeting.RSVP_MAYBE -> {
-//                    meetingStatusText.text = getString(R.string.maybe)
-//                    meetingStatusText.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.ic_maybe, 0, 0)
-//                }
-//                else -> {
-//                    meetingStatusText.text = getString(R.string.not_going)
-//                    meetingStatusText.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.ic_not_attending, 0, 0)
-//                }
-//            }
-//            optionContainer.visibility = View.GONE
-//        } else {
-//            optionGoing.setOnClickListener({ _ -> presenter.respondToMeeting(meeting.uid, Meeting.RSVP_YES) })
-//            optionMaybe.setOnClickListener({ _ -> presenter.respondToMeeting(meeting.uid, Meeting.RSVP_MAYBE) })
-//            optionNotGoing.setOnClickListener({ _ -> presenter.respondToMeeting(meeting.uid, Meeting.RSVP_NO) })
-//        }
+        voteSelectOption.setOnClickListener({ displayAlert(vote) });
     }
+
+    fun displayAlert(vote: Vote) {
+        val alert = AlertDialog.Builder(this)
+        var voteChoice: EditText? = null
+        var result: String
+
+        var options: MutableSet<String> = vote.voteOptions.keys
+
+//        val cs: CharSequence = options.elementAt(0)
+//            val itemsArray = arrayOfNulls<CharSequence>(options.size)
+//        val arrayOption = options.toTypedArray();
+//        options.forEachIndexed((index, option) -> itemsArray[index] = option);
+
+//        val items = arrayOf<CharSequence>(options.elementAt(0), options.elementAt(1), options.elementAt(2))
+
+//        val itemOptions: Array<CharSequence> = vote.voteOptions.keys.;
+
+        //var displayOptions: Array<CharSequence> = List<Map.Entry<String, Int>>(vote.voteOptions.map({ options -> options }), bla)
+        // Builder
+        with(alert) {
+            setTitle("Vote Options")
+                    .setItems(vote.voteOptions.keys.toTypedArray(), DialogInterface.OnClickListener { dialog, which ->
+                        // The 'which' argument contains the index position
+                        // of the selected item
+                        Timber.d("User selected option: %s", options.elementAt(which))
+                        presenter.respondToVote(vote.uid, options.elementAt(which))
+                    })
+        }
+        // Dialog
+        val dialog = alert.create()
+        dialog.setView(voteChoice)
+        dialog.show()
+    }
+
+
 
     private fun renderTally(vote: Vote) {
         Timber.d("rendering these options: %s", vote.voteOptions?.toString())
@@ -125,8 +141,13 @@ class VoteDetailsActivity : GrassrootActivity(), VoteDetailsPresenter.VoteDetail
 
 
     private fun convertVoteResults(vote: Vote): List<VoteResult> {
-        val totalVotes = vote.voteOptions.values.sum();
-        return vote.voteOptions.map { entry -> VoteResult(entry.key, entry.value, entry.value.toDouble() / totalVotes) }
+        if (vote.voteOptions == null) {
+            val list = listOf<VoteResult>()
+            return list
+        } else {
+            val totalVotes = vote.voteOptions.values.sum();
+            return vote.voteOptions.map { entry -> VoteResult(entry.key, entry.value, entry.value.toDouble() / totalVotes) }
+        }
     }
 
     override fun renderPosts(posts: List<Post>) {
