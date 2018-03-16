@@ -58,8 +58,8 @@ constructor(private val databaseService: DatabaseService, private val networkSer
         disposableOnDetach(networkService.respondToVote(uid, response).subscribeOn(io()).observeOn(main()).subscribe({ networkResponse ->
             view.closeProgressBar()
             disposableOnDetach(databaseService.load(Vote::class.javaObjectType, uid).flatMapSingle { vote ->
-                vote.voteResponse = response
-                return@flatMapSingle databaseService.store(Vote::class.javaObjectType, vote)
+                Timber.d("got back altered vote: %s", networkResponse.toString())
+                return@flatMapSingle databaseService.store(Vote::class.javaObjectType, networkResponse)
             }.observeOn(main()).subscribe({ t -> view.render(t) }))
         }, {throwable ->
             // todo : handle the various types of errors
