@@ -37,6 +37,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="15dp"
                     android:layout_marginEnd="8dp"
+                    android:layout_marginRight="8dp"
                     android:layout_marginLeft="30dp"
                     android:layout_marginStart="40dp"
                     android:fontFamily="sans-serif"
@@ -71,6 +72,7 @@
 
             </android.support.constraint.ConstraintLayout>
 
+
             <TextView
                 android:id="@+id/voteStatusText"
                 android:layout_width="wrap_content"
@@ -97,68 +99,32 @@
                 android:textColor="@color/colorPrimary"
                 android:textSize="@dimen/txt_header_2"
                 android:textAllCaps="false"
-                android:background="@drawable/btn_primary_white"
+                android:background="@color/transparent"
                 android:text="Cast your vote"
                 android:visibility="visible" />
-<!--
-            <LinearLayout
-                android:id="@+id/yesNoOptionContainer"
-                android:visibility="gone"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:orientation="horizontal">
 
-                <TextView
-                    android:id="@+id/optionVoteYes"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal"
-                    android:layout_weight="1"
-                    android:drawablePadding="@dimen/padding_std_medium"
-                    android:drawableTop="@drawable/ic_attend_compat"
-                    android:gravity="center_horizontal"
-                    android:text="@android:string/yes"
-                    android:textColor="@color/colorPrimary"
-                    android:textSize="@dimen/default_font_size"
-                    android:textStyle="normal" />
-
-                <TextView
-                    android:id="@+id/optionAbstain"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal"
-                    android:layout_weight="1"
-                    android:drawablePadding="@dimen/padding_std_medium"
-                    android:drawableTop="@drawable/ic_attend_compat"
-                    android:gravity="center_horizontal"
-                    android:text="@string/abstain"
-                    android:textColor="@color/colorPrimary"
-                    android:textSize="@dimen/default_font_size"
-                    android:textStyle="normal" />
-
-                <TextView
-                    android:id="@+id/optionVoteNo"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal"
-                    android:layout_weight="1"
-                    android:drawablePadding="@dimen/padding_std_medium"
-                    android:drawableTop="@drawable/ic_attend_compat"
-                    android:gravity="center_horizontal"
-                    android:text="@android:string/no"
-                    android:textColor="@color/colorPrimary"
-                    android:textSize="@dimen/default_font_size"
-                    android:textStyle="normal" />
-
-            </LinearLayout>
--->
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:layout_marginBottom="@dimen/margin_std_large"
                 android:layout_marginTop="@dimen/margin_std_large"
                 android:background="#f1f1f1" />
+
+            <TextView
+                android:id="@+id/voteDate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/margin_std_large"
+                android:layout_marginLeft="28dp"
+                android:layout_marginRight="28dp"
+                android:drawableLeft="@drawable/ic_cal_grey_compat"
+                android:drawablePadding="@dimen/padding_std_large"
+                android:drawableStart="@drawable/ic_cal_grey_compat"
+                android:gravity="center_vertical"
+                android:textColor="@color/default_font_color"
+                android:textSize="@dimen/default_font_size"
+                android:textStyle="normal" />
+
 
             <TextView
                 android:layout_width="match_parent"
