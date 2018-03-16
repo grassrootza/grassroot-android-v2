@@ -11,16 +11,20 @@ import android.view.View
 import android.widget.EditText
 import com.tbruyelle.rxpermissions2.RxPermissions
 import kotlinx.android.synthetic.main.activity_vote_details.*
+import kotlinx.android.synthetic.main.fragment_meeting_date.view.*
 import timber.log.Timber
 import za.org.grassroot2.R
 import za.org.grassroot2.dagger.activity.ActivityComponent
+import za.org.grassroot2.database.DatabaseService
 import za.org.grassroot2.model.Post
 import za.org.grassroot2.model.task.Vote
 import za.org.grassroot2.model.task.VoteResult
 import za.org.grassroot2.presenter.activity.VoteDetailsPresenter
+import za.org.grassroot2.util.DateFormatter
 import za.org.grassroot2.view.adapter.PostAdapter
 import za.org.grassroot2.view.adapter.VoteResultsAdapter
 import javax.inject.Inject
+
 
 class VoteDetailsActivity : GrassrootActivity(), VoteDetailsPresenter.VoteDetailsView {
 
@@ -91,31 +95,31 @@ class VoteDetailsActivity : GrassrootActivity(), VoteDetailsPresenter.VoteDetail
 
     override fun render(vote: Vote) {
         voteSubject.text = vote.name
+        voteDate.text = DateFormatter.formatMeetingDate(vote.date())
         renderVoteOptions(vote)
         renderTally(vote)
     }
 
     private fun renderVoteOptions(vote: Vote) {
-        voteSelectOption.setOnClickListener({ displayAlert(vote) });
+        if (vote.hasResponded()) {
+            voteStatusText.visibility = View.VISIBLE
+            voteStatusText.text = vote.voteResponse
+            voteSelectOption.visibility = View.GONE
+            resultsAdapter.setData(convertVoteResults(vote));
+            //refreshVoteResults()
+        } else {
+            voteSelectOption.setOnClickListener({ displayAlert(vote) })
+        }
     }
 
     fun displayAlert(vote: Vote) {
         val alert = AlertDialog.Builder(this)
         var voteChoice: EditText? = null
-        var result: String
 
         var options: MutableSet<String> = vote.voteOptions.keys
+        options.remove("TOTAL_VOTE_MEMBERS")
+        Timber.d("The contents of options are now: %s",  options)
 
-//        val cs: CharSequence = options.elementAt(0)
-//            val itemsArray = arrayOfNulls<CharSequence>(options.size)
-//        val arrayOption = options.toTypedArray();
-//        options.forEachIndexed((index, option) -> itemsArray[index] = option);
-
-//        val items = arrayOf<CharSequence>(options.elementAt(0), options.elementAt(1), options.elementAt(2))
-
-//        val itemOptions: Array<CharSequence> = vote.voteOptions.keys.;
-
-        //var displayOptions: Array<CharSequence> = List<Map.Entry<String, Int>>(vote.voteOptions.map({ options -> options }), bla)
         // Builder
         with(alert) {
             setTitle("Vote Options")
@@ -123,6 +127,9 @@ class VoteDetailsActivity : GrassrootActivity(), VoteDetailsPresenter.VoteDetail
                         // The 'which' argument contains the index position
                         // of the selected item
                         Timber.d("User selected option: %s", options.elementAt(which))
+                        Timber.d("The contents of voteOptions are: %s", vote.voteOptions)
+                        Timber.d("The contents of voteResponse are: %s", vote.voteResponse)
+                        Timber.d("The contents of vote.date() are: %s", vote.date())
                         presenter.respondToVote(vote.uid, options.elementAt(which))
                     })
         }
@@ -132,10 +139,10 @@ class VoteDetailsActivity : GrassrootActivity(), VoteDetailsPresenter.VoteDetail
         dialog.show()
     }
 
-
-
     private fun renderTally(vote: Vote) {
         Timber.d("rendering these options: %s", vote.voteOptions?.toString())
+        val results = convertVoteResults(vote)
+        Timber.d("converted results: %s", results);
         resultsAdapter.setData(convertVoteResults(vote));
     }
 
@@ -145,6 +152,7 @@ class VoteDetailsActivity : GrassrootActivity(), VoteDetailsPresenter.VoteDetail
             val list = listOf<VoteResult>()
             return list
         } else {
+            vote.voteOptions.remove("TOTAL_VOTE_MEMBERS")
             val totalVotes = vote.voteOptions.values.sum();
             return vote.voteOptions.map { entry -> VoteResult(entry.key, entry.value, entry.value.toDouble() / totalVotes) }
         }
@@ -158,7 +166,6 @@ class VoteDetailsActivity : GrassrootActivity(), VoteDetailsPresenter.VoteDetail
     }
 
     companion object {
-
         val EXTRA_VOTE_UID = "vote_uid"
         val TRIGGERED_BY_NOTIFICATION = "triggered_by_notification"
 
