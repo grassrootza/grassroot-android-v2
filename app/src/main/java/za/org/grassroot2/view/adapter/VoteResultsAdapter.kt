@@ -25,16 +25,19 @@ constructor(private val context: Context, private var data: List<VoteResult>) : 
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder?, position: Int) {
         val item = data[position]
+        Timber.d("The contents of item.option are: %s", item.option)
         val resultHolder = holder as VoteResultViewHolder
         resultHolder.option.text = item.option
-        val countString = context.resources.getQuantityString(R.plurals.vote_count, item.voteCount) + "(" +
-                Math.round(item.votePercent * 100) + ")"
+        val countString = context.resources.getQuantityString(R.plurals.vote_count, item.voteCount, item.voteCount) + " (" +
+            Math.round(item.votePercent * 100) + "%)"
         Timber.d("count string: %s", countString)
-        resultHolder.option.text = countString;
+        Timber.d("The contents of item.voteCount are: %s", item.voteCount)
+        resultHolder.count.text = countString
     }
 
     fun setData(results: List<VoteResult>) {
         data = results
+        Timber.d("results now inside adapter = %s", data)
         notifyDataSetChanged()
     }
 
