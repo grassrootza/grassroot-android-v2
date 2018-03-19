@@ -11,6 +11,7 @@ import za.org.grassroot2.model.network.EntityForDownload
 import za.org.grassroot2.model.network.EntityForUpload
 import za.org.grassroot2.model.request.MemberRequest
 import za.org.grassroot2.model.task.Task
+import za.org.grassroot2.model.task.Vote
 
 /**
  * Created by luke on 2017/08/16.
@@ -56,6 +57,8 @@ interface NetworkService {
     fun getAllAround(longitude: Double, latitude: Double, radius: Int): Flowable<Resource<List<AroundEntity>>>
 
     fun respondToMeeting(meetingUid: String, response: String): Observable<Response<Void>>
+
+    fun respondToVote(voteUid: String, response: String): Observable<Vote>
 
     fun uploadMeetingPost(meetingUid: String, description: String, mediaFile: MediaFile?): Observable<Response<Void>>
 

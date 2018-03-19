@@ -40,7 +40,7 @@ class ForgottenPasswordPresenter @Inject constructor(val grassrootAuthApi: Grass
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe({ stringRestResponse ->
                         view.closeProgressBar()
-                        view.switchToOtpInput(if (BuildConfig.DEBUG) stringRestResponse.data else "")
+                        view.switchToOtpInput(if (BuildConfig.DEBUG) stringRestResponse.data!! else "")
                     }) { throwable ->
                         throwable.printStackTrace()
                         view.closeProgressBar()

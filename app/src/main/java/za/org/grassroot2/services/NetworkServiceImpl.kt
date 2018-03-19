@@ -15,14 +15,15 @@ import za.org.grassroot2.database.DatabaseService
 import za.org.grassroot2.model.*
 import za.org.grassroot2.model.alert.LiveWireAlert
 import za.org.grassroot2.model.enums.GrassrootEntityType
-import za.org.grassroot2.model.exception.EntityAlreadyUploadingException
-import za.org.grassroot2.model.exception.ServerErrorException
+import za.org.grassroot2.model.exception.*
 import za.org.grassroot2.model.language.NluResponse
 import za.org.grassroot2.model.network.EntityForDownload
 import za.org.grassroot2.model.network.EntityForUpload
 import za.org.grassroot2.model.request.MemberRequest
 import za.org.grassroot2.model.task.Meeting
 import za.org.grassroot2.model.task.Task
+import za.org.grassroot2.model.task.Vote
+import za.org.grassroot2.services.rest.ApiError
 import za.org.grassroot2.services.rest.GrassrootUserApi
 import za.org.grassroot2.services.rest.RestResponse
 import java.io.File
@@ -88,7 +89,7 @@ constructor(private val userDetailsService: UserDetailsService,
 
     override fun downloadTaskMinimumInfo(): Observable<List<Task>> {
         return grassrootUserApi
-                .fetchUserTasksMinimumInfo(currentUserUid, databaseService.getAllTasksLastChangedTimestamp())
+                .fetchUserTasksMinimumInfo(databaseService.getAllTasksLastChangedTimestamp())
                 .doOnError({ Timber.e(it) })
     }
 
@@ -151,7 +152,7 @@ constructor(private val userDetailsService: UserDetailsService,
                 for (t in listRestResponse) {
                     uids.put(t.uid, t.type.name)
                 }
-                grassrootUserApi.fetchTasksByUid(currentUserUid, uids)
+                grassrootUserApi.fetchTasksByUid(uids)
             } else {
                 Observable.just(ArrayList<Task>())
             }
@@ -160,7 +161,7 @@ constructor(private val userDetailsService: UserDetailsService,
 
     override fun getTasksByUids(uids: Map<String, String>): Observable<List<Task>> {
         return grassrootUserApi
-                .fetchTasksByUid(currentUserUid, uids)
+                .fetchTasksByUid(uids)
                 .doOnError({ Timber.e(it) })
     }
 
@@ -238,7 +239,7 @@ constructor(private val userDetailsService: UserDetailsService,
     private fun successHandler(alert: EntityForUpload): Function<Response<RestResponse<String>>, ObservableSource<out UploadResult>> {
         return Function { restResponseResponse ->
             if (restResponseResponse.isSuccessful()) {
-                Observable.just(UploadResult(alert.type, alert.uid, restResponseResponse.body()!!.getData()))
+                Observable.just(UploadResult(alert.type, alert.uid, restResponseResponse.body()!!.data))
             } else {
                 Observable.just(UploadResult(alert.type, ServerErrorException(restResponseResponse.code())))
             }
@@ -283,6 +284,20 @@ constructor(private val userDetailsService: UserDetailsService,
     }
 
     override fun respondToMeeting(meetingUid: String, response: String): Observable<Response<Void>> = grassrootUserApi.respondToMeeting(currentUserUid, meetingUid, response)
+
+    override fun respondToVote(voteUid: String, response: String): Observable<Vote> {
+        return grassrootUserApi.respondToVote(voteUid, response).flatMap { serverResponse ->
+            if (serverResponse.isSuccessful) {
+                Observable.just(serverResponse.body())
+            } else {
+                when (ApiError(serverResponse.errorBody()).errorCode) {
+                    "USER_NOT_PART_OF_VOTE" -> throw UserNotPartOfTaskException()
+                    "VOTE_ALREADY_CLOSED" -> throw VoteClosedException()
+                    else -> throw GenericApiException(serverResponse.errorBody())
+                }
+            }
+        }
+    }
 
     override fun uploadMeetingPost(meetingUid: String, description: String, mediaFile: MediaFile?): Observable<Response<Void>> {
         return grassrootUserApi.uploadPost(

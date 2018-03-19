@@ -24,17 +24,18 @@ import za.org.grassroot2.model.alert.LiveWireAlert;
 import za.org.grassroot2.model.language.NluResponse;
 import za.org.grassroot2.model.request.MemberRequest;
 import za.org.grassroot2.model.task.Task;
+import za.org.grassroot2.model.task.Vote;
 
 public interface GrassrootUserApi {
 
     // Fetching groups
-    @POST("/api/group/fetch/updated/{userUid}")
-    Observable<List<Group>> fetchUserGroups(@Path("userUid") String userUid,
-                                                          @Body Map<String, Long> existingUids);
+    @POST("/api/group/fetch/updated")
+    Observable<List<Group>> fetchUserGroups(@Query("userUid") String userUid,
+                                            @Body Map<String, Long> existingUids);
 
-    @GET("/api/group/fetch/info/{userUid}")
-    Observable<List<Group>> fetchGroupsInfo(@Path("userUid") String userUid,
-                                                          @Query("groupUids") List<String> groupUids);
+    @GET("/api/group/fetch/info")
+    Observable<List<Group>> fetchGroupsInfo(@Query("userUid") String userUid,
+                                            @Query("groupUids") List<String> groupUids);
 
     @GET("/api/group/fetch/full")
     Observable<Group> fetchFullGroupInfo(@Query("groupUid") String groupUid);
@@ -64,11 +65,11 @@ public interface GrassrootUserApi {
     @POST("/api/task/fetch/updated/group/{userUid}/{groupUid}")
     Observable<List<Task>> fetchGroupTasksMinimumInfo(@Path("userUid") String userUid, @Path("groupUid") String groupUid, @Body Map<String, Long> timestamps);
 
-    @POST("/api/task/fetch/specified/{userUid}")
-    Observable<List<Task>> fetchTasksByUid(@Path("userUid") String userUid, @Body Map<String, String> taskUids);
+    @POST("/api/task/fetch/specified")
+    Observable<List<Task>> fetchTasksByUid(@Body Map<String, String> taskUids);
 
-    @POST("/api/task/fetch/updated/{userUid}")
-    Observable<List<Task>> fetchUserTasksMinimumInfo(@Path("userUid") String userUid, @Body Map<String, Long> timestamps);
+    @POST("/api/task/fetch/updated")
+    Observable<List<Task>> fetchUserTasksMinimumInfo(@Body Map<String, Long> timestamps);
 
     @POST("/api/group/modify/members/add/{userUid}/{groupUid}")
     Observable<Response<Void>> addMembersToGroup(@Path("userUid") String userId, @Path("groupUid") String groupId, @Body List<MemberRequest> request);
@@ -126,6 +127,9 @@ public interface GrassrootUserApi {
 
     @POST("/api/task/respond/meeting/{userUid}/{taskUid}")
     Observable<Response<Void>> respondToMeeting(@Path("userUid") String userId, @Path("taskUid") String taskUid, @Query("response") String response);
+
+    @POST("/api/task/respond/vote/{taskUid}")
+    Observable<Response<Vote>> respondToVote(@Path("taskUid") String taskUid, @Query("vote") String vote);
 
     @Multipart
     @POST("/api/task/respond/post/{userUid}/{taskType}/{taskUid}")

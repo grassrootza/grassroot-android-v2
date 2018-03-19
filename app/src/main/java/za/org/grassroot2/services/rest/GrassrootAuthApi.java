@@ -6,6 +6,7 @@ import retrofit2.Response;
 import retrofit2.http.GET;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
+import za.org.grassroot2.model.AuthorizationResponse;
 import za.org.grassroot2.model.TokenResponse;
 
 /**
@@ -17,14 +18,14 @@ public interface GrassrootAuthApi {
     // Some authentication related methods
     @GET("/api/auth/token/refresh")
     Observable<Response<RestResponse<String>>> refreshOtp(@Query("oldToken") String oldToken,
-                                                         @Query("durationMillis") Long expiresIn);
+                                                          @Query("durationMillis") Long expiresIn);
 
     @GET("/api/auth/token/validate")
     Single<RestResponse> validateToken(@Query("token") String token);
 
     @GET("/api/auth/login-password")
-    Observable<RestResponse<TokenResponse>> login(@Query("phoneNumber") String msisdn,
-                                                  @Query("password") String password);
+    Observable<Response<AuthorizationResponse>> login(@Query("username") String msisdn,
+                                                      @Query("password") String password);
 
 
     @GET("/api/auth/register")

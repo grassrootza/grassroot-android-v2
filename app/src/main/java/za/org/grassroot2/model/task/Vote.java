@@ -10,7 +10,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
-import za.org.grassroot2.model.HomeFeedItem;
 import za.org.grassroot2.model.MediaFile;
 import za.org.grassroot2.model.enums.GrassrootEntityType;
 
@@ -67,6 +66,9 @@ public class Vote implements Task {
 
     @DatabaseField(foreign = true)
     private MediaFile mediaFile;
+
+    @DatabaseField
+    private transient boolean synced = true;
 
     @Override
     public String getUid() {
@@ -149,6 +151,14 @@ public class Vote implements Task {
         return true;
     }
 
+    public String getVoteResponse() {
+        return voteResponse;
+    }
+
+    public void setVoteResponse(String voteResponse) {
+        this.voteResponse = voteResponse;
+    }
+
     @Override
     public boolean isPublic() {
         return false; // see above
@@ -173,4 +183,5 @@ public class Vote implements Task {
     public void setAncestorGroupName(String ancestorGroupName) {
         this.ancestorGroupName = ancestorGroupName;
     }
+
 }

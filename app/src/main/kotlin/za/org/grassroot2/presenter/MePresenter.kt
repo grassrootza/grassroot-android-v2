@@ -187,29 +187,30 @@ class MePresenter(private val dbService: DatabaseService,
 
     private fun storeSuccessfulAuthAndProceed(response: RestResponse<TokenResponse>) {
         val tokenAndUserDetails = response.data
-
-        disposableOnDetach(
-                userDetailsService.storeUserDetails(tokenAndUserDetails.userUid,
-                        tokenAndUserDetails.msisdn,
-                        tokenAndUserDetails.displayName,
-                        tokenAndUserDetails.email,
-                        tokenAndUserDetails.languageCode,
-                        tokenAndUserDetails.systemRole,
-                        tokenAndUserDetails.token)
-                        .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(
-                                { upd ->
-                                    this.userProfile = upd
-                                    view.displayUserData(this.userProfile)
-                                    view.closeProgressBar()
-                                },
-                                {
-                                    view.closeProgressBar()
-                                    view.showErrorDialog(R.string.me_error_updating_data)
-                                    Timber.e(it)
-                                }
-                        )
-        )
+        tokenAndUserDetails?.let {
+            disposableOnDetach(
+                    userDetailsService.storeUserDetails(tokenAndUserDetails.userUid,
+                            tokenAndUserDetails.msisdn,
+                            tokenAndUserDetails.displayName,
+                            tokenAndUserDetails.email,
+                            tokenAndUserDetails.languageCode,
+                            tokenAndUserDetails.systemRole,
+                            tokenAndUserDetails.token)
+                            .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(
+                                    { upd ->
+                                        this.userProfile = upd
+                                        view.displayUserData(this.userProfile)
+                                        view.closeProgressBar()
+                                    },
+                                    {
+                                        view.closeProgressBar()
+                                        view.showErrorDialog(R.string.me_error_updating_data)
+                                        Timber.e(it)
+                                    }
+                            )
+            )
+        }
     }
 
     fun isCurrentLanguage(languageCode: String): Boolean {

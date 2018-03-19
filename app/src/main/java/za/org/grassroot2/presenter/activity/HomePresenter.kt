@@ -1,27 +1,40 @@
 package za.org.grassroot2.presenter.activity
 
+import android.content.OperationApplicationException
+import android.content.SyncResult
 import android.location.Location
+import android.os.RemoteException
 import io.reactivex.Observable
+import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
+import org.json.JSONException
+import timber.log.Timber
 import za.org.grassroot2.R
 import za.org.grassroot2.database.DatabaseService
 import za.org.grassroot2.model.AroundEntity
 import za.org.grassroot2.model.HomeFeedItem
+import za.org.grassroot2.model.UserProfile
 import za.org.grassroot2.model.alert.LiveWireAlert
 import za.org.grassroot2.model.enums.GrassrootEntityType
+import za.org.grassroot2.model.exception.ServerUnreachableException
 import za.org.grassroot2.model.language.NluResponse
 import za.org.grassroot2.model.task.Meeting
 import za.org.grassroot2.model.task.Task
+import za.org.grassroot2.model.task.Vote
 import za.org.grassroot2.presenter.fragment.BaseFragmentPresenter
 import za.org.grassroot2.services.LocationManager
 import za.org.grassroot2.services.NetworkService
 import za.org.grassroot2.services.account.SyncAdapter
 import za.org.grassroot2.view.FragmentView
+import java.util.HashMap
 import javax.inject.Inject
+import za.org.grassroot2.services.UserDetailsService
+import java.io.IOException
 
 class HomePresenter @Inject
-constructor(private val locationManager: LocationManager, private val dbService: DatabaseService, private val networkService: NetworkService) : BaseFragmentPresenter<HomePresenter.HomeView>() {
+constructor(private val locationManager: LocationManager, private val dbService: DatabaseService, private val networkService: NetworkService,
+            private val userDetailsService: UserDetailsService ) : BaseFragmentPresenter<HomePresenter.HomeView>() {
 
     private val testLat = -26.1925350
     private val testLong = 28.0373235
@@ -34,6 +47,8 @@ constructor(private val locationManager: LocationManager, private val dbService:
         disposableOnDetach(view.listItemClick().subscribe({ m ->
             if (m is Meeting) {
                 view.openMeetingDetails(m)
+            } else if (m is Vote) {
+                view.openVoteDetails(m)
             }
         }, { t -> t.printStackTrace() }))
         disposableOnDetach(view.searchInputChanged().observeOn(main()).subscribe({ searchQuery ->
@@ -100,6 +115,27 @@ constructor(private val locationManager: LocationManager, private val dbService:
         }, { t -> t.printStackTrace() }))
     }
 
+    fun reloadHomeItems() {
+        refreshTasks()
+    }
+
+    private fun refreshTasks() {
+        Timber.d("Positive ping at location beta")
+        networkService.downloadTaskMinimumInfo().subscribeOn(io()).flatMap { tasksMin ->
+            dbService.storeTasks(tasksMin)
+            val uids = HashMap<String, String>()
+            for (t in tasksMin) {
+                uids.put(t.uid, t.type.name)
+                Timber.d("The contents of variable t are: %s", t)
+            }
+            networkService.getTasksByUids(uids)
+        }.observeOn(main()).subscribe({ tasksFull ->
+            dbService.storeTasks(tasksFull)
+            prepareAndRenderItems()
+        })
+        Timber.d("location beta exit ping.")
+    }
+
     private fun prepareAndRenderItems() {
         homeItems.clear()
         homeItems.addAll(currentTasks)
@@ -124,6 +160,7 @@ constructor(private val locationManager: LocationManager, private val dbService:
         fun initiateCreateAction(actionToInitiate: Int)
         fun listItemClick() : Observable<HomeFeedItem>
         fun openMeetingDetails(meeting: Meeting)
+        fun openVoteDetails(vote: Vote)
     }
 
 }

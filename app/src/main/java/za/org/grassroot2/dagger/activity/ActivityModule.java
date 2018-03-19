@@ -33,6 +33,7 @@ import za.org.grassroot2.util.ImageUtil;
 import za.org.grassroot2.util.MediaRecorderWrapper;
 import za.org.grassroot2.view.adapter.HomeAdapter;
 import za.org.grassroot2.view.adapter.PostAdapter;
+import za.org.grassroot2.view.adapter.VoteResultsAdapter;
 
 /**
  * Created by luke on 2017/08/08.
@@ -129,6 +130,12 @@ public class ActivityModule {
     @PerActivity
     PostAdapter providePostAdapter(@ActivityContext AppCompatActivity c) {
         return new PostAdapter(c, new ArrayList<>());
+    }
+
+    @Provides
+    @PerActivity
+    VoteResultsAdapter provideVoteResultsAdapter(@ActivityContext AppCompatActivity c) {
+        return new VoteResultsAdapter(c, new ArrayList<>());
     }
 
     @Provides

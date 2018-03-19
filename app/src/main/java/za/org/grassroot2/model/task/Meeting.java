@@ -45,6 +45,7 @@ public class Meeting implements Task, Syncable, AroundItem {
     @SerializedName("createdByUserName")
     @DatabaseField
     private String callerName;
+
     @DatabaseField
     @SerializedName("location")
     private String locationDescription;

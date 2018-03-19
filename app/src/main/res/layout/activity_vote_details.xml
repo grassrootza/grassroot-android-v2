@@ -29,14 +29,15 @@
                     android:layout_width="match_parent"
                     android:layout_height="150dp"
                     android:scaleType="centerCrop"
-                    app:srcCompat="@drawable/group_5" />
+                    android:src="@drawable/group_5" />
 
                 <TextView
-                    android:id="@+id/meetingTitle"
+                    android:id="@+id/voteSubject"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="15dp"
                     android:layout_marginEnd="8dp"
+                    android:layout_marginRight="8dp"
                     android:layout_marginLeft="30dp"
                     android:layout_marginStart="40dp"
                     android:fontFamily="sans-serif"
@@ -48,7 +49,7 @@
                     app:layout_constraintEnd_toStartOf="@+id/addPhoto"
                     app:layout_constraintLeft_toLeftOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    tools:text="Soccer Stars Dream Team" />
+                    tools:text="Kliptown Freedom Charter" />
 
                 <ImageView
                     android:id="@+id/addPhoto"
@@ -71,8 +72,9 @@
 
             </android.support.constraint.ConstraintLayout>
 
+
             <TextView
-                android:id="@+id/meetingStatusText"
+                android:id="@+id/voteStatusText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
@@ -82,59 +84,24 @@
                 android:gravity="center_horizontal"
                 android:textColor="@color/colorPrimary"
                 android:textSize="@dimen/default_font_size"
-                android:textStyle="normal"
+                android:textStyle="bold"
+                tools:text="You voted yes"
                 android:visibility="gone" />
 
-            <LinearLayout
-                android:id="@+id/optionContainer"
-                android:layout_width="match_parent"
+            <Button
+                android:id="@+id/voteSelectOption"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
                 android:layout_marginTop="16dp"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:id="@+id/optionGoing"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal"
-                    android:layout_weight="1"
-                    android:drawablePadding="@dimen/padding_std_medium"
-                    android:drawableTop="@drawable/ic_attend_compat"
-                    android:gravity="center_horizontal"
-                    android:text="@string/going"
-                    android:textColor="@color/colorPrimary"
-                    android:textSize="@dimen/default_font_size"
-                    android:textStyle="normal" />
-
-                <TextView
-                    android:id="@+id/optionMaybe"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal"
-                    android:layout_weight="1"
-                    android:drawablePadding="@dimen/padding_std_medium"
-                    android:drawableTop="@drawable/ic_attend_compat"
-                    android:gravity="center_horizontal"
-                    android:text="@string/maybe"
-                    android:textColor="@color/colorPrimary"
-                    android:textSize="@dimen/default_font_size"
-                    android:textStyle="normal" />
-
-                <TextView
-                    android:id="@+id/optionNotGoing"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal"
-                    android:layout_weight="1"
-                    android:drawablePadding="@dimen/padding_std_medium"
-                    android:drawableTop="@drawable/ic_attend_compat"
-                    android:gravity="center_horizontal"
-                    android:text="@string/not_going"
-                    android:textColor="@color/colorPrimary"
-                    android:textSize="@dimen/default_font_size"
-                    android:textStyle="normal" />
-
-            </LinearLayout>
+                android:drawablePadding="@dimen/padding_std_medium"
+                android:gravity="center_horizontal"
+                android:textColor="@color/colorPrimary"
+                android:textSize="@dimen/txt_header_2"
+                android:textAllCaps="false"
+                android:background="@color/transparent"
+                android:text="Cast your vote"
+                android:visibility="visible" />
 
             <View
                 android:layout_width="match_parent"
@@ -144,7 +111,7 @@
                 android:background="#f1f1f1" />
 
             <TextView
-                android:id="@+id/meetingDate"
+                android:id="@+id/voteDate"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/margin_std_large"
@@ -158,19 +125,27 @@
                 android:textSize="@dimen/default_font_size"
                 android:textStyle="normal" />
 
+
             <TextView
-                android:id="@+id/meetingLocation"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="28dp"
-                android:layout_marginRight="28dp"
-                android:drawableLeft="@drawable/ic_location_defaut"
-                android:drawablePadding="@dimen/padding_std_large"
-                android:drawableStart="@drawable/ic_location_defaut"
-                android:gravity="center_vertical"
-                android:textColor="@color/default_font_color"
-                android:textSize="@dimen/default_font_size"
-                android:textStyle="normal" />
+                android:textColor="@color/text_dark_grey"
+                android:paddingLeft="@dimen/padding_std_medium"
+                android:paddingRight="@dimen/padding_std_medium"
+                android:textSize="@dimen/txt_header_4"
+                android:text="@string/vote_results_header"/>
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/vote_results"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/white"
+                android:layout_marginTop="@dimen/margin_std_medium"
+                android:layout_marginBottom="@dimen/margin_std_medium"
+                tools:listitem="@layout/item_vote_result"
+                app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+            </android.support.v7.widget.RecyclerView>
 
             <View
                 android:layout_width="match_parent"
@@ -178,17 +153,6 @@
                 android:layout_marginBottom="@dimen/margin_std_large"
                 android:layout_marginTop="@dimen/margin_std_large"
                 android:background="#f1f1f1" />
-
-            <TextView
-                android:id="@+id/meetingDescription"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="28dp"
-                android:layout_marginRight="28dp"
-                android:gravity="center_vertical"
-                android:textColor="@color/default_font_color"
-                android:textSize="@dimen/default_font_size"
-                android:textStyle="normal" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -227,7 +191,6 @@
 
     </android.support.design.widget.AppBarLayout>
 
-
     <android.support.v7.widget.RecyclerView
         android:id="@+id/posts"
         android:layout_width="match_parent"
@@ -236,16 +199,5 @@
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
     </android.support.v7.widget.RecyclerView>
-
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/fab"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="end|bottom"
-        android:layout_margin="16dp"
-        app:backgroundTint="@color/colorPrimary"
-        app:layout_anchorGravity="bottom|end"
-        app:layout_behavior="za.org.grassroot2.view.ScrollingFabBehavior"
-        app:srcCompat="@drawable/ic_add_white_24dp" />
 
 </android.support.design.widget.CoordinatorLayout>
