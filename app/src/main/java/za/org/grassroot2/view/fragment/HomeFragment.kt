@@ -74,7 +74,7 @@ class HomeFragment : GrassrootFragment(), HomePresenter.HomeView {
         (activity as AppCompatActivity).setSupportActionBar(toolbar)
         fab.setOnClickListener({ _ -> CreateActionActivity.startFromHome(activity) })
         toolbar.setTitle(R.string.title_home)
-        refreshLayout.setOnRefreshListener { refreshView() }
+        refreshLayout.setOnRefreshListener { reloadView() }
         presenter.onViewCreated()
         refreshView()
     }
@@ -86,6 +86,12 @@ class HomeFragment : GrassrootFragment(), HomePresenter.HomeView {
 
     private fun refreshView() {
         presenter.loadHomeItems()
+        requestLocation()
+    }
+
+    private fun reloadView() {
+        presenter.reloadHomeItems()
+        Timber.d("Positive ping at location alpha")
         requestLocation()
     }
 
