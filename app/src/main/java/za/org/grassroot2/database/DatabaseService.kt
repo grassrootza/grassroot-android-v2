@@ -9,6 +9,7 @@ import za.org.grassroot2.model.network.Syncable
 import za.org.grassroot2.model.request.MemberRequest
 import za.org.grassroot2.model.task.Meeting
 import za.org.grassroot2.model.task.Task
+import za.org.grassroot2.model.task.Todo
 
 /**
  * Created by luke on 2017/08/10.
@@ -74,5 +75,7 @@ interface DatabaseService {
     fun <E> deleteAll(cls: Class<E>)
     fun loadPublicMeetings(): Maybe<List<AroundEntity>>
     fun storePosts(meeting: Meeting, posts: List<Post>)
+    //fun storeTodoPosts(todo: Todo, posts: List<Posts>)
     fun getMeetings(taskUid: String): Maybe<List<Post>>
+    //fun getTodos(taskUid: String): Maybe<List<Posts>>
 }

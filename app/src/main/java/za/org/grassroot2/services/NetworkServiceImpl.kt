@@ -23,6 +23,7 @@ import za.org.grassroot2.model.request.MemberRequest
 import za.org.grassroot2.model.task.Meeting
 import za.org.grassroot2.model.task.Task
 import za.org.grassroot2.model.task.Vote
+import za.org.grassroot2.model.task.Todo
 import za.org.grassroot2.services.rest.ApiError
 import za.org.grassroot2.services.rest.GrassrootUserApi
 import za.org.grassroot2.services.rest.RestResponse
@@ -159,6 +160,25 @@ constructor(private val userDetailsService: UserDetailsService,
         }
     }
 
+/*
+    override fun fetchTodoResponses(todoId: String): Observable<MutableList<out Task>>? {
+        return grassrootUserApi.fetchTodoResponses(todoId).flatMap { listRestResponse ->
+            if (true) {
+                val uids = HashMap<String, String>()
+                for (t in listRestResponse) {
+                    uids.put(t.uid, t.type.name)
+                }
+                grassrootUserApi.fetchTasksByUid(uids)
+            } else {
+                Observable.just(ArrayList<Todo>())
+            }
+        }
+    }
+
+    override fun downloadTodoResponses(taskUid: String): Observable<Todo> {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+*/
     override fun getTasksByUids(uids: Map<String, String>): Observable<List<Task>> {
         return grassrootUserApi
                 .fetchTasksByUid(uids)
@@ -299,6 +319,21 @@ constructor(private val userDetailsService: UserDetailsService,
         }
     }
 
+    override fun respondToTodo(todoUid: String, response: String): Observable<Todo> {
+        return grassrootUserApi.respondToTodo(todoUid, response).flatMap { serverResponse ->
+            if (serverResponse.isSuccessful) {
+                Observable.just(serverResponse.body())
+            } else {
+                when (ApiError(serverResponse.errorBody()).errorCode) {
+                    "USER_NOT_PART_OF_TODO" -> throw UserNotPartOfTaskException()
+                    "TODO_ALREADY_CLOSED" -> throw TodoClosedException()
+                    else -> throw GenericApiException(serverResponse.errorBody())
+                }
+            }
+        }
+    }
+
+
     override fun uploadMeetingPost(meetingUid: String, description: String, mediaFile: MediaFile?): Observable<Response<Void>> {
         return grassrootUserApi.uploadPost(
                 currentUserUid,
@@ -353,7 +388,28 @@ constructor(private val userDetailsService: UserDetailsService,
         }, BackpressureStrategy.BUFFER)
 
     }
+/*
+    override fun getTodoPosts(taskUid: String): Flowable<Resource<List<Posts>>> {
+        return Flowable.create({ e ->
+            object : NetworkResource<List<Posts>, List<Posts>>(e) {
 
+                override fun local(): Maybe<List<Posts>> = databaseService.getTodos(taskUid)
+
+                override fun remote(): Observable<List<Posts>> =
+                        grassrootUserApi.getPostsForTask(currentUserUid, "TODO", taskUid)
+
+                override fun saveResult(data: List<Posts>) {
+                    val todo = databaseService.loadObjectByUid(Todo::class.javaObjectType, taskUid)
+                    databaseService.storeTodoPosts(todo!!, data)
+                }
+
+                override fun shouldFetch(): Boolean = true
+
+            }
+        }, BackpressureStrategy.BUFFER)
+
+    }
+*/
 
     private fun getFileFromPath(mediaFile: MediaFile, paramName: String): MultipartBody.Part? {
         return try {

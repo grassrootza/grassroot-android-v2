@@ -15,9 +15,7 @@ import za.org.grassroot.messaging.dto.EventNotificationDTO
 import za.org.grassroot.messaging.dto.EventType
 import za.org.grassroot.messaging.dto.MessageDTO
 import za.org.grassroot2.R
-import za.org.grassroot2.view.activity.DashboardActivity
-import za.org.grassroot2.view.activity.MeetingDetailsActivity
-import za.org.grassroot2.view.activity.VoteDetailsActivity
+import za.org.grassroot2.view.activity.*
 import java.io.IOException
 import java.util.*
 
@@ -96,6 +94,10 @@ class GcmListenerServiceImpl : GcmListenerService() {
                     val voteIntent = Intent(this, VoteDetailsActivity::class.java)
                     voteIntent.putExtra(VoteDetailsActivity.EXTRA_VOTE_UID, msg.eventUid)
                     voteIntent.putExtra(VoteDetailsActivity.TRIGGERED_BY_NOTIFICATION, true)
+                } else if (msg.eventType == EventType.TO_DO) {
+                    val todoIntent = Intent(this, TodoDetailsActivity::class.java)
+                    todoIntent.putExtra(TodoDetailsActivity.EXTRA_TODO_UID, msg.eventUid)
+                    todoIntent.putExtra(TodoDetailsActivity.TRIGGERED_BY_NOTIFICATION, true)
                 } else {
                     defaultTargetIntent(msg)
                 }
