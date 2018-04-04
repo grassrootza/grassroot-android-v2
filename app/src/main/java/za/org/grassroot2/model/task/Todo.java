@@ -170,10 +170,9 @@ public class Todo implements Task, Syncable {
         return synced;
     }
 
-    //@Override
+    // @Override
     public String getTodoType() { return todoType; }
 
-    //@Override
     public void setTodoType() {
         this.todoType = todoType;
     }
