@@ -119,7 +119,8 @@
                     android:layout_marginStart="8dp"
                     android:ems="10"
                     android:inputType="textPersonName"
-                    android:text="Name"
+                    android:text=""
+                    android:textColor="@color/colorPrimary"
                     app:layout_constraintStart_toStartOf="parent"
                     tools:layout_editor_absoluteY="32dp" />
 

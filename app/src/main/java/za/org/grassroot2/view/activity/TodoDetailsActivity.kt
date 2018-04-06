@@ -7,10 +7,13 @@ import android.support.v7.widget.LinearLayoutManager
 import android.text.TextUtils
 import android.view.Menu
 import android.view.View
+import android.widget.EditText
+import android.widget.TextView
 import com.tbruyelle.rxpermissions2.RxPermissions
 import kotlinx.android.synthetic.main.activity_todo_details.*
 import timber.log.Timber
 import za.org.grassroot2.R
+import za.org.grassroot2.R.id.todoTextBox
 import za.org.grassroot2.dagger.activity.ActivityComponent
 import za.org.grassroot2.model.Post
 import za.org.grassroot2.model.task.Todo
@@ -32,6 +35,7 @@ class TodoDetailsActivity : GrassrootActivity(), TodoDetailsPresenter.TodoDetail
     @Inject lateinit var postAdapter: PostAdapter
     @Inject lateinit var resultsAdapter: TodoResponseAdapter
 
+    //var mEdit: EditText? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -39,7 +43,7 @@ class TodoDetailsActivity : GrassrootActivity(), TodoDetailsPresenter.TodoDetail
         todoUid = intent.getStringExtra(EXTRA_TODO_UID)
         initView()
         presenter.attach(this)
-        presenter.init(todoUid!!, triggeredByNotification)
+        presenter.init(todoUid!!, true) // todo: switch this back to triggerByNotification when done debugging
         todoStatusText.setOnClickListener {
             val attendenceDialog = OptionPickDialog.attendenceChoiceDialog()
             disposables.add(attendenceDialog.clickAction().subscribe( { clickId ->
@@ -48,7 +52,7 @@ class TodoDetailsActivity : GrassrootActivity(), TodoDetailsPresenter.TodoDetail
                     // Do some stuff
                     R.id.optionA -> presenter.respondToTodo(todoUid!!, Todo.TODO_YES)
                     R.id.optionB -> presenter.respondToTodo(todoUid!!, Todo.TODO_NO)
-                    R.id.todoTextBoxButton -> presenter.respondToTodo(todoUid!!, Todo.TODO_INFO) // has the value been assigned?
+                    R.id.todoTextBoxButton -> presenter.respondToTodo(todoUid!!, Todo.TODO_INFO)
                 }
             }, {t -> t.printStackTrace() }))
             attendenceDialog.show(supportFragmentManager, "")
@@ -66,6 +70,7 @@ class TodoDetailsActivity : GrassrootActivity(), TodoDetailsPresenter.TodoDetail
 
     override fun onResume() {
         super.onResume()
+        Timber.d("inside activity, telling presenter to load data");
         presenter.loadData()
     }
 
@@ -103,14 +108,16 @@ class TodoDetailsActivity : GrassrootActivity(), TodoDetailsPresenter.TodoDetail
         Timber.d("The contents of todo.description are: %s", todo.description)
         Timber.d("The contents of todo.searchableContent are: %s", todo.searchableContent() )
         Timber.d("The contents of todo.todoType are: %s", todo.todoType)
-        Timber.d("The contents of todo.hasResponded are: %s", todo.hasResponded())
+        Timber.d("The contents of todo.toString() are: %s", todo.toString())
         // todoLocation.text = todo.locationDescription
         if (todo.todoType == "VOLUNTEERS_NEEDED") {
             todoTextBox.visibility = View.GONE
+            todoTextBoxButton.visibility = View.GONE
             theBigQuestion.text = "Will You Volunteer?"
         }
         else if (todo.todoType == "VALIDATION_REQUIRED") {
             todoTextBox.visibility = View.GONE
+            todoTextBoxButton.visibility = View.GONE
             theBigQuestion.text = "Is The Action Complete?"
         }
         else if (todo.todoType == "INFORMATION_REQUIRED") {
@@ -123,6 +130,8 @@ class TodoDetailsActivity : GrassrootActivity(), TodoDetailsPresenter.TodoDetail
             optionA.visibility = View.GONE
             optionB.visibility = View.GONE
             todoTextBox.visibility = View.GONE
+            todoTextBoxButton.visibility = View.GONE
+
         }
         else if (todo.todoType == null) {
             theBigQuestion.text = "This Task Is No More"
@@ -130,7 +139,7 @@ class TodoDetailsActivity : GrassrootActivity(), TodoDetailsPresenter.TodoDetail
             optionB.visibility = View.GONE
             todoTextBox.visibility = View.GONE
             todoTextBoxButton.visibility = View.GONE
-        }
+        } 
         todo.deadlineMillis?.let { todoDate.text = DateFormatter.formatMeetingDate(it) }
         renderDescription(todo)
         renderResponseSection(todo)
@@ -144,16 +153,17 @@ class TodoDetailsActivity : GrassrootActivity(), TodoDetailsPresenter.TodoDetail
                 todoStatusText.visibility = View.VISIBLE
                 when (todo.response) {
                     Todo.TODO_YES -> {
-                        todoStatusText.text = getString(R.string.going)
+                        todoStatusText.text = "YES"
                         todoStatusText.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.ic_attend, 0, 0)
                     }
                     Todo.TODO_NO -> {
-                        todoStatusText.text = getString(R.string.not_going)
+                        todoStatusText.text = "NO"
                         todoStatusText.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.ic_not_attending, 0, 0)
                     }
                 }
             }
             else if (todo.todoType == "INFORMATION_REQUIRED") {
+                todoStatusText.text = "You Have Responded"
                 todoTextBox.visibility = View.GONE
 
             }
@@ -164,8 +174,9 @@ class TodoDetailsActivity : GrassrootActivity(), TodoDetailsPresenter.TodoDetail
                 optionB.setOnClickListener({ _ -> presenter.respondToTodo(todo.uid, Todo.TODO_NO) })
             }
             else if (todo.todoType == "INFORMATION_REQUIRED") {
-                Todo.TODO_INFO = todoTextBox.text.toString()
-                todoTextBoxButton.setOnClickListener({ _ -> presenter.respondToTodo(todo.uid, Todo.TODO_INFO)})
+                var mEdit = findViewById(R.id.todoTextBox) as EditText
+                Todo.TODO_INFO = mEdit.text.toString()
+                todoTextBoxButton.setOnClickListener({ _ -> presenter.respondToTodo(todo.uid, Todo.TODO_INFO+mEdit.text.toString())})
             }
         }
     }

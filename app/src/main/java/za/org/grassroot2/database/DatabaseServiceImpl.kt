@@ -462,10 +462,14 @@ class DatabaseServiceImpl(private val helper: DatabaseHelper) : DatabaseService 
     override fun storeTasks(data: List<Task>) {
         for (t in data) {
             val type = t.type
+            Timber.d("type of task is: %s", type)
             when (type) {
                 GrassrootEntityType.VOTE -> storeObject(Vote::class.javaObjectType, t as Vote)
                 GrassrootEntityType.MEETING -> storeObject(Meeting::class.javaObjectType, t as Meeting)
-                GrassrootEntityType.TODO -> storeObject(Todo::class.javaObjectType, t as Todo)
+                GrassrootEntityType.TODO -> {
+                    Timber.d("it's a todo, storing, looks like: %s", (t as Todo).toString())
+                    storeObject(Todo::class.javaObjectType, t as Todo)
+                }
                 else -> {
                 }
             }

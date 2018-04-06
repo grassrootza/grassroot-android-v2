@@ -30,7 +30,9 @@ constructor(private val databaseService: DatabaseService, private val networkSer
 
 
     fun loadData() {
+        Timber.d("inside load data in presenter");
         if (forceSync) {
+            Timber.d("showing prog par, calling network");
             view.showProgressBar()
             val todoUidAndType = mapOf(todoUid to "TODO")
             disposableOnDetach(networkService.getTasksByUids(todoUidAndType)
@@ -39,6 +41,7 @@ constructor(private val databaseService: DatabaseService, private val networkSer
                             { tasksFull ->
                                 view.closeProgressBar()
                                 databaseService.storeTasks(tasksFull)
+                                Timber.d("stored task in DB, about to load data");
                                 displayData() // data synced with server, display it
                             },
                             { throwable ->
@@ -52,7 +55,9 @@ constructor(private val databaseService: DatabaseService, private val networkSer
     }
 
     private fun displayData() {
+        Timber.d("getting todo from db ...");
         disposableOnDetach(databaseService.load(Todo::class.java, todoUid).subscribeOn(io()).observeOn(main()).subscribe({ todo ->
+            Timber.d("todo from database: %s", todo)
             this.todo = todo
             view.render(this.todo)
         }, { it.printStackTrace() }))

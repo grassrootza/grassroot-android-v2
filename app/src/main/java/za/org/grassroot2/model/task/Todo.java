@@ -62,6 +62,35 @@ public class Todo implements Task, Syncable {
     @DatabaseField(canBeNull = false)
     private String summary;
 
+    @Override
+    public String toString() {
+        return "Todo{" +
+                "uid='" + uid + '\'' +
+                ", parentUid='" + parentUid + '\'' +
+                ", response='" + response + '\'' +
+                ", todoResponses=" + todoResponses +
+                ", locationDescription='" + locationDescription + '\'' +
+                ", todoType='" + todoType + '\'' +
+                ", synced=" + synced +
+                ", parentEntityType=" + parentEntityType +
+                ", summary='" + summary + '\'' +
+                ", description='" + description + '\'' +
+                ", recorderName='" + recorderName + '\'' +
+                ", needsConfirmation=" + needsConfirmation +
+                ", isConfirmed=" + isConfirmed +
+                ", createdDate=" + createdDate +
+                ", deadlineMillis=" + deadlineMillis +
+                ", lastChangeTimeServerMillis=" + lastChangeTimeServerMillis +
+                ", ancestorGroupName='" + ancestorGroupName + '\'' +
+                ", assignedMembers=" + assignedMembers +
+                ", confirmingMembers=" + confirmingMembers +
+                ", hasConfirmed=" + hasConfirmed +
+                ", mediaFile=" + mediaFile +
+                ", userPartOf=" + userPartOf +
+                ", publicTodo=" + publicTodo +
+                '}';
+    }
+
     @DatabaseField
     private String description;
 
