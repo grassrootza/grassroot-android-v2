@@ -104,7 +104,7 @@ class TodoDetailsActivity : GrassrootActivity(), TodoDetailsPresenter.TodoDetail
     override fun render(todo: Todo) {
         todoTitle.text = todo.name
         Timber.d("The contents of todo are: %s", todo.toString())
-        Timber.d("The contents of todo.response are: %s", todo.response)
+        Timber.d("The contents of todo.todoResponse are: %s", todo.todoResponse)
         Timber.d("The contents of todo.description are: %s", todo.description)
         Timber.d("The contents of todo.searchableContent are: %s", todo.searchableContent() )
         Timber.d("The contents of todo.todoType are: %s", todo.todoType)
@@ -139,11 +139,11 @@ class TodoDetailsActivity : GrassrootActivity(), TodoDetailsPresenter.TodoDetail
             optionB.visibility = View.GONE
             todoTextBox.visibility = View.GONE
             todoTextBoxButton.visibility = View.GONE
-        } 
+        }
         todo.deadlineMillis?.let { todoDate.text = DateFormatter.formatMeetingDate(it) }
         renderDescription(todo)
         renderResponseSection(todo)
-        //renderResponses(todo)
+        renderResponses(todo)
     }
 
     private fun renderResponseSection(todo: Todo) {

@@ -54,6 +54,7 @@ constructor(private val databaseService: DatabaseService, private val networkSer
         } else displayData()
     }
 
+
     private fun displayData() {
         Timber.d("getting todo from db ...");
         disposableOnDetach(databaseService.load(Todo::class.java, todoUid).subscribeOn(io()).observeOn(main()).subscribe({ todo ->

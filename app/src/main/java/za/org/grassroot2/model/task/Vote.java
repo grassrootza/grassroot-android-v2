@@ -94,7 +94,6 @@ public class Vote implements Task {
     public GrassrootEntityType getParentEntityType() {
         return parentEntityType;
     }
-
     @Override
     public String getName() {
         return subject;

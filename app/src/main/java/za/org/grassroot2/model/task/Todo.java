@@ -1,5 +1,7 @@
 package za.org.grassroot2.model.task;
 
+import android.text.TextUtils;
+
 import com.google.gson.annotations.SerializedName;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
@@ -102,6 +104,9 @@ public class Todo implements Task, Syncable {
     private boolean needsConfirmation;
 
     @DatabaseField
+    private String todoResponse;
+
+    @DatabaseField
     private boolean isConfirmed;
 
     @DatabaseField
@@ -163,6 +168,15 @@ public class Todo implements Task, Syncable {
     public Date getCreatedDateTime() {
         return new Date(createdDate);
     }
+
+    public String getTodoResponse() {
+        return todoResponse;
+    }
+
+    public void setTodoResponse(String todoResponse) {
+        this.todoResponse = todoResponse;
+    }
+
 
     @Override
     public long getDeadlineMillis() {
