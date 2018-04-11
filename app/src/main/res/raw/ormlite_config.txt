@@ -577,9 +577,10 @@ fieldName=ancestorGroupName
 fieldName=assignedMembers
 # --field-end--
 # --field-start--
-fieldName=todoResponse
+fieldName=userResponse
 # --field-end--
 # --field-start--
+fieldName=
 fieldName=confirmingMembers
 # --field-end--
 # --field-start--

@@ -71,5 +71,9 @@ interface NetworkService {
 
     fun getMeetingPosts(taskUid: String): Flowable<Resource<List<Post>>>
 
+    fun fetchTodoResponses(taskUid: String): Observable<Map<String, String>>
+
+    fun downloadTodoResponses(taskUid: String): Observable<ByteArray>?
+
     //fun getTodoPosts(taskUid: String): Flowable<Resource<List<Posts>>>
 }

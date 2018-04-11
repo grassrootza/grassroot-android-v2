@@ -160,25 +160,20 @@ constructor(private val userDetailsService: UserDetailsService,
         }
     }
 
-/*
-    override fun fetchTodoResponses(todoId: String): Observable<MutableList<out Task>>? {
-        return grassrootUserApi.fetchTodoResponses(todoId).flatMap { listRestResponse ->
-            if (true) {
-                val uids = HashMap<String, String>()
-                for (t in listRestResponse) {
-                    uids.put(t.uid, t.type.name)
-                }
-                grassrootUserApi.fetchTasksByUid(uids)
-            } else {
-                Observable.just(ArrayList<Todo>())
-            }
-        }
+
+    override fun fetchTodoResponses(taskUid: String): Observable<Map<String, String>> {
+        var responses = grassrootUserApi
+                .fetchTodoResponses(taskUid)
+                .doOnError({ Timber.e(it)})
+        return responses
     }
 
-    override fun downloadTodoResponses(taskUid: String): Observable<Todo> {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    override fun downloadTodoResponses(taskUid: String): Observable<ByteArray>? {
+        return grassrootUserApi
+                .downloadTodoResponses(taskUid)
+                .doOnError({ Timber.e(it)})
     }
-*/
+
     override fun getTasksByUids(uids: Map<String, String>): Observable<List<Task>> {
         return grassrootUserApi
                 .fetchTasksByUid(uids)

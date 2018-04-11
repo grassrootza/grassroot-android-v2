@@ -25,22 +25,21 @@ constructor(private val context: Context, private var data: List<TodoResponse>) 
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder?, position: Int) {
         val item = data[position]
-        Timber.d("The contents of item.userName are: %s", item.userName)
         val resultHolder = holder as TodoResultViewHolder
         resultHolder.userName.text = item.userName
-        resultHolder.responseText.text = item.todoResponse
+        resultHolder.userResponse.text = item.userResponse
     }
 
     fun setData(responses: List<TodoResponse>) {
         data = responses
-        Timber.d("responses now inside adapter = %s", data)
+        // Timber.d("responses now inside adapter = %s", data)
         notifyDataSetChanged()
     }
 
     internal class TodoResultViewHolder internal constructor(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
         var userName: TextView = itemView.userDisplayName
-        var responseText: TextView = itemView.responseSnippet
+        var userResponse: TextView = itemView.responseSnippet
 
     }
 }

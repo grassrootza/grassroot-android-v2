@@ -61,6 +61,7 @@ class TodoDetailsActivity : GrassrootActivity(), TodoDetailsPresenter.TodoDetail
         writePostButton.setOnClickListener { writePost() }
         posts.adapter = postAdapter
         todo_results.adapter = resultsAdapter
+        todo_results.layoutManager = LinearLayoutManager(this)
         posts.layoutManager = LinearLayoutManager(this)
     }
 
@@ -103,13 +104,8 @@ class TodoDetailsActivity : GrassrootActivity(), TodoDetailsPresenter.TodoDetail
 
     override fun render(todo: Todo) {
         todoTitle.text = todo.name
-        Timber.d("The contents of todo are: %s", todo.toString())
-        Timber.d("The contents of todo.todoResponse are: %s", todo.todoResponse)
-        Timber.d("The contents of todo.description are: %s", todo.description)
-        Timber.d("The contents of todo.searchableContent are: %s", todo.searchableContent() )
-        Timber.d("The contents of todo.todoType are: %s", todo.todoType)
-        Timber.d("The contents of todo.toString() are: %s", todo.toString())
-        // todoLocation.text = todo.locationDescription
+        // Timber.d("The contents of todo are: %s", todo.toString())
+        // Timber.d("The contents of todo.toString() are: %s", todo.toString())
         if (todo.todoType == "VOLUNTEERS_NEEDED") {
             todoTextBox.visibility = View.GONE
             todoTextBoxButton.visibility = View.GONE
@@ -143,7 +139,6 @@ class TodoDetailsActivity : GrassrootActivity(), TodoDetailsPresenter.TodoDetail
         todo.deadlineMillis?.let { todoDate.text = DateFormatter.formatMeetingDate(it) }
         renderDescription(todo)
         renderResponseSection(todo)
-        renderResponses(todo)
     }
 
     private fun renderResponseSection(todo: Todo) {
@@ -190,25 +185,25 @@ class TodoDetailsActivity : GrassrootActivity(), TodoDetailsPresenter.TodoDetail
         }
     }
 
-    private fun renderResponses(todo: Todo) {
-        resultsAdapter.setData(convertTodoResponses(todo));
+    override fun renderResponses(todoResponses: Map<String, String>) {
+        resultsAdapter.setData(convertTodoResponses(todoResponses));
     }
 
-    private fun convertTodoResponses(todo: Todo): List<TodoResponse> {
-        if (todo.todoResponses == null) {
+    private fun convertTodoResponses(todoResponse: Map<String, String>): List<TodoResponse> {
+        if (todoResponse == null) {
             val list = listOf<TodoResponse>()
             return list
         } else {
-            return todo.todoResponses.map { entry -> TodoResponse(entry.key, entry.value.toString()) }
+            return todoResponse.map { entry -> TodoResponse(entry.key, entry.value) }
         }
     }
 
-    override fun renderPosts(posts: List<Post>) {
+    /*override fun renderPosts(posts: List<Post>) {
         if (posts.isNotEmpty()) {
             listTitle.visibility = View.VISIBLE
             postAdapter.setData(posts)
         }
-    }
+    }*/
 
     companion object {
 
@@ -222,3 +217,4 @@ class TodoDetailsActivity : GrassrootActivity(), TodoDetailsPresenter.TodoDetail
         }
     }
 }
+

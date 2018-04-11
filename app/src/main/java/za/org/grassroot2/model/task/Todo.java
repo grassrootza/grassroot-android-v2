@@ -9,6 +9,7 @@ import com.j256.ormlite.table.DatabaseTable;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import za.org.grassroot2.model.HomeFeedItem;
 import za.org.grassroot2.model.MediaFile;
@@ -45,7 +46,7 @@ public class Todo implements Task, Syncable {
 
     @SerializedName("todoResponses")
     @DatabaseField
-    private HashMap<String, Integer> todoResponses;
+    private Map<String, String> todoResponses;
 
     @DatabaseField
     @SerializedName("location")
@@ -104,7 +105,7 @@ public class Todo implements Task, Syncable {
     private boolean needsConfirmation;
 
     @DatabaseField
-    private String todoResponse;
+    private String userResponse;
 
     @DatabaseField
     private boolean isConfirmed;
@@ -169,12 +170,12 @@ public class Todo implements Task, Syncable {
         return new Date(createdDate);
     }
 
-    public String getTodoResponse() {
-        return todoResponse;
+    public String getUserResponse() {
+        return userResponse;
     }
 
-    public void setTodoResponse(String todoResponse) {
-        this.todoResponse = todoResponse;
+    public void setUserResponse(String todoResponse) {
+        this.userResponse = userResponse;
     }
 
 
@@ -264,7 +265,7 @@ public class Todo implements Task, Syncable {
         this.ancestorGroupName = ancestorGroupName;
     }
 
-    public HashMap<String, Integer> getTodoResponses() {
+    public Map<String, String> getTodoResponses() {
         return todoResponses;
     }
 
