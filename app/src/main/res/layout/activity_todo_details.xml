@@ -104,7 +104,9 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
-                    tools:text="Will you volunteer" />
+                    tools:text="Will you volunteer"
+                    android:visibility="gone"/>
+
             </android.support.constraint.ConstraintLayout>
 
             <android.support.constraint.ConstraintLayout
@@ -113,7 +115,7 @@
 
                 <EditText
                     android:id="@+id/todoTextBox"
-                    android:layout_width="250dp"
+                    android:layout_width="220dp"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="8dp"
                     android:layout_marginStart="8dp"
@@ -122,7 +124,9 @@
                     android:text=""
                     android:textColor="@color/colorPrimary"
                     app:layout_constraintStart_toStartOf="parent"
-                    tools:layout_editor_absoluteY="32dp" />
+                    tools:layout_editor_absoluteY="32dp"
+                    android:visibility="gone"
+                    />
 
                 <Button
                     android:id="@+id/todoTextBoxButton"
@@ -135,7 +139,9 @@
                     android:text="SEND"
                     app:layout_constraintBaseline_toBaselineOf="@+id/todoTextBox"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toEndOf="@+id/todoTextBox" />
+                    app:layout_constraintStart_toEndOf="@+id/todoTextBox"
+                    android:visibility="gone"/>
+
             </android.support.constraint.ConstraintLayout>
 
 
@@ -158,7 +164,9 @@
                     android:text="YES"
                     android:textColor="@color/colorPrimary"
                     android:textSize="@dimen/default_font_size"
-                    android:textStyle="normal" />
+                    android:textStyle="normal"
+                    android:visibility="gone"
+                    />
 
                 <TextView
                     android:id="@+id/optionB"
@@ -172,7 +180,8 @@
                     android:text="NO"
                     android:textColor="@color/colorPrimary"
                     android:textSize="@dimen/default_font_size"
-                    android:textStyle="normal" />
+                    android:textStyle="normal"
+                    android:visibility="gone"/>
 
 
             </LinearLayout>

@@ -107,34 +107,23 @@ class TodoDetailsActivity : GrassrootActivity(), TodoDetailsPresenter.TodoDetail
         // Timber.d("The contents of todo are: %s", todo.toString())
         // Timber.d("The contents of todo.toString() are: %s", todo.toString())
         if (todo.todoType == "VOLUNTEERS_NEEDED") {
-            todoTextBox.visibility = View.GONE
-            todoTextBoxButton.visibility = View.GONE
+            theBigQuestion.visibility = View.VISIBLE
+            optionA.visibility = View.VISIBLE
+            optionB.visibility = View.VISIBLE
             theBigQuestion.text = "Will You Volunteer?"
         }
         else if (todo.todoType == "VALIDATION_REQUIRED") {
-            todoTextBox.visibility = View.GONE
-            todoTextBoxButton.visibility = View.GONE
+            theBigQuestion.visibility = View.VISIBLE
+            optionA.visibility = View.VISIBLE
+            optionB.visibility = View.VISIBLE
             theBigQuestion.text = "Is The Action Complete?"
         }
         else if (todo.todoType == "INFORMATION_REQUIRED") {
-            theBigQuestion.visibility = View.GONE
-            optionA.visibility = View.GONE
-            optionB.visibility = View.GONE
+            todoTextBoxButton.visibility = View.VISIBLE
+            todoTextBox.visibility = View.VISIBLE
         }
         else if (todo.todoType == "ACTION_REQUIRED") {
-            theBigQuestion.visibility = View.GONE
-            optionA.visibility = View.GONE
-            optionB.visibility = View.GONE
-            todoTextBox.visibility = View.GONE
-            todoTextBoxButton.visibility = View.GONE
-
-        }
-        else if (todo.todoType == null) {
-            theBigQuestion.text = "This Task Is No More"
-            optionA.visibility = View.GONE
-            optionB.visibility = View.GONE
-            todoTextBox.visibility = View.GONE
-            todoTextBoxButton.visibility = View.GONE
+            // This option is informative so display no additional info
         }
         todo.deadlineMillis?.let { todoDate.text = DateFormatter.formatMeetingDate(it) }
         renderDescription(todo)
