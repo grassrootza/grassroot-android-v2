@@ -135,17 +135,22 @@
                 android:textSize="@dimen/txt_header_4"
                 android:text="@string/vote_results_header"/>
 
-            <android.support.v7.widget.RecyclerView
-                android:id="@+id/vote_results"
+            <ScrollView
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@color/white"
-                android:layout_marginTop="@dimen/margin_std_medium"
-                android:layout_marginBottom="@dimen/margin_std_medium"
-                tools:listitem="@layout/item_vote_result"
-                app:layout_behavior="@string/appbar_scrolling_view_behavior">
+                android:layout_height="wrap_content">
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/vote_results"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/white"
+                    android:layout_marginTop="@dimen/margin_std_medium"
+                    android:layout_marginBottom="@dimen/margin_std_medium"
+                    tools:listitem="@layout/item_vote_result"
+                    app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-            </android.support.v7.widget.RecyclerView>
+                </android.support.v7.widget.RecyclerView>
+            </ScrollView>
+
 
             <View
                 android:layout_width="match_parent"
