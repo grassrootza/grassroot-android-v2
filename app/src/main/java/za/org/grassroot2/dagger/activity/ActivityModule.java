@@ -6,12 +6,14 @@ import android.support.v7.app.AppCompatActivity;
 import com.tbruyelle.rxpermissions2.RxPermissions;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import dagger.Module;
 import dagger.Provides;
 import za.org.grassroot2.dagger.ActivityContext;
 import za.org.grassroot2.dagger.ApplicationContext;
 import za.org.grassroot2.database.DatabaseService;
+import za.org.grassroot2.model.task.TodoResponse;
 import za.org.grassroot2.presenter.ForgottenPasswordPresenter;
 import za.org.grassroot2.presenter.RegistrationPresenter;
 import za.org.grassroot2.presenter.activity.GroupDetailsPresenter;
@@ -34,6 +36,7 @@ import za.org.grassroot2.util.MediaRecorderWrapper;
 import za.org.grassroot2.view.adapter.HomeAdapter;
 import za.org.grassroot2.view.adapter.PostAdapter;
 import za.org.grassroot2.view.adapter.VoteResultsAdapter;
+import za.org.grassroot2.view.adapter.TodoResponseAdapter;
 
 /**
  * Created by luke on 2017/08/08.
@@ -136,6 +139,12 @@ public class ActivityModule {
     @PerActivity
     VoteResultsAdapter provideVoteResultsAdapter(@ActivityContext AppCompatActivity c) {
         return new VoteResultsAdapter(c, new ArrayList<>());
+    }
+
+    @Provides
+    @PerActivity
+    TodoResponseAdapter provideTodoResponseAdapter(@ActivityContext AppCompatActivity c) {
+        return new TodoResponseAdapter(c, new ArrayList<>());
     }
 
     @Provides

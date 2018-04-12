@@ -62,6 +62,7 @@ constructor() : BaseFragmentPresenter<GroupTasksPresenter.AllFragmentView>() {
         fun empty()
         fun showMeetingDetails(uid: String)
         fun showVoteDetails(uid: String)
+        fun showTodoDetails(uid: String)
     }
 
     @Subscribe

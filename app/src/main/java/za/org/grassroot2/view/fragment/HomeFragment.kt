@@ -17,12 +17,11 @@ import za.org.grassroot2.R
 import za.org.grassroot2.dagger.activity.ActivityComponent
 import za.org.grassroot2.model.HomeFeedItem
 import za.org.grassroot2.model.task.Meeting
+import za.org.grassroot2.model.task.Todo
 import za.org.grassroot2.model.task.Vote
 import za.org.grassroot2.presenter.activity.HomePresenter
 import za.org.grassroot2.rxbinding.RxTextView
-import za.org.grassroot2.view.activity.CreateActionActivity
-import za.org.grassroot2.view.activity.MeetingDetailsActivity
-import za.org.grassroot2.view.activity.VoteDetailsActivity
+import za.org.grassroot2.view.activity.*
 import za.org.grassroot2.view.adapter.HomeAdapter
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
@@ -117,5 +116,9 @@ class HomeFragment : GrassrootFragment(), HomePresenter.HomeView {
 
     override fun openVoteDetails(vote: Vote) {
         VoteDetailsActivity.start(activity, vote.uid)
+    }
+
+    override fun openTodoDetails(todo: Todo) {
+        TodoDetailsActivity.start(activity, todo.uid)
     }
 }

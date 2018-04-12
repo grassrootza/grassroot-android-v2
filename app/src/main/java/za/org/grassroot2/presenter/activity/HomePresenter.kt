@@ -22,6 +22,7 @@ import za.org.grassroot2.model.language.NluResponse
 import za.org.grassroot2.model.task.Meeting
 import za.org.grassroot2.model.task.Task
 import za.org.grassroot2.model.task.Vote
+import za.org.grassroot2.model.task.Todo
 import za.org.grassroot2.presenter.fragment.BaseFragmentPresenter
 import za.org.grassroot2.services.LocationManager
 import za.org.grassroot2.services.NetworkService
@@ -49,6 +50,8 @@ constructor(private val locationManager: LocationManager, private val dbService:
                 view.openMeetingDetails(m)
             } else if (m is Vote) {
                 view.openVoteDetails(m)
+            } else if (m is Todo) {
+                view.openTodoDetails(m)
             }
         }, { t -> t.printStackTrace() }))
         disposableOnDetach(view.searchInputChanged().observeOn(main()).subscribe({ searchQuery ->
@@ -161,6 +164,7 @@ constructor(private val locationManager: LocationManager, private val dbService:
         fun listItemClick() : Observable<HomeFeedItem>
         fun openMeetingDetails(meeting: Meeting)
         fun openVoteDetails(vote: Vote)
+        fun openTodoDetails(todo: Todo)
     }
 
 }

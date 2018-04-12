@@ -20,6 +20,11 @@ public interface Task extends EntityForDownload, SelectableItem, HomeFeedItem {
     boolean hasResponded();
     boolean hasMedia();
 
+    //String getTodoType();
+
+    @Override
+    String getDescription();
+
     boolean isUserPartOf();
     boolean isPublic();
 

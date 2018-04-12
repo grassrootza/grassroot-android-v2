@@ -9,6 +9,7 @@ import za.org.grassroot2.model.network.Syncable
 import za.org.grassroot2.model.request.MemberRequest
 import za.org.grassroot2.model.task.Meeting
 import za.org.grassroot2.model.task.Task
+import za.org.grassroot2.model.task.Todo
 
 /**
  * Created by luke on 2017/08/10.
@@ -45,7 +46,7 @@ interface DatabaseService {
     fun <E> storeObject(cls: Class<E>, `object`: E): E
     fun <E> copyOrUpdateListOfEntities(cls: Class<E>, objects: List<E>): List<E>
 
-    //    void executeTransaction(Realm.Transaction transaction);
+
     fun updateOrCreateUserProfile(userUid: String, userPhone: String, userDisplayName: String,
                                   email: String?, languageCode: String, userSystemRole: String?): UserProfile
 

@@ -1,28 +1,62 @@
 package za.org.grassroot2.model.task;
 
+import android.text.TextUtils;
+
 import com.google.gson.annotations.SerializedName;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import za.org.grassroot2.model.HomeFeedItem;
 import za.org.grassroot2.model.MediaFile;
 import za.org.grassroot2.model.enums.GrassrootEntityType;
+import za.org.grassroot2.model.network.Syncable;
 
 /**
  * Created by luke on 2017/09/21.
  */
 @DatabaseTable(tableName = "todos")
-public class Todo implements Task {
+public class Todo implements Task, Syncable {
 
     @DatabaseField(id = true)
     @SerializedName("taskUid")
     private String uid;
 
+    public static final String TODO_YES = "YES";
+    public static final String TODO_NO = "NO";
+    public static String TODO_INFO = ""; // value assigned at runtime
+
     @DatabaseField
     private String parentUid;
+
+    public String getResponse() {
+        return response;
+    }
+
+    public void setResponse(String response) {
+        this.response = response;
+    }
+
+    @DatabaseField
+    private String response;
+
+    @SerializedName("todoResponses")
+    @DatabaseField
+    private Map<String, String> todoResponses;
+
+    @DatabaseField
+    @SerializedName("location")
+    private String locationDescription;
+
+    @DatabaseField
+    private String todoType;
+
+    @DatabaseField
+    private transient boolean synced = true;
 
     @DatabaseField
     private GrassrootEntityType parentEntityType;
@@ -30,6 +64,35 @@ public class Todo implements Task {
     @SerializedName("title")
     @DatabaseField(canBeNull = false)
     private String summary;
+
+    @Override
+    public String toString() {
+        return "Todo{" +
+                "uid='" + uid + '\'' +
+                ", parentUid='" + parentUid + '\'' +
+                ", response='" + response + '\'' +
+                ", todoResponses=" + todoResponses +
+                ", locationDescription='" + locationDescription + '\'' +
+                ", todoType='" + todoType + '\'' +
+                ", synced=" + synced +
+                ", parentEntityType=" + parentEntityType +
+                ", summary='" + summary + '\'' +
+                ", description='" + description + '\'' +
+                ", recorderName='" + recorderName + '\'' +
+                ", needsConfirmation=" + needsConfirmation +
+                ", isConfirmed=" + isConfirmed +
+                ", createdDate=" + createdDate +
+                ", deadlineMillis=" + deadlineMillis +
+                ", lastChangeTimeServerMillis=" + lastChangeTimeServerMillis +
+                ", ancestorGroupName='" + ancestorGroupName + '\'' +
+                ", assignedMembers=" + assignedMembers +
+                ", confirmingMembers=" + confirmingMembers +
+                ", hasConfirmed=" + hasConfirmed +
+                ", mediaFile=" + mediaFile +
+                ", userPartOf=" + userPartOf +
+                ", publicTodo=" + publicTodo +
+                '}';
+    }
 
     @DatabaseField
     private String description;
@@ -40,6 +103,9 @@ public class Todo implements Task {
 
     @DatabaseField
     private boolean needsConfirmation;
+
+    @DatabaseField
+    private String userResponse;
 
     @DatabaseField
     private boolean isConfirmed;
@@ -104,6 +170,15 @@ public class Todo implements Task {
         return new Date(createdDate);
     }
 
+    public String getUserResponse() {
+        return userResponse;
+    }
+
+    public void setUserResponse(String todoResponse) {
+        this.userResponse = userResponse;
+    }
+
+
     @Override
     public long getDeadlineMillis() {
         return deadlineMillis;
@@ -135,6 +210,35 @@ public class Todo implements Task {
     }
 
     @Override
+    public boolean isSynced() {
+        return synced;
+    }
+
+    // @Override
+    public String getTodoType() { return todoType; }
+
+    public void setTodoType() {
+        this.todoType = todoType;
+    }
+
+    @Override
+    public long createdDate() {
+        return createdDate;
+    }
+
+    public void setLocationDescription(String locationDescription) {
+        this.locationDescription = locationDescription;
+    }
+
+    public String getLocationDescription() {
+        return locationDescription;
+    }
+
+    public void setSynced(boolean synced) {
+        this.synced = synced;
+    }
+
+    @Override
     public boolean hasMedia() {
         return mediaFile != null;
     }
@@ -159,6 +263,10 @@ public class Todo implements Task {
 
     public void setAncestorGroupName(String ancestorGroupName) {
         this.ancestorGroupName = ancestorGroupName;
+    }
+
+    public Map<String, String> getTodoResponses() {
+        return todoResponses;
     }
 
     @Override

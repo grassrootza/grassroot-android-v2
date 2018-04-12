@@ -17,8 +17,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@color/white"
-            app:layout_scrollFlags="scroll|exitUntilCollapsed"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            app:layout_scrollFlags="scroll|exitUntilCollapsed">
 
             <android.support.constraint.ConstraintLayout
                 android:layout_width="match_parent"
@@ -29,15 +29,14 @@
                     android:layout_width="match_parent"
                     android:layout_height="150dp"
                     android:scaleType="centerCrop"
-                    android:src="@drawable/group_5" />
+                    app:srcCompat="@drawable/group_5" />
 
                 <TextView
-                    android:id="@+id/voteSubject"
+                    android:id="@+id/todoTitle"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="15dp"
                     android:layout_marginEnd="8dp"
-                    android:layout_marginRight="8dp"
                     android:layout_marginLeft="30dp"
                     android:layout_marginStart="40dp"
                     android:fontFamily="sans-serif"
@@ -49,16 +48,16 @@
                     app:layout_constraintEnd_toStartOf="@+id/addPhoto"
                     app:layout_constraintLeft_toLeftOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    tools:text="Kliptown Freedom Charter" />
+                    tools:text="Will You Volenteer For Our Suicide Program" />
 
                 <ImageView
                     android:id="@+id/addPhoto"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginRight="18dp"
-                    app:layout_constraintBottom_toBottomOf="@id/meetingTitle"
+                    app:layout_constraintBottom_toBottomOf="@id/todoTitle"
                     app:layout_constraintRight_toRightOf="parent"
-                    app:layout_constraintTop_toTopOf="@id/meetingTitle"
+                    app:layout_constraintTop_toTopOf="@id/todoTitle"
                     app:srcCompat="@drawable/ic_add_a_photo_white_24dp" />
 
                 <android.support.v7.widget.Toolbar
@@ -72,9 +71,8 @@
 
             </android.support.constraint.ConstraintLayout>
 
-
             <TextView
-                android:id="@+id/voteStatusText"
+                android:id="@+id/todoStatusText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
@@ -84,24 +82,109 @@
                 android:gravity="center_horizontal"
                 android:textColor="@color/colorPrimary"
                 android:textSize="@dimen/default_font_size"
-                android:textStyle="bold"
-                tools:text="You voted yes"
+                android:textStyle="normal"
                 android:visibility="gone" />
 
-            <Button
-                android:id="@+id/voteSelectOption"
-                android:layout_width="wrap_content"
+            <android.support.constraint.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <TextView
+                    android:id="@+id/theBigQuestion"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginRight="8dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="8dp"
+                    android:text="TextView"
+                    android:textColor="@color/colorPrimary"
+                    android:textSize="18sp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:text="Will you volunteer"
+                    android:visibility="gone"/>
+
+            </android.support.constraint.ConstraintLayout>
+
+            <android.support.constraint.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <EditText
+                    android:id="@+id/todoTextBox"
+                    android:layout_width="220dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginStart="8dp"
+                    android:ems="10"
+                    android:inputType="textPersonName"
+                    android:text=""
+                    android:textColor="@color/colorPrimary"
+                    app:layout_constraintStart_toStartOf="parent"
+                    tools:layout_editor_absoluteY="32dp"
+                    android:visibility="gone"
+                    />
+
+                <Button
+                    android:id="@+id/todoTextBoxButton"
+                    android:layout_width="71dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginRight="8dp"
+                    android:layout_marginStart="8dp"
+                    android:text="SEND"
+                    app:layout_constraintBaseline_toBaselineOf="@+id/todoTextBox"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/todoTextBox"
+                    android:visibility="gone"/>
+
+            </android.support.constraint.ConstraintLayout>
+
+
+            <LinearLayout
+                android:id="@+id/optionContainer"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
                 android:layout_marginTop="16dp"
-                android:drawablePadding="@dimen/padding_std_medium"
-                android:gravity="center_horizontal"
-                android:textColor="@color/colorPrimary"
-                android:textSize="@dimen/txt_header_2"
-                android:textAllCaps="false"
-                android:background="@color/transparent"
-                android:text="Cast your vote"
-                android:visibility="visible" />
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/optionA"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_weight="1"
+                    android:drawablePadding="@dimen/padding_std_medium"
+                    android:drawableTop="@drawable/ic_attend_compat"
+                    android:gravity="center_horizontal"
+                    android:text="YES"
+                    android:textColor="@color/colorPrimary"
+                    android:textSize="@dimen/default_font_size"
+                    android:textStyle="normal"
+                    android:visibility="gone"
+                    />
+
+                <TextView
+                    android:id="@+id/optionB"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_weight="1"
+                    android:drawablePadding="@dimen/padding_std_medium"
+                    android:drawableTop="@drawable/ic_attend_compat"
+                    android:gravity="center_horizontal"
+                    android:text="NO"
+                    android:textColor="@color/colorPrimary"
+                    android:textSize="@dimen/default_font_size"
+                    android:textStyle="normal"
+                    android:visibility="gone"/>
+
+
+            </LinearLayout>
 
             <View
                 android:layout_width="match_parent"
@@ -111,7 +194,7 @@
                 android:background="#f1f1f1" />
 
             <TextView
-                android:id="@+id/voteDate"
+                android:id="@+id/todoDate"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/margin_std_large"
@@ -125,32 +208,39 @@
                 android:textSize="@dimen/default_font_size"
                 android:textStyle="normal" />
 
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginBottom="@dimen/margin_std_large"
+                android:layout_marginTop="@dimen/margin_std_large"
+                android:background="#f1f1f1" />
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textColor="@color/text_dark_grey"
                 android:paddingLeft="@dimen/padding_std_medium"
                 android:paddingRight="@dimen/padding_std_medium"
-                android:textSize="@dimen/txt_header_4"
-                android:text="@string/vote_results_header"/>
+                android:text="@string/vote_results_header"
+                android:textColor="@color/text_dark_grey"
+                android:textSize="@dimen/txt_header_4" />
 
             <ScrollView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
+
                 <android.support.v7.widget.RecyclerView
-                    android:id="@+id/vote_results"
+                    android:id="@+id/todo_results"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@color/white"
-                    android:layout_marginTop="@dimen/margin_std_medium"
                     android:layout_marginBottom="@dimen/margin_std_medium"
-                    tools:listitem="@layout/item_vote_result"
-                    app:layout_behavior="@string/appbar_scrolling_view_behavior">
+                    android:layout_marginTop="@dimen/margin_std_medium"
+                    android:background="@color/white"
+                    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+                    tools:listitem="@layout/item_todo_result">
 
                 </android.support.v7.widget.RecyclerView>
-            </ScrollView>
 
+            </ScrollView>
 
             <View
                 android:layout_width="match_parent"
@@ -158,6 +248,17 @@
                 android:layout_marginBottom="@dimen/margin_std_large"
                 android:layout_marginTop="@dimen/margin_std_large"
                 android:background="#f1f1f1" />
+
+            <TextView
+                android:id="@+id/todoDescription"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="28dp"
+                android:layout_marginRight="28dp"
+                android:gravity="center_vertical"
+                android:textColor="@color/default_font_color"
+                android:textSize="@dimen/default_font_size"
+                android:textStyle="normal" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -196,6 +297,7 @@
 
     </android.support.design.widget.AppBarLayout>
 
+
     <android.support.v7.widget.RecyclerView
         android:id="@+id/posts"
         android:layout_width="match_parent"
@@ -204,5 +306,16 @@
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
     </android.support.v7.widget.RecyclerView>
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end|bottom"
+        android:layout_margin="16dp"
+        app:backgroundTint="@color/colorPrimary"
+        app:layout_anchorGravity="bottom|end"
+        app:layout_behavior="za.org.grassroot2.view.ScrollingFabBehavior"
+        app:srcCompat="@drawable/ic_add_white_24dp" />
 
 </android.support.design.widget.CoordinatorLayout>

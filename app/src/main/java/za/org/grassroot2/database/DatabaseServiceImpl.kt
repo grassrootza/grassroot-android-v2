@@ -465,7 +465,9 @@ class DatabaseServiceImpl(private val helper: DatabaseHelper) : DatabaseService 
             when (type) {
                 GrassrootEntityType.VOTE -> storeObject(Vote::class.javaObjectType, t as Vote)
                 GrassrootEntityType.MEETING -> storeObject(Meeting::class.javaObjectType, t as Meeting)
-                GrassrootEntityType.TODO -> storeObject(Todo::class.javaObjectType, t as Todo)
+                GrassrootEntityType.TODO -> {
+                    storeObject(Todo::class.javaObjectType, t as Todo)
+                }
                 else -> {
                 }
             }

@@ -16,13 +16,13 @@
     <uses-permission android:name="android.permission.WRITE_SYNC_SETTINGS" />
     <uses-permission android:name="android.permission.READ_SYNC_SETTINGS" />
     <uses-permission android:name="android.permission.READ_SYNC_STATS" />
-
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
 
     <permission
         android:name="za.org.grassroot2.permission.C2D_MESSAGE"
         android:protectionLevel="signature" />
+
     <uses-permission android:name="za.org.grassroot2.permission.C2D_MESSAGE" />
 
     <application
@@ -106,10 +106,12 @@
             android:name=".view.activity.GroupDetailsActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.Toolbar" />
-        <activity android:name=".GroupSettingsActivity"
+        <activity
+            android:name=".GroupSettingsActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.Toolbar" />
-        <activity android:name=".view.activity.MembersActivity"
+        <activity
+            android:name=".view.activity.MembersActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.Toolbar"
             android:windowSoftInputMode="stateHidden" />
@@ -121,6 +123,10 @@
             android:name=".view.activity.VoteDetailsActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.Toolbar" />
+        <activity
+            android:name=".view.activity.TodoDetailsActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.Toolbar"/>
         <activity
             android:name=".view.activity.CreateActionActivity"
             android:screenOrientation="portrait"
@@ -164,6 +170,7 @@
             <intent-filter>
                 <action android:name="com.google.android.c2dm.intent.RECEIVE" />
                 <action android:name="com.google.android.c2dm.intent.REGISTRATION" />
+
                 <category android:name="za.org.grassroot2" />
             </intent-filter>
         </receiver>
@@ -175,7 +182,6 @@
                 <action android:name="com.google.android.c2dm.intent.RECEIVE" />
             </intent-filter>
         </service>
-
         <service
             android:name=".service.GCMInstanceIDListenerService"
             android:exported="false">
@@ -183,12 +189,9 @@
                 <action android:name="com.google.android.gms.iid.InstanceID" />
             </intent-filter>
         </service>
-
         <service
             android:name=".service.GCMRegistrationService"
             android:exported="false" />
-
-
     </application>
 
 </manifest>

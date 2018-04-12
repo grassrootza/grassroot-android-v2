@@ -124,12 +124,6 @@ class VoteDetailsActivity : GrassrootActivity(), VoteDetailsPresenter.VoteDetail
         with(alert) {
             setTitle("Vote Options")
                     .setItems(vote.voteOptions.keys.toTypedArray(), DialogInterface.OnClickListener { dialog, which ->
-                        // The 'which' argument contains the index position
-                        // of the selected item
-                        Timber.d("User selected option: %s", options.elementAt(which))
-                        Timber.d("The contents of voteOptions are: %s", vote.voteOptions)
-                        Timber.d("The contents of voteResponse are: %s", vote.voteResponse)
-                        Timber.d("The contents of vote.date() are: %s", vote.date())
                         presenter.respondToVote(vote.uid, options.elementAt(which))
                     })
         }
