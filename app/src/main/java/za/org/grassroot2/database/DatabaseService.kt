@@ -46,7 +46,7 @@ interface DatabaseService {
     fun <E> storeObject(cls: Class<E>, `object`: E): E
     fun <E> copyOrUpdateListOfEntities(cls: Class<E>, objects: List<E>): List<E>
 
-    //    void executeTransaction(Realm.Transaction transaction);
+
     fun updateOrCreateUserProfile(userUid: String, userPhone: String, userDisplayName: String,
                                   email: String?, languageCode: String, userSystemRole: String?): UserProfile
 
@@ -75,7 +75,5 @@ interface DatabaseService {
     fun <E> deleteAll(cls: Class<E>)
     fun loadPublicMeetings(): Maybe<List<AroundEntity>>
     fun storePosts(meeting: Meeting, posts: List<Post>)
-    //fun storeTodoPosts(todo: Todo, posts: List<Posts>)
     fun getMeetings(taskUid: String): Maybe<List<Post>>
-    //fun getTodos(taskUid: String): Maybe<List<Posts>>
 }
