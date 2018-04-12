@@ -224,18 +224,23 @@
                 android:textColor="@color/text_dark_grey"
                 android:textSize="@dimen/txt_header_4" />
 
-            <android.support.v7.widget.RecyclerView
-                android:id="@+id/todo_results"
+            <ScrollView
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/margin_std_medium"
-                android:layout_marginTop="@dimen/margin_std_medium"
-                android:background="@color/white"
-                app:layout_behavior="@string/appbar_scrolling_view_behavior"
-                tools:listitem="@layout/item_todo_result">
+                android:layout_height="wrap_content">
 
-            </android.support.v7.widget.RecyclerView>
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/todo_results"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/margin_std_medium"
+                    android:layout_marginTop="@dimen/margin_std_medium"
+                    android:background="@color/white"
+                    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+                    tools:listitem="@layout/item_todo_result">
 
+                </android.support.v7.widget.RecyclerView>
+
+            </ScrollView>
 
             <View
                 android:layout_width="match_parent"
