@@ -1,5 +1,7 @@
 package za.org.grassroot2.view.fragment
 
+import android.content.DialogInterface
+import android.support.v7.app.AlertDialog
 import android.Manifest
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
@@ -8,21 +10,24 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
+import android.widget.EditText
 import com.tbruyelle.rxpermissions2.RxPermissions
 import dagger.Lazy
+import dagger.Provides
 import io.reactivex.Observable
 import kotlinx.android.synthetic.main.fragment_home.*
 import timber.log.Timber
 import za.org.grassroot2.R
 import za.org.grassroot2.dagger.activity.ActivityComponent
+import za.org.grassroot2.database.DatabaseService
 import za.org.grassroot2.model.HomeFeedItem
 import za.org.grassroot2.model.task.Meeting
+import za.org.grassroot2.model.task.PendingTodoDTO
+import za.org.grassroot2.model.task.Todo
 import za.org.grassroot2.model.task.Vote
 import za.org.grassroot2.presenter.activity.HomePresenter
 import za.org.grassroot2.rxbinding.RxTextView
-import za.org.grassroot2.view.activity.CreateActionActivity
-import za.org.grassroot2.view.activity.MeetingDetailsActivity
-import za.org.grassroot2.view.activity.VoteDetailsActivity
+import za.org.grassroot2.view.activity.*
 import za.org.grassroot2.view.adapter.HomeAdapter
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
@@ -61,6 +66,23 @@ class HomeFragment : GrassrootFragment(), HomePresenter.HomeView {
     override fun onDestroyView() {
         super.onDestroyView()
         presenter.detach(this)
+    }
+
+    override fun displayAlert(pending: PendingTodoDTO) {
+        Timber.d("This is what I got: %s", pending.toString())
+        val alert = AlertDialog.Builder(activity)
+        var voteChoice: EditText? = null
+
+        // Builder
+        with(alert) {
+            setTitle("Group: "+pending.parentName)
+                    .setMessage("Created by: " + pending.creatorName)
+                    .setMessage(pending.title)
+        }
+        // Dialog
+        val dialog = alert.create()
+        dialog.setView(voteChoice)
+        dialog.show()
     }
 
     override fun getLayoutResourceId(): Int {
@@ -117,5 +139,9 @@ class HomeFragment : GrassrootFragment(), HomePresenter.HomeView {
 
     override fun openVoteDetails(vote: Vote) {
         VoteDetailsActivity.start(activity, vote.uid)
+    }
+
+    override fun openTodoDetails(todo: Todo) {
+        TodoDetailsActivity.start(activity, todo.uid)
     }
 }

@@ -23,8 +23,10 @@ import za.org.grassroot2.model.TokenResponse;
 import za.org.grassroot2.model.alert.LiveWireAlert;
 import za.org.grassroot2.model.language.NluResponse;
 import za.org.grassroot2.model.request.MemberRequest;
+import za.org.grassroot2.model.task.PendingTodoDTO;
 import za.org.grassroot2.model.task.Task;
 import za.org.grassroot2.model.task.Vote;
+import za.org.grassroot2.model.task.Todo;
 
 public interface GrassrootUserApi {
 
@@ -62,8 +64,22 @@ public interface GrassrootUserApi {
                                      @Query("longitude") double longitude,
                                      @Query("mediaFileKeys") Set<String> mediaFileUids);
 
+    @GET("/api/task/fetch/todo/responses/{taskUid}")
+    Observable<Map<String, String>> fetchTodoResponses(@Path("taskUid") String taskUid);
+
+    @GET("/api/task/fetch/todo/download/{taskUid}")
+    Observable<byte[]> downloadTodoResponses(@Path("taskUid") String taskUid);
+
+    @GET("/api/task/respond/todo/information/{todoUid}")
+    Observable<Response<Todo>> respondToTodo(@Path("todoUid") String taskUid,
+                                             @Query("response") String response );
+
     @POST("/api/task/fetch/updated/group/{userUid}/{groupUid}")
     Observable<List<Task>> fetchGroupTasksMinimumInfo(@Path("userUid") String userUid, @Path("groupUid") String groupUid, @Body Map<String, Long> timestamps);
+
+
+    @GET("/api/user/pending")
+    Observable<PendingTodoDTO> fetchPendingTodos();
 
     @POST("/api/task/fetch/specified")
     Observable<List<Task>> fetchTasksByUid(@Body Map<String, String> taskUids);

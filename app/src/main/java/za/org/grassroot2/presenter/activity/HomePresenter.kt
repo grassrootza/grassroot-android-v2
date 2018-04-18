@@ -19,9 +19,7 @@ import za.org.grassroot2.model.alert.LiveWireAlert
 import za.org.grassroot2.model.enums.GrassrootEntityType
 import za.org.grassroot2.model.exception.ServerUnreachableException
 import za.org.grassroot2.model.language.NluResponse
-import za.org.grassroot2.model.task.Meeting
-import za.org.grassroot2.model.task.Task
-import za.org.grassroot2.model.task.Vote
+import za.org.grassroot2.model.task.*
 import za.org.grassroot2.presenter.fragment.BaseFragmentPresenter
 import za.org.grassroot2.services.LocationManager
 import za.org.grassroot2.services.NetworkService
@@ -30,6 +28,7 @@ import za.org.grassroot2.view.FragmentView
 import java.util.HashMap
 import javax.inject.Inject
 import za.org.grassroot2.services.UserDetailsService
+import za.org.grassroot2.view.fragment.HomeFragment
 import java.io.IOException
 
 class HomePresenter @Inject
@@ -42,6 +41,7 @@ constructor(private val locationManager: LocationManager, private val dbService:
     private var currentTasks: List<Task> = listOf()
     private var currentPublicMeetings: List<AroundEntity> = listOf()
     private var homeItems: MutableList<HomeFeedItem> = mutableListOf()
+    //@Inject lateinit var homeFrag: HomeFragment
 
     override fun onViewCreated() {
         disposableOnDetach(view.listItemClick().subscribe({ m ->
@@ -49,6 +49,8 @@ constructor(private val locationManager: LocationManager, private val dbService:
                 view.openMeetingDetails(m)
             } else if (m is Vote) {
                 view.openVoteDetails(m)
+            } else if (m is Todo) {
+                view.openTodoDetails(m)
             }
         }, { t -> t.printStackTrace() }))
         disposableOnDetach(view.searchInputChanged().observeOn(main()).subscribe({ searchQuery ->
@@ -105,7 +107,17 @@ constructor(private val locationManager: LocationManager, private val dbService:
     }
 
     fun loadHomeItems() {
+        var currentTask: PendingTodoDTO = PendingTodoDTO()
         getTasks()
+        Timber.d("About to run network request for pending todos")
+        disposableOnDetach(networkService.fetchPendingTodos()
+                .subscribeOn(io()).observeOn(main()).subscribe({ task ->
+                    currentTask = task
+                    view.displayAlert(currentTask)
+                    Timber.d("Contents of task are %s", task.toString())
+                }, { t -> t.printStackTrace() }))
+        Timber.d("Network request sent?")
+        //view.displayAlert(currentTask)
     }
 
     private fun getTasks() {
@@ -161,6 +173,8 @@ constructor(private val locationManager: LocationManager, private val dbService:
         fun listItemClick() : Observable<HomeFeedItem>
         fun openMeetingDetails(meeting: Meeting)
         fun openVoteDetails(vote: Vote)
+        fun openTodoDetails(todo: Todo)
+        fun displayAlert(pending: PendingTodoDTO)
     }
 
 }
