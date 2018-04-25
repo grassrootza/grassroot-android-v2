@@ -59,7 +59,7 @@ constructor(private val userDetailsService: UserDetailsService,
 
     override fun downloadAllChangedOrNewGroups(): Observable<List<Group>> {
         return grassrootUserApi
-                .fetchUserGroups(currentUserUid, databaseService.loadExistingObjectsWithLastChangeTime(Group::class.java))
+                .fetchUserGroups(databaseService.loadExistingObjectsWithLastChangeTime(Group::class.java))
                 .doOnError({ Timber.e(it) })
                 .filter { listRestResponse ->
                     Timber.e("filtering if group list empty, what does map look like? %s", listRestResponse)
@@ -68,7 +68,7 @@ constructor(private val userDetailsService: UserDetailsService,
                 .concatMap { groups ->
                     Timber.e("getting group info for remainder")
                     val changedUids = groups.indices.map { groups[it].uid }
-                    grassrootUserApi.fetchGroupsInfo(currentUserUid, changedUids)
+                    grassrootUserApi.fetchGroupsInfo(changedUids)
                 }
                 .doOnError({ Timber.e(it) })
                 .flatMap { listRestResponse ->

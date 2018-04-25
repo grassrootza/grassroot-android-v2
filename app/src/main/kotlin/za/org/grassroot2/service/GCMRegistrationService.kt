@@ -37,29 +37,29 @@ class GCMRegistrationService : IntentService(TAG) {
 
         val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
 
-        try {
-
-            val instanceID = InstanceID.getInstance(this)
-
-            val gcmSenderId = getString(R.string.gcm_sender_id)
-            val token = instanceID.getToken(gcmSenderId, GoogleCloudMessaging.INSTANCE_ID_SCOPE, null)
-
-            Timber.i("GCM Registration Token: " + token)
-
-            val currentToken = sharedPreferences.getString(GCMPreferences.CURRENT_GCM_TOKEN, null)
-
-            if (currentToken == null || currentToken != token) {
-                sendRegistrationToServer(token, sharedPreferences)
-            } else {
-                val registrationComplete = Intent(GCMPreferences.GCM_REGISTRATION_COMPLETE)
-                LocalBroadcastManager.getInstance(this).sendBroadcast(registrationComplete)
-            }
-
-        } catch (e: Exception) {
-            val registrationFailed = Intent(GCMPreferences.GCM_REGISTRATION_COMPLETE)
-            LocalBroadcastManager.getInstance(this).sendBroadcast(registrationFailed)
-            Timber.d("Failed to complete token refresh", e)
-        }
+//        try {
+//
+//            val instanceID = InstanceID.getInstance(this)
+//
+//            val gcmSenderId = getString(R.string.gcm_sender_id)
+//            val token = instanceID.getToken(gcmSenderId, GoogleCloudMessaging.INSTANCE_ID_SCOPE, null)
+//
+//            Timber.i("GCM Registration Token: " + token)
+//
+//            val currentToken = sharedPreferences.getString(GCMPreferences.CURRENT_GCM_TOKEN, null)
+//
+//            if (currentToken == null || currentToken != token) {
+////                sendRegistrationToServer(token, sharedPreferences)
+//            } else {
+//                val registrationComplete = Intent(GCMPreferences.GCM_REGISTRATION_COMPLETE)
+//                LocalBroadcastManager.getInstance(this).sendBroadcast(registrationComplete)
+//            }
+//
+//        } catch (e: Exception) {
+//            val registrationFailed = Intent(GCMPreferences.GCM_REGISTRATION_COMPLETE)
+//            LocalBroadcastManager.getInstance(this).sendBroadcast(registrationFailed)
+//            Timber.d("Failed to complete token refresh", e)
+//        }
 
     }
 

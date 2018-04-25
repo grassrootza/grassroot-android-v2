@@ -3,7 +3,9 @@ package za.org.grassroot2.view.fragment
 import android.content.DialogInterface
 import android.support.v7.app.AlertDialog
 import android.Manifest
+import android.content.Intent
 import android.os.Bundle
+import android.support.v4.content.ContextCompat.startActivity
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.view.LayoutInflater
@@ -11,6 +13,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.widget.EditText
+import android.widget.TextView
 import com.tbruyelle.rxpermissions2.RxPermissions
 import dagger.Lazy
 import dagger.Provides
@@ -70,19 +73,49 @@ class HomeFragment : GrassrootFragment(), HomePresenter.HomeView {
 
     override fun displayAlert(pending: PendingTodoDTO) {
         Timber.d("This is what I got: %s", pending.toString())
-        val alert = AlertDialog.Builder(activity)
-        var voteChoice: EditText? = null
 
-        // Builder
-        with(alert) {
+        // val dialogBuilder = AlertDialog.Builder(activity)
+        // val inflater = this.layoutInflater
+        // val dialogView = inflater.inflate(R.layout.fragment_pending_todo, null)
+        // dialogBuilder.setView(dialogView)
+
+        // val creator = dialogView.findViewById(R.id.creatorField) as TextView
+        // creator.setText("Created by: "+pending.creatorName)
+
+        // val pendingDescription = dialogView.findViewById(R.id.contentField) as TextView
+        // pendingDescription.setText(pending.title)
+
+        // val alertDialog = dialogBuilder.create()
+        // alertDialog.show()
+
+        val dialogBuilder = AlertDialog.Builder(activity)
+
+        dialogBuilder.setTitle("Group: "+pending.parentName)
+
+        var details: Array<String> = arrayOf("Created by: "+pending.creatorName, pending.title)
+
+        with(dialogBuilder) {
             setTitle("Group: "+pending.parentName)
-                    .setMessage("Created by: " + pending.creatorName)
-                    .setMessage(pending.title)
+                    .setItems(details, DialogInterface.OnClickListener { dialog, which ->
+                        details.elementAt(which)
+                    })
         }
-        // Dialog
-        val dialog = alert.create()
-        dialog.setView(voteChoice)
-        dialog.show()
+
+        dialogBuilder.setPositiveButton("OPEN",
+            object : DialogInterface.OnClickListener {
+                override fun onClick(dialog: DialogInterface, which: Int) {
+                    val intent = Intent("android.intent.action.TodoFromNotification")
+                    intent.putExtra("EXTRA_TODO_UID", pending.entityUid)
+                    startActivity(intent)
+        }
+
+        })
+        dialogBuilder.setNegativeButton("CLOSE", DialogInterface.OnClickListener { dialog, whichButton ->
+            //pass
+        })
+
+        val b = dialogBuilder.create()
+        b.show()
     }
 
     override fun getLayoutResourceId(): Int {
