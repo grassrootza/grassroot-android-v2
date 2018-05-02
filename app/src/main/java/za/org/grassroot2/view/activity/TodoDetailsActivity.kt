@@ -10,6 +10,7 @@ import android.view.View
 import android.widget.EditText
 import android.widget.TextView
 import com.tbruyelle.rxpermissions2.RxPermissions
+import kotlinx.android.synthetic.main.activity_group_details.*
 import kotlinx.android.synthetic.main.activity_todo_details.*
 import timber.log.Timber
 import za.org.grassroot2.R
@@ -41,10 +42,9 @@ class TodoDetailsActivity : GrassrootActivity(), TodoDetailsPresenter.TodoDetail
         val triggeredByNotification = intent.getBooleanExtra(TRIGGERED_BY_NOTIFICATION, false)
         todoUid = intent.getStringExtra(EXTRA_TODO_UID)
         Timber.d("In TodoDetailsActivity, extracted this uid from HomeFrag: %s", todoUid)
-        Timber.d("The value of triggeredByNotification is %s", triggeredByNotification)
         initView()
         presenter.attach(this)
-        presenter.init(todoUid!!, true) // todo: switch this back to triggerByNotification when done debugging
+        presenter.init(todoUid!!, triggeredByNotification)
         todoStatusText.setOnClickListener {
             val attendenceDialog = OptionPickDialog.attendenceChoiceDialog()
             disposables.add(attendenceDialog.clickAction().subscribe( { clickId ->
@@ -58,7 +58,7 @@ class TodoDetailsActivity : GrassrootActivity(), TodoDetailsPresenter.TodoDetail
             }, {t -> t.printStackTrace() }))
             attendenceDialog.show(supportFragmentManager, "")
         }
-        fab.setOnClickListener { writePost() }
+        // todofab.setOnClickListener { CreateActionActivity.start(activity, todoUid) }
         writePostButton.setOnClickListener { writePost() }
         posts.adapter = postAdapter
         todo_results.adapter = resultsAdapter
@@ -92,10 +92,10 @@ class TodoDetailsActivity : GrassrootActivity(), TodoDetailsPresenter.TodoDetail
     }
 
     private fun initToolbar() {
-        setSupportActionBar(toolbar)
-        toolbar.title = ""
-        toolbar.setNavigationIcon(R.drawable.ic_arrow_left_white_24dp)
-        toolbar.setNavigationOnClickListener { v -> finish() }
+        setSupportActionBar(todo_toolbar)
+        todo_toolbar.title = ""
+        todo_toolbar.setNavigationIcon(R.drawable.ic_arrow_left_white_24dp)
+        todo_toolbar.setNavigationOnClickListener { v -> finish() }
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {

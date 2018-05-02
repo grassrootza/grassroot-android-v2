@@ -105,6 +105,7 @@ class HomeFragment : GrassrootFragment(), HomePresenter.HomeView {
             object : DialogInterface.OnClickListener {
                 override fun onClick(dialog: DialogInterface, which: Int) {
                     val intent = Intent("android.intent.action.TodoFromNotification")
+                    Timber.d("In HomeFragment. entityUid looks like %s", pending.entityUid)
                     intent.putExtra("EXTRA_TODO_UID", pending.entityUid)
                     startActivity(intent)
         }

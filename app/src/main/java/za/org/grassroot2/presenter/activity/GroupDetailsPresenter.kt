@@ -8,6 +8,7 @@ import javax.inject.Inject
 
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
+import timber.log.Timber
 import za.org.grassroot2.R
 import za.org.grassroot2.database.DatabaseService
 import za.org.grassroot2.model.Group
@@ -30,9 +31,11 @@ constructor(private val databaseService: DatabaseService, private val networkSer
     fun loadData() {
         disposableOnDetach(databaseService.load(Group::class.java, groupUid!!).subscribeOn(io()).observeOn(main()).subscribe({ group ->
             if (view != null) {
-                if (GroupPermissionChecker.hasCreatePermission(group)) {
+                Timber.d("in GroupDetailsPresenter. View is not null.")
+                // if (GroupPermissionChecker.hasCreatePermission(group)) {
                     view.displayFab()
-                }
+                    Timber.d("User has create groups permissions. Proceed to the get down.")
+                // }
                 view.render(group)
             }
         }, { it.printStackTrace() }))

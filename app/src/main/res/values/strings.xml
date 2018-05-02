@@ -182,9 +182,13 @@
     <string name="cancel">CANCEL</string>
     <string name="next">NEXT</string>
     <string name="info_meeting_subject">Type in a short sentence the subject of this meeting.</string>
+    <string name="info_vote_subject">Describe what is being voted on.</string>
+    <string name="info_todo_description">Describe the Action for members.</string>
     <string name="info_post_subject">Type in a short sentence the subject of this post.</string>
     <string name="info_meeting_location">Type in location of this meeting.</string>
     <string name="hint_meeting_subject">Meeting subject</string>
+    <string name="hint_vote_subject">Vote subject</string>
+    <string name="hint_todo_subject">Todo subject</string>
     <string name="hint_meeting_location">Meeting location</string>
     <string name="when_would_it_happen">When would it happen?</string>
     <string name="hint_meeting_date_time">Meeting date and time</string>

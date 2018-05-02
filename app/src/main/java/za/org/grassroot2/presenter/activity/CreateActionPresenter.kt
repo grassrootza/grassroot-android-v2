@@ -48,7 +48,7 @@ constructor(private val networkService: NetworkService, private val dbService: D
     }
 
     enum class ActionType {
-        Meeting, LivewireAlert
+        Meeting, LivewireAlert, Vote, Todo
     }
 
     fun initTask(type: ActionType) {

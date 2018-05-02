@@ -61,14 +61,31 @@ class CreateActionActivity : GrassrootActivity(), BackNavigationListener, Create
         val createActionFragment = MultiOptionPickFragment.homeActionPicker
         disposables.add(createActionFragment.clickAction().subscribe { integer ->
             when (integer) {
-                R.id.createGroup -> {
-                }
-                R.id.takeAction -> {
-                    addActionFragment(MultiOptionPickFragment.homeTakeActionFragment(), null)
-                    nextStep()
-                }
                 R.id.dictate -> {
                     RecordAudioActivity.start(this, REQUEST_DICTATE)
+                }
+                R.id.takeVote -> {
+                    launchVoteSequence(null)
+                }
+                R.id.createTodo -> {
+                    launchTodoSequence(null)
+                }
+                R.id.createGroup -> {
+                    launchGroupSequence()
+                }
+                R.id.callMeeting -> {
+                    launchMeetingSequence(null)
+                }
+                R.id.createLivewireAlert -> {
+                    removeAllViewsAboveCurrent()
+                    presenter.initTask(CreateActionPresenter.ActionType.LivewireAlert)
+
+                    addGroupSelectionFragment()
+
+                    addHeadlineFragment()
+                    addMediaFragment()
+                    addLongDescriptionFragment()
+                    nextStep()
                 }
             }
         })
@@ -103,6 +120,37 @@ class CreateActionActivity : GrassrootActivity(), BackNavigationListener, Create
         component.inject(this)
     }
 
+    // Todo
+    private fun addTodoDateFragment() {
+        val todoDateFragment = MeetingDateFragment() // NOTE: Perhaps a generalisation of this class?
+        disposables.add(todoDateFragment.meetingDatePicked().subscribe { date ->
+            closeKeyboard()
+            presenter.setMeetingDate(date)
+            val f = MeetingDateConfirmFragment.newInstance(date!!)
+            disposables.add(f.meetingDateConfirmed().subscribe({ _ -> presenter.createMeeting() }, { it.printStackTrace() }))
+            adapter.addFragment(f, "")
+            nextStep()
+            shouldRemoveLast = true
+        })
+        adapter.addFragment(todoDateFragment, "")
+    }
+
+    // Vote
+    private fun addVoteDateFragment() {
+        val voteDateFragment = MeetingDateFragment()
+        disposables.add(voteDateFragment.meetingDatePicked().subscribe { date ->
+            closeKeyboard()
+            presenter.setMeetingDate(date)
+            val f = MeetingDateConfirmFragment.newInstance(date!!)
+            disposables.add(f.meetingDateConfirmed().subscribe({ _ -> presenter.createMeeting() }, { it.printStackTrace() }))
+            adapter.addFragment(f, "")
+            nextStep()
+            shouldRemoveLast = true
+        })
+        adapter.addFragment(voteDateFragment, "")
+    }
+
+    // Meeting
     private fun addMeetingDateFragment() {
         val meetingDateFragment = MeetingDateFragment()
         disposables.add(meetingDateFragment.meetingDatePicked().subscribe { date ->
@@ -121,6 +169,24 @@ class CreateActionActivity : GrassrootActivity(), BackNavigationListener, Create
         val actionSingleInputFragment = ActionSingleInputFragment.newInstance(R.string.where_will_it_happen, R.string.info_meeting_location, R.string.hint_meeting_location, false)
         disposables.add(actionSingleInputFragment.inputAdded().subscribe { location ->
             presenter.setMeetingLocation(location)
+            nextStep()
+        })
+        adapter.addFragment(actionSingleInputFragment, "")
+    }
+
+    private fun addTodoSubjectFragment() {
+        val actionSingleInputFragment = ActionSingleInputFragment.newInstance(R.string.what_is_it_about, R.string.info_todo_description, R.string.hint_todo_subject, false)
+        disposables.add(actionSingleInputFragment.inputAdded().subscribe { subject ->
+            presenter.setSubject(subject)
+            nextStep()
+        })
+        adapter.addFragment(actionSingleInputFragment, "")
+    }
+
+    private fun addVoteSubjectFragment() {
+        val actionSingleInputFragment = ActionSingleInputFragment.newInstance(R.string.what_is_it_about, R.string.info_vote_subject, R.string.hint_vote_subject, false)
+        disposables.add(actionSingleInputFragment.inputAdded().subscribe { subject ->
+            presenter.setSubject(subject)
             nextStep()
         })
         adapter.addFragment(actionSingleInputFragment, "")
@@ -160,6 +226,16 @@ class CreateActionActivity : GrassrootActivity(), BackNavigationListener, Create
         adapter.addFragment(actionSingleInputFragment, "")
     }
 
+
+    private fun addTodoTypeFragment() {
+        // TODO: Input fields vary by type
+    }
+
+    private fun addVoteOptionsFragment() {
+        // TODO: Design a layout
+        // NOTE: Must have dynamic input fields. Cater for custom vote options
+    }
+
     private fun addGroupSelectionFragment() {
         val fragment = GroupSelectionFragment()
         disposables.add(fragment.itemSelection().subscribe { group ->
@@ -174,6 +250,12 @@ class CreateActionActivity : GrassrootActivity(), BackNavigationListener, Create
         adapter.addFragment(fragment, "")
     }
 
+    private fun addGroupNameFragment() {
+    }
+
+    private fun addGroupMembersFragment() {
+    }
+
     override fun ensureWriteExteralStoragePermission(): Observable<Boolean> {
         return rxPermission.request(Manifest.permission.WRITE_EXTERNAL_STORAGE)
     }
@@ -183,6 +265,15 @@ class CreateActionActivity : GrassrootActivity(), BackNavigationListener, Create
             when (integer) {
                 R.id.dictate -> {
                     RecordAudioActivity.start(this, REQUEST_DICTATE)
+                }
+                R.id.takeVote -> {
+                    launchVoteSequence(group)
+                }
+                R.id.createTodo -> {
+                    launchTodoSequence(group)
+                }
+                R.id.createGroup -> {
+                    launchGroupSequence()
                 }
                 R.id.callMeeting -> {
                     launchMeetingSequence(group)
@@ -203,6 +294,43 @@ class CreateActionActivity : GrassrootActivity(), BackNavigationListener, Create
             }
         })
         adapter.addFragment(fragment, "")
+    }
+
+    private fun launchGroupSequence() {
+        // TODO: create group from ground up and register with server
+        removeAllViewsAboveCurrent()
+
+        addGroupNameFragment()
+        addGroupMembersFragment()
+        nextStep()
+    }
+
+    private fun launchTodoSequence(group: Group?) {
+        removeAllViewsAboveCurrent()
+        presenter.initTask(CreateActionPresenter.ActionType.Todo)
+        if (group == null) {
+            addGroupSelectionFragment()
+        } else {
+            presenter.setGroupUid(group)
+        }
+        addTodoSubjectFragment()
+        addTodoTypeFragment()
+        addTodoDateFragment()
+        nextStep()
+    }
+
+    private fun launchVoteSequence(group: Group?) {
+        removeAllViewsAboveCurrent()
+        presenter.initTask(CreateActionPresenter.ActionType.Vote)
+        if (group == null) {
+            addGroupSelectionFragment()
+        } else {
+            presenter.setGroupUid(group)
+        }
+        addVoteSubjectFragment()
+        addVoteOptionsFragment()
+        addVoteDateFragment()
+        nextStep()
     }
 
     private fun launchMeetingSequence(group: Group?) {
