@@ -8,12 +8,12 @@ import android.os.Bundle
 import android.provider.MediaStore
 import android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI
 import android.support.design.widget.Snackbar
-import com.tbruyelle.rxpermissions2.RxPermissions
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_create_action.*
 import za.org.grassroot2.R
+import com.tbruyelle.rxpermissions2.RxPermissions
 import za.org.grassroot2.dagger.activity.ActivityComponent
 import za.org.grassroot2.model.Group
 import za.org.grassroot2.model.GroupPermission
@@ -22,6 +22,8 @@ import za.org.grassroot2.presenter.activity.CreateActionPresenter
 import za.org.grassroot2.view.adapter.GenericViewPagerAdapter
 import za.org.grassroot2.view.dialog.MediaPickerFragment
 import za.org.grassroot2.view.dialog.MultiOptionPickFragment
+import za.org.grassroot2.view.activity.PickContactActivity
+import za.org.grassroot2.view.dialog.AddMemberDialog
 import za.org.grassroot2.view.fragment.*
 import javax.inject.Inject
 
@@ -29,6 +31,8 @@ class CreateActionActivity : GrassrootActivity(), BackNavigationListener, Create
 
     @Inject lateinit var presenter: CreateActionPresenter
     @Inject lateinit var rxPermission: RxPermissions
+    @Inject lateinit var contactPicker: PickContactActivity
+    @Inject lateinit var rxPermissions: RxPermissions
 
     private lateinit var adapter: GenericViewPagerAdapter
     private var created: Boolean = false
@@ -127,7 +131,7 @@ class CreateActionActivity : GrassrootActivity(), BackNavigationListener, Create
             closeKeyboard()
             presenter.setMeetingDate(date)
             val f = MeetingDateConfirmFragment.newInstance(date!!)
-            disposables.add(f.meetingDateConfirmed().subscribe({ _ -> presenter.createMeeting() }, { it.printStackTrace() }))
+            disposables.add(f.meetingDateConfirmed().subscribe({ _ -> presenter.createTodo() }, { it.printStackTrace() }))
             adapter.addFragment(f, "")
             nextStep()
             shouldRemoveLast = true
@@ -142,7 +146,7 @@ class CreateActionActivity : GrassrootActivity(), BackNavigationListener, Create
             closeKeyboard()
             presenter.setMeetingDate(date)
             val f = MeetingDateConfirmFragment.newInstance(date!!)
-            disposables.add(f.meetingDateConfirmed().subscribe({ _ -> presenter.createMeeting() }, { it.printStackTrace() }))
+            disposables.add(f.meetingDateConfirmed().subscribe({ _ -> presenter.createVote() }, { it.printStackTrace() }))
             adapter.addFragment(f, "")
             nextStep()
             shouldRemoveLast = true
@@ -250,11 +254,51 @@ class CreateActionActivity : GrassrootActivity(), BackNavigationListener, Create
         adapter.addFragment(fragment, "")
     }
 
-    private fun addGroupNameFragment() {
+    private fun addGroupNameFragment() {   // CHECK: Will using some of meeting resources cause type conflict?
+        val actionSingleInputFragment = ActionSingleInputFragment.newInstance(R.string.name_your_group , R.string.info_group_nature, R.string.hint_create_group_name, false)
+        disposables.add(actionSingleInputFragment.inputAdded().subscribe { groupName ->
+            presenter.setSubject(groupName)
+            nextStep()
+        })
+        adapter.addFragment(actionSingleInputFragment, "")
     }
 
     private fun addGroupMembersFragment() {
+        launchContactSelectionFragment()
+        // closeContactSelectionFragment()
+        // onContactSelectionComplete()
+        // handleMembersWithInvalidNumbers()
+        // handledSavedButSomeInvalidNumbers()
+        // retryInvalidNumbers()
+        // giveUpOnInvalidNumbers()
+        //
     }
+
+    // Addapt separate code or use GroupDetailsActivity's displayInviteDialog?
+    private fun launchContactSelectionFragment() {
+        /* val df = AddMemberDialog.newInstance(AddMemberDialog.TYPE_PICK)
+        df.setAddMemberDialogListener(object : AddMemberDialog.AddMemberDialogListener {
+            override fun contactBook() {
+                rxPermissions.request(Manifest.permission.READ_CONTACTS).subscribe({ result ->
+                    if (result!!) {
+                        // PickContactActivity.startForResult(this@GroupDetailsActivity, GroupDetailsActivity.REQUEST_PICK_CONTACTS)
+                    }
+                }, { it.printStackTrace() })
+            }
+
+            override fun manual() {
+                showFillDialog()
+            }
+        })
+        df.show(supportFragmentManager, GrassrootActivity.DIALOG_TAG)*/
+    }
+
+    /*
+    private fun showFillDialog() {
+        val df = AddMemberDialog.newInstance(AddMemberDialog.TYPE_INSERT_MANUAL)
+        df.setContactListener { name, phone -> presenter.inviteContact(name, phone) }
+        df.show(supportFragmentManager, GrassrootActivity.DIALOG_TAG)
+    }*/
 
     override fun ensureWriteExteralStoragePermission(): Observable<Boolean> {
         return rxPermission.request(Manifest.permission.WRITE_EXTERNAL_STORAGE)
@@ -299,9 +343,13 @@ class CreateActionActivity : GrassrootActivity(), BackNavigationListener, Create
     private fun launchGroupSequence() {
         // TODO: create group from ground up and register with server
         removeAllViewsAboveCurrent()
+        presenter.initTask(CreateActionPresenter.ActionType.Group)
 
         addGroupNameFragment()
         addGroupMembersFragment()
+        // saveGroupIfNamed()
+        // (if need be) cleanUpLocalEntities(final boolean deleteLocalGroup)
+        // changeLengthCounter(CharSequence s)
         nextStep()
     }
 
@@ -383,6 +431,38 @@ class CreateActionActivity : GrassrootActivity(), BackNavigationListener, Create
             viewPager.setCurrentItem(current - 1, true)
         }
     }
+
+    /*
+    private void createGroup() {
+        save.setEnabled(false);
+        cacheWipGroup();
+        progressDialog.show();
+        progressDialog.setCancelable(false);
+
+        final Observable<String> sendGroup =  GroupService.getInstance()
+                .sendNewGroupToServer(groupUid, AndroidSchedulers.mainThread());
+
+        final Consumer<String> successConsumer = new Consumer<String>() {
+            @Override
+            public void accept(@io.reactivex.annotations.NonNull String s) throws Exception {
+                Log.d(TAG, "string received : " + s);
+                progressDialog.dismiss();
+                Group finalGroup;
+                if (NetworkUtils.SAVED_OFFLINE_MODE.equals(s)) {
+                    finalGroup = RealmUtils.loadGroupFromDB(groupUid);
+                    handleGroupCreationAndExit(finalGroup, false);
+                } else {
+                    final String serverUid = s.substring("OK-".length());
+                    finalGroup = RealmUtils.loadGroupFromDB(serverUid);
+                    Log.d(TAG, "here is the saved group = " + finalGroup.toString());
+                    if ("OK".equals(s.substring(0, 2))) {
+                        handleGroupCreationAndExit(finalGroup, false);
+                    } else {
+                        handleSavedButSomeInvalid(serverUid);
+                    }
+                }
+            }
+        };*/
 
     override fun backPressedAndRemoveLast() {
         shouldRemoveLast = false

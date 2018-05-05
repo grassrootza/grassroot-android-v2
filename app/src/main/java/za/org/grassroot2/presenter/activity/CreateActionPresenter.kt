@@ -48,7 +48,7 @@ constructor(private val networkService: NetworkService, private val dbService: D
     }
 
     enum class ActionType {
-        Meeting, LivewireAlert, Vote, Todo
+        Meeting, LivewireAlert, Vote, Todo, Group
     }
 
     fun initTask(type: ActionType) {
@@ -59,6 +59,39 @@ constructor(private val networkService: NetworkService, private val dbService: D
             }
             CreateActionPresenter.ActionType.LivewireAlert -> alert = LiveWireAlert()
         }
+    }
+
+    fun createGroup() {
+        view.showProgressBar()
+        disposableOnDetach(networkService.createTask(task!!).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe({ task ->
+            view.closeProgressBar()
+            view.uploadSuccessfull(GrassrootEntityType.GROUP)
+        }) { throwable ->
+            view.closeProgressBar()
+            view.uploadSuccessfull(GrassrootEntityType.GROUP)
+        })
+    }
+
+    fun createVote() {
+        view.showProgressBar()
+        disposableOnDetach(networkService.createTask(task!!).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe({ task ->
+            view.closeProgressBar()
+            view.uploadSuccessfull(GrassrootEntityType.VOTE)
+        }) { throwable ->
+            view.closeProgressBar()
+            view.uploadSuccessfull(GrassrootEntityType.VOTE)
+        })
+    }
+
+    fun createTodo() {
+        view.showProgressBar()
+        disposableOnDetach(networkService.createTask(task!!).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe({ task ->
+            view.closeProgressBar()
+            view.uploadSuccessfull(GrassrootEntityType.TODO)
+        }) { throwable ->
+            view.closeProgressBar()
+            view.uploadSuccessfull(GrassrootEntityType.TODO)
+        })
     }
 
     fun createMeeting() {
@@ -114,7 +147,7 @@ constructor(private val networkService: NetworkService, private val dbService: D
         (task as Meeting).locationDescription = location
     }
 
-    fun setSubject(subject: String) {
+    fun setSubject(subject: String) {          // Generalise / polymorphism?
         (task as Meeting).setSubject(subject)
     }
 
