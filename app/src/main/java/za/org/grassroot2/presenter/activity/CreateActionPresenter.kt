@@ -15,6 +15,8 @@ import za.org.grassroot2.model.alert.LiveWireAlert
 import za.org.grassroot2.model.enums.GrassrootEntityType
 import za.org.grassroot2.model.task.Meeting
 import za.org.grassroot2.model.task.Task
+import za.org.grassroot2.model.task.Todo
+import za.org.grassroot2.model.task.Vote
 import za.org.grassroot2.services.MediaService
 import za.org.grassroot2.services.NetworkService
 import za.org.grassroot2.util.MediaRecorderWrapper
@@ -61,47 +63,37 @@ constructor(private val networkService: NetworkService, private val dbService: D
         }
     }
 
-    fun createGroup() {
+    private fun createGroup(name: String): Group {
+        val g = Group()
+        g.name = name
+        g.uid = UUID.randomUUID().toString()
+        g.memberCount = 10
+        g.userRole = "Admin"
+        g.lastActionOrChange = System.currentTimeMillis()
+        g.lastTimeChangedServer = System.currentTimeMillis()
+        Timber.d("Inside create group, New Group looks like: %s", g.toString())
+        return g
+    }
+
+    fun uploadGroup(g: Group) {
         view.showProgressBar()
-        disposableOnDetach(networkService.createTask(task!!).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe({ task ->
+        disposableOnDetach(networkService.createGroup(g!!).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe({ task ->
+            view.closeProgressBar()
+            view.uploadSuccessfull(GrassrootEntityType.GROUP)  // eg. view.uploadSuccessfull(GrassrootEntityType.VOTE)
+        }) { throwable ->
             view.closeProgressBar()
             view.uploadSuccessfull(GrassrootEntityType.GROUP)
-        }) { throwable ->
-            view.closeProgressBar()
-            view.uploadSuccessfull(GrassrootEntityType.GROUP)
         })
     }
 
-    fun createVote() {
+    fun createTask(Type: GrassrootEntityType) {
         view.showProgressBar()
         disposableOnDetach(networkService.createTask(task!!).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe({ task ->
             view.closeProgressBar()
-            view.uploadSuccessfull(GrassrootEntityType.VOTE)
+            view.uploadSuccessfull(Type)  // eg. view.uploadSuccessfull(GrassrootEntityType.VOTE)
         }) { throwable ->
             view.closeProgressBar()
-            view.uploadSuccessfull(GrassrootEntityType.VOTE)
-        })
-    }
-
-    fun createTodo() {
-        view.showProgressBar()
-        disposableOnDetach(networkService.createTask(task!!).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe({ task ->
-            view.closeProgressBar()
-            view.uploadSuccessfull(GrassrootEntityType.TODO)
-        }) { throwable ->
-            view.closeProgressBar()
-            view.uploadSuccessfull(GrassrootEntityType.TODO)
-        })
-    }
-
-    fun createMeeting() {
-        view.showProgressBar()
-        disposableOnDetach(networkService.createTask(task!!).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe({ task ->
-            view.closeProgressBar()
-            view.uploadSuccessfull(GrassrootEntityType.MEETING)
-        }) { throwable ->
-            view.closeProgressBar()
-            view.uploadSuccessfull(GrassrootEntityType.MEETING)
+            view.uploadSuccessfull(Type)
         })
     }
 
@@ -147,8 +139,22 @@ constructor(private val networkService: NetworkService, private val dbService: D
         (task as Meeting).locationDescription = location
     }
 
-    fun setSubject(subject: String) {          // Generalise / polymorphism?
+    fun setMeetingSubject(subject: String) {
         (task as Meeting).setSubject(subject)
+    }
+
+    fun setTodoSubject(subject: String) {
+        (task as Todo).setSubject(subject)
+    }
+
+    fun setVoteSubject(subject: String) {
+        (task as Vote).setSubject(subject)
+    }
+
+    fun setGroupName(groupName: String) {
+        var g = createGroup(groupName)
+        Timber.d("Newly created group looks like: %s", g.toString())
+        uploadGroup(g)
     }
 
     fun setGroupUid(group: Group) {

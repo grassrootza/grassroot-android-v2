@@ -10,7 +10,7 @@ import za.org.grassroot2.model.language.NluResponse
 import za.org.grassroot2.model.network.EntityForDownload
 import za.org.grassroot2.model.network.EntityForUpload
 import za.org.grassroot2.model.request.MemberRequest
-import za.org.grassroot2.model.task.PendingTodoDTO
+import za.org.grassroot2.model.task.PendingResponseDTO
 import za.org.grassroot2.model.task.Task
 import za.org.grassroot2.model.task.Vote
 import za.org.grassroot2.model.task.Todo
@@ -76,7 +76,9 @@ interface NetworkService {
 
     fun downloadTodoResponses(taskUid: String): Observable<ByteArray>?
 
-    fun fetchPendingTodos(): Observable<PendingTodoDTO>
+    fun fetchPendingResponses(): Observable<PendingResponseDTO>
+
+    fun createGroup(group: Group): Observable<Group>
 
     //fun getTodoPosts(taskUid: String): Flowable<Resource<List<Posts>>>
 }

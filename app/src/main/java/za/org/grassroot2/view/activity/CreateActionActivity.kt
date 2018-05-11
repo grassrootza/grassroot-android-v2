@@ -18,11 +18,12 @@ import za.org.grassroot2.dagger.activity.ActivityComponent
 import za.org.grassroot2.model.Group
 import za.org.grassroot2.model.GroupPermission
 import za.org.grassroot2.model.enums.GrassrootEntityType
+import za.org.grassroot2.model.task.Task
 import za.org.grassroot2.presenter.activity.CreateActionPresenter
 import za.org.grassroot2.view.adapter.GenericViewPagerAdapter
 import za.org.grassroot2.view.dialog.MediaPickerFragment
 import za.org.grassroot2.view.dialog.MultiOptionPickFragment
-import za.org.grassroot2.view.activity.PickContactActivity
+//import za.org.grassroot2.view.activity.PickContactActivity
 import za.org.grassroot2.view.dialog.AddMemberDialog
 import za.org.grassroot2.view.fragment.*
 import javax.inject.Inject
@@ -31,7 +32,7 @@ class CreateActionActivity : GrassrootActivity(), BackNavigationListener, Create
 
     @Inject lateinit var presenter: CreateActionPresenter
     @Inject lateinit var rxPermission: RxPermissions
-    @Inject lateinit var contactPicker: PickContactActivity
+    //@Inject lateinit var contactPicker: PickContactActivity
     @Inject lateinit var rxPermissions: RxPermissions
 
     private lateinit var adapter: GenericViewPagerAdapter
@@ -125,48 +126,18 @@ class CreateActionActivity : GrassrootActivity(), BackNavigationListener, Create
     }
 
     // Todo
-    private fun addTodoDateFragment() {
-        val todoDateFragment = MeetingDateFragment() // NOTE: Perhaps a generalisation of this class?
-        disposables.add(todoDateFragment.meetingDatePicked().subscribe { date ->
+    private fun addTaskDateFragment(task: GrassrootEntityType) { // task param should be in the form GrassrootEntityTpye.VOTE (for example)
+        val taskDateFragment = MeetingDateFragment() // NOTE: Perhaps a generalisation of this class?
+        disposables.add(taskDateFragment.meetingDatePicked().subscribe { date ->
             closeKeyboard()
             presenter.setMeetingDate(date)
             val f = MeetingDateConfirmFragment.newInstance(date!!)
-            disposables.add(f.meetingDateConfirmed().subscribe({ _ -> presenter.createTodo() }, { it.printStackTrace() }))
+            disposables.add(f.meetingDateConfirmed().subscribe({ _ -> presenter.createTask(task) }, { it.printStackTrace() }))
             adapter.addFragment(f, "")
             nextStep()
             shouldRemoveLast = true
         })
-        adapter.addFragment(todoDateFragment, "")
-    }
-
-    // Vote
-    private fun addVoteDateFragment() {
-        val voteDateFragment = MeetingDateFragment()
-        disposables.add(voteDateFragment.meetingDatePicked().subscribe { date ->
-            closeKeyboard()
-            presenter.setMeetingDate(date)
-            val f = MeetingDateConfirmFragment.newInstance(date!!)
-            disposables.add(f.meetingDateConfirmed().subscribe({ _ -> presenter.createVote() }, { it.printStackTrace() }))
-            adapter.addFragment(f, "")
-            nextStep()
-            shouldRemoveLast = true
-        })
-        adapter.addFragment(voteDateFragment, "")
-    }
-
-    // Meeting
-    private fun addMeetingDateFragment() {
-        val meetingDateFragment = MeetingDateFragment()
-        disposables.add(meetingDateFragment.meetingDatePicked().subscribe { date ->
-            closeKeyboard()
-            presenter.setMeetingDate(date)
-            val f = MeetingDateConfirmFragment.newInstance(date!!)
-            disposables.add(f.meetingDateConfirmed().subscribe({ _ -> presenter.createMeeting() }, { it.printStackTrace() }))
-            adapter.addFragment(f, "")
-            nextStep()
-            shouldRemoveLast = true
-        })
-        adapter.addFragment(meetingDateFragment, "")
+        adapter.addFragment(taskDateFragment, "")
     }
 
     private fun addMeetingLocationFragment() {
@@ -181,7 +152,7 @@ class CreateActionActivity : GrassrootActivity(), BackNavigationListener, Create
     private fun addTodoSubjectFragment() {
         val actionSingleInputFragment = ActionSingleInputFragment.newInstance(R.string.what_is_it_about, R.string.info_todo_description, R.string.hint_todo_subject, false)
         disposables.add(actionSingleInputFragment.inputAdded().subscribe { subject ->
-            presenter.setSubject(subject)
+            presenter.setTodoSubject(subject)
             nextStep()
         })
         adapter.addFragment(actionSingleInputFragment, "")
@@ -190,7 +161,7 @@ class CreateActionActivity : GrassrootActivity(), BackNavigationListener, Create
     private fun addVoteSubjectFragment() {
         val actionSingleInputFragment = ActionSingleInputFragment.newInstance(R.string.what_is_it_about, R.string.info_vote_subject, R.string.hint_vote_subject, false)
         disposables.add(actionSingleInputFragment.inputAdded().subscribe { subject ->
-            presenter.setSubject(subject)
+            presenter.setVoteSubject(subject)
             nextStep()
         })
         adapter.addFragment(actionSingleInputFragment, "")
@@ -199,7 +170,7 @@ class CreateActionActivity : GrassrootActivity(), BackNavigationListener, Create
     private fun addMeetingSubjectFragment() {
         val actionSingleInputFragment = ActionSingleInputFragment.newInstance(R.string.what_is_it_about, R.string.info_meeting_subject, R.string.hint_meeting_subject, false)
         disposables.add(actionSingleInputFragment.inputAdded().subscribe { subject ->
-            presenter.setSubject(subject)
+            presenter.setMeetingSubject(subject)
             nextStep()
         })
         adapter.addFragment(actionSingleInputFragment, "")
@@ -257,7 +228,7 @@ class CreateActionActivity : GrassrootActivity(), BackNavigationListener, Create
     private fun addGroupNameFragment() {   // CHECK: Will using some of meeting resources cause type conflict?
         val actionSingleInputFragment = ActionSingleInputFragment.newInstance(R.string.name_your_group , R.string.info_group_nature, R.string.hint_create_group_name, false)
         disposables.add(actionSingleInputFragment.inputAdded().subscribe { groupName ->
-            presenter.setSubject(groupName)
+            presenter.setGroupName(groupName)
             nextStep()
         })
         adapter.addFragment(actionSingleInputFragment, "")
@@ -265,16 +236,9 @@ class CreateActionActivity : GrassrootActivity(), BackNavigationListener, Create
 
     private fun addGroupMembersFragment() {
         launchContactSelectionFragment()
-        // closeContactSelectionFragment()
-        // onContactSelectionComplete()
-        // handleMembersWithInvalidNumbers()
-        // handledSavedButSomeInvalidNumbers()
-        // retryInvalidNumbers()
-        // giveUpOnInvalidNumbers()
-        //
     }
 
-    // Addapt separate code or use GroupDetailsActivity's displayInviteDialog?
+    // Adapt separate code or use GroupDetailsActivity's displayInviteDialog?
     private fun launchContactSelectionFragment() {
         /* val df = AddMemberDialog.newInstance(AddMemberDialog.TYPE_PICK)
         df.setAddMemberDialogListener(object : AddMemberDialog.AddMemberDialogListener {
@@ -346,10 +310,8 @@ class CreateActionActivity : GrassrootActivity(), BackNavigationListener, Create
         presenter.initTask(CreateActionPresenter.ActionType.Group)
 
         addGroupNameFragment()
+
         addGroupMembersFragment()
-        // saveGroupIfNamed()
-        // (if need be) cleanUpLocalEntities(final boolean deleteLocalGroup)
-        // changeLengthCounter(CharSequence s)
         nextStep()
     }
 
@@ -363,7 +325,7 @@ class CreateActionActivity : GrassrootActivity(), BackNavigationListener, Create
         }
         addTodoSubjectFragment()
         addTodoTypeFragment()
-        addTodoDateFragment()
+        addTaskDateFragment(GrassrootEntityType.TODO)
         nextStep()
     }
 
@@ -377,7 +339,7 @@ class CreateActionActivity : GrassrootActivity(), BackNavigationListener, Create
         }
         addVoteSubjectFragment()
         addVoteOptionsFragment()
-        addVoteDateFragment()
+        addTaskDateFragment(GrassrootEntityType.VOTE)
         nextStep()
     }
 
@@ -391,7 +353,7 @@ class CreateActionActivity : GrassrootActivity(), BackNavigationListener, Create
         }
         addMeetingSubjectFragment()
         addMeetingLocationFragment()
-        addMeetingDateFragment()
+        addTaskDateFragment(GrassrootEntityType.MEETING)
         nextStep()
     }
 

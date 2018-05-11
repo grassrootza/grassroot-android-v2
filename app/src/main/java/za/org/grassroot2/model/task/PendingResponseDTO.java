@@ -1,6 +1,9 @@
 package za.org.grassroot2.model.task;
 
-public class PendingTodoDTO {
+/**
+ * Created by frtnx on 2045/08/01.
+ */
+public class PendingResponseDTO {
 
     public boolean hasPendingResponse;
 

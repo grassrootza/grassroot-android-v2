@@ -41,7 +41,6 @@ constructor(private val locationManager: LocationManager, private val dbService:
     private var currentTasks: List<Task> = listOf()
     private var currentPublicMeetings: List<AroundEntity> = listOf()
     private var homeItems: MutableList<HomeFeedItem> = mutableListOf()
-    //@Inject lateinit var homeFrag: HomeFragment
 
     override fun onViewCreated() {
         disposableOnDetach(view.listItemClick().subscribe({ m ->
@@ -107,10 +106,10 @@ constructor(private val locationManager: LocationManager, private val dbService:
     }
 
     fun loadHomeItems() {
-        var currentTask: PendingTodoDTO = PendingTodoDTO()
+        var currentTask: PendingResponseDTO = PendingResponseDTO()
         getTasks()
         Timber.d("About to run network request for pending todos")
-        disposableOnDetach(networkService.fetchPendingTodos()
+        disposableOnDetach(networkService.fetchPendingResponses()
                 .subscribeOn(io()).observeOn(main()).subscribe({ task ->
                     currentTask = task
                     view.displayAlert(currentTask)
@@ -174,7 +173,7 @@ constructor(private val locationManager: LocationManager, private val dbService:
         fun openMeetingDetails(meeting: Meeting)
         fun openVoteDetails(vote: Vote)
         fun openTodoDetails(todo: Todo)
-        fun displayAlert(pending: PendingTodoDTO)
+        fun displayAlert(pending: PendingResponseDTO)
     }
 
 }

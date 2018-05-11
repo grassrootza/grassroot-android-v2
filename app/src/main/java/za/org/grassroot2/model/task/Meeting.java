@@ -53,9 +53,11 @@ public class Meeting implements Task, Syncable, AroundItem {
     @DatabaseField
     @SerializedName("createdDate")
     private long createdDate;
+
     @DatabaseField
     @SerializedName("deadlineMillis")
     private long deadlineMillis;
+
     @DatabaseField
     private long lastChangeTimeServerMillis;
 

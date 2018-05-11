@@ -91,9 +91,9 @@ constructor(private val userDetailsService: UserDetailsService,
                 .doOnError({ Timber.e(it) })
     }
 
-    override fun fetchPendingTodos(): Observable<PendingTodoDTO> {
+    override fun fetchPendingResponses(): Observable<PendingResponseDTO> {
         return grassrootUserApi
-                .fetchPendingTodos()
+                .fetchPendingResponses()
                 .doOnError({ Timber.e(it) })
     }
 
@@ -183,17 +183,63 @@ constructor(private val userDetailsService: UserDetailsService,
                 .doOnError({ Timber.e(it) })
     }
 
+    override fun createGroup(g: Group): Observable<Group> {
+        /*return Observable.create { e ->
+            object : ResourceToStore<Task, Task>(g, e) {
+                override fun uploadRemote(localObject: Task?): Observable<Response<Task>> {
+                    val g = localObject as Group
+                    return grassrootUserApi.createGroup()
+                }
+            }
+        }*/
+
+        return grassrootUserApi.createGroup()
+    }
+
     override fun createTask(t: Task): Observable<Resource<Task>> {
         return Observable.create { e ->
             object : ResourceToStore<Task, Task>(t, e) {
                 override fun uploadRemote(localObject: Task): Observable<Response<Task>> {
-                    val m = localObject as Meeting
-                    return grassrootUserApi.createTask("GROUP", currentUserUid, t.parentUid, m.name, m.locationDescription, t.deadlineMillis)
+                    if (t.parentEntityType == GrassrootEntityType.MEETING) {
+                        val m = localObject as Meeting
+                        return grassrootUserApi.createMeeting("GROUP", currentUserUid, t.parentUid, m.name, m.locationDescription, t.deadlineMillis)
+                    }
+                    else if (t.parentEntityType == GrassrootEntityType.VOTE) {
+                        val v = localObject as Vote
+                        return grassrootUserApi.createVote("GROUP", currentUserUid, t.parentUid, v.name, v.deadlineMillis)
+                    }
+                    else if (t.parentEntityType == GrassrootEntityType.TODO) {
+                        val todo = localObject as Todo
+                        // as there are 4 different To-do-related api paths we must distinguish between todos
+                        if (todo.todoType == "ACTION_REQUIRED") {
+                            return grassrootUserApi.createActionTodo("GROUP", currentUserUid, todo.parentUid, todo.name, todo.deadlineMillis)
+                        }
+                        else if (todo.todoType == "INFORMATION_REQUIRED") {
+                            return grassrootUserApi.createInformationTodo("GROUP", currentUserUid, todo.parentUid, todo.name, todo.deadlineMillis)
+                        }
+                        else if (todo.todoType == "VALIDATION_REQUIRED") {
+                            return grassrootUserApi.createConfirmationTodo("GROUP", currentUserUid, todo.parentUid, todo.name, todo.deadlineMillis)
+                        }
+                        else if (todo.todoType == "VOLUNTEERS_NEEDED") {
+                            return grassrootUserApi.createVolunteerTodo("GROUP", currentUserUid, todo.parentUid, todo.name, todo.deadlineMillis)
+                        }
+                    }
+                    // return statement requiered here
                 }
 
                 override fun uploadFailed(localObject: Task) {
-                    val m = localObject as Meeting
-                    m.isSynced = false
+                    if (localObject.parentEntityType == GrassrootEntityType.MEETING) {
+                        val m = localObject as Meeting
+                        m.isSynced = false
+                    }
+                    else if (localObject.parentEntityType == GrassrootEntityType.VOTE) {
+                        val v = localObject as Vote
+                        v.isSynced = false
+                    }
+                    else if (localObject.parentEntityType == GrassrootEntityType.TODO) {
+                        val td = localObject as Todo
+                        td.isSynced = false
+                    }
                     databaseService.storeTasks(listOf<Task>(localObject))
                 }
 

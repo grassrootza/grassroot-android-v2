@@ -24,10 +24,7 @@ import za.org.grassroot2.R
 import za.org.grassroot2.dagger.activity.ActivityComponent
 import za.org.grassroot2.database.DatabaseService
 import za.org.grassroot2.model.HomeFeedItem
-import za.org.grassroot2.model.task.Meeting
-import za.org.grassroot2.model.task.PendingTodoDTO
-import za.org.grassroot2.model.task.Todo
-import za.org.grassroot2.model.task.Vote
+import za.org.grassroot2.model.task.*
 import za.org.grassroot2.presenter.activity.HomePresenter
 import za.org.grassroot2.rxbinding.RxTextView
 import za.org.grassroot2.view.activity.*
@@ -71,7 +68,7 @@ class HomeFragment : GrassrootFragment(), HomePresenter.HomeView {
         presenter.detach(this)
     }
 
-    override fun displayAlert(pending: PendingTodoDTO) {
+    override fun displayAlert(pending: PendingResponseDTO) {
         Timber.d("This is what I got: %s", pending.toString())
 
         // val dialogBuilder = AlertDialog.Builder(activity)
@@ -104,10 +101,7 @@ class HomeFragment : GrassrootFragment(), HomePresenter.HomeView {
         dialogBuilder.setPositiveButton("OPEN",
             object : DialogInterface.OnClickListener {
                 override fun onClick(dialog: DialogInterface, which: Int) {
-                    val intent = Intent("android.intent.action.TodoFromNotification")
-                    Timber.d("In HomeFragment. entityUid looks like %s", pending.entityUid)
-                    intent.putExtra("EXTRA_TODO_UID", pending.entityUid)
-                    startActivity(intent)
+                    openPendingTask(pending)
         }
 
         })
@@ -133,6 +127,7 @@ class HomeFragment : GrassrootFragment(), HomePresenter.HomeView {
         refreshLayout.setOnRefreshListener { reloadView() }
         presenter.onViewCreated()
         refreshView()
+
     }
 
     override fun initiateCreateAction(actionToInitiate: Int) {
@@ -177,5 +172,19 @@ class HomeFragment : GrassrootFragment(), HomePresenter.HomeView {
 
     override fun openTodoDetails(todo: Todo) {
         TodoDetailsActivity.start(activity, todo.uid)
+    }
+
+    fun openPendingTask(task: PendingResponseDTO) {
+        Timber.d("This is what PendingResponseDTO looks like in HomeFragment: %s", task.toString())
+        Timber.d("enityType = %s", task.entityType)
+        if (task.entityType == "TODO") {
+            TodoDetailsActivity.start(activity, task.entityUid)
+        }
+        else if (task.entityType == "VOTE") {
+            VoteDetailsActivity.start(activity, task.entityUid)
+        }
+        else if (task.entityType == "VOTE") {
+            MeetingDetailsActivity.start(activity, task.entityUid)
+        }
     }
 }
