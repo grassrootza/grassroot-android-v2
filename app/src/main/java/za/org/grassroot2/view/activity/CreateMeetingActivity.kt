@@ -44,7 +44,7 @@ class CreateMeetingActivity : GrassrootActivity() {
     companion object {
 
         fun start(activity: Activity) {
-            val intent = Intent(activity, CreateTodoActivity::class.java)
+            val intent = Intent(activity, CreateMeetingActivity::class.java)
             activity.startActivity(intent)
         }
     }

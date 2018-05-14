@@ -122,59 +122,59 @@ public interface GrassrootUserApi {
     Observable<Response<Task>> createVote(@Path("parentType") String parentType,
                                           @Path("parentUid") String parentUid,
                                           @Query("title") String subject,
-                                          @Query("voteOptions") Array voteOptions, // imp
-                                          @Query("description") String description, // imp
-                                          @Query("time") long time, // imp
-                                          @Query("mediaFileUid") String mediaFileUid, // imp
-                                          @Query("assignedMemberUids") Array assignedMemberUids); // imp
+                                          @Query("voteOptions") Array voteOptions,
+                                          @Query("description") String description,
+                                          @Query("time") long time,
+                                          @Query("mediaFileUid") String mediaFileUid,
+                                          @Query("assignedMemberUids") Array assignedMemberUids);
 
     @POST("/v2/api/task/create/todo/action/{parentType}/{parentUid}")
     Observable<Response<Task>> createActionTodo(@Path("parentType") String parentType,
                                                 @Path("parentUid") String parentUid,
                                                 @Query("subject") String subject,
-                                                @Query("dueDateTime") long dueDateTime, //imp
-                                                @Query("recurring") boolean recurring, // imp
-                                                @Query("recurringPeriodMillis") long recurringPeriodMillis, // imp
-                                                @Query("assignedMembersUids") Array assignedMembersUids, // imp
-                                                @Query("mediaFileUids") Array mediaFileUids); // imp
+                                                @Query("dueDateTime") long dueDateTime,
+                                                @Query("recurring") boolean recurring,
+                                                @Query("recurringPeriodMillis") long recurringPeriodMillis,
+                                                @Query("assignedMembersUids") Array assignedMembersUids,
+                                                @Query("mediaFileUids") Array mediaFileUids);
 
     @POST("/v2/api/task/create/todo/information/{parentType}/{parentUid}")
     Observable<Response<Task>> createInformationTodo(@Path("parentType") String parentType,
                                           @Path("parentUid") String parentUid,
                                           @Query("subject") String subject,
-                                          @Query("responseTag") String responseTag, // imp
-                                          @Query("dueDateTime") long dueDatetime, // imp
-                                          @Query("assignedUids") Array assignedUids, // imp
-                                          @Query("mediaFileUids") Array mediaFileUids); // imp
+                                          @Query("responseTag") String responseTag,
+                                          @Query("dueDateTime") long dueDatetime,
+                                          @Query("assignedUids") Array assignedUids,
+                                          @Query("mediaFileUids") Array mediaFileUids);
 
     @POST("/v2/api/task/create/todo/confirmation/{parentType}/{parentUid}")
     Observable<Response<Task>> createConfirmationTodo(@Path("parentType") String parentType,
                                           @Path("parentUid") String parentUid,
                                           @Query("subject") String subject,
-                                          @Query("dueDateTime") long dueDateTime, // imp
-                                          @Query("requireImages") boolean requireImages, // imp
-                                          @Query("assignedMemberUids") Array assignedMemberUids, // imp
-                                          @Query("confirmingMemberUids") Array confirmingMemberUids, // imp
-                                          @Query("recurring") boolean recurring, // imp
-                                          @Query("recurringPeriodMillis") long recurringPeriodMillis, // imp
-                                          @Query("mediaFileUids") Array mediaFileUids); // imp
+                                          @Query("dueDateTime") long dueDateTime,
+                                          @Query("requireImages") boolean requireImages,
+                                          @Query("assignedMemberUids") Array assignedMemberUids,
+                                          @Query("confirmingMemberUids") Array confirmingMemberUids,
+                                          @Query("recurring") boolean recurring,
+                                          @Query("recurringPeriodMillis") long recurringPeriodMillis,
+                                          @Query("mediaFileUids") Array mediaFileUids);
 
     @POST("/v2/api/task/create/todo/volunteer/{parentType}/{parentUid}")
     Observable<Response<Task>> createVolunteerTodo(@Path("parentType") String parentType,
                                           @Path("parentUid") String parentUid,
                                           @Query("subject") String subject,
-                                          @Query("dueDateTime") long dueDateTime, // imp
-                                          @Query("assignedMemberUids") Array assignedMemberUids, // imp
-                                          @Query("mediaFileUids") Array mediaFileUids); // imp
+                                          @Query("dueDateTime") long dueDateTime,
+                                          @Query("assignedMemberUids") Array assignedMemberUids,
+                                          @Query("mediaFileUids") Array mediaFileUids);
 
     @POST("/v2/api/group/modify/create")
     Observable<Response<Task>> createGroup(@Query("name") String groupName,
                                            @Query("description") String description,
-                                           @Query("permissionTemplate") String permissionTemplate, // imp
-                                           @Query("reminderMinutes") int reminderMinutes, // imp
-                                           @Query("discoverable") boolean discoverable, // imp
-                                           @Query("defaultAddToAccount") boolean defaultAddToAccount, // imp
-                                           @Query("pinGroup") boolean pinGroup); // imp
+                                           @Query("permissionTemplate") String permissionTemplate,
+                                           @Query("reminderMinutes") int reminderMinutes,
+                                           @Query("discoverable") boolean discoverable,
+                                           @Query("defaultAddToAccount") boolean defaultAddToAccount,
+                                           @Query("pinGroup") boolean pinGroup);
 
     @GET("/v2/api/location/all/alerts/{userUid}")
     Observable<List<LiveWireAlert>> getAlertsAround(@Path("userUid") String userUid,

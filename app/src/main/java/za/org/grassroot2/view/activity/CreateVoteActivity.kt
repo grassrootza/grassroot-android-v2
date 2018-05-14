@@ -45,7 +45,7 @@ class CreateVoteActivity : GrassrootActivity() {
     companion object {
 
         fun start(activity: Activity) {
-            val intent = Intent(activity, CreateTodoActivity::class.java)
+            val intent = Intent(activity, CreateVoteActivity::class.java)
             activity.startActivity(intent)
         }
     }
