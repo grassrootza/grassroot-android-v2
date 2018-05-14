@@ -1,5 +1,6 @@
 package za.org.grassroot2.services
 
+import com.google.auto.value.processor.escapevelocity.Template
 import io.reactivex.*
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -183,17 +184,25 @@ constructor(private val userDetailsService: UserDetailsService,
                 .doOnError({ Timber.e(it) })
     }
 
-    override fun createGroup(g: Group): Observable<Group> {
-        /*return Observable.create { e ->
-            object : ResourceToStore<Task, Task>(g, e) {
-                override fun uploadRemote(localObject: Task?): Observable<Response<Task>> {
-                    val g = localObject as Group
-                    return grassrootUserApi.createGroup()
+
+    override fun createGroup(group: Group): Observable<Resource<Group>> {
+        return Observable.create { e ->
+            object : ResourceToStore<Group, Task>(group, e) {
+                override fun uploadRemote(localObject: Group?): Observable<Response<Task>> {
+                    val group = localObject as Group
+                    return grassrootUserApi.createGroup(group.name, group.description, group.userRole, group.reminderMinutes, group.isHidden, group.isDefaultAddToAccount, group.isPinned )
+                }
+
+                override fun uploadFailed(localObject: Group) {
+                    // TBI
+                }
+
+                override fun saveResult(data: Task) {
+                    databaseService.storeTasks(listOf(data))
                 }
             }
-        }*/
-
-        return grassrootUserApi.createGroup()
+        }
+        //return grassrootUserApi.createGroup(group.name, group.description, group.permissionTemplate, group.reminderMinutes, group.isHidden, group.defaultAddToAccount, group.isPinned )
     }
 
     override fun createTask(t: Task): Observable<Resource<Task>> {
@@ -202,29 +211,29 @@ constructor(private val userDetailsService: UserDetailsService,
                 override fun uploadRemote(localObject: Task): Observable<Response<Task>> {
                     if (t.parentEntityType == GrassrootEntityType.MEETING) {
                         val m = localObject as Meeting
-                        return grassrootUserApi.createMeeting("GROUP", currentUserUid, t.parentUid, m.name, m.locationDescription, t.deadlineMillis)
+                        return grassrootUserApi.createMeeting("GROUP", m.parentUid, m.name,m.locationDescription, m.date, m.description, true, m.latitude, m.longitude,  m.assignedMemberUids, m.mediaFileUid)
                     }
                     else if (t.parentEntityType == GrassrootEntityType.VOTE) {
                         val v = localObject as Vote
-                        return grassrootUserApi.createVote("GROUP", currentUserUid, t.parentUid, v.name, v.deadlineMillis)
+                        return grassrootUserApi.createVote("GROUP", v.parentUid, v.name, v.voteOptions, v.description, v.createdDate(), v.mediaFileUid, v.assignedMemberUids)
                     }
                     else if (t.parentEntityType == GrassrootEntityType.TODO) {
                         val todo = localObject as Todo
                         // as there are 4 different To-do-related api paths we must distinguish between todos
                         if (todo.todoType == "ACTION_REQUIRED") {
-                            return grassrootUserApi.createActionTodo("GROUP", currentUserUid, todo.parentUid, todo.name, todo.deadlineMillis)
+                            return grassrootUserApi.createActionTodo("GROUP", todo.parentUid, todo.name, todo.deadlineMillis, todo.isRecurring, todo.recurringPeriodMillis, todo.assignedMemberUids, todo.mediaFileUids)
                         }
                         else if (todo.todoType == "INFORMATION_REQUIRED") {
-                            return grassrootUserApi.createInformationTodo("GROUP", currentUserUid, todo.parentUid, todo.name, todo.deadlineMillis)
+                            return grassrootUserApi.createInformationTodo("GROUP", todo.parentUid, todo.name, todo.responseTag, todo.deadlineMillis, todo.assignedMemberUids, todo.mediaFileUids)
                         }
                         else if (todo.todoType == "VALIDATION_REQUIRED") {
-                            return grassrootUserApi.createConfirmationTodo("GROUP", currentUserUid, todo.parentUid, todo.name, todo.deadlineMillis)
+                            return grassrootUserApi.createConfirmationTodo("GROUP", todo.parentUid, todo.name, todo.deadlineMillis, todo.isRequireImages, todo.assignedMemberUids, todo.confirmingMemberUids, todo.isRecurring, todo.recurringPeriodMillis, todo.mediaFileUids)
                         }
                         else if (todo.todoType == "VOLUNTEERS_NEEDED") {
-                            return grassrootUserApi.createVolunteerTodo("GROUP", currentUserUid, todo.parentUid, todo.name, todo.deadlineMillis)
+                            return grassrootUserApi.createVolunteerTodo("GROUP", todo.parentUid, todo.name, todo.deadlineMillis, todo.assignedMemberUids, todo.mediaFileUids)
                         }
                     }
-                    // return statement requiered here
+                    // return statement required here
                 }
 
                 override fun uploadFailed(localObject: Task) {

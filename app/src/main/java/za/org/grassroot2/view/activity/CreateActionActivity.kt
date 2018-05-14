@@ -12,6 +12,10 @@ import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_create_action.*
+import kotlinx.android.synthetic.main.activity_create_group.*
+import kotlinx.android.synthetic.main.activity_create_meeting.*
+import kotlinx.android.synthetic.main.activity_create_todo.*
+import kotlinx.android.synthetic.main.activity_create_vote.*
 import za.org.grassroot2.R
 import com.tbruyelle.rxpermissions2.RxPermissions
 import za.org.grassroot2.dagger.activity.ActivityComponent
@@ -126,8 +130,8 @@ class CreateActionActivity : GrassrootActivity(), BackNavigationListener, Create
     }
 
     // Todo
-    private fun addTaskDateFragment(task: GrassrootEntityType) { // task param should be in the form GrassrootEntityTpye.VOTE (for example)
-        val taskDateFragment = MeetingDateFragment() // NOTE: Perhaps a generalisation of this class?
+    private fun addTaskDateFragment(task: GrassrootEntityType) {
+        val taskDateFragment = MeetingDateFragment()
         disposables.add(taskDateFragment.meetingDatePicked().subscribe { date ->
             closeKeyboard()
             presenter.setMeetingDate(date)
@@ -167,6 +171,7 @@ class CreateActionActivity : GrassrootActivity(), BackNavigationListener, Create
         adapter.addFragment(actionSingleInputFragment, "")
     }
 
+    /*
     private fun addMeetingSubjectFragment() {
         val actionSingleInputFragment = ActionSingleInputFragment.newInstance(R.string.what_is_it_about, R.string.info_meeting_subject, R.string.hint_meeting_subject, false)
         disposables.add(actionSingleInputFragment.inputAdded().subscribe { subject ->
@@ -175,6 +180,7 @@ class CreateActionActivity : GrassrootActivity(), BackNavigationListener, Create
         })
         adapter.addFragment(actionSingleInputFragment, "")
     }
+    */
 
     private fun addHeadlineFragment() {
         val actionSingleInputFragment = ActionSingleInputFragment.newInstance(R.string.what_is_it_about, R.string.info_headline, R.string.hint_headline, false)
@@ -225,14 +231,35 @@ class CreateActionActivity : GrassrootActivity(), BackNavigationListener, Create
         adapter.addFragment(fragment, "")
     }
 
-    private fun addGroupNameFragment() {   // CHECK: Will using some of meeting resources cause type conflict?
+    private fun addGroupNameDescriptionFragment() {
+        val group = Group()
         val actionSingleInputFragment = ActionSingleInputFragment.newInstance(R.string.name_your_group , R.string.info_group_nature, R.string.hint_create_group_name, false)
         disposables.add(actionSingleInputFragment.inputAdded().subscribe { groupName ->
-            presenter.setGroupName(groupName)
+            group.setName(groupName)
+            nextStep()
+        })
+        adapter.addFragment(actionSingleInputFragment, "")
+
+        val sActionSingleInputFragment = ActionSingleInputFragment.newInstance(R.string.describe_your_group , R.string.info_group_description, R.string.hint_description, false)
+        disposables.add(sActionSingleInputFragment.inputAdded().subscribe { groupDescription ->
+            group.setDescription(groupDescription)
+            nextStep()
+        })
+        adapter.addFragment(actionSingleInputFragment, "")
+
+        presenter.createGroup(group.name, group.description)
+    }
+
+    /*
+    private fun addGroupDescriptionFragment() {
+        val actionSingleInputFragment = ActionSingleInputFragment.newInstance(R.string.describe_your_group , R.string.info_group_description, R.string.hint_description, false)
+        disposables.add(actionSingleInputFragment.inputAdded().subscribe { groupDescription ->
+            presenter.setGroupDescription(groupDescription)
             nextStep()
         })
         adapter.addFragment(actionSingleInputFragment, "")
     }
+    */
 
     private fun addGroupMembersFragment() {
         launchContactSelectionFragment()
@@ -309,9 +336,10 @@ class CreateActionActivity : GrassrootActivity(), BackNavigationListener, Create
         removeAllViewsAboveCurrent()
         presenter.initTask(CreateActionPresenter.ActionType.Group)
 
-        addGroupNameFragment()
+        addGroupNameDescriptionFragment()
 
-        addGroupMembersFragment()
+        //addGroupMembersFragment()
+
         nextStep()
     }
 
@@ -323,10 +351,14 @@ class CreateActionActivity : GrassrootActivity(), BackNavigationListener, Create
         } else {
             presenter.setGroupUid(group)
         }
+
         addTodoSubjectFragment()
         addTodoTypeFragment()
         addTaskDateFragment(GrassrootEntityType.TODO)
         nextStep()
+
+        // or
+        // CreateTodoActivity.start(activity)
     }
 
     private fun launchVoteSequence(group: Group?) {
@@ -351,7 +383,7 @@ class CreateActionActivity : GrassrootActivity(), BackNavigationListener, Create
         } else {
             presenter.setGroupUid(group)
         }
-        addMeetingSubjectFragment()
+        //addMeetingSubjectFragment()
         addMeetingLocationFragment()
         addTaskDateFragment(GrassrootEntityType.MEETING)
         nextStep()

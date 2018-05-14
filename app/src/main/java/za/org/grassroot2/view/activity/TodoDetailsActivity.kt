@@ -53,7 +53,6 @@ class TodoDetailsActivity : GrassrootActivity(), TodoDetailsPresenter.TodoDetail
                     // Do some stuff
                     R.id.optionA -> presenter.respondToTodo(todoUid!!, Todo.TODO_YES)
                     R.id.optionB -> presenter.respondToTodo(todoUid!!, Todo.TODO_NO)
-                    R.id.todoTextBoxButton -> presenter.respondToTodo(todoUid!!, Todo.TODO_INFO)
                 }
             }, {t -> t.printStackTrace() }))
             attendenceDialog.show(supportFragmentManager, "")
@@ -160,8 +159,7 @@ class TodoDetailsActivity : GrassrootActivity(), TodoDetailsPresenter.TodoDetail
             }
             else if (todo.todoType == "INFORMATION_REQUIRED") {
                 var mEdit = findViewById(R.id.todoTextBox) as EditText
-                Todo.TODO_INFO = mEdit.text.toString()
-                todoTextBoxButton.setOnClickListener({ _ -> presenter.respondToTodo(todo.uid, Todo.TODO_INFO+mEdit.text.toString())})
+                todoTextBoxButton.setOnClickListener({ _ -> presenter.respondToTodo(todo.uid, mEdit.text.toString())})
             }
         }
     }

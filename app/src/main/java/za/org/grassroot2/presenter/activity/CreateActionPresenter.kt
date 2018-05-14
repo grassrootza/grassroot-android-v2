@@ -63,28 +63,46 @@ constructor(private val networkService: NetworkService, private val dbService: D
         }
     }
 
-    private fun createGroup(name: String): Group {
+    fun createGroup(name: String, description: String) {
         val g = Group()
         g.name = name
-        g.uid = UUID.randomUUID().toString()
-        g.memberCount = 10
+        g.description = description
+        g.reminderMinutes = 1440
         g.userRole = "Admin"
-        g.lastActionOrChange = System.currentTimeMillis()
-        g.lastTimeChangedServer = System.currentTimeMillis()
         Timber.d("Inside create group, New Group looks like: %s", g.toString())
-        return g
+        uploadGroup(g)
+    }
+
+    fun createMeeting(name: String, description: String) {
+        val meeting = Meeting()
+        meeting.name = name
+        meeting.description = description
+        meeting.date = System.currentTimeMillis()
+        createMeeting(meeting)
     }
 
     fun uploadGroup(g: Group) {
         view.showProgressBar()
         disposableOnDetach(networkService.createGroup(g!!).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe({ task ->
             view.closeProgressBar()
-            view.uploadSuccessfull(GrassrootEntityType.GROUP)  // eg. view.uploadSuccessfull(GrassrootEntityType.VOTE)
+            view.uploadSuccessfull(GrassrootEntityType.GROUP)
         }) { throwable ->
             view.closeProgressBar()
             view.uploadSuccessfull(GrassrootEntityType.GROUP)
         })
     }
+
+    fun createMeeting(m: Meeting) {
+        view.showProgressBar()
+        disposableOnDetach(networkService.createTask(m!!).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe({ task ->
+            view.closeProgressBar()
+            view.uploadSuccessfull(GrassrootEntityType.MEETING)  // eg. view.uploadSuccessfull(GrassrootEntityType.VOTE)
+        }) { throwable ->
+            view.closeProgressBar()
+            view.uploadSuccessfull(GrassrootEntityType.MEETING)
+        })
+    }
+
 
     fun createTask(Type: GrassrootEntityType) {
         view.showProgressBar()
@@ -139,10 +157,6 @@ constructor(private val networkService: NetworkService, private val dbService: D
         (task as Meeting).locationDescription = location
     }
 
-    fun setMeetingSubject(subject: String) {
-        (task as Meeting).setSubject(subject)
-    }
-
     fun setTodoSubject(subject: String) {
         (task as Todo).setSubject(subject)
     }
@@ -152,9 +166,11 @@ constructor(private val networkService: NetworkService, private val dbService: D
     }
 
     fun setGroupName(groupName: String) {
-        var g = createGroup(groupName)
-        Timber.d("Newly created group looks like: %s", g.toString())
-        uploadGroup(g)
+        (task as Group).setName(groupName)
+    }
+
+    fun setGroupDescription(description: String) {
+        (task as Group).setDescription(description)
     }
 
     fun setGroupUid(group: Group) {

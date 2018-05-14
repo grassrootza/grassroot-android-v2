@@ -6,6 +6,7 @@ import com.google.gson.annotations.SerializedName;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
+import java.lang.reflect.Array;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -47,6 +48,47 @@ public class Vote implements Task, Syncable {
     private long createdDate;
 
     @DatabaseField
+    @SerializedName("mediaFileUid")
+    private String mediaFileUid;
+
+    public void setParentEntityType(GrassrootEntityType parentEntityType) {
+        this.parentEntityType = parentEntityType;
+    }
+
+    public String getMediaFileUid() {
+        return mediaFileUid;
+    }
+
+    public void setMediaFileUid(String mediaFileUid) {
+        this.mediaFileUid = mediaFileUid;
+    }
+
+    public Array getAssignedMemberUids() {
+        return assignedMemberUids;
+    }
+
+    public void setAssignedMemberUids(Array assignedMemberUids) {
+        this.assignedMemberUids = assignedMemberUids;
+    }
+
+    @DatabaseField
+    @SerializedName("assignedMemberUids")
+    private Array assignedMemberUids;
+
+    @DatabaseField
+    @SerializedName("voteOptions")
+    private Array voteOptions;
+
+    public void setVoteOptions(Array voteOptions) {
+        this.voteOptions = voteOptions;
+    }
+
+    public Array getVoteOptions() {
+        return voteOptions;
+    }
+
+    @DatabaseField
+
     @SerializedName("deadlineMillis")
     private long deadlineMillis;
     @DatabaseField
@@ -57,7 +99,7 @@ public class Vote implements Task, Syncable {
 
     @SerializedName("voteResults")
     @DatabaseField
-    private HashMap<String, Integer> voteOptions;
+    private HashMap<String, Integer> voteResults;
 
     @DatabaseField
     private String voteResponse;
@@ -195,8 +237,8 @@ public class Vote implements Task, Syncable {
         return callerName;
     }
 
-    public HashMap<String, Integer> getVoteOptions() {
-        return voteOptions;
+    public HashMap<String, Integer> getVoteResults() {
+        return voteResults;
     }
 
     public String getAncestorGroupName() {

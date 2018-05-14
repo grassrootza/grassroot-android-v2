@@ -6,6 +6,7 @@ import com.google.gson.annotations.SerializedName;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
+import java.lang.reflect.Array;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -28,7 +29,6 @@ public class Todo implements Task, Syncable {
 
     public static final String TODO_YES = "YES";
     public static final String TODO_NO = "NO";
-    public static String TODO_INFO = ""; // value assigned at runtime
 
     @DatabaseField
     private String parentUid;
@@ -124,6 +124,106 @@ public class Todo implements Task, Syncable {
 
     @DatabaseField
     private List<String> assignedMembers;
+
+    @DatabaseField
+    @SerializedName("assignedMemberUids")
+    private Array assignedMemberUids;
+
+    @DatabaseField
+    @SerializedName("mediaFileUids")
+    private Array mediaFileUids;
+
+    public static String getTodoNo() {
+        return TODO_NO;
+    }
+
+    public boolean isRequireImages() {
+        return requireImages;
+    }
+
+    public void setRequireImages(boolean requireImages) {
+        this.requireImages = requireImages;
+    }
+
+    @DatabaseField
+    @SerializedName("recurring")
+    private boolean recurring;
+
+    @DatabaseField
+    @SerializedName("requireImages")
+    private boolean requireImages;
+
+    public static String getTodoYes() {
+        return TODO_YES;
+    }
+
+    public Array getAssignedMemberUids() {
+        return assignedMemberUids;
+    }
+
+    public void setAssignedMemberUids(Array assignedMemberUids) {
+        this.assignedMemberUids = assignedMemberUids;
+    }
+
+    public Array getMediaFileUids() {
+        return mediaFileUids;
+    }
+
+    public void setMediaFileUid(Array mediaFileUid) {
+        this.mediaFileUids = mediaFileUid;
+    }
+
+    public boolean isRecurring() {
+        return recurring;
+    }
+
+    public void setRecurring(boolean recurring) {
+        this.recurring = recurring;
+    }
+
+    public long getRecurringPeriodMillis() {
+        return recurringPeriodMillis;
+    }
+
+    public void setRecurringPeriodMillis(long recurringPeriodMillis) {
+        this.recurringPeriodMillis = recurringPeriodMillis;
+    }
+
+    public String getResponseTag() {
+        return responseTag;
+    }
+
+    public void setResponseTag(String responseTag) {
+        this.responseTag = responseTag;
+    }
+
+    public Array getConfirmingMemberUids() {
+        return confirmingMemberUids;
+    }
+
+    public void setConfirmingMemberUids(Array confirmingMemberUids) {
+        this.confirmingMemberUids = confirmingMemberUids;
+    }
+
+    public List<String> getConfirmingMembers() {
+        return confirmingMembers;
+    }
+
+    public void setConfirmingMembers(List<String> confirmingMembers) {
+        this.confirmingMembers = confirmingMembers;
+    }
+
+    @DatabaseField
+    @SerializedName("recurringPeriodMillis")
+    private long recurringPeriodMillis = 1440;
+
+    @DatabaseField
+    @SerializedName("responseTag")
+    private String responseTag;
+
+    @DatabaseField
+    @SerializedName("confirmingMemberUids")
+    private Array confirmingMemberUids;
 
     @DatabaseField
     private List<String> confirmingMembers;

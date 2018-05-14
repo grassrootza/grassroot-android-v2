@@ -8,6 +8,8 @@ import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.field.ForeignCollectionField;
 import com.j256.ormlite.table.DatabaseTable;
 
+import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.Date;
 
 import za.org.grassroot2.model.AroundItem;
@@ -35,10 +37,11 @@ public class Meeting implements Task, Syncable, AroundItem {
     @DatabaseField
     private GrassrootEntityType parentEntityType;
 
-    @SerializedName("title")
+    @SerializedName("subject")
     @DatabaseField(canBeNull = false)
     private String subject;
 
+    @SerializedName("description")
     @DatabaseField
     private String description;
 
@@ -51,8 +54,45 @@ public class Meeting implements Task, Syncable, AroundItem {
     private String locationDescription;
 
     @DatabaseField
+    @SerializedName("assignedMemberUids")
+    private Array assignedMemberUids;
+
+    public Array getAssignedMemberUids() {
+        return assignedMemberUids;
+    }
+
+    public void setAssignedMemberUids(Array assignedMemberUids) {
+        this.assignedMemberUids = assignedMemberUids;
+    }
+
+    public String getMediaFileUid() {
+        return mediaFileUid;
+    }
+
+    public void setMediaFileUid(String mediaFileUid) {
+        this.mediaFileUid = mediaFileUid;
+    }
+
+    @DatabaseField
+    @SerializedName("mediaFileUid")
+    private String mediaFileUid;
+
+    public long getDate() {
+        return date;
+    }
+
+    public void setDate(long date) {
+        this.date = date;
+    }
+
+    @DatabaseField
     @SerializedName("createdDate")
+
     private long createdDate;
+
+    @DatabaseField
+    @SerializedName("createdDate")
+    private long date;
 
     @DatabaseField
     @SerializedName("deadlineMillis")
@@ -116,6 +156,10 @@ public class Meeting implements Task, Syncable, AroundItem {
         return new Date(createdDate);
     }
 
+    public Date getCreatedDate() {
+        return new Date(createdDate);
+    }
+
     @Override
     public long getDeadlineMillis() {
         return deadlineMillis;
@@ -170,7 +214,11 @@ public class Meeting implements Task, Syncable, AroundItem {
         this.parentUid = parentUid;
     }
 
-    public void setSubject(String subject) {
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public void setName(String subject) {
         this.subject = subject;
     }
 
