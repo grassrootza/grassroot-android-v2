@@ -57,11 +57,11 @@ public class Vote implements Task, Syncable {
 
     @DatabaseField
     @SerializedName("assignedMemberUids")
-    private Array assignedMemberUids;
+    private String[] assignedMemberUids;
 
     @DatabaseField
     @SerializedName("voteOptions")
-    private Array voteOptions;
+    private String[] voteOptions;
 
     @DatabaseField
     @SerializedName("deadlineMillis")
@@ -237,11 +237,11 @@ public class Vote implements Task, Syncable {
         this.parentEntityType = parentEntityType;
     }
 
-    public void setVoteOptions(Array voteOptions) {
+    public void setVoteOptions(String[] voteOptions) {
         this.voteOptions = voteOptions;
     }
 
-    public Array getVoteOptions() {
+    public String[] getVoteOptions() {
         return voteOptions;
     }
 
@@ -253,11 +253,11 @@ public class Vote implements Task, Syncable {
         this.mediaFileUid = mediaFileUid;
     }
 
-    public Array getAssignedMemberUids() {
+    public String[] getAssignedMemberUids() {
         return assignedMemberUids;
     }
 
-    public void setAssignedMemberUids(Array assignedMemberUids) {
+    public void setAssignedMemberUids(String[] assignedMemberUids) {
         this.assignedMemberUids = assignedMemberUids;
     }
 

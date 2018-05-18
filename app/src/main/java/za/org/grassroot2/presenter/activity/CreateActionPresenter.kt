@@ -120,8 +120,8 @@ constructor(private val networkService: NetworkService, private val dbService: D
         (task as Meeting).locationDescription = location
     }
 
-    fun setVoteOptions(options: Array<String>) {
-        (task as Vote).setVoteOptions(options) // TODO: Kotlin-Java array conversion
+    fun setVoteOptions(options: List<String>) {
+        (task as Vote).setVoteOptions(options.toTypedArray())
     }
 
     fun setTodoSubject(subject: String) {

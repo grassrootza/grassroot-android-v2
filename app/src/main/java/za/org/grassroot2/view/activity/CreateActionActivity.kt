@@ -12,10 +12,6 @@ import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_create_action.*
-import kotlinx.android.synthetic.main.activity_create_group.*
-import kotlinx.android.synthetic.main.activity_create_meeting.*
-import kotlinx.android.synthetic.main.activity_create_todo.*
-import kotlinx.android.synthetic.main.activity_create_vote.*
 import za.org.grassroot2.R
 import com.tbruyelle.rxpermissions2.RxPermissions
 import za.org.grassroot2.dagger.activity.ActivityComponent
@@ -235,7 +231,7 @@ class CreateActionActivity : GrassrootActivity(), BackNavigationListener, Create
             disposables.add(fragment.itemSelection().subscribe { integer ->
                 when (integer) {
                     R.id.yes_no_option -> {
-                        presenter.setVoteOptions(arrayOf("YES", "NO"))
+                        presenter.setVoteOptions(listOf("YES", "NO"))
                     }
                     R.id.customOptions -> {
                         addVoteOptionsFragment()
@@ -248,8 +244,8 @@ class CreateActionActivity : GrassrootActivity(), BackNavigationListener, Create
     private fun addVoteOptionsFragment() {
         // launches VoteActionSingleInputFragment and returns an array of chosen options
         val voteActionSingleInputFragment = VoteActionSingleInputFragment.newInstance(R.string.vote_option_header,  R.string.hint_description, false)
-        disposables.add(voteActionSingleInputFragment.inputAdded().subscribe { description ->
-            presenter.setVoteDescription(description)
+        disposables.add(voteActionSingleInputFragment.inputAdded().subscribe { voteOptions ->
+            presenter.setVoteOptions(voteOptions)
             nextStep()
         })
         adapter.addFragment(voteActionSingleInputFragment, "")

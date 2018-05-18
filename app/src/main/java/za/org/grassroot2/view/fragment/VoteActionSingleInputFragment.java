@@ -8,8 +8,10 @@ import android.text.InputType;
 import android.view.Gravity;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import java.lang.reflect.Array;
@@ -44,24 +46,23 @@ public class VoteActionSingleInputFragment extends GrassrootFragment{
     View next;
     @BindView(R.id.add_vote_option_cancel)
     Button cancel;
+    @BindView(R.id.voteOptionsListView)
+    ListView listView;
     @BindView(R.id.buttons)
     Button add;
 
     List<String> chosenOptionsList = new List<String>;
 
-    private PublishSubject<Array> chosenOptions = PublishSubject.create();
+    private PublishSubject<List<String>> chosenOptions = PublishSubject.create();
     private BackNavigationListener listener;
     private boolean                multiLine;
 
-    public static VoteActionSingleInputFragment newInstance(List<String> optionsList/*make null safe*/, int resTitle, int resHint, boolean canSkip) {
+    public static VoteActionSingleInputFragment newInstance(int resTitle, int resHint, boolean canSkip) {
         VoteActionSingleInputFragment f = new VoteActionSingleInputFragment();
         Bundle b = new Bundle();
         b.putInt(EXTRA_TITLE_RES, resTitle);
         b.putInt(EXTRA_HINT_RES, resHint);
         b.putBoolean(EXTRA_CAN_SKIP, canSkip);
-        if (!optionsList.equals(null)) {
-            b.putIntegerArrayList(EXTRA_OPTIONS_LIST, optionsList);
-        }
         f.setArguments(b);
         return f;
     }
@@ -86,9 +87,8 @@ public class VoteActionSingleInputFragment extends GrassrootFragment{
     void add() {
         String voteOptionInput = inputContainer.getEditText().getText().toString();
         chosenOptionsList.add(voteOptionInput);
-        fragment = VoteActionSingleInputFragment.newInstance(chosenOptionsList, getArguments().getInt(EXTRA_TITLE_RES), getArguments().getInt(EXTRA_HINT_RES), getArguments().getBoolean(EXTRA_CAN_SKIP));
-        // How to call observable in each new created instance...
-        // When user clicks next, chosenOptions should bubble back to the first instance and publish to subscriber
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(getContext(), R.layout.fragment_add_vote_responses_single_input, chosenOptionsList);
+        adapter.notifyDataSetChanged();
     }
 
     @Override
@@ -102,13 +102,12 @@ public class VoteActionSingleInputFragment extends GrassrootFragment{
         inputContainer.setHint(getString(getArguments().getInt(EXTRA_HINT_RES)));
         setMultilineIfRequired();
         title.setText(getArguments().getInt(EXTRA_TITLE_RES));
-        if (getArguments().getBoolean(EXTRA_CAN_SKIP, false)) {
-            cancel.setText(R.string.button_skip);
-            cancel.setOnClickListener(v -> input.onNext(""));
-        }
         disposables.add(RxTextView.textChanges(input).debounce(500, TimeUnit.MILLISECONDS)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(charSequence -> next.setEnabled(charSequence.length() > 3), Throwable::printStackTrace));
+
+        RxView.clicks(next).observeOn(AndroidSchedulers.mainThread())
+                .map(clickEvent -> chosenOptionsList).subscribe(chosenOptions);
     }
 
     private void setMultilineIfRequired() {
@@ -126,7 +125,7 @@ public class VoteActionSingleInputFragment extends GrassrootFragment{
         super.onDestroy();
     }
 
-    public Observable<Array> inputAdded() {
+    public Observable<List<String>> inputAdded() {
         return chosenOptions;
     }
 
