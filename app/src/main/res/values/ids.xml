@@ -9,7 +9,13 @@
     <item name="video" type="id" />
     <item name="gallery" type="id" />
     <item name="createGroup" type="id" />
-    <item name="takeAction" type="id" />
+    <item name="yes_no_option" type="id"/>
+    <item name="takeAction" type="id" />\
+    <item name="customOptions" type="id"/>
     <item name="audio" type="id" />
     <item name="unknownIntent" type="id" />
+    <item name="todoAction" type="id"/>
+    <item name="todoInformation" type="id"/>
+    <item name="todoVolunteer" type="id"/>
+    <item name="todoValidate" type="id"/>
 </resources>

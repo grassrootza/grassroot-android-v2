@@ -63,52 +63,11 @@ constructor(private val networkService: NetworkService, private val dbService: D
         }
     }
 
-    fun createGroup(name: String, description: String) {
-        val g = Group()
-        g.name = name
-        g.description = description
-        g.reminderMinutes = 1440
-        g.userRole = "Admin"
-        Timber.d("Inside create group, New Group looks like: %s", g.toString())
-        uploadGroup(g)
-    }
-
-    fun createMeeting(name: String, description: String) {
-        val meeting = Meeting()
-        meeting.name = name
-        meeting.description = description
-        meeting.date = System.currentTimeMillis()
-        createMeeting(meeting)
-    }
-
-    fun uploadGroup(g: Group) {
-        view.showProgressBar()
-        disposableOnDetach(networkService.createGroup(g!!).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe({ task ->
-            view.closeProgressBar()
-            view.uploadSuccessfull(GrassrootEntityType.GROUP)
-        }) { throwable ->
-            view.closeProgressBar()
-            view.uploadSuccessfull(GrassrootEntityType.GROUP)
-        })
-    }
-
-    fun createMeeting(m: Meeting) {
-        view.showProgressBar()
-        disposableOnDetach(networkService.createTask(m!!).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe({ task ->
-            view.closeProgressBar()
-            view.uploadSuccessfull(GrassrootEntityType.MEETING)  // eg. view.uploadSuccessfull(GrassrootEntityType.VOTE)
-        }) { throwable ->
-            view.closeProgressBar()
-            view.uploadSuccessfull(GrassrootEntityType.MEETING)
-        })
-    }
-
-
     fun createTask(Type: GrassrootEntityType) {
         view.showProgressBar()
         disposableOnDetach(networkService.createTask(task!!).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe({ task ->
             view.closeProgressBar()
-            view.uploadSuccessfull(Type)  // eg. view.uploadSuccessfull(GrassrootEntityType.VOTE)
+            view.uploadSuccessfull(Type)
         }) { throwable ->
             view.closeProgressBar()
             view.uploadSuccessfull(Type)
@@ -148,6 +107,10 @@ constructor(private val networkService: NetworkService, private val dbService: D
         }
     }
 
+    fun setMeetingSubject(subject: String) {
+        (task as Meeting).setName(subject)
+    }
+
     fun setMeetingDate(date: Long?) {
         (task as Meeting).deadlineMillis = date!!
         (task as Meeting).setCreatedDate(System.currentTimeMillis())
@@ -155,6 +118,10 @@ constructor(private val networkService: NetworkService, private val dbService: D
 
     fun setMeetingLocation(location: String) {
         (task as Meeting).locationDescription = location
+    }
+
+    fun setVoteOptions(options: Array<String>) {
+        (task as Vote).setVoteOptions(options) // TODO: Kotlin-Java array conversion
     }
 
     fun setTodoSubject(subject: String) {
@@ -165,12 +132,28 @@ constructor(private val networkService: NetworkService, private val dbService: D
         (task as Vote).setSubject(subject)
     }
 
+    fun setTodoType(type: String) {
+        (task as Todo).setTodoType(type)
+    }
+
+    fun setTodoResponseTag(responseTag: String) {
+        (task as Todo).setResponseTag(responseTag)
+    }
+
     fun setGroupName(groupName: String) {
         (task as Group).setName(groupName)
     }
 
+    fun setUserRole() {
+        (task as Group).setUserRole("ROLE_GROUP_ORGANIZER")
+    }
+
     fun setGroupDescription(description: String) {
         (task as Group).setDescription(description)
+    }
+
+    fun setVoteDescription(description: String) {
+        (task as Vote).setDescription(description)
     }
 
     fun setGroupUid(group: Group) {

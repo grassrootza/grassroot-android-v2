@@ -33,14 +33,6 @@ public class Todo implements Task, Syncable {
     @DatabaseField
     private String parentUid;
 
-    public String getResponse() {
-        return response;
-    }
-
-    public void setResponse(String response) {
-        this.response = response;
-    }
-
     @DatabaseField
     private String response;
 
@@ -65,34 +57,32 @@ public class Todo implements Task, Syncable {
     @DatabaseField(canBeNull = false)
     private String subject;
 
-    @Override
-    public String toString() {
-        return "Todo{" +
-                "uid='" + uid + '\'' +
-                ", parentUid='" + parentUid + '\'' +
-                ", response='" + response + '\'' +
-                ", todoResponses=" + todoResponses +
-                ", locationDescription='" + locationDescription + '\'' +
-                ", todoType='" + todoType + '\'' +
-                ", synced=" + synced +
-                ", parentEntityType=" + parentEntityType +
-                ", summary='" + subject + '\'' +
-                ", description='" + description + '\'' +
-                ", recorderName='" + recorderName + '\'' +
-                ", needsConfirmation=" + needsConfirmation +
-                ", isConfirmed=" + isConfirmed +
-                ", createdDate=" + createdDate +
-                ", deadlineMillis=" + deadlineMillis +
-                ", lastChangeTimeServerMillis=" + lastChangeTimeServerMillis +
-                ", ancestorGroupName='" + ancestorGroupName + '\'' +
-                ", assignedMembers=" + assignedMembers +
-                ", confirmingMembers=" + confirmingMembers +
-                ", hasConfirmed=" + hasConfirmed +
-                ", mediaFile=" + mediaFile +
-                ", userPartOf=" + userPartOf +
-                ", publicTodo=" + publicTodo +
-                '}';
-    }
+    @DatabaseField
+    @SerializedName("recurringPeriodMillis")
+    private long recurringPeriodMillis = 1440;
+
+    @DatabaseField
+    @SerializedName("responseTag")
+    private String responseTag;
+
+    @DatabaseField
+    @SerializedName("confirmingMemberUids")
+    private Array confirmingMemberUids;
+
+    @DatabaseField
+    private List<String> confirmingMembers;
+
+    @DatabaseField
+    private boolean hasConfirmed;
+
+    @DatabaseField(foreign = true)
+    private MediaFile mediaFile;
+
+    @DatabaseField
+    private boolean userPartOf = true;
+
+    @DatabaseField
+    private boolean publicTodo = false; // no such thing yet, but flexibility for future
 
     @DatabaseField
     private String description;
@@ -113,9 +103,11 @@ public class Todo implements Task, Syncable {
     @DatabaseField
     @SerializedName("createdDateTimeMillis")
     private long createdDate;
+
     @DatabaseField
     @SerializedName("deadlineMillis")
     private long deadlineMillis;
+
     @DatabaseField
     private long lastChangeTimeServerMillis;
 
@@ -133,6 +125,14 @@ public class Todo implements Task, Syncable {
     @SerializedName("mediaFileUids")
     private Array mediaFileUids;
 
+    @DatabaseField
+    @SerializedName("recurring")
+    private boolean recurring;
+
+    @DatabaseField
+    @SerializedName("requireImages")
+    private boolean requireImages;
+
     public static String getTodoNo() {
         return TODO_NO;
     }
@@ -144,14 +144,6 @@ public class Todo implements Task, Syncable {
     public void setRequireImages(boolean requireImages) {
         this.requireImages = requireImages;
     }
-
-    @DatabaseField
-    @SerializedName("recurring")
-    private boolean recurring;
-
-    @DatabaseField
-    @SerializedName("requireImages")
-    private boolean requireImages;
 
     public static String getTodoYes() {
         return TODO_YES;
@@ -213,32 +205,13 @@ public class Todo implements Task, Syncable {
         this.confirmingMembers = confirmingMembers;
     }
 
-    @DatabaseField
-    @SerializedName("recurringPeriodMillis")
-    private long recurringPeriodMillis = 1440;
+    public String getResponse() {
+        return response;
+    }
 
-    @DatabaseField
-    @SerializedName("responseTag")
-    private String responseTag;
-
-    @DatabaseField
-    @SerializedName("confirmingMemberUids")
-    private Array confirmingMemberUids;
-
-    @DatabaseField
-    private List<String> confirmingMembers;
-
-    @DatabaseField
-    private boolean hasConfirmed;
-
-    @DatabaseField(foreign = true)
-    private MediaFile mediaFile;
-
-    @DatabaseField
-    private boolean userPartOf = true;
-
-    @DatabaseField
-    private boolean publicTodo = false; // no such thing yet, but flexibility for future
+    public void setResponse(String response) {
+        this.response = response;
+    }
 
     @Override
     public String getUid() {
@@ -316,7 +289,7 @@ public class Todo implements Task, Syncable {
     // @Override
     public String getTodoType() { return todoType; }
 
-    public void setTodoType() {
+    public void setTodoType(String todoType) {
         this.todoType = todoType;
     }
 
@@ -380,5 +353,34 @@ public class Todo implements Task, Syncable {
     @Override
     public String searchableContent() {
         return subject + (description != null ? description : "");
+    }
+
+    @Override
+    public String toString() {
+        return "Todo{" +
+                "uid='" + uid + '\'' +
+                ", parentUid='" + parentUid + '\'' +
+                ", response='" + response + '\'' +
+                ", todoResponses=" + todoResponses +
+                ", locationDescription='" + locationDescription + '\'' +
+                ", todoType='" + todoType + '\'' +
+                ", synced=" + synced +
+                ", parentEntityType=" + parentEntityType +
+                ", summary='" + subject + '\'' +
+                ", description='" + description + '\'' +
+                ", recorderName='" + recorderName + '\'' +
+                ", needsConfirmation=" + needsConfirmation +
+                ", isConfirmed=" + isConfirmed +
+                ", createdDate=" + createdDate +
+                ", deadlineMillis=" + deadlineMillis +
+                ", lastChangeTimeServerMillis=" + lastChangeTimeServerMillis +
+                ", ancestorGroupName='" + ancestorGroupName + '\'' +
+                ", assignedMembers=" + assignedMembers +
+                ", confirmingMembers=" + confirmingMembers +
+                ", hasConfirmed=" + hasConfirmed +
+                ", mediaFile=" + mediaFile +
+                ", userPartOf=" + userPartOf +
+                ", publicTodo=" + publicTodo +
+                '}';
     }
 }

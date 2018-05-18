@@ -57,42 +57,17 @@ public class Meeting implements Task, Syncable, AroundItem {
     @SerializedName("assignedMemberUids")
     private Array assignedMemberUids;
 
-    public Array getAssignedMemberUids() {
-        return assignedMemberUids;
-    }
-
-    public void setAssignedMemberUids(Array assignedMemberUids) {
-        this.assignedMemberUids = assignedMemberUids;
-    }
-
-    public String getMediaFileUid() {
-        return mediaFileUid;
-    }
-
-    public void setMediaFileUid(String mediaFileUid) {
-        this.mediaFileUid = mediaFileUid;
-    }
-
     @DatabaseField
     @SerializedName("mediaFileUid")
     private String mediaFileUid;
 
-    public long getDate() {
-        return date;
-    }
-
-    public void setDate(long date) {
-        this.date = date;
-    }
-
     @DatabaseField
     @SerializedName("createdDate")
-
     private long createdDate;
 
     @DatabaseField
-    @SerializedName("createdDate")
-    private long date;
+    @SerializedName("creationDate")
+    private long creationDate;
 
     @DatabaseField
     @SerializedName("deadlineMillis")
@@ -103,14 +78,6 @@ public class Meeting implements Task, Syncable, AroundItem {
 
     @ForeignCollectionField
     private ForeignCollection<Post> posts;
-
-    public String getResponse() {
-        return response;
-    }
-
-    public void setResponse(String response) {
-        this.response = response;
-    }
 
     @DatabaseField
     private String response;
@@ -230,12 +197,44 @@ public class Meeting implements Task, Syncable, AroundItem {
         this.deadlineMillis = deadlineMillis;
     }
 
+    public Array getAssignedMemberUids() {
+        return assignedMemberUids;
+    }
+
+    public void setAssignedMemberUids(Array assignedMemberUids) {
+        this.assignedMemberUids = assignedMemberUids;
+    }
+
+    public long getCreationDate() {
+        return creationDate;
+    }
+
+    public void setCreationDate(long creationDate) {
+        this.creationDate = creationDate;
+    }
+
+    public String getMediaFileUid() {
+        return mediaFileUid;
+    }
+
+    public void setMediaFileUid(String mediaFileUid) {
+        this.mediaFileUid = mediaFileUid;
+    }
+
     public void setLocationDescription(String locationDescription) {
         this.locationDescription = locationDescription;
     }
 
     public String getLocationDescription() {
         return locationDescription;
+    }
+
+    public String getResponse() {
+        return response;
+    }
+
+    public void setResponse(String response) {
+        this.response = response;
     }
 
     @Override

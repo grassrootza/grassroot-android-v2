@@ -48,28 +48,12 @@ public class Vote implements Task, Syncable {
     private long createdDate;
 
     @DatabaseField
+    @SerializedName("createdDateTimeMillis")
+    private long createdDateTimeMillis;
+
+    @DatabaseField
     @SerializedName("mediaFileUid")
     private String mediaFileUid;
-
-    public void setParentEntityType(GrassrootEntityType parentEntityType) {
-        this.parentEntityType = parentEntityType;
-    }
-
-    public String getMediaFileUid() {
-        return mediaFileUid;
-    }
-
-    public void setMediaFileUid(String mediaFileUid) {
-        this.mediaFileUid = mediaFileUid;
-    }
-
-    public Array getAssignedMemberUids() {
-        return assignedMemberUids;
-    }
-
-    public void setAssignedMemberUids(Array assignedMemberUids) {
-        this.assignedMemberUids = assignedMemberUids;
-    }
 
     @DatabaseField
     @SerializedName("assignedMemberUids")
@@ -79,18 +63,10 @@ public class Vote implements Task, Syncable {
     @SerializedName("voteOptions")
     private Array voteOptions;
 
-    public void setVoteOptions(Array voteOptions) {
-        this.voteOptions = voteOptions;
-    }
-
-    public Array getVoteOptions() {
-        return voteOptions;
-    }
-
     @DatabaseField
-
     @SerializedName("deadlineMillis")
     private long deadlineMillis;
+
     @DatabaseField
     private long lastChangeTimeServerMillis;
 
@@ -241,8 +217,48 @@ public class Vote implements Task, Syncable {
         return voteResults;
     }
 
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public long getCreatedDateTimeMillis() {
+        return createdDateTimeMillis;
+    }
+
+    public void setCreatedDateTimeMillis(long createdDateTimeMillis) {
+        this.createdDateTimeMillis = createdDateTimeMillis;
+    }
+
     public String getAncestorGroupName() {
         return ancestorGroupName;
+    }
+
+    public void setParentEntityType(GrassrootEntityType parentEntityType) {
+        this.parentEntityType = parentEntityType;
+    }
+
+    public void setVoteOptions(Array voteOptions) {
+        this.voteOptions = voteOptions;
+    }
+
+    public Array getVoteOptions() {
+        return voteOptions;
+    }
+
+    public String getMediaFileUid() {
+        return mediaFileUid;
+    }
+
+    public void setMediaFileUid(String mediaFileUid) {
+        this.mediaFileUid = mediaFileUid;
+    }
+
+    public Array getAssignedMemberUids() {
+        return assignedMemberUids;
+    }
+
+    public void setAssignedMemberUids(Array assignedMemberUids) {
+        this.assignedMemberUids = assignedMemberUids;
     }
 
     public void setAncestorGroupName(String ancestorGroupName) {

@@ -179,14 +179,18 @@
     <string name="select_a_group">Select a group</string>
     <string name="hint_group_name">Search By Group name</string>
     <string name="what_is_it_about">What is it about?</string>
+    <string name="vote_option_header">add a vote option</string>
     <string name="name_your_group">What is the groups name?</string>
     <string name="describe_your_group">What is the group about?</string>
+    <string name="enter_response_tag">How would you like to prefix responses?</string>
     <string name="cancel">CANCEL</string>
     <string name="next">NEXT</string>
     <string name="info_meeting_subject">Type in a short sentence the subject of this meeting.</string>
-    <string name="info_vote_subject">Describe what is being voted on.</string>
+    <string name="info_vote_subject">Briefly describe what is being voted on.</string>
+    <string name="info_vote_description">Provide a detailed description what is being voted on.</string>
     <string name="info_group_nature">Enter the name of your group</string>
     <string name="info_group_description">Enter a short description of your group</string>
+    <string name="info_response_tag">Enter a response tag</string>
     <string name="info_todo_description">Describe the Action for members.</string>
     <string name="info_post_subject">Type in a short sentence the subject of this post.</string>
     <string name="info_meeting_location">Type in location of this meeting.</string>
@@ -214,6 +218,8 @@
     <string name="long_description">Long description?</string>
     <string name="info_long_description">Enter longer description</string>
     <string name="hint_description">Description</string>
+    <string name="hint_vote_option">Vote Option</string>
+    <string name="hint_response_tag">Response Tag</string>
     <string name="hint_create_group_name">Group Name</string>
     <string name="error_getting_location">There is problem getting your location!</string>
     <string name="view_group">VIEW GROUP</string>
@@ -260,6 +266,8 @@
     <string name="registration_failed_number_already_registered">User with this number is already registered</string>
     <string name="registration_failed_invalid_otp">Code verification failed</string>
     <string name="createGroup">Create group</string>
+    <string name="yes_no_option">Yes or No</string>
+    <string name="customOptions">Custom Options</string>
     <string name="takeAction">Take action</string>
     <string name="dictateMyAction">Dictate my action</string>
     <string name="write_post">WRITE A POST</string>
@@ -271,6 +279,11 @@
     <string name="post_confirm_text_no_media">Issuing a post with title \'%1$s\', No media attached.</string>
     <string name="speak_now">Speak now</string>
     <string name="activity">ACTIVITY</string>
+
+    <string name="todoAction">by Taking Action</string>
+    <string name="todoInformation">By Providing Information</string>
+    <string name="todoVolunteer">By Volunteering</string>
+    <string name="todoValidate">By Validating an Event</string>
 
     <string name="me_change_profile_photo">CHANGE PROFILE PHOTO</string>
     <string name="me_phone_number">Phone number</string>

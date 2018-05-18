@@ -129,7 +129,6 @@ class CreateActionActivity : GrassrootActivity(), BackNavigationListener, Create
         component.inject(this)
     }
 
-    // Todo
     private fun addTaskDateFragment(task: GrassrootEntityType) {
         val taskDateFragment = MeetingDateFragment()
         disposables.add(taskDateFragment.meetingDatePicked().subscribe { date ->
@@ -171,7 +170,7 @@ class CreateActionActivity : GrassrootActivity(), BackNavigationListener, Create
         adapter.addFragment(actionSingleInputFragment, "")
     }
 
-    /*
+
     private fun addMeetingSubjectFragment() {
         val actionSingleInputFragment = ActionSingleInputFragment.newInstance(R.string.what_is_it_about, R.string.info_meeting_subject, R.string.hint_meeting_subject, false)
         disposables.add(actionSingleInputFragment.inputAdded().subscribe { subject ->
@@ -180,7 +179,6 @@ class CreateActionActivity : GrassrootActivity(), BackNavigationListener, Create
         })
         adapter.addFragment(actionSingleInputFragment, "")
     }
-    */
 
     private fun addHeadlineFragment() {
         val actionSingleInputFragment = ActionSingleInputFragment.newInstance(R.string.what_is_it_about, R.string.info_headline, R.string.hint_headline, false)
@@ -210,11 +208,61 @@ class CreateActionActivity : GrassrootActivity(), BackNavigationListener, Create
 
     private fun addTodoTypeFragment() {
         // TODO: Input fields vary by type
+        val fragment = MultiOptionPickFragment.todoOptionPicker
+            disposables.add(fragment.itemSelection().subscribe { integer ->
+                when (integer) {
+                    R.id.todoAction -> {
+                        presenter.setTodoType("ACTION_REQUIRED")
+                   }
+                R.id.todoInformation -> {
+                    presenter.setTodoType("INFORMATION_REQUIRED")
+                    addResponseTagFragment()
+                }
+                R.id.todoVolunteer -> {
+                    presenter.setTodoType("VOLUNTEERS_REQUIRED")
+                }
+                R.id.todoValidate -> {
+                    presenter.setTodoType("VALIDATION_REQUIRED")
+                }
+            }
+                nextStep()
+        })
+    }
+
+    private fun addVoteTypeFragment() {
+
+        val fragment = MultiOptionPickFragment.voteOptionPicker
+            disposables.add(fragment.itemSelection().subscribe { integer ->
+                when (integer) {
+                    R.id.yes_no_option -> {
+                        presenter.setVoteOptions(arrayOf("YES", "NO"))
+                    }
+                    R.id.customOptions -> {
+                        addVoteOptionsFragment()
+                    }
+                }
+                nextStep()
+            })
     }
 
     private fun addVoteOptionsFragment() {
-        // TODO: Design a layout
-        // NOTE: Must have dynamic input fields. Cater for custom vote options
+        // launches VoteActionSingleInputFragment and returns an array of chosen options
+        val voteActionSingleInputFragment = VoteActionSingleInputFragment.newInstance(R.string.vote_option_header,  R.string.hint_description, false)
+        disposables.add(voteActionSingleInputFragment.inputAdded().subscribe { description ->
+            presenter.setVoteDescription(description)
+            nextStep()
+        })
+        adapter.addFragment(voteActionSingleInputFragment, "")
+
+    }
+
+    private fun addVoteDescriptionFragment() {
+        val actionSingleInputFragment = ActionSingleInputFragment.newInstance(R.string.what_is_it_about, R.string.info_vote_description, R.string.hint_description, false)
+        disposables.add(actionSingleInputFragment.inputAdded().subscribe { description ->
+            presenter.setVoteDescription(description)
+            nextStep()
+        })
+        adapter.addFragment(actionSingleInputFragment, "")
     }
 
     private fun addGroupSelectionFragment() {
@@ -231,26 +279,24 @@ class CreateActionActivity : GrassrootActivity(), BackNavigationListener, Create
         adapter.addFragment(fragment, "")
     }
 
-    private fun addGroupNameDescriptionFragment() {
-        val group = Group()
+    private fun addGroupNameFragment() {
         val actionSingleInputFragment = ActionSingleInputFragment.newInstance(R.string.name_your_group , R.string.info_group_nature, R.string.hint_create_group_name, false)
         disposables.add(actionSingleInputFragment.inputAdded().subscribe { groupName ->
-            group.setName(groupName)
+            presenter.setGroupName(groupName)
             nextStep()
         })
         adapter.addFragment(actionSingleInputFragment, "")
-
-        val sActionSingleInputFragment = ActionSingleInputFragment.newInstance(R.string.describe_your_group , R.string.info_group_description, R.string.hint_description, false)
-        disposables.add(sActionSingleInputFragment.inputAdded().subscribe { groupDescription ->
-            group.setDescription(groupDescription)
-            nextStep()
-        })
-        adapter.addFragment(actionSingleInputFragment, "")
-
-        presenter.createGroup(group.name, group.description)
     }
 
-    /*
+    private fun addResponseTagFragment() {
+        val actionSingleInputFragment = ActionSingleInputFragment.newInstance(R.string.enter_response_tag , R.string.info_response_tag, R.string.hint_response_tag, false)
+        disposables.add(actionSingleInputFragment.inputAdded().subscribe { responseTag ->
+            presenter.setTodoResponseTag(responseTag)
+            nextStep()
+        })
+        adapter.addFragment(actionSingleInputFragment, "")
+    }
+
     private fun addGroupDescriptionFragment() {
         val actionSingleInputFragment = ActionSingleInputFragment.newInstance(R.string.describe_your_group , R.string.info_group_description, R.string.hint_description, false)
         disposables.add(actionSingleInputFragment.inputAdded().subscribe { groupDescription ->
@@ -258,30 +304,6 @@ class CreateActionActivity : GrassrootActivity(), BackNavigationListener, Create
             nextStep()
         })
         adapter.addFragment(actionSingleInputFragment, "")
-    }
-    */
-
-    private fun addGroupMembersFragment() {
-        launchContactSelectionFragment()
-    }
-
-    // Adapt separate code or use GroupDetailsActivity's displayInviteDialog?
-    private fun launchContactSelectionFragment() {
-        /* val df = AddMemberDialog.newInstance(AddMemberDialog.TYPE_PICK)
-        df.setAddMemberDialogListener(object : AddMemberDialog.AddMemberDialogListener {
-            override fun contactBook() {
-                rxPermissions.request(Manifest.permission.READ_CONTACTS).subscribe({ result ->
-                    if (result!!) {
-                        // PickContactActivity.startForResult(this@GroupDetailsActivity, GroupDetailsActivity.REQUEST_PICK_CONTACTS)
-                    }
-                }, { it.printStackTrace() })
-            }
-
-            override fun manual() {
-                showFillDialog()
-            }
-        })
-        df.show(supportFragmentManager, GrassrootActivity.DIALOG_TAG)*/
     }
 
     /*
@@ -332,14 +354,13 @@ class CreateActionActivity : GrassrootActivity(), BackNavigationListener, Create
     }
 
     private fun launchGroupSequence() {
-        // TODO: create group from ground up and register with server
         removeAllViewsAboveCurrent()
         presenter.initTask(CreateActionPresenter.ActionType.Group)
 
-        addGroupNameDescriptionFragment()
-
-        //addGroupMembersFragment()
-
+        addGroupNameFragment()
+        addGroupDescriptionFragment()
+        presenter.setUserRole()
+        addTaskDateFragment(GrassrootEntityType.GROUP)
         nextStep()
     }
 
@@ -356,9 +377,6 @@ class CreateActionActivity : GrassrootActivity(), BackNavigationListener, Create
         addTodoTypeFragment()
         addTaskDateFragment(GrassrootEntityType.TODO)
         nextStep()
-
-        // or
-        // CreateTodoActivity.start(activity)
     }
 
     private fun launchVoteSequence(group: Group?) {
@@ -370,7 +388,8 @@ class CreateActionActivity : GrassrootActivity(), BackNavigationListener, Create
             presenter.setGroupUid(group)
         }
         addVoteSubjectFragment()
-        addVoteOptionsFragment()
+        addVoteDescriptionFragment()
+        addVoteTypeFragment()
         addTaskDateFragment(GrassrootEntityType.VOTE)
         nextStep()
     }
@@ -383,7 +402,8 @@ class CreateActionActivity : GrassrootActivity(), BackNavigationListener, Create
         } else {
             presenter.setGroupUid(group)
         }
-        //addMeetingSubjectFragment()
+
+        addMeetingSubjectFragment()
         addMeetingLocationFragment()
         addTaskDateFragment(GrassrootEntityType.MEETING)
         nextStep()

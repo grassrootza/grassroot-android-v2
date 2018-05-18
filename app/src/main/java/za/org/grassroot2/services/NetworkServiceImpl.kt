@@ -184,34 +184,17 @@ constructor(private val userDetailsService: UserDetailsService,
                 .doOnError({ Timber.e(it) })
     }
 
-
-    override fun createGroup(group: Group): Observable<Resource<Group>> {
-        return Observable.create { e ->
-            object : ResourceToStore<Group, Task>(group, e) {
-                override fun uploadRemote(localObject: Group?): Observable<Response<Task>> {
-                    val group = localObject as Group
-                    return grassrootUserApi.createGroup(group.name, group.description, group.userRole, group.reminderMinutes, group.isHidden, group.isDefaultAddToAccount, group.isPinned )
-                }
-
-                override fun uploadFailed(localObject: Group) {
-                    // TBI
-                }
-
-                override fun saveResult(data: Task) {
-                    databaseService.storeTasks(listOf(data))
-                }
-            }
-        }
-        //return grassrootUserApi.createGroup(group.name, group.description, group.permissionTemplate, group.reminderMinutes, group.isHidden, group.defaultAddToAccount, group.isPinned )
-    }
-
     override fun createTask(t: Task): Observable<Resource<Task>> {
         return Observable.create { e ->
             object : ResourceToStore<Task, Task>(t, e) {
                 override fun uploadRemote(localObject: Task): Observable<Response<Task>> {
+                    if (t.parentEntityType == GrassrootEntityType.GROUP) {
+                        val group = localObject as Group
+                        return grassrootUserApi.createGroup(group.name, group.description, group.userRole, group.reminderMinutes, group.isHidden, group.isDefaultAddToAccount, group.isPinned )
+                    }
                     if (t.parentEntityType == GrassrootEntityType.MEETING) {
                         val m = localObject as Meeting
-                        return grassrootUserApi.createMeeting("GROUP", m.parentUid, m.name,m.locationDescription, m.date, m.description, true, m.latitude, m.longitude,  m.assignedMemberUids, m.mediaFileUid)
+                        return grassrootUserApi.createMeeting("GROUP", m.parentUid, m.name,m.locationDescription, m.creationDate, m.description, true, m.latitude, m.longitude,  m.assignedMemberUids, m.mediaFileUid)
                     }
                     else if (t.parentEntityType == GrassrootEntityType.VOTE) {
                         val v = localObject as Vote
