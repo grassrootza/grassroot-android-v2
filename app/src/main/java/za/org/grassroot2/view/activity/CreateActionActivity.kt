@@ -1,5 +1,6 @@
 package za.org.grassroot2.view.activity
 
+//import za.org.grassroot2.view.activity.PickContactActivity
 import android.Manifest
 import android.content.Context
 import android.content.Intent
@@ -8,23 +9,21 @@ import android.os.Bundle
 import android.provider.MediaStore
 import android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI
 import android.support.design.widget.Snackbar
+import com.tbruyelle.rxpermissions2.RxPermissions
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_create_action.*
+import timber.log.Timber
 import za.org.grassroot2.R
-import com.tbruyelle.rxpermissions2.RxPermissions
 import za.org.grassroot2.dagger.activity.ActivityComponent
 import za.org.grassroot2.model.Group
 import za.org.grassroot2.model.GroupPermission
 import za.org.grassroot2.model.enums.GrassrootEntityType
-import za.org.grassroot2.model.task.Task
 import za.org.grassroot2.presenter.activity.CreateActionPresenter
 import za.org.grassroot2.view.adapter.GenericViewPagerAdapter
 import za.org.grassroot2.view.dialog.MediaPickerFragment
 import za.org.grassroot2.view.dialog.MultiOptionPickFragment
-//import za.org.grassroot2.view.activity.PickContactActivity
-import za.org.grassroot2.view.dialog.AddMemberDialog
 import za.org.grassroot2.view.fragment.*
 import javax.inject.Inject
 
@@ -52,17 +51,22 @@ class CreateActionActivity : GrassrootActivity(), BackNavigationListener, Create
 
     override fun onCreate(icicle: Bundle?) {
         super.onCreate(icicle)
+        Timber.d("creating create action activity, intent: %s", intent.toString())
         adapter = GenericViewPagerAdapter(supportFragmentManager)
         viewPager.adapter = adapter
         presenter.attach(this)
+        Timber.d("Intent extras: %s", intent.extras.toString())
         if (intent.hasExtra(EXTRA_FROM_HOME)) {
+            Timber.d("have extra flag correct")
             addHomeActionTypeFragment()
         } else {
+            Timber.d("Checking for permissions")
             presenter.verifyGroupPermissions(intent.getStringExtra(EXTRA_GROUP_UID))
         }
     }
 
     private fun addHomeActionTypeFragment() {
+        Timber.d("alright, adding home action fragment, bringing up picker")
         val createActionFragment = MultiOptionPickFragment.homeActionPicker
         disposables.add(createActionFragment.clickAction().subscribe { integer ->
             when (integer) {
@@ -125,11 +129,11 @@ class CreateActionActivity : GrassrootActivity(), BackNavigationListener, Create
         component.inject(this)
     }
 
-    private fun addTaskDateFragment(task: GrassrootEntityType) {
+    private fun addTaskDateFragment(taskType: CreateActionPresenter.ActionType, task: GrassrootEntityType) {
         val taskDateFragment = MeetingDateFragment()
         disposables.add(taskDateFragment.meetingDatePicked().subscribe { date ->
             closeKeyboard()
-            presenter.setMeetingDate(date)
+            presenter.setTaskDate(taskType, date)
             val f = MeetingDateConfirmFragment.newInstance(date!!)
             disposables.add(f.meetingDateConfirmed().subscribe({ _ -> presenter.createTask(task) }, { it.printStackTrace() }))
             adapter.addFragment(f, "")
@@ -203,13 +207,12 @@ class CreateActionActivity : GrassrootActivity(), BackNavigationListener, Create
 
 
     private fun addTodoTypeFragment() {
-        // TODO: Input fields vary by type
-        val fragment = MultiOptionPickFragment.todoOptionPicker
-            disposables.add(fragment.itemSelection().subscribe { integer ->
-                when (integer) {
-                    R.id.todoAction -> {
-                        presenter.setTodoType("ACTION_REQUIRED")
-                   }
+        val todoTypeFragment = MultiOptionPickFragment.todoOptionPicker
+        disposables.add(todoTypeFragment.itemSelection().subscribe { integer ->
+            when (integer) {
+                R.id.todoAction -> {
+                    presenter.setTodoType("ACTION_REQUIRED")
+                }
                 R.id.todoInformation -> {
                     presenter.setTodoType("INFORMATION_REQUIRED")
                     addResponseTagFragment()
@@ -221,24 +224,25 @@ class CreateActionActivity : GrassrootActivity(), BackNavigationListener, Create
                     presenter.setTodoType("VALIDATION_REQUIRED")
                 }
             }
-                nextStep()
+            nextStep()
         })
+        adapter.addFragment(todoTypeFragment, "")
     }
 
     private fun addVoteTypeFragment() {
 
         val fragment = MultiOptionPickFragment.voteOptionPicker
-            disposables.add(fragment.itemSelection().subscribe { integer ->
-                when (integer) {
-                    R.id.yes_no_option -> {
-                        presenter.setVoteOptions(listOf("YES", "NO"))
-                    }
-                    R.id.customOptions -> {
-                        addVoteOptionsFragment()
-                    }
+        disposables.add(fragment.itemSelection().subscribe { integer ->
+            when (integer) {
+                R.id.yes_no_option -> {
+                    presenter.setVoteOptions(listOf("YES", "NO"))
                 }
-                nextStep()
-            })
+                R.id.customOptions -> {
+                    addVoteOptionsFragment()
+                }
+            }
+            nextStep()
+        })
     }
 
     private fun addVoteOptionsFragment() {
@@ -351,12 +355,14 @@ class CreateActionActivity : GrassrootActivity(), BackNavigationListener, Create
 
     private fun launchGroupSequence() {
         removeAllViewsAboveCurrent()
-        presenter.initTask(CreateActionPresenter.ActionType.Group)
+        presenter.initGroup()
 
         addGroupNameFragment()
         addGroupDescriptionFragment()
-        presenter.setUserRole()
-        addTaskDateFragment(GrassrootEntityType.GROUP)
+        closeKeyboard()
+        presenter.createGroup()
+        nextStep()
+        shouldRemoveLast = true
         nextStep()
     }
 
@@ -371,7 +377,7 @@ class CreateActionActivity : GrassrootActivity(), BackNavigationListener, Create
 
         addTodoSubjectFragment()
         addTodoTypeFragment()
-        addTaskDateFragment(GrassrootEntityType.TODO)
+        addTaskDateFragment(CreateActionPresenter.ActionType.Todo, GrassrootEntityType.TODO)
         nextStep()
     }
 
@@ -386,7 +392,7 @@ class CreateActionActivity : GrassrootActivity(), BackNavigationListener, Create
         addVoteSubjectFragment()
         addVoteDescriptionFragment()
         addVoteTypeFragment()
-        addTaskDateFragment(GrassrootEntityType.VOTE)
+        addTaskDateFragment(CreateActionPresenter.ActionType.Vote, GrassrootEntityType.VOTE)
         nextStep()
     }
 
@@ -401,7 +407,7 @@ class CreateActionActivity : GrassrootActivity(), BackNavigationListener, Create
 
         addMeetingSubjectFragment()
         addMeetingLocationFragment()
-        addTaskDateFragment(GrassrootEntityType.MEETING)
+        addTaskDateFragment(CreateActionPresenter.ActionType.Meeting, GrassrootEntityType.MEETING)
         nextStep()
     }
 
@@ -441,38 +447,6 @@ class CreateActionActivity : GrassrootActivity(), BackNavigationListener, Create
             viewPager.setCurrentItem(current - 1, true)
         }
     }
-
-    /*
-    private void createGroup() {
-        save.setEnabled(false);
-        cacheWipGroup();
-        progressDialog.show();
-        progressDialog.setCancelable(false);
-
-        final Observable<String> sendGroup =  GroupService.getInstance()
-                .sendNewGroupToServer(groupUid, AndroidSchedulers.mainThread());
-
-        final Consumer<String> successConsumer = new Consumer<String>() {
-            @Override
-            public void accept(@io.reactivex.annotations.NonNull String s) throws Exception {
-                Log.d(TAG, "string received : " + s);
-                progressDialog.dismiss();
-                Group finalGroup;
-                if (NetworkUtils.SAVED_OFFLINE_MODE.equals(s)) {
-                    finalGroup = RealmUtils.loadGroupFromDB(groupUid);
-                    handleGroupCreationAndExit(finalGroup, false);
-                } else {
-                    final String serverUid = s.substring("OK-".length());
-                    finalGroup = RealmUtils.loadGroupFromDB(serverUid);
-                    Log.d(TAG, "here is the saved group = " + finalGroup.toString());
-                    if ("OK".equals(s.substring(0, 2))) {
-                        handleGroupCreationAndExit(finalGroup, false);
-                    } else {
-                        handleSavedButSomeInvalid(serverUid);
-                    }
-                }
-            }
-        };*/
 
     override fun backPressedAndRemoveLast() {
         shouldRemoveLast = false
@@ -514,7 +488,14 @@ class CreateActionActivity : GrassrootActivity(), BackNavigationListener, Create
     private fun addSuccessFragment(type: GrassrootEntityType) {
         val f: ItemCreatedFragment = if (type == GrassrootEntityType.MEETING) {
             ItemCreatedFragment.get(presenter.task!!.parentUid, type)
-        } else {
+        }
+        else if (type == GrassrootEntityType.VOTE) {
+            ItemCreatedFragment.get(presenter.task!!.parentUid, type)
+        }
+        else if (type == GrassrootEntityType.TODO) {
+            ItemCreatedFragment.get(presenter.task!!.parentUid, type)
+        }
+        else {
             ItemCreatedFragment.get(presenter.alert!!.groupUid, type)
         }
         adapter.addFragment(f, "")
@@ -540,6 +521,7 @@ class CreateActionActivity : GrassrootActivity(), BackNavigationListener, Create
         }
 
         fun startFromHome(c: Context) {
+            Timber.d("starting create action from home");
             val i = Intent(c, CreateActionActivity::class.java)
             i.putExtra(EXTRA_FROM_HOME, true)
             c.startActivity(i)

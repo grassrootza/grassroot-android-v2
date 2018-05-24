@@ -173,13 +173,13 @@
     <string name="title_pick_contact">Pick Contact</string>
     <string name="no_contacts">You don\'t have contacts with phone numbers</string>
     <string name="dictate_your_action">Dictate your action</string>
-    <string name="call_a_meeting">Call a meeting</string>
-    <string name="take_a_vote">Take a vote</string>
-    <string name="create_to_do">Create To-do</string>
+    <string name="callMeeting">Call a meeting</string>
+    <string name="takeVote">Take a vote</string>
+    <string name="createTodo">Create To-do</string>
     <string name="select_a_group">Select a group</string>
     <string name="hint_group_name">Search By Group name</string>
     <string name="what_is_it_about">What is it about?</string>
-    <string name="vote_option_header">add a vote option</string>
+    <string name="vote_option_header">Add a vote option</string>
     <string name="name_your_group">What is the groups name?</string>
     <string name="describe_your_group">What is the group about?</string>
     <string name="enter_response_tag">How would you like to prefix responses?</string>
@@ -187,7 +187,7 @@
     <string name="next">NEXT</string>
     <string name="info_meeting_subject">Type in a short sentence the subject of this meeting.</string>
     <string name="info_vote_subject">Briefly describe what is being voted on.</string>
-    <string name="info_vote_description">Provide a detailed description what is being voted on.</string>
+    <string name="info_vote_description">Provide a detailed description of what is being voted on.</string>
     <string name="info_group_nature">Enter the name of your group</string>
     <string name="info_group_description">Enter a short description of your group</string>
     <string name="info_response_tag">Enter a response tag</string>

@@ -22,6 +22,7 @@ public class PickContactPresenter extends BasePresenter<PickContactPresenter.Pic
     }
 
     public void loadContacts() {
+        timber.log.Timber.d("Showing solitary progress bar in PickContactPresenter");
         getView().showProgressBar();
         disposableOnDetach(contactHelper.getAllContactsSimple().subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).flatMap(contacts -> {
             getView().closeProgressBar();

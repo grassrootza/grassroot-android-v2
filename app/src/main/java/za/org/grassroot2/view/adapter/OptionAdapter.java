@@ -12,6 +12,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.reactivex.Observable;
 import io.reactivex.subjects.PublishSubject;
+import timber.log.Timber;
 import za.org.grassroot2.R;
 import za.org.grassroot2.model.dto.ActionOption;
 import za.org.grassroot2.rxbinding.RxView;
@@ -36,6 +37,7 @@ public class OptionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        Timber.e("creating view holder ...");
         final View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_option, parent, false);
         return new OptionViewHolder(view);
     }

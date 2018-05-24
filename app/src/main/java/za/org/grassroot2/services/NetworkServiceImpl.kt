@@ -184,24 +184,44 @@ constructor(private val userDetailsService: UserDetailsService,
                 .doOnError({ Timber.e(it) })
     }
 
+    override fun createGroup(group: Group): Observable<Resource<Group>> {
+        return Observable.create { e ->
+            object : ResourceToStore<Group, Task>(group, e) {
+                override fun uploadRemote(localObject: Group?): Observable<Response<Task>> {
+                    val group = localObject as Group
+                    return grassrootUserApi.createGroup(group.name, group.description, group.userRole, group.reminderMinutes, group.isHidden, group.isDefaultAddToAccount, group.isPinned )
+                }
+                override fun uploadFailed(localObject: Group) {
+                    val g = localObject as Group
+                    g.isSynced = false
+                    //databaseService.storeTasks(listOf<Task>(localObject))
+                }
+
+                override fun saveResult(data: Task) {
+                    databaseService.storeTasks(listOf(data))
+                }
+            }
+        }
+    }
+
     override fun createTask(t: Task): Observable<Resource<Task>> {
+        Timber.e("Task type is: %s", t.type.toString())
         return Observable.create { e ->
             object : ResourceToStore<Task, Task>(t, e) {
                 override fun uploadRemote(localObject: Task): Observable<Response<Task>> {
-                    if (t.parentEntityType == GrassrootEntityType.GROUP) {
-                        val group = localObject as Group
-                        return grassrootUserApi.createGroup(group.name, group.description, group.userRole, group.reminderMinutes, group.isHidden, group.isDefaultAddToAccount, group.isPinned )
-                    }
-                    if (t.parentEntityType == GrassrootEntityType.MEETING) {
+                    if (t.type.toString() == "MEETING") {
                         val m = localObject as Meeting
+                        Timber.e("Here's what I'm sending: %s", m.toString())
                         return grassrootUserApi.createMeeting("GROUP", m.parentUid, m.name,m.locationDescription, m.creationDate, m.description, true, m.latitude, m.longitude,  m.assignedMemberUids, m.mediaFileUid)
                     }
-                    else if (t.parentEntityType == GrassrootEntityType.VOTE) {
+                    else if (t.type.toString() == "VOTE") {
                         val v = localObject as Vote
+                        Timber.e("Here's what I'm sending: %s", v.toString())
                         return grassrootUserApi.createVote("GROUP", v.parentUid, v.name, v.voteOptions, v.description, v.createdDate(), v.mediaFileUid, v.assignedMemberUids)
                     }
-                    else if (t.parentEntityType == GrassrootEntityType.TODO) {
+                    else if (t.type.toString() == "TODO") {
                         val todo = localObject as Todo
+                        Timber.e("Here's what I'm sending: %s", todo.toString())
                         // as there are 4 different To-do-related api paths we must distinguish between todos
                         if (todo.todoType == "ACTION_REQUIRED") {
                             return grassrootUserApi.createActionTodo("GROUP", todo.parentUid, todo.name, todo.deadlineMillis, todo.isRecurring, todo.recurringPeriodMillis, todo.assignedMemberUids, todo.mediaFileUids)
@@ -216,7 +236,7 @@ constructor(private val userDetailsService: UserDetailsService,
                             return grassrootUserApi.createVolunteerTodo("GROUP", todo.parentUid, todo.name, todo.deadlineMillis, todo.assignedMemberUids, todo.mediaFileUids)
                         }
                     }
-                    // return statement required here
+                    throw IllegalArgumentException("Error, no task type.")
                 }
 
                 override fun uploadFailed(localObject: Task) {

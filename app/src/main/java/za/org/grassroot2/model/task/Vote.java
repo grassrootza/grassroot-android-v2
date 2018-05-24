@@ -57,15 +57,40 @@ public class Vote implements Task, Syncable {
 
     @DatabaseField
     @SerializedName("assignedMemberUids")
-    private String[] assignedMemberUids;
+    private List<String> assignedMemberUids;
 
     @DatabaseField
     @SerializedName("voteOptions")
-    private String[] voteOptions;
+    private List<String> voteOptions;
 
     @DatabaseField
     @SerializedName("deadlineMillis")
     private long deadlineMillis;
+
+    @Override
+    public String toString() {
+        return "Vote{" +
+                "uid='" + uid + '\'' +
+                ", parentUid='" + parentUid + '\'' +
+                ", parentEntityType=" + parentEntityType +
+                ", subject='" + subject + '\'' +
+                ", description='" + description + '\'' +
+                ", callerName='" + callerName + '\'' +
+                ", createdDate=" + createdDate +
+                ", createdDateTimeMillis=" + createdDateTimeMillis +
+                ", mediaFileUid='" + mediaFileUid + '\'' +
+                ", assignedMemberUids=" + assignedMemberUids +
+                ", voteOptions=" + voteOptions +
+                ", deadlineMillis=" + deadlineMillis +
+                ", lastChangeTimeServerMillis=" + lastChangeTimeServerMillis +
+                ", ancestorGroupName='" + ancestorGroupName + '\'' +
+                ", voteResults=" + voteResults +
+                ", voteResponse='" + voteResponse + '\'' +
+                ", tags=" + tags +
+                ", mediaFile=" + mediaFile +
+                ", synced=" + synced +
+                '}';
+    }
 
     @DatabaseField
     private long lastChangeTimeServerMillis;
@@ -237,11 +262,15 @@ public class Vote implements Task, Syncable {
         this.parentEntityType = parentEntityType;
     }
 
-    public void setVoteOptions(String[] voteOptions) {
+    public void setDeadlineMillis(long deadlineMillis) {
+        this.deadlineMillis = deadlineMillis;
+    }
+
+    public void setVoteOptions(List voteOptions) {
         this.voteOptions = voteOptions;
     }
 
-    public String[] getVoteOptions() {
+    public List<String> getVoteOptions() {
         return voteOptions;
     }
 
@@ -253,11 +282,11 @@ public class Vote implements Task, Syncable {
         this.mediaFileUid = mediaFileUid;
     }
 
-    public String[] getAssignedMemberUids() {
+    public List<String> getAssignedMemberUids() {
         return assignedMemberUids;
     }
 
-    public void setAssignedMemberUids(String[] assignedMemberUids) {
+    public void setAssignedMemberUids(List assignedMemberUids) {
         this.assignedMemberUids = assignedMemberUids;
     }
 

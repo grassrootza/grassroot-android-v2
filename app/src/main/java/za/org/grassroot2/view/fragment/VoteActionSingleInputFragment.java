@@ -36,9 +36,9 @@ public class VoteActionSingleInputFragment extends GrassrootFragment{
     private static final String EXTRA_HINT_RES  = "hint_res";
     private static final String EXTRA_CAN_SKIP  = "can_skip";
     private static final String EXTRA_OPTIONS_LIST = "options_list";
-    @BindView(R.id.input)
+    @BindView(R.id.vote_input)
     EditText input;
-    @BindView(R.id.inputContainer)
+    @BindView(R.id.addVoteOptionsInputContainer)
     TextInputLayout inputContainer;
     @BindView(R.id.vote_options_header)
     TextView title;
@@ -48,10 +48,10 @@ public class VoteActionSingleInputFragment extends GrassrootFragment{
     Button cancel;
     @BindView(R.id.voteOptionsListView)
     ListView listView;
-    @BindView(R.id.buttons)
+    @BindView(R.id.add_vote_response_button)
     Button add;
 
-    List<String> chosenOptionsList = new List<String>;
+    List<String> chosenOptionsList = new ArrayList<String>();
 
     private PublishSubject<List<String>> chosenOptions = PublishSubject.create();
     private BackNavigationListener listener;
@@ -73,12 +73,12 @@ public class VoteActionSingleInputFragment extends GrassrootFragment{
         listener = (BackNavigationListener) getActivity();
     }
 
-    @OnClick(R.id.backNav)
+    @OnClick(R.id.vote_back_nav)
     void back() {
         listener.backPressed();
     }
 
-    @OnClick(R.id.cancel)
+    @OnClick(R.id.add_vote_option_cancel)
     void close() {
         getActivity().finish();
     }

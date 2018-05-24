@@ -51,6 +51,7 @@ constructor(private val databaseService: DatabaseService, private val networkSer
     }
 
     fun inviteContacts(contacts: List<Contact>) {
+        Timber.d("Showing solitary progress bar in GroupDetailsPresenter")
         view.showProgressBar()
         disposableOnDetach(networkService.inviteContactsToGroup(groupUid!!, RequestMapper.map(groupUid, contacts)).observeOn(AndroidSchedulers.mainThread()).subscribeOn(Schedulers.io()).subscribe({ voidResponse ->
             view.closeProgressBar()

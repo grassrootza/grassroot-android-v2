@@ -7,14 +7,12 @@
     android:orientation="vertical">
 
     <android.support.v7.widget.RecyclerView
-        android:id="@+id/action_option_list"
+        android:id="@+id/list"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-    </android.support.v7.widget.RecyclerView>
+        android:layout_height="wrap_content" />
 
     <Button
-        android:id="@+id/action_option_close"
+        android:id="@+id/close"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@drawable/primary_bottom_rounded"

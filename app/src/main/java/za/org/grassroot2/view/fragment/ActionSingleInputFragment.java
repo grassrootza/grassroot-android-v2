@@ -84,8 +84,12 @@ public class ActionSingleInputFragment extends GrassrootFragment {
             cancel.setText(R.string.button_skip);
             cancel.setOnClickListener(v -> actionSubject.onNext(""));
         }
-        disposables.add(RxTextView.textChanges(input).debounce(500, TimeUnit.MILLISECONDS).observeOn(AndroidSchedulers.mainThread()).subscribe(charSequence -> next.setEnabled(charSequence.length() > 3), Throwable::printStackTrace));
+        disposables.add(RxTextView.textChanges(input).debounce(500, TimeUnit.MILLISECONDS)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(charSequence -> next.setEnabled(charSequence.length() > 3), Throwable::printStackTrace));
+
         RxView.clicks(next).map(o -> input.getText().toString()).subscribe(actionSubject);
+
         RxTextView.editorActionEvents(input, textViewEditorActionEvent -> textViewEditorActionEvent.actionId() == EditorInfo.IME_ACTION_DONE && input.length() > 3)
                 .map(textViewEditorActionEvent -> input.getText().toString()).subscribe(actionSubject);
     }

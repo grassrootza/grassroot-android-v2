@@ -52,6 +52,9 @@ public class Group implements EntityForDownload, SelectableItem, Serializable, A
     private String userRole;
 
     @DatabaseField
+    private transient boolean synced = true;
+
+    @DatabaseField
     @SerializedName("defaultAddToAccount")
     private boolean defaultAddToAccount;
 
@@ -60,7 +63,6 @@ public class Group implements EntityForDownload, SelectableItem, Serializable, A
     private int reminderMinutes;
 
     @DatabaseField
-
     @SerializedName("lastGroupChange")
     private long lastTimeChangedServer = 0;
 
@@ -123,6 +125,14 @@ public class Group implements EntityForDownload, SelectableItem, Serializable, A
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public boolean isSynced() {
+        return synced;
+    }
+
+    public void setSynced(boolean synced) {
+        this.synced = synced;
     }
 
     public boolean isDefaultAddToAccount() {

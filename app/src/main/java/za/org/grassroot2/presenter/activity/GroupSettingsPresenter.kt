@@ -57,6 +57,7 @@ constructor(private val networkService: NetworkService, private val dbService: D
     }
 
     fun hideGroup() {
+        Timber.d("Showing progress bar 1 in GroupSettingsPresenter")
         view.showProgressBar()
         group?.isHidden = true
         dbService.store(Group::class.java, group!!)
@@ -76,6 +77,7 @@ constructor(private val networkService: NetworkService, private val dbService: D
     }
 
     fun leaveGroup() {
+        Timber.d("Showing progress bar 2 in GroupSettingsPresenter")
         view.showProgressBar()
         networkService.leaveGroup(group!!).subscribeOn(io()).observeOn(main())
                 .subscribe({ b ->

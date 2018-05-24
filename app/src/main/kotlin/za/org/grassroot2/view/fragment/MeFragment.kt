@@ -137,6 +137,7 @@ class MeFragment : GrassrootFragment(), MeView {
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        Timber.d("Showing solitary progress bar in MeFragment")
         showProgressBar()
         if (resultCode == Activity.RESULT_OK) {
             if (requestCode == REQUEST_TAKE_PHOTO) {

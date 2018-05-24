@@ -24,6 +24,7 @@ public class MeetingDatePresenter extends BaseFragmentPresenter<MeetingDatePrese
     @Override
     public void onViewCreated() {
         disposableOnDetach(getView().dateInputConfirmed().observeOn(AndroidSchedulers.mainThread()).flatMap(s -> {
+            timber.log.Timber.e("No one really cares but nvthlss showing progress bar in MeetingDatePresenter");
             getView().showProgressBar();
             return networkService.getTimestampForText(s);
         }).subscribeOn(Schedulers.io())

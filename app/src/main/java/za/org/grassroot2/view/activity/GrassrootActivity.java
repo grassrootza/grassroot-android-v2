@@ -247,6 +247,7 @@ public abstract class GrassrootActivity extends AppCompatActivity implements Gra
 
     @Override
     public void showProgressBar() {
+        Timber.d("showing progress bar 1 in activity: %s", getActivity().toString());
         if (progress != null) {
             ViewAnimation.fadeIn(progress);
         }
@@ -254,6 +255,7 @@ public abstract class GrassrootActivity extends AppCompatActivity implements Gra
 
     @Override
     public void closeProgressBar() {
+        Timber.d("showing progress bar 2 inside activity");
         if (progress != null) {
             ViewAnimation.fadeOut(progress);
         }
@@ -303,16 +305,17 @@ public abstract class GrassrootActivity extends AppCompatActivity implements Gra
         super.onResume();
         EventBus.getDefault().register(this);
 
-        if (loggedIn()) {
-
-            if (checkPlayServices()) {
-                // start registration service in order to check token and register if not already registered
-                showProgressBar();
-                registerReceiver();
-                Intent intent = new Intent(this, GCMRegistrationService.class);
-                startService(intent);
-            }
-        }
+//        if (loggedIn()) {
+//
+//            if (checkPlayServices()) {
+//                Timber.e("Showing progress bar 3 in activity: %s", getActivity().toString());
+//                // start registration service in order to check token and register if not already registered
+//                showProgressBar();
+//                registerReceiver();
+//                Intent intent = new Intent(this, GCMRegistrationService.class);
+//                startService(intent);
+//            }
+//        }
     }
 
     @Subscribe(sticky = true)

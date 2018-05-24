@@ -8,6 +8,7 @@ import org.greenrobot.eventbus.ThreadMode
 import javax.inject.Inject
 
 import io.reactivex.Observable
+import timber.log.Timber
 import za.org.grassroot2.database.DatabaseService
 import za.org.grassroot2.model.Group
 import za.org.grassroot2.services.UserDetailsService
@@ -25,6 +26,7 @@ constructor(private val databaseService: DatabaseService, private val userDetail
             view.renderEmptyFailedSync()
         } else {
             if (firstSyncNotCompleted) {
+                Timber.d("Showing progress bar in GroupFragmentPresenter")
                 view.showProgressBar()
             } else {
                 view.closeProgressBar()
@@ -34,6 +36,7 @@ constructor(private val databaseService: DatabaseService, private val userDetail
     }
 
     fun refreshGroups() {
+        Timber.e("refresh groups triggered inside groups fragment")
         userDetailsService.requestSync()
     }
 

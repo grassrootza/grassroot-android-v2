@@ -11,6 +11,7 @@ import com.j256.ormlite.table.DatabaseTable;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import za.org.grassroot2.model.AroundItem;
 import za.org.grassroot2.model.ExcludeFromSerialization;
@@ -55,7 +56,7 @@ public class Meeting implements Task, Syncable, AroundItem {
 
     @DatabaseField
     @SerializedName("assignedMemberUids")
-    private Array assignedMemberUids;
+    private List<String> assignedMemberUids;
 
     @DatabaseField
     @SerializedName("mediaFileUid")
@@ -197,11 +198,11 @@ public class Meeting implements Task, Syncable, AroundItem {
         this.deadlineMillis = deadlineMillis;
     }
 
-    public Array getAssignedMemberUids() {
+    public List<String> getAssignedMemberUids() {
         return assignedMemberUids;
     }
 
-    public void setAssignedMemberUids(Array assignedMemberUids) {
+    public void setAssignedMemberUids(List assignedMemberUids) {
         this.assignedMemberUids = assignedMemberUids;
     }
 

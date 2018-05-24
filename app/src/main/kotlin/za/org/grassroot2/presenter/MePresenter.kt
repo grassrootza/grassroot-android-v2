@@ -89,6 +89,7 @@ class MePresenter(private val dbService: DatabaseService,
     }
 
     fun cameraResult() {
+        Timber.d("Showing progress bar 1 in MePresenter")
         view.showProgressBar()
         disposableOnDetach(mediaService.captureMediaFile(currentMediaFileUid, 500, 500)
                 .observeOn(AndroidSchedulers.mainThread())
@@ -106,6 +107,7 @@ class MePresenter(private val dbService: DatabaseService,
     }
 
     fun handlePickResult(data: Uri) {
+        Timber.d("Showing progress bar 2 in MePresenter")
         view.showProgressBar()
         disposableOnDetach(mediaService.storeGalleryFile(currentMediaFileUid, data, 500, 500)
                 .subscribeOn(Schedulers.io())
@@ -124,6 +126,7 @@ class MePresenter(private val dbService: DatabaseService,
     }
 
     fun updateProfileData(displayName: String, phoneNumber: String, email: String, languageCode: String) {
+        Timber.d("Showing progress bar 3 in MePresenter")
         view.showProgressBar()
         grassrootUserApi.updateProfileData(displayName, phoneNumber, email, languageCode)
                 .subscribeOn(Schedulers.io())
@@ -148,6 +151,7 @@ class MePresenter(private val dbService: DatabaseService,
     }
 
     private fun uploadProfilePhoto(mediaFile: MediaFile) {
+        Timber.d("Showing progress bar 4 in MePresenter")
         view.showProgressBar()
         mediaFile.initUploading()
         dbService.storeObject(MediaFile::class.java, mediaFile)

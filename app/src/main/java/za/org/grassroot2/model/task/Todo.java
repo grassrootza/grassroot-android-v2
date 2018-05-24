@@ -36,9 +36,9 @@ public class Todo implements Task, Syncable {
     @DatabaseField
     private String response;
 
-    @SerializedName("todoResponses")
-    @DatabaseField
-    private Map<String, String> todoResponses;
+    //@SerializedName("todoResponses")
+    //@DatabaseField
+    //private Map<String, String> todoResponses;
 
     @DatabaseField
     @SerializedName("location")
@@ -67,7 +67,7 @@ public class Todo implements Task, Syncable {
 
     @DatabaseField
     @SerializedName("confirmingMemberUids")
-    private Array confirmingMemberUids;
+    private List<String> confirmingMemberUids;
 
     @DatabaseField
     private List<String> confirmingMembers;
@@ -119,11 +119,11 @@ public class Todo implements Task, Syncable {
 
     @DatabaseField
     @SerializedName("assignedMemberUids")
-    private Array assignedMemberUids;
+    private List<String> assignedMemberUids;
 
     @DatabaseField
     @SerializedName("mediaFileUids")
-    private Array mediaFileUids;
+    private List<String> mediaFileUids;
 
     @DatabaseField
     @SerializedName("recurring")
@@ -149,19 +149,23 @@ public class Todo implements Task, Syncable {
         return TODO_YES;
     }
 
-    public Array getAssignedMemberUids() {
+    public List<String> getAssignedMemberUids() {
         return assignedMemberUids;
     }
 
-    public void setAssignedMemberUids(Array assignedMemberUids) {
+    public void setAssignedMemberUids(List assignedMemberUids) {
         this.assignedMemberUids = assignedMemberUids;
     }
 
-    public Array getMediaFileUids() {
+    public void setDeadlineMillis(long deadlineMillis) {
+        this.deadlineMillis = deadlineMillis;
+    }
+
+    public List<String> getMediaFileUids() {
         return mediaFileUids;
     }
 
-    public void setMediaFileUid(Array mediaFileUid) {
+    public void setMediaFileUid(List mediaFileUid) {
         this.mediaFileUids = mediaFileUid;
     }
 
@@ -181,6 +185,14 @@ public class Todo implements Task, Syncable {
         this.recurringPeriodMillis = recurringPeriodMillis;
     }
 
+    public long getCreatedDate() {
+        return createdDate;
+    }
+
+    public void setCreatedDate(long createdDate) {
+        this.createdDate = createdDate;
+    }
+
     public String getResponseTag() {
         return responseTag;
     }
@@ -189,11 +201,11 @@ public class Todo implements Task, Syncable {
         this.responseTag = responseTag;
     }
 
-    public Array getConfirmingMemberUids() {
+    public List<String> getConfirmingMemberUids() {
         return confirmingMemberUids;
     }
 
-    public void setConfirmingMemberUids(Array confirmingMemberUids) {
+    public void setConfirmingMemberUids(List confirmingMemberUids) {
         this.confirmingMemberUids = confirmingMemberUids;
     }
 
@@ -341,10 +353,6 @@ public class Todo implements Task, Syncable {
         this.ancestorGroupName = ancestorGroupName;
     }
 
-    public Map<String, String> getTodoResponses() {
-        return todoResponses;
-    }
-
     @Override
     public long date() {
         return deadlineMillis;
@@ -361,7 +369,6 @@ public class Todo implements Task, Syncable {
                 "uid='" + uid + '\'' +
                 ", parentUid='" + parentUid + '\'' +
                 ", response='" + response + '\'' +
-                ", todoResponses=" + todoResponses +
                 ", locationDescription='" + locationDescription + '\'' +
                 ", todoType='" + todoType + '\'' +
                 ", synced=" + synced +

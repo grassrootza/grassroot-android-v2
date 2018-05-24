@@ -32,6 +32,9 @@ constructor(private val networkService: NetworkService, private val dbService: D
     var task: Task? = null
         private set
 
+    var group: Group? = null
+        private set
+
     private var currentMediaFileUid: String? = null
 
     var alert: LiveWireAlert? = null
@@ -59,11 +62,25 @@ constructor(private val networkService: NetworkService, private val dbService: D
                 task = Meeting()
                 task!!.uid = UUID.randomUUID().toString()
             }
+            CreateActionPresenter.ActionType.Todo -> {
+                task = Todo()
+                task!!.uid = UUID.randomUUID().toString()
+            }
+            CreateActionPresenter.ActionType.Vote -> {
+                task = Vote()
+                task!!.uid = UUID.randomUUID().toString()
+            }
             CreateActionPresenter.ActionType.LivewireAlert -> alert = LiveWireAlert()
         }
     }
 
+    fun initGroup() {
+        group = Group()
+        group!!.uid = UUID.randomUUID().toString()
+    }
+
     fun createTask(Type: GrassrootEntityType) {
+        Timber.d("showing progress bar 1 inside CreateActionPresenter")
         view.showProgressBar()
         disposableOnDetach(networkService.createTask(task!!).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe({ task ->
             view.closeProgressBar()
@@ -74,8 +91,20 @@ constructor(private val networkService: NetworkService, private val dbService: D
         })
     }
 
+    fun createGroup() {
+        view.showProgressBar()
+        disposableOnDetach(networkService.createGroup(group!!).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe({ task ->
+            view.closeProgressBar()
+            view.uploadSuccessfull(GrassrootEntityType.GROUP)
+        }) { throwable ->
+            view.closeProgressBar()
+            view.uploadSuccessfull(GrassrootEntityType.GROUP)
+        })
+    }
+
     fun createAlert() {
         if (alert!!.areMinimumFieldsComplete()) {
+            Timber.d("showing progress bar 2 inside CreateActionPresenter")
             view.showProgressBar()
             alert!!.setComplete(true)
             if (currentMediaFileUid != null) {
@@ -111,9 +140,21 @@ constructor(private val networkService: NetworkService, private val dbService: D
         (task as Meeting).setName(subject)
     }
 
-    fun setMeetingDate(date: Long?) {
-        (task as Meeting).deadlineMillis = date!!
-        (task as Meeting).setCreatedDate(System.currentTimeMillis())
+    fun setTaskDate(t: ActionType, date: Long?) {
+        when (t) {
+            CreateActionPresenter.ActionType.Meeting -> {
+                (task as Meeting).deadlineMillis = date!!
+                (task as Meeting).setCreatedDate(System.currentTimeMillis())
+            }
+            CreateActionPresenter.ActionType.Vote -> {
+                (task as Vote).deadlineMillis = date!!
+                (task as Vote).setCreatedDate(System.currentTimeMillis())
+            }
+            CreateActionPresenter.ActionType.Todo -> {
+                (task as Todo).deadlineMillis = date!!
+                (task as Todo).setCreatedDate(System.currentTimeMillis())
+            }
+        }
     }
 
     fun setMeetingLocation(location: String) {
@@ -121,7 +162,7 @@ constructor(private val networkService: NetworkService, private val dbService: D
     }
 
     fun setVoteOptions(options: List<String>) {
-        (task as Vote).setVoteOptions(options.toTypedArray())
+        (task as Vote).setVoteOptions(options)
     }
 
     fun setTodoSubject(subject: String) {
@@ -137,19 +178,15 @@ constructor(private val networkService: NetworkService, private val dbService: D
     }
 
     fun setTodoResponseTag(responseTag: String) {
-        (task as Todo).setResponseTag(responseTag)
+        (task as Todo).responseTag = responseTag
     }
 
     fun setGroupName(groupName: String) {
-        (task as Group).setName(groupName)
-    }
-
-    fun setUserRole() {
-        (task as Group).setUserRole("ROLE_GROUP_ORGANIZER")
+        (group as Group).name = groupName
     }
 
     fun setGroupDescription(description: String) {
-        (task as Group).setDescription(description)
+        (group as Group).setDescription(description)
     }
 
     fun setVoteDescription(description: String) {
@@ -238,6 +275,7 @@ constructor(private val networkService: NetworkService, private val dbService: D
     }
 
     fun handleSpeech(data: Uri) {
+        Timber.d("showing progress bar 3 inside CreateActionPresenter")
         view.showProgressBar()
         networkService.uploadSpeech(MediaRecorderWrapper.SAMPLING_RATE, true, data.path).subscribeOn(io()).observeOn(main()).subscribe({ response ->
             view.closeProgressBar()

@@ -1,6 +1,5 @@
 package za.org.grassroot2.services.rest;
 
-import java.lang.reflect.Array;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -115,18 +114,18 @@ public interface GrassrootUserApi {
                                           @Query("publicMeeting") boolean publicMeeting,
                                           @Query("userLat") double userLatitude,
                                           @Query("userLong") double userLongitude,
-                                          @Query("assignedMembersUids") Array assignedMembersUids,
+                                          @Query("assignedMembersUids") List<String> assignedMembersUids,
                                           @Query("mediaFileUid") String mediaFileUid);
 
     @POST("/v2/api/task/create/vote/{parentType}/{parentUid}")
     Observable<Response<Task>> createVote(@Path("parentType") String parentType,
                                           @Path("parentUid") String parentUid,
                                           @Query("title") String subject,
-                                          @Query("voteOptions") Array voteOptions,
+                                          @Query("voteOptions") List<String> voteOptions,
                                           @Query("description") String description,
                                           @Query("time") long time,
                                           @Query("mediaFileUid") String mediaFileUid,
-                                          @Query("assignedMemberUids") Array assignedMemberUids);
+                                          @Query("assignedMemberUids") List<String> assignedMemberUids);
 
     @POST("/v2/api/task/create/todo/action/{parentType}/{parentUid}")
     Observable<Response<Task>> createActionTodo(@Path("parentType") String parentType,
@@ -135,8 +134,8 @@ public interface GrassrootUserApi {
                                                 @Query("dueDateTime") long dueDateTime,
                                                 @Query("recurring") boolean recurring,
                                                 @Query("recurringPeriodMillis") long recurringPeriodMillis,
-                                                @Query("assignedMembersUids") Array assignedMembersUids,
-                                                @Query("mediaFileUids") Array mediaFileUids);
+                                                @Query("assignedMembersUids") List<String> assignedMembersUids,
+                                                @Query("mediaFileUids") List<String> mediaFileUids);
 
     @POST("/v2/api/task/create/todo/information/{parentType}/{parentUid}")
     Observable<Response<Task>> createInformationTodo(@Path("parentType") String parentType,
@@ -144,8 +143,8 @@ public interface GrassrootUserApi {
                                           @Query("subject") String subject,
                                           @Query("responseTag") String responseTag,
                                           @Query("dueDateTime") long dueDatetime,
-                                          @Query("assignedUids") Array assignedUids,
-                                          @Query("mediaFileUids") Array mediaFileUids);
+                                          @Query("assignedUids") List<String> assignedUids,
+                                          @Query("mediaFileUids") List<String> mediaFileUids);
 
     @POST("/v2/api/task/create/todo/confirmation/{parentType}/{parentUid}")
     Observable<Response<Task>> createConfirmationTodo(@Path("parentType") String parentType,
@@ -153,19 +152,19 @@ public interface GrassrootUserApi {
                                           @Query("subject") String subject,
                                           @Query("dueDateTime") long dueDateTime,
                                           @Query("requireImages") boolean requireImages,
-                                          @Query("assignedMemberUids") Array assignedMemberUids,
-                                          @Query("confirmingMemberUids") Array confirmingMemberUids,
+                                          @Query("assignedMemberUids") List<String> assignedMemberUids,
+                                          @Query("confirmingMemberUids") List<String> confirmingMemberUids,
                                           @Query("recurring") boolean recurring,
                                           @Query("recurringPeriodMillis") long recurringPeriodMillis,
-                                          @Query("mediaFileUids") Array mediaFileUids);
+                                          @Query("mediaFileUids") List<String> mediaFileUids);
 
     @POST("/v2/api/task/create/todo/volunteer/{parentType}/{parentUid}")
     Observable<Response<Task>> createVolunteerTodo(@Path("parentType") String parentType,
                                           @Path("parentUid") String parentUid,
                                           @Query("subject") String subject,
                                           @Query("dueDateTime") long dueDateTime,
-                                          @Query("assignedMemberUids") Array assignedMemberUids,
-                                          @Query("mediaFileUids") Array mediaFileUids);
+                                          @Query("assignedMemberUids") List<String> assignedMemberUids,
+                                          @Query("mediaFileUids") List<String> mediaFileUids);
 
     @POST("/v2/api/group/modify/create")
     Observable<Response<Task>> createGroup(@Query("name") String groupName,

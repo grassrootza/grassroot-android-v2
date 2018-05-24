@@ -116,20 +116,14 @@ class VoteDetailsActivity : GrassrootActivity(), VoteDetailsPresenter.VoteDetail
         val alert = AlertDialog.Builder(this)
         var voteChoice: EditText? = null
 
-        var options: MutableSet<String> = vote.voteOptions.keys
+        var options: MutableSet<String> = vote.voteResults.keys
         options.remove("TOTAL_VOTE_MEMBERS")
         Timber.d("The contents of options are now: %s",  options)
 
         // Builder
         with(alert) {
             setTitle("Vote Options")
-                    .setItems(vote.voteOptions.keys.toTypedArray(), DialogInterface.OnClickListener { dialog, which ->
-                        // The 'which' argument contains the index position
-                        // of the selected item
-                        Timber.d("User selected option: %s", options.elementAt(which))
-                        Timber.d("The contents of voteOptions are: %s", vote.voteOptions)
-                        Timber.d("The contents of voteResponse are: %s", vote.voteResponse)
-                        Timber.d("The contents of vote.date() are: %s", vote.date())
+                    .setItems(vote.voteResults.keys.toTypedArray(), DialogInterface.OnClickListener { dialog, which ->
                         presenter.respondToVote(vote.uid, options.elementAt(which))
                     })
         }
@@ -152,9 +146,9 @@ class VoteDetailsActivity : GrassrootActivity(), VoteDetailsPresenter.VoteDetail
             val list = listOf<VoteResult>()
             return list
         } else {
-            vote.voteOptions.remove("TOTAL_VOTE_MEMBERS")
-            val totalVotes = vote.voteOptions.values.sum();
-            return vote.voteOptions.map { entry -> VoteResult(entry.key, entry.value, entry.value.toDouble() / totalVotes) }
+            vote.voteResults.remove("TOTAL_VOTE_MEMBERS")
+            val totalVotes = vote.voteResults.values.sum();
+            return vote.voteResults.map { entry -> VoteResult(entry.key, entry.value, entry.value.toDouble() / totalVotes) }
         }
     }
 
