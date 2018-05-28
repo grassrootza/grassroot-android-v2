@@ -13,7 +13,7 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="33dp"
         android:layout_marginTop="8dp"
-        app:layout_constraintBottom_toTopOf="@+id/addVoteOptionsInputContainer"
+        app:layout_constraintBottom_toTopOf="@+id/add_vote_options_input_container"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/ic_arrow_left_green_24dp" />
@@ -29,20 +29,20 @@
         android:textColor="@color/default_font_color"
         android:textSize="20sp"
         android:textStyle="normal"
-        app:layout_constraintBottom_toTopOf="@+id/addVoteOptionsInputContainer"
+        app:layout_constraintBottom_toTopOf="@+id/add_vote_options_input_container"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <android.support.design.widget.TextInputLayout
-        android:id="@+id/addVoteOptionsInputContainer"
-        android:layout_width="232dp"
+        android:id="@+id/add_vote_options_input_container"
+        android:layout_width="150dp"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginRight="8dp"
         android:textColorHint="@color/colorPrimary"
-        app:layout_constraintBottom_toTopOf="@+id/voteOptionsListView"
+        app:layout_constraintBottom_toTopOf="@+id/vote_options_ist_view"
         app:layout_constraintEnd_toStartOf="@+id/add_vote_response_button"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent">
@@ -95,12 +95,11 @@
         android:layout_marginRight="8dp"
         android:text="Add"
         android:layout_weight="1"
-        android:background="@drawable/standard_button_selector"
-        app:layout_constraintBottom_toTopOf="@+id/voteOptionsListView"
+        app:layout_constraintBottom_toTopOf="@+id/vote_options_ist_view"
         app:layout_constraintEnd_toEndOf="parent" />
 
     <ListView
-        android:id="@+id/voteOptionsListView"
+        android:id="@+id/vote_options_ist_view"
         android:layout_width="match_parent"
         android:layout_height="57dp"
         android:layout_marginBottom="8dp"

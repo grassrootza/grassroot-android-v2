@@ -1,5 +1,6 @@
 package za.org.grassroot2.presenter.activity
 
+import android.app.Activity
 import android.net.Uri
 import android.text.TextUtils
 import io.reactivex.Maybe
@@ -8,6 +9,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import timber.log.Timber
 import za.org.grassroot2.R
+import za.org.grassroot2.R.string.activity
 import za.org.grassroot2.database.DatabaseService
 import za.org.grassroot2.model.Group
 import za.org.grassroot2.model.MediaFile
@@ -21,6 +23,8 @@ import za.org.grassroot2.services.MediaService
 import za.org.grassroot2.services.NetworkService
 import za.org.grassroot2.util.MediaRecorderWrapper
 import za.org.grassroot2.view.GrassrootView
+import za.org.grassroot2.view.activity.CreateActionActivity
+import za.org.grassroot2.view.activity.GroupDetailsActivity
 import java.io.File
 import java.util.*
 import javax.inject.Inject
@@ -74,15 +78,17 @@ constructor(private val networkService: NetworkService, private val dbService: D
         }
     }
 
-    fun initGroup() {
+    fun initGroup(): String {
         group = Group()
         group!!.uid = UUID.randomUUID().toString()
+        group!!.userRole = "CLOSED_GROUP"
+        return group!!.uid
     }
 
     fun createTask(Type: GrassrootEntityType) {
-        Timber.d("showing progress bar 1 inside CreateActionPresenter")
         view.showProgressBar()
         disposableOnDetach(networkService.createTask(task!!).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe({ task ->
+            Timber.e("subscriber completed, task created")
             view.closeProgressBar()
             view.uploadSuccessfull(Type)
         }) { throwable ->
@@ -91,11 +97,11 @@ constructor(private val networkService: NetworkService, private val dbService: D
         })
     }
 
-    fun createGroup() {
+    fun createGroup(groupUid: String) {
         view.showProgressBar()
-        disposableOnDetach(networkService.createGroup(group!!).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe({ task ->
+        disposableOnDetach(networkService.createGroup(group!!).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe({ group ->
             view.closeProgressBar()
-            view.uploadSuccessfull(GrassrootEntityType.GROUP)
+            GroupDetailsActivity.start(view.activity, groupUid)
         }) { throwable ->
             view.closeProgressBar()
             view.uploadSuccessfull(GrassrootEntityType.GROUP)
@@ -104,7 +110,6 @@ constructor(private val networkService: NetworkService, private val dbService: D
 
     fun createAlert() {
         if (alert!!.areMinimumFieldsComplete()) {
-            Timber.d("showing progress bar 2 inside CreateActionPresenter")
             view.showProgressBar()
             alert!!.setComplete(true)
             if (currentMediaFileUid != null) {
@@ -275,7 +280,6 @@ constructor(private val networkService: NetworkService, private val dbService: D
     }
 
     fun handleSpeech(data: Uri) {
-        Timber.d("showing progress bar 3 inside CreateActionPresenter")
         view.showProgressBar()
         networkService.uploadSpeech(MediaRecorderWrapper.SAMPLING_RATE, true, data.path).subscribeOn(io()).observeOn(main()).subscribe({ response ->
             view.closeProgressBar()

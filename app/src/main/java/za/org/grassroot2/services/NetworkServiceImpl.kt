@@ -164,7 +164,6 @@ constructor(private val userDetailsService: UserDetailsService,
         }
     }
 
-
     override fun fetchTodoResponses(taskUid: String): Observable<Map<String, String>> {
         var responses = grassrootUserApi
                 .fetchTodoResponses(taskUid)
@@ -186,19 +185,22 @@ constructor(private val userDetailsService: UserDetailsService,
 
     override fun createGroup(group: Group): Observable<Resource<Group>> {
         return Observable.create { e ->
-            object : ResourceToStore<Group, Task>(group, e) {
-                override fun uploadRemote(localObject: Group?): Observable<Response<Task>> {
+            object : ResourceToStore<Group, Group>(group, e) {
+                override fun uploadRemote(localObject: Group?): Observable<Response<Group>> {
                     val group = localObject as Group
+                    Timber.d("Sending new group to server.")
                     return grassrootUserApi.createGroup(group.name, group.description, group.userRole, group.reminderMinutes, group.isHidden, group.isDefaultAddToAccount, group.isPinned )
                 }
                 override fun uploadFailed(localObject: Group) {
+                    Timber.d("createGroup uploadFailed")
                     val g = localObject as Group
                     g.isSynced = false
-                    //databaseService.storeTasks(listOf<Task>(localObject))
+                    //databaseService.storeGroupWithMembers(group)
                 }
 
-                override fun saveResult(data: Task) {
-                    databaseService.storeTasks(listOf(data))
+                override fun saveResult(data: Group) {
+                    databaseService.storeGroupWithMembers(group).toObservable()
+                    Timber.d("Saving result from server")
                 }
             }
         }
@@ -211,18 +213,18 @@ constructor(private val userDetailsService: UserDetailsService,
                 override fun uploadRemote(localObject: Task): Observable<Response<Task>> {
                     if (t.type.toString() == "MEETING") {
                         val m = localObject as Meeting
-                        Timber.e("Here's what I'm sending: %s", m.toString())
-                        return grassrootUserApi.createMeeting("GROUP", m.parentUid, m.name,m.locationDescription, m.creationDate, m.description, true, m.latitude, m.longitude,  m.assignedMemberUids, m.mediaFileUid)
+                        Timber.d("Here's what I'm sending: %s", m.toString())
+                        return grassrootUserApi.createMeeting("GROUP", m.parentUid, m.name,m.locationDescription, m.deadlineMillis, m.description, true, m.latitude, m.longitude,  m.assignedMemberUids, m.mediaFileUid)
                     }
                     else if (t.type.toString() == "VOTE") {
                         val v = localObject as Vote
-                        Timber.e("Here's what I'm sending: %s", v.toString())
-                        return grassrootUserApi.createVote("GROUP", v.parentUid, v.name, v.voteOptions, v.description, v.createdDate(), v.mediaFileUid, v.assignedMemberUids)
+                        Timber.d("Here's what I'm sending: %s", v.toString())
+                        return grassrootUserApi.createVote("GROUP", v.parentUid, v.name, v.voteOptions, v.description, v.deadlineMillis, v.mediaFileUid, v.assignedMemberUids)
                     }
                     else if (t.type.toString() == "TODO") {
                         val todo = localObject as Todo
-                        Timber.e("Here's what I'm sending: %s", todo.toString())
-                        // as there are 4 different To-do-related api paths we must distinguish between todos
+                        Timber.d("Here's what I'm sending: %s", todo.toString())
+                        // as there are 4 different To-do creation api paths we must distinguish between todos
                         if (todo.todoType == "ACTION_REQUIRED") {
                             return grassrootUserApi.createActionTodo("GROUP", todo.parentUid, todo.name, todo.deadlineMillis, todo.isRecurring, todo.recurringPeriodMillis, todo.assignedMemberUids, todo.mediaFileUids)
                         }
@@ -389,7 +391,6 @@ constructor(private val userDetailsService: UserDetailsService,
         }
     }
 
-
     override fun uploadMeetingPost(meetingUid: String, description: String, mediaFile: MediaFile?): Observable<Response<Void>> {
         return grassrootUserApi.uploadPost(
                 currentUserUid,
@@ -444,29 +445,6 @@ constructor(private val userDetailsService: UserDetailsService,
         }, BackpressureStrategy.BUFFER)
 
     }
-
-/*
-    override fun getTodoPosts(taskUid: String): Flowable<Resource<List<Posts>>> {
-        return Flowable.create({ e ->
-            object : NetworkResource<List<Posts>, List<Posts>>(e) {
-
-                override fun local(): Maybe<List<Posts>> = databaseService.getTodos(taskUid)
-
-                override fun remote(): Observable<List<Posts>> =
-                        grassrootUserApi.getPostsForTask(currentUserUid, "TODO", taskUid)
-
-                override fun saveResult(data: List<Posts>) {
-                    val todo = databaseService.loadObjectByUid(Todo::class.javaObjectType, taskUid)
-                    databaseService.storeTodoPosts(todo!!, data)
-                }
-
-                override fun shouldFetch(): Boolean = true
-
-            }
-        }, BackpressureStrategy.BUFFER)
-
-    }
-*/
 
     private fun getFileFromPath(mediaFile: MediaFile, paramName: String): MultipartBody.Part? {
         return try {

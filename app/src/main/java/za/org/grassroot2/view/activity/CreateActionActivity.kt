@@ -1,6 +1,5 @@
 package za.org.grassroot2.view.activity
 
-//import za.org.grassroot2.view.activity.PickContactActivity
 import android.Manifest
 import android.content.Context
 import android.content.Intent
@@ -31,7 +30,6 @@ class CreateActionActivity : GrassrootActivity(), BackNavigationListener, Create
 
     @Inject lateinit var presenter: CreateActionPresenter
     @Inject lateinit var rxPermission: RxPermissions
-    //@Inject lateinit var contactPicker: PickContactActivity
     @Inject lateinit var rxPermissions: RxPermissions
 
     private lateinit var adapter: GenericViewPagerAdapter
@@ -51,22 +49,17 @@ class CreateActionActivity : GrassrootActivity(), BackNavigationListener, Create
 
     override fun onCreate(icicle: Bundle?) {
         super.onCreate(icicle)
-        Timber.d("creating create action activity, intent: %s", intent.toString())
         adapter = GenericViewPagerAdapter(supportFragmentManager)
         viewPager.adapter = adapter
         presenter.attach(this)
-        Timber.d("Intent extras: %s", intent.extras.toString())
         if (intent.hasExtra(EXTRA_FROM_HOME)) {
-            Timber.d("have extra flag correct")
             addHomeActionTypeFragment()
         } else {
-            Timber.d("Checking for permissions")
             presenter.verifyGroupPermissions(intent.getStringExtra(EXTRA_GROUP_UID))
         }
     }
 
     private fun addHomeActionTypeFragment() {
-        Timber.d("alright, adding home action fragment, bringing up picker")
         val createActionFragment = MultiOptionPickFragment.homeActionPicker
         disposables.add(createActionFragment.clickAction().subscribe { integer ->
             when (integer) {
@@ -162,7 +155,7 @@ class CreateActionActivity : GrassrootActivity(), BackNavigationListener, Create
     }
 
     private fun addVoteSubjectFragment() {
-        val actionSingleInputFragment = ActionSingleInputFragment.newInstance(R.string.what_is_it_about, R.string.info_vote_subject, R.string.hint_vote_subject, false)
+        val actionSingleInputFragment = ActionSingleInputFragment.newInstance(R.string.vote_subject, R.string.info_vote_subject, R.string.hint_vote_subject, false)
         disposables.add(actionSingleInputFragment.inputAdded().subscribe { subject ->
             presenter.setVoteSubject(subject)
             nextStep()
@@ -230,30 +223,31 @@ class CreateActionActivity : GrassrootActivity(), BackNavigationListener, Create
     }
 
     private fun addVoteTypeFragment() {
-
-        val fragment = MultiOptionPickFragment.voteOptionPicker
-        disposables.add(fragment.itemSelection().subscribe { integer ->
+        val voteOptionFragment = MultiOptionPickFragment.voteOptionPicker
+        disposables.add(voteOptionFragment.itemSelection().subscribe { integer ->
             when (integer) {
                 R.id.yes_no_option -> {
                     presenter.setVoteOptions(listOf("YES", "NO"))
+                    addTaskDateFragment(CreateActionPresenter.ActionType.Vote, GrassrootEntityType.VOTE)
+                    nextStep()
                 }
                 R.id.customOptions -> {
                     addVoteOptionsFragment()
+                    addTaskDateFragment(CreateActionPresenter.ActionType.Vote, GrassrootEntityType.VOTE)
+                    nextStep()
                 }
             }
-            nextStep()
         })
+        adapter.addFragment(voteOptionFragment, "")
     }
 
     private fun addVoteOptionsFragment() {
-        // launches VoteActionSingleInputFragment and returns an array of chosen options
-        val voteActionSingleInputFragment = VoteActionSingleInputFragment.newInstance(R.string.vote_option_header,  R.string.hint_description, false)
+        val voteActionSingleInputFragment = VoteActionSingleInputFragment.newInstance(R.string.vote_option_header,  R.string.hint_vote_option, false)
         disposables.add(voteActionSingleInputFragment.inputAdded().subscribe { voteOptions ->
             presenter.setVoteOptions(voteOptions)
             nextStep()
         })
         adapter.addFragment(voteActionSingleInputFragment, "")
-
     }
 
     private fun addVoteDescriptionFragment() {
@@ -297,21 +291,20 @@ class CreateActionActivity : GrassrootActivity(), BackNavigationListener, Create
         adapter.addFragment(actionSingleInputFragment, "")
     }
 
-    private fun addGroupDescriptionFragment() {
+    private fun addGroupDescriptionFragment(groupUid: String) {
         val actionSingleInputFragment = ActionSingleInputFragment.newInstance(R.string.describe_your_group , R.string.info_group_description, R.string.hint_description, false)
         disposables.add(actionSingleInputFragment.inputAdded().subscribe { groupDescription ->
             presenter.setGroupDescription(groupDescription)
-            nextStep()
+            closeKeyboard()
+            presenter.createGroup(groupUid)
+            shouldRemoveLast = true
         })
         adapter.addFragment(actionSingleInputFragment, "")
     }
 
-    /*
-    private fun showFillDialog() {
-        val df = AddMemberDialog.newInstance(AddMemberDialog.TYPE_INSERT_MANUAL)
-        df.setContactListener { name, phone -> presenter.inviteContact(name, phone) }
-        df.show(supportFragmentManager, GrassrootActivity.DIALOG_TAG)
-    }*/
+    private fun createNewGroup(groupUid: String) {
+
+    }
 
     override fun ensureWriteExteralStoragePermission(): Observable<Boolean> {
         return rxPermission.request(Manifest.permission.WRITE_EXTERNAL_STORAGE)
@@ -355,14 +348,10 @@ class CreateActionActivity : GrassrootActivity(), BackNavigationListener, Create
 
     private fun launchGroupSequence() {
         removeAllViewsAboveCurrent()
-        presenter.initGroup()
+        var uid = presenter.initGroup()
 
         addGroupNameFragment()
-        addGroupDescriptionFragment()
-        closeKeyboard()
-        presenter.createGroup()
-        nextStep()
-        shouldRemoveLast = true
+        addGroupDescriptionFragment(uid)
         nextStep()
     }
 
@@ -392,7 +381,6 @@ class CreateActionActivity : GrassrootActivity(), BackNavigationListener, Create
         addVoteSubjectFragment()
         addVoteDescriptionFragment()
         addVoteTypeFragment()
-        addTaskDateFragment(CreateActionPresenter.ActionType.Vote, GrassrootEntityType.VOTE)
         nextStep()
     }
 
@@ -494,6 +482,9 @@ class CreateActionActivity : GrassrootActivity(), BackNavigationListener, Create
         }
         else if (type == GrassrootEntityType.TODO) {
             ItemCreatedFragment.get(presenter.task!!.parentUid, type)
+        }
+        else if (type == GrassrootEntityType.GROUP) {
+            ItemCreatedFragment.get(presenter.group!!.uid, type)
         }
         else {
             ItemCreatedFragment.get(presenter.alert!!.groupUid, type)

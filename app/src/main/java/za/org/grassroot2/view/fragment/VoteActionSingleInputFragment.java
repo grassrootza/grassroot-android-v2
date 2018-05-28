@@ -16,6 +16,7 @@ import android.widget.TextView;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
@@ -25,6 +26,7 @@ import butterknife.OnClick;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.subjects.PublishSubject;
+import timber.log.Timber;
 import za.org.grassroot2.R;
 import za.org.grassroot2.dagger.activity.ActivityComponent;
 import za.org.grassroot2.rxbinding.RxTextView;
@@ -35,10 +37,9 @@ public class VoteActionSingleInputFragment extends GrassrootFragment{
     private static final String EXTRA_TITLE_RES = "title_res";
     private static final String EXTRA_HINT_RES  = "hint_res";
     private static final String EXTRA_CAN_SKIP  = "can_skip";
-    private static final String EXTRA_OPTIONS_LIST = "options_list";
     @BindView(R.id.vote_input)
     EditText input;
-    @BindView(R.id.addVoteOptionsInputContainer)
+    @BindView(R.id.add_vote_options_input_container)
     TextInputLayout inputContainer;
     @BindView(R.id.vote_options_header)
     TextView title;
@@ -46,10 +47,11 @@ public class VoteActionSingleInputFragment extends GrassrootFragment{
     View next;
     @BindView(R.id.add_vote_option_cancel)
     Button cancel;
-    @BindView(R.id.voteOptionsListView)
+    @BindView(R.id.vote_options_ist_view)
     ListView listView;
     @BindView(R.id.add_vote_response_button)
     Button add;
+
 
     List<String> chosenOptionsList = new ArrayList<String>();
 
@@ -87,8 +89,10 @@ public class VoteActionSingleInputFragment extends GrassrootFragment{
     void add() {
         String voteOptionInput = inputContainer.getEditText().getText().toString();
         chosenOptionsList.add(voteOptionInput);
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(getContext(), R.layout.fragment_add_vote_responses_single_input, chosenOptionsList);
-        adapter.notifyDataSetChanged();
+        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(getContext(),  R.layout.simple_single_item, chosenOptionsList);
+        listView.setAdapter(arrayAdapter);
+        inputContainer.getEditText().setText("");
+        arrayAdapter.notifyDataSetChanged();
     }
 
     @Override
@@ -104,7 +108,7 @@ public class VoteActionSingleInputFragment extends GrassrootFragment{
         title.setText(getArguments().getInt(EXTRA_TITLE_RES));
         disposables.add(RxTextView.textChanges(input).debounce(500, TimeUnit.MILLISECONDS)
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(charSequence -> next.setEnabled(charSequence.length() > 3), Throwable::printStackTrace));
+                .subscribe(charSequence -> next.setEnabled(true), Throwable::printStackTrace));
 
         RxView.clicks(next).observeOn(AndroidSchedulers.mainThread())
                 .map(clickEvent -> chosenOptionsList).subscribe(chosenOptions);

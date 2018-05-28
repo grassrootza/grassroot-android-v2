@@ -105,12 +105,12 @@ class MultiOptionPickFragment : GrassrootFragment() {
 
         fun getActionPicker(group: Group?): MultiOptionPickFragment {
             val options = LinkedHashMap<Int, ActionOption>()
-            options.put(R.id.createLivewireAlert, ActionOption(R.id.createLivewireAlert, R.string.create_livewire_alert, R.drawable.ic_mic_24dp))
-            options.put(R.id.createGroup, ActionOption(R.id.createGroup, R.string.createGroup, R.drawable.ic_mic_24dp))
+            options.put(R.id.dictate, ActionOption(R.id.dictate, R.string.dictateMyAction, R.drawable.ic_mic_24dp))
+            options.put(R.id.takeVote, ActionOption(R.id.takeVote, R.string.takeVote, R.drawable.ic_format_list_bulleted_24dp))
             options.put(R.id.createTodo, ActionOption(R.id.createTodo, R.string.createTodo, R.drawable.ic_format_list_bulleted_24dp))
-            options.put(R.id.takeVote, ActionOption(R.id.takeVote, R.string.takeVote, R.drawable.ic_mic_24dp))
+            options.put(R.id.createGroup, ActionOption(R.id.createGroup, R.string.createGroup, R.drawable.ic_format_list_bulleted_24dp))
             options.put(R.id.callMeeting, ActionOption(R.id.callMeeting, R.string.callMeeting, R.drawable.ic_date_range_green_24dp))
-            options.put(R.id.dictate, ActionOption(R.id.dictate, R.string.dictateMyAction, R.drawable.ic_date_range_green_24dp))
+            options.put(R.id.createLivewireAlert, ActionOption(R.id.createLivewireAlert, R.string.create_livewire_alert, R.drawable.ic_format_list_bulleted_24dp))
             val f = MultiOptionPickFragment()
             val b = Bundle()
             b.putSerializable(EXTRA_OPTIONS, options)
@@ -123,12 +123,12 @@ class MultiOptionPickFragment : GrassrootFragment() {
             get() {
                 Timber.d("In homeActionPicker within MultiOptionFragment")
                 val options = LinkedHashMap<Int, ActionOption>()
-                options.put(R.id.dictate, ActionOption(R.id.dictate, R.string.dictateMyAction, R.drawable.ic_date_range_green_24dp))
-                options.put(R.id.takeVote, ActionOption(R.id.takeVote, R.string.takeVote, R.drawable.ic_mic_24dp))
+                options.put(R.id.dictate, ActionOption(R.id.dictate, R.string.dictateMyAction, R.drawable.ic_mic_24dp))
+                options.put(R.id.takeVote, ActionOption(R.id.takeVote, R.string.takeVote, R.drawable.ic_format_list_bulleted_24dp))
                 options.put(R.id.createTodo, ActionOption(R.id.createTodo, R.string.createTodo, R.drawable.ic_format_list_bulleted_24dp))
-                options.put(R.id.createGroup, ActionOption(R.id.createGroup, R.string.createGroup, R.drawable.ic_mic_24dp))
+                options.put(R.id.createGroup, ActionOption(R.id.createGroup, R.string.createGroup, R.drawable.ic_format_list_bulleted_24dp))
                 options.put(R.id.callMeeting, ActionOption(R.id.callMeeting, R.string.callMeeting, R.drawable.ic_date_range_green_24dp))
-                options.put(R.id.createLivewireAlert, ActionOption(R.id.createLivewireAlert, R.string.create_livewire_alert, R.drawable.ic_mic_24dp))
+                options.put(R.id.createLivewireAlert, ActionOption(R.id.createLivewireAlert, R.string.create_livewire_alert, R.drawable.ic_format_list_bulleted_24dp))
                 val f = MultiOptionPickFragment()
                 val b = Bundle()
                 b.putSerializable(EXTRA_OPTIONS, options)
@@ -139,6 +139,7 @@ class MultiOptionPickFragment : GrassrootFragment() {
 
         val voteOptionPicker: MultiOptionPickFragment
             get() {
+                Timber.e("Inside voteOptionPicker in MultiOptionPickFragment")
                 val options = LinkedHashMap<Int, ActionOption>()
                 options.put(R.id.yes_no_option, ActionOption(R.id.yes_no_option, R.string.yes_no_option, R.drawable.ic_mic_24dp))
                 options.put(R.id.customOptions, ActionOption(R.id.customOptions, R.string.customOptions, R.drawable.ic_mic_24dp))
@@ -146,6 +147,7 @@ class MultiOptionPickFragment : GrassrootFragment() {
                 val b = Bundle()
                 b.putSerializable(EXTRA_OPTIONS, options)
                 f.arguments = b
+                Timber.e("Returning voteOptionPicker fragment")
                 return f
             }
 
@@ -167,12 +169,12 @@ class MultiOptionPickFragment : GrassrootFragment() {
 
         fun homeTakeActionFragment(): MultiOptionPickFragment {
             val options = LinkedHashMap<Int, ActionOption>()
-            options.put(R.id.createLivewireAlert, ActionOption(R.id.createLivewireAlert, R.string.create_livewire_alert, R.drawable.ic_mic_24dp))
-            options.put(R.id.createGroup, ActionOption(R.id.createGroup, R.string.createGroup, R.drawable.ic_mic_24dp))
+            options.put(R.id.dictate, ActionOption(R.id.dictate, R.string.dictateMyAction, R.drawable.ic_mic_24dp))
+            options.put(R.id.takeVote, ActionOption(R.id.takeVote, R.string.takeVote, R.drawable.ic_format_list_bulleted_24dp))
             options.put(R.id.createTodo, ActionOption(R.id.createTodo, R.string.createTodo, R.drawable.ic_format_list_bulleted_24dp))
-            options.put(R.id.takeVote, ActionOption(R.id.takeVote, R.string.takeVote, R.drawable.ic_mic_24dp))
+            options.put(R.id.createGroup, ActionOption(R.id.createGroup, R.string.createGroup, R.drawable.ic_format_list_bulleted_24dp))
             options.put(R.id.callMeeting, ActionOption(R.id.callMeeting, R.string.callMeeting, R.drawable.ic_date_range_green_24dp))
-            options.put(R.id.dictate, ActionOption(R.id.dictate, R.string.dictateMyAction, R.drawable.ic_date_range_green_24dp))
+            options.put(R.id.createLivewireAlert, ActionOption(R.id.createLivewireAlert, R.string.create_livewire_alert, R.drawable.ic_format_list_bulleted_24dp))
             val f = MultiOptionPickFragment()
             val b = Bundle()
             b.putSerializable(EXTRA_OPTIONS, options)

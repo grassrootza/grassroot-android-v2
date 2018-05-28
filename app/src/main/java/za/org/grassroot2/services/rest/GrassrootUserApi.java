@@ -167,7 +167,7 @@ public interface GrassrootUserApi {
                                           @Query("mediaFileUids") List<String> mediaFileUids);
 
     @POST("/v2/api/group/modify/create")
-    Observable<Response<Task>> createGroup(@Query("name") String groupName,
+    Observable<Response<Group>> createGroup(@Query("name") String groupName,
                                            @Query("description") String description,
                                            @Query("permissionTemplate") String permissionTemplate,
                                            @Query("reminderMinutes") int reminderMinutes,
