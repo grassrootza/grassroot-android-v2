@@ -15,9 +15,9 @@ data class NluIntent(val name: String, val confidence: Float) {
 
     fun getActionEquivalent(): Int {
         when (name) {
-            MEETING_INTENT -> return R.id.callMeeting
-            LIVEWIRE_INTENT -> return R.id.createLivewireAlert
-            GROUP_CREATE_INTENT -> return R.id.createGroup
+            MEETING_INTENT -> return R.id.call_meeting
+            LIVEWIRE_INTENT -> return R.id.create_livewire_alert
+            GROUP_CREATE_INTENT -> return R.id.create_group
             else -> {
                 return R.id.unknownIntent
             }

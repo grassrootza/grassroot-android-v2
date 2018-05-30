@@ -32,7 +32,7 @@ import za.org.grassroot2.dagger.activity.ActivityComponent;
 import za.org.grassroot2.rxbinding.RxTextView;
 import za.org.grassroot2.rxbinding.RxView;
 
-public class VoteActionSingleInputFragment extends GrassrootFragment{
+public class VoteOptionsSingleInputFragment extends GrassrootFragment{
 
     private static final String EXTRA_TITLE_RES = "title_res";
     private static final String EXTRA_HINT_RES  = "hint_res";
@@ -59,8 +59,8 @@ public class VoteActionSingleInputFragment extends GrassrootFragment{
     private BackNavigationListener listener;
     private boolean                multiLine;
 
-    public static VoteActionSingleInputFragment newInstance(int resTitle, int resHint, boolean canSkip) {
-        VoteActionSingleInputFragment f = new VoteActionSingleInputFragment();
+    public static VoteOptionsSingleInputFragment newInstance(int resTitle, int resHint, boolean canSkip) {
+        VoteOptionsSingleInputFragment f = new VoteOptionsSingleInputFragment();
         Bundle b = new Bundle();
         b.putInt(EXTRA_TITLE_RES, resTitle);
         b.putInt(EXTRA_HINT_RES, resHint);

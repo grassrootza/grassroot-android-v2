@@ -60,13 +60,13 @@ class MediaPickerFragment : GrassrootFragment() {
         val g = arguments.getSerializable(EXTRA_GROUP) as Group?
         g?.let {
             if (!GroupPermissionChecker.canCallMeeting(g)) {
-                options!!.remove(R.id.callMeeting)
+                options!!.remove(R.id.call_meeting)
             }
             if (!GroupPermissionChecker.canCreateTodo(g)) {
-                options!!.remove(R.id.createTodo)
+                options!!.remove(R.id.create_todo)
             }
             if (!GroupPermissionChecker.canCreateVote(g)) {
-                options!!.remove(R.id.takeVote)
+                options!!.remove(R.id.take_vote)
             }
         }
     }

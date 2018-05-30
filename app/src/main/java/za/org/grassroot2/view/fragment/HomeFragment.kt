@@ -12,6 +12,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
+import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
 import com.tbruyelle.rxpermissions2.RxPermissions
@@ -70,47 +71,34 @@ class HomeFragment : GrassrootFragment(), HomePresenter.HomeView {
 
     override fun displayAlert(pending: PendingResponseDTO) {
         Timber.d("This is what I got: %s", pending.toString())
-
-        // val dialogBuilder = AlertDialog.Builder(activity)
-        // val inflater = this.layoutInflater
-        // val dialogView = inflater.inflate(R.layout.fragment_pending_todo, null)
-        // dialogBuilder.setView(dialogView)
-
-        // val creator = dialogView.findViewById(R.id.creatorField) as TextView
-        // creator.setText("Created by: "+pending.creatorName)
-
-        // val pendingDescription = dialogView.findViewById(R.id.contentField) as TextView
-        // pendingDescription.setText(pending.title)
-
-        // val alertDialog = dialogBuilder.create()
-        // alertDialog.show()
+        Timber.e("Attempting to display dialogView in HomeFragment")
 
         val dialogBuilder = AlertDialog.Builder(activity)
+        val inflater = this.layoutInflater
+        val dialogView = inflater.inflate(R.layout.fragment_pending_task, null)
+        dialogBuilder.setView(dialogView)
 
-        dialogBuilder.setTitle("Group: "+pending.parentName)
+        val entity = dialogView.findViewById(R.id.pending_entity_type) as TextView
+        entity.setText(pending.entityType)
 
-        var details: Array<String> = arrayOf("Created by: "+pending.creatorName, pending.title)
+        val creator = dialogView.findViewById(R.id.creatorField) as TextView
+        creator.setText("Created by: "+pending.creatorName)
 
-        with(dialogBuilder) {
-            setTitle("Group: "+pending.parentName)
-                    .setItems(details, DialogInterface.OnClickListener { dialog, which ->
-                        details.elementAt(which)
-                    })
+        val pendingDescription = dialogView.findViewById(R.id.contentField) as TextView
+        pendingDescription.setText(pending.title)
+
+
+        dialogView.findViewById(R.id.pending_task_open).setOnClickListener {dialogView ->
+            openPendingTask(pending)
         }
 
-        dialogBuilder.setPositiveButton("OPEN",
-            object : DialogInterface.OnClickListener {
-                override fun onClick(dialog: DialogInterface, which: Int) {
-                    openPendingTask(pending)
+        dialogView.findViewById(R.id.pending_task_close).setOnClickListener { dialogView ->
+            // pass
+            Timber.d("Exiting alertDialog")
         }
-
-        })
-        dialogBuilder.setNegativeButton("CLOSE", DialogInterface.OnClickListener { dialog, whichButton ->
-            //pass
-        })
-
-        val b = dialogBuilder.create()
-        b.show()
+        
+        val alertDialog = dialogBuilder.create()
+        alertDialog.show()
     }
 
     override fun getLayoutResourceId(): Int {

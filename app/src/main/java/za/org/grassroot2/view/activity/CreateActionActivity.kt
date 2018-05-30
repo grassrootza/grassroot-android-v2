@@ -66,19 +66,19 @@ class CreateActionActivity : GrassrootActivity(), BackNavigationListener, Create
                 R.id.dictate -> {
                     RecordAudioActivity.start(this, REQUEST_DICTATE)
                 }
-                R.id.takeVote -> {
+                R.id.take_vote -> {
                     launchVoteSequence(null)
                 }
-                R.id.createTodo -> {
+                R.id.create_todo -> {
                     launchTodoSequence(null)
                 }
-                R.id.createGroup -> {
+                R.id.create_group -> {
                     launchGroupSequence()
                 }
-                R.id.callMeeting -> {
+                R.id.call_meeting -> {
                     launchMeetingSequence(null)
                 }
-                R.id.createLivewireAlert -> {
+                R.id.create_livewire_alert -> {
                     removeAllViewsAboveCurrent()
                     presenter.initTask(CreateActionPresenter.ActionType.LivewireAlert)
 
@@ -203,17 +203,17 @@ class CreateActionActivity : GrassrootActivity(), BackNavigationListener, Create
         val todoTypeFragment = MultiOptionPickFragment.todoOptionPicker
         disposables.add(todoTypeFragment.itemSelection().subscribe { integer ->
             when (integer) {
-                R.id.todoAction -> {
+                R.id.todo_action -> {
                     presenter.setTodoType("ACTION_REQUIRED")
                 }
-                R.id.todoInformation -> {
+                R.id.todo_information -> {
                     presenter.setTodoType("INFORMATION_REQUIRED")
                     addResponseTagFragment()
                 }
-                R.id.todoVolunteer -> {
+                R.id.todo_volunteer -> {
                     presenter.setTodoType("VOLUNTEERS_REQUIRED")
                 }
-                R.id.todoValidate -> {
+                R.id.todo_validate -> {
                     presenter.setTodoType("VALIDATION_REQUIRED")
                 }
             }
@@ -231,7 +231,7 @@ class CreateActionActivity : GrassrootActivity(), BackNavigationListener, Create
                     addTaskDateFragment(CreateActionPresenter.ActionType.Vote, GrassrootEntityType.VOTE)
                     nextStep()
                 }
-                R.id.customOptions -> {
+                R.id.custom_options -> {
                     addVoteOptionsFragment()
                     addTaskDateFragment(CreateActionPresenter.ActionType.Vote, GrassrootEntityType.VOTE)
                     nextStep()
@@ -242,7 +242,7 @@ class CreateActionActivity : GrassrootActivity(), BackNavigationListener, Create
     }
 
     private fun addVoteOptionsFragment() {
-        val voteActionSingleInputFragment = VoteActionSingleInputFragment.newInstance(R.string.vote_option_header,  R.string.hint_vote_option, false)
+        val voteActionSingleInputFragment = VoteOptionsSingleInputFragment.newInstance(R.string.vote_option_header,  R.string.hint_vote_option, false)
         disposables.add(voteActionSingleInputFragment.inputAdded().subscribe { voteOptions ->
             presenter.setVoteOptions(voteOptions)
             nextStep()
@@ -302,10 +302,6 @@ class CreateActionActivity : GrassrootActivity(), BackNavigationListener, Create
         adapter.addFragment(actionSingleInputFragment, "")
     }
 
-    private fun createNewGroup(groupUid: String) {
-
-    }
-
     override fun ensureWriteExteralStoragePermission(): Observable<Boolean> {
         return rxPermission.request(Manifest.permission.WRITE_EXTERNAL_STORAGE)
     }
@@ -316,19 +312,19 @@ class CreateActionActivity : GrassrootActivity(), BackNavigationListener, Create
                 R.id.dictate -> {
                     RecordAudioActivity.start(this, REQUEST_DICTATE)
                 }
-                R.id.takeVote -> {
+                R.id.take_vote -> {
                     launchVoteSequence(group)
                 }
-                R.id.createTodo -> {
+                R.id.create_todo -> {
                     launchTodoSequence(group)
                 }
-                R.id.createGroup -> {
+                R.id.create_group -> {
                     launchGroupSequence()
                 }
-                R.id.callMeeting -> {
+                R.id.call_meeting -> {
                     launchMeetingSequence(group)
                 }
-                R.id.createLivewireAlert -> {
+                R.id.create_livewire_alert -> {
                     removeAllViewsAboveCurrent()
                     presenter.initTask(CreateActionPresenter.ActionType.LivewireAlert)
                     if (group == null) {

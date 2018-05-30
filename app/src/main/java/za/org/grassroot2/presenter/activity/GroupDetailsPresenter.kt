@@ -32,10 +32,10 @@ constructor(private val databaseService: DatabaseService, private val networkSer
         disposableOnDetach(databaseService.load(Group::class.java, groupUid!!).subscribeOn(io()).observeOn(main()).subscribe({ group ->
             if (view != null) {
                 Timber.d("in GroupDetailsPresenter. View is not null.")
-                // if (GroupPermissionChecker.hasCreatePermission(group)) {
+                if (GroupPermissionChecker.hasCreatePermission(group)) {
                     view.displayFab()
                     Timber.d("User has create groups permissions. Proceed to the get down.")
-                // }
+                }
                 view.render(group)
             }
         }, { it.printStackTrace() }))
@@ -51,7 +51,6 @@ constructor(private val databaseService: DatabaseService, private val networkSer
     }
 
     fun inviteContacts(contacts: List<Contact>) {
-        Timber.d("Showing solitary progress bar in GroupDetailsPresenter")
         view.showProgressBar()
         disposableOnDetach(networkService.inviteContactsToGroup(groupUid!!, RequestMapper.map(groupUid, contacts)).observeOn(AndroidSchedulers.mainThread()).subscribeOn(Schedulers.io()).subscribe({ voidResponse ->
             view.closeProgressBar()

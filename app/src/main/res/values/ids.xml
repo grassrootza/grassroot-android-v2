@@ -1,21 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <item name="dictate" type="id" />
-    <item name="createLivewireAlert" type="id" />
-    <item name="createTodo" type="id" />
-    <item name="takeVote" type="id" />
-    <item name="callMeeting" type="id" />
+    <item name="create_livewire_alert" type="id" />
+    <item name="create_todo" type="id" />
+    <item name="take_vote" type="id" />
+    <item name="call_meeting" type="id" />
     <item name="photo" type="id" />
     <item name="video" type="id" />
     <item name="gallery" type="id" />
-    <item name="createGroup" type="id" />
+    <item name="create_group" type="id" />
     <item name="yes_no_option" type="id"/>
     <item name="takeAction" type="id" />\
-    <item name="customOptions" type="id"/>
+    <item name="custom_options" type="id"/>
     <item name="audio" type="id" />
     <item name="unknownIntent" type="id" />
-    <item name="todoAction" type="id"/>
-    <item name="todoInformation" type="id"/>
-    <item name="todoVolunteer" type="id"/>
-    <item name="todoValidate" type="id"/>
+    <item name="todo_action" type="id"/>
+    <item name="todo_information" type="id"/>
+    <item name="todo_volunteer" type="id"/>
+    <item name="todo_validate" type="id"/>
 </resources>

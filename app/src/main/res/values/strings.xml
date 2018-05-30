@@ -173,9 +173,9 @@
     <string name="title_pick_contact">Pick Contact</string>
     <string name="no_contacts">You don\'t have contacts with phone numbers</string>
     <string name="dictate_your_action">Dictate your action</string>
-    <string name="callMeeting">Call a meeting</string>
-    <string name="takeVote">Take a vote</string>
-    <string name="createTodo">Create To-do</string>
+    <string name="call_meeting">Call a meeting</string>
+    <string name="take_vote">Take a vote</string>
+    <string name="create_todo">Create To-do</string>
     <string name="select_a_group">Select a group</string>
     <string name="hint_group_name">Search By Group name</string>
     <string name="what_is_it_about">What is it about?</string>
@@ -268,11 +268,11 @@
     <string name="registration_failed_username_taken">Username is already taken</string>
     <string name="registration_failed_number_already_registered">User with this number is already registered</string>
     <string name="registration_failed_invalid_otp">Code verification failed</string>
-    <string name="createGroup">Create group</string>
+    <string name="create_group">Create group</string>
     <string name="yes_no_option">Yes or No</string>
-    <string name="customOptions">Custom Options</string>
+    <string name="custom_options">Custom Options</string>
     <string name="takeAction">Take action</string>
-    <string name="dictateMyAction">Dictate my action</string>
+    <string name="dictate_my_action">Dictate my action</string>
     <string name="write_post">WRITE A POST</string>
     <string name="not_going">NOT GOING</string>
     <string name="maybe">MAYBE</string>
@@ -283,10 +283,10 @@
     <string name="speak_now">Speak now</string>
     <string name="activity">ACTIVITY</string>
 
-    <string name="todoAction">by Taking Action</string>
-    <string name="todoInformation">By Providing Information</string>
-    <string name="todoVolunteer">By Volunteering</string>
-    <string name="todoValidate">By Validating an Event</string>
+    <string name="todo_action">by Taking Action</string>
+    <string name="todo_information">By Providing Information</string>
+    <string name="todo_volunteer">By Volunteering</string>
+    <string name="todo_validate">By Validating an Event</string>
 
     <string name="me_change_profile_photo">CHANGE PROFILE PHOTO</string>
     <string name="me_phone_number">Phone number</string>

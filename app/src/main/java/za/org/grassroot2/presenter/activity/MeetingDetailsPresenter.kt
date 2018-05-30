@@ -27,7 +27,6 @@ constructor(private val databaseService: DatabaseService, private val networkSer
 
     fun loadData() {
         if (forceSync) {
-            Timber.d("Showing progress bar 1 in MeetingDetailsPresenter")
             view.showProgressBar()
             val meetingUidAndType = mapOf(meetingUid to "MEETING")
             disposableOnDetach(networkService.getTasksByUids(meetingUidAndType)
@@ -66,7 +65,6 @@ constructor(private val databaseService: DatabaseService, private val networkSer
     }
 
     fun respondToMeeting(uid: String, response: String) {
-        Timber.d("Showing progress bar 2 in MeetingDetailsPresenter")
         view.showProgressBar()
         //dummy error response is returned in case of any failure, and in that case item is marked for sync
         disposableOnDetach(networkService.respondToMeeting(uid, response).subscribeOn(io()).observeOn(main()).onErrorReturn { RestResponse.errorResponse() }.subscribe({ networkResponse ->
