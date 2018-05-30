@@ -242,12 +242,12 @@ class CreateActionActivity : GrassrootActivity(), BackNavigationListener, Create
     }
 
     private fun addVoteOptionsFragment() {
-        val voteActionSingleInputFragment = VoteOptionsSingleInputFragment.newInstance(R.string.vote_option_header,  R.string.hint_vote_option, false)
-        disposables.add(voteActionSingleInputFragment.inputAdded().subscribe { voteOptions ->
+        val voteOptionsSingleInputFragment = VoteOptionsSingleInputFragment.newInstance(R.string.vote_option_header,  R.string.hint_vote_option, false)
+        disposables.add(voteOptionsSingleInputFragment.inputAdded().subscribe { voteOptions ->
             presenter.setVoteOptions(voteOptions)
             nextStep()
         })
-        adapter.addFragment(voteActionSingleInputFragment, "")
+        adapter.addFragment(voteOptionsSingleInputFragment, "")
     }
 
     private fun addVoteDescriptionFragment() {
