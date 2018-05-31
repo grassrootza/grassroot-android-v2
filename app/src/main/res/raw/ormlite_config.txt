@@ -194,6 +194,21 @@ fieldName=name
 canBeNull=false
 # --field-end--
 # --field-start--
+fieldName=description
+# --field-end--
+# --field-start--
+fieldName=reminderMinutes
+# --field-end--
+# --field-start--
+fieldName=defaultAddToAccount
+# --field-end--
+# --field-start--
+fieldName=latitude
+# --field-end--
+# --field-start--
+fieldName=longitude
+# --field-end--
+# --field-start--
 fieldName=memberCount
 canBeNull=false
 # --field-end--
@@ -487,6 +502,21 @@ id=true
 fieldName=parentUid
 # --field-end--
 # --field-start--
+fieldName=createdDateTimeMillis
+# --field-end--
+# --field-start--
+fieldName=mediaFileUid
+# --field-end--
+# --field-start--
+fieldName=assignedMemberUids
+# --field-end--
+# --field-start--
+fieldName=voteResults
+# --field-end--
+# --field-start--
+fieldName=synced
+# --field-end--
+# --field-start--
 fieldName=parentEntityType
 # --field-end--
 # --field-start--
@@ -539,10 +569,41 @@ id=true
 fieldName=parentUid
 # --field-end--
 # --field-start--
+fieldName=response
+# --field-end--
+# --field-start--
+fieldName=locationDescription
+# --field-end--
+# --field-start--
+fieldName=synced
+# --field-end--
+# --field-start--
+fieldName=recurringPeriodMillis
+# --field-end--
+# --field-start--
+fieldName=responseTag
+# --field-end--
+# --field-start--
+fieldName=confirmingMemberUids
+# --field-end--
+# --field-start--
+fieldName=mediaFileUids
+# --field-end--
+# --field-start--
+fieldName=recurring
+# --field-end--
+# --field-start--
+fieldName=requireImages
+# --field-end--
+# --field-start--
 fieldName=parentEntityType
 # --field-end--
 # --field-start--
-fieldName=summary
+fieldName=subject
+canBeNull=false
+# --field-end--
+# --field-start--
+fieldName=todoType
 canBeNull=false
 # --field-end--
 # --field-start--
@@ -573,6 +634,10 @@ fieldName=ancestorGroupName
 fieldName=assignedMembers
 # --field-end--
 # --field-start--
+fieldName=userResponse
+# --field-end--
+# --field-start--
+fieldName=
 fieldName=confirmingMembers
 # --field-end--
 # --field-start--
@@ -617,6 +682,15 @@ fieldName=callerName
 # --field-end--
 # --field-start--
 fieldName=locationDescription
+# --field-end--
+# --field-start--
+fieldName=assignedMemberUids
+# --field-end--
+# --field-start--
+fieldName=mediaFileUid
+# --field-end--
+# --field-start--
+fieldName=creationDate
 # --field-end--
 # --field-start--
 fieldName=createdDate

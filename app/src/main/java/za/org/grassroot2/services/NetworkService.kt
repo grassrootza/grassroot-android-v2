@@ -10,8 +10,7 @@ import za.org.grassroot2.model.language.NluResponse
 import za.org.grassroot2.model.network.EntityForDownload
 import za.org.grassroot2.model.network.EntityForUpload
 import za.org.grassroot2.model.request.MemberRequest
-import za.org.grassroot2.model.task.Task
-import za.org.grassroot2.model.task.Vote
+import za.org.grassroot2.model.task.*
 
 /**
  * Created by luke on 2017/08/16.
@@ -58,6 +57,8 @@ interface NetworkService {
 
     fun respondToMeeting(meetingUid: String, response: String): Observable<Response<Void>>
 
+    fun respondToTodo(todoUid: String, response: String): Observable<Todo>
+
     fun respondToVote(voteUid: String, response: String): Observable<Vote>
 
     fun uploadMeetingPost(meetingUid: String, description: String, mediaFile: MediaFile?): Observable<Response<Void>>
@@ -67,4 +68,14 @@ interface NetworkService {
     fun uploadSpeech(sampleRate: Int, parseForIntent: Boolean, filePath: String): Observable<Response<Void>>
 
     fun getMeetingPosts(taskUid: String): Flowable<Resource<List<Post>>>
+
+    fun fetchTodoResponses(taskUid: String): Observable<Map<String, String>>
+
+    fun downloadTodoResponses(taskUid: String): Observable<ByteArray>?
+
+    fun fetchPendingResponses(): Observable<PendingResponseDTO>
+
+    fun createGroup(group: Group): Observable<Resource<Group>>
+
+    //fun getTodoPosts(taskUid: String): Flowable<Resource<List<Posts>>>
 }

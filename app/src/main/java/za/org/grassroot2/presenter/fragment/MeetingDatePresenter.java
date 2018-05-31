@@ -24,12 +24,10 @@ public class MeetingDatePresenter extends BaseFragmentPresenter<MeetingDatePrese
     @Override
     public void onViewCreated() {
         disposableOnDetach(getView().dateInputConfirmed().observeOn(AndroidSchedulers.mainThread()).flatMap(s -> {
-            getView().showProgressBar();
             return networkService.getTimestampForText(s);
         }).subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread()).subscribe(timestamp -> getView().renderDate(timestamp), throwable -> {
             throwable.printStackTrace();
-            getView().closeProgressBar();
             getView().showDatePicker();
         }));
     }

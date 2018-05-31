@@ -29,6 +29,7 @@ import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.fragment_multi_option_pick.*
 import kotlinx.android.synthetic.main.fragment_multi_option_pick.view.*
+import kotlinx.android.synthetic.main.fragment_option_pick.view.*
 import za.org.grassroot2.R
 import za.org.grassroot2.model.Group
 import za.org.grassroot2.model.dto.ActionOption
@@ -41,7 +42,7 @@ class OptionPickDialog : DialogFragment() {
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val builder = AlertDialog.Builder(activity)
-        val v = LayoutInflater.from(activity).inflate(R.layout.fragment_multi_option_pick, null, false)
+        val v = LayoutInflater.from(activity).inflate(R.layout.fragment_option_pick, null, false)
         val options = arguments.getSerializable(EXTRA_OPTIONS) as HashMap<Int, ActionOption>
         setupAdapter(v, options)
         v.close.setOnClickListener {
@@ -59,11 +60,11 @@ class OptionPickDialog : DialogFragment() {
     private fun setupAdapter(view: View, options: HashMap<Int, ActionOption>) {
         val itemDecoration = DividerItemDecoration(activity, DividerItemDecoration.VERTICAL)
         itemDecoration.setDrawable(ContextCompat.getDrawable(activity, R.drawable.item_divider))
-        view.list.addItemDecoration(itemDecoration)
-        view.list.layoutManager = LinearLayoutManager(activity)
+        view.action_option_list.addItemDecoration(itemDecoration)
+        view.action_option_list.layoutManager = LinearLayoutManager(activity)
         val adapter = OptionAdapter(ArrayList(options.values))
         adapter.viewClickObservable.subscribe(actionSubject)
-        view.list.adapter = adapter
+        view.action_option_list.adapter = adapter
     }
 
     companion object {

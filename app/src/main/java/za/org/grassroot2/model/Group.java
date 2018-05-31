@@ -6,6 +6,7 @@ import com.j256.ormlite.field.ForeignCollectionField;
 import com.j256.ormlite.table.DatabaseTable;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -39,12 +40,27 @@ public class Group implements EntityForDownload, SelectableItem, Serializable, A
     private String name;
 
     @DatabaseField(canBeNull = false)
+    @SerializedName("description")
+    private String description;
+
+    @DatabaseField(canBeNull = false)
     @SerializedName("memberCount")
     private Integer memberCount;
 
     @DatabaseField(canBeNull = false)
     @SerializedName("userRole")
     private String userRole;
+
+    @DatabaseField
+    private transient boolean synced = true;
+
+    @DatabaseField
+    @SerializedName("defaultAddToAccount")
+    private boolean defaultAddToAccount;
+
+    @DatabaseField
+    @SerializedName("reminderMinutes")
+    private int reminderMinutes;
 
     @DatabaseField
     @SerializedName("lastGroupChange")
@@ -102,11 +118,29 @@ public class Group implements EntityForDownload, SelectableItem, Serializable, A
 
     @Override
     public String getDescription() {
-        return memberCount + " members";
+        return description;
     }
+
+    public void setDescription(String description) { this.description = description;}
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public boolean isSynced() {
+        return synced;
+    }
+
+    public void setSynced(boolean synced) {
+        this.synced = synced;
+    }
+
+    public boolean isDefaultAddToAccount() {
+        return defaultAddToAccount;
+    }
+
+    public void setDefaultAddToAccount(boolean defaultAddToAccount) {
+        this.defaultAddToAccount = defaultAddToAccount;
     }
 
     public Integer getMemberCount() {
@@ -135,6 +169,14 @@ public class Group implements EntityForDownload, SelectableItem, Serializable, A
 
     public void setLastActionOrChange(long lastActionOrChange) {
         this.lastActionOrChange = lastActionOrChange;
+    }
+
+    public int getReminderMinutes() {
+        return reminderMinutes;
+    }
+
+    public void setReminderMinutes(int reminderMinutes) {
+        this.reminderMinutes = reminderMinutes;
     }
 
     public boolean isHidden() {

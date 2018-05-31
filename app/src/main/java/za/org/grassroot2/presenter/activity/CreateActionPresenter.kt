@@ -1,5 +1,6 @@
 package za.org.grassroot2.presenter.activity
 
+import android.app.Activity
 import android.net.Uri
 import android.text.TextUtils
 import io.reactivex.Maybe
@@ -8,6 +9,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import timber.log.Timber
 import za.org.grassroot2.R
+import za.org.grassroot2.R.string.activity
 import za.org.grassroot2.database.DatabaseService
 import za.org.grassroot2.model.Group
 import za.org.grassroot2.model.MediaFile
@@ -15,10 +17,14 @@ import za.org.grassroot2.model.alert.LiveWireAlert
 import za.org.grassroot2.model.enums.GrassrootEntityType
 import za.org.grassroot2.model.task.Meeting
 import za.org.grassroot2.model.task.Task
+import za.org.grassroot2.model.task.Todo
+import za.org.grassroot2.model.task.Vote
 import za.org.grassroot2.services.MediaService
 import za.org.grassroot2.services.NetworkService
 import za.org.grassroot2.util.MediaRecorderWrapper
 import za.org.grassroot2.view.GrassrootView
+import za.org.grassroot2.view.activity.CreateActionActivity
+import za.org.grassroot2.view.activity.GroupDetailsActivity
 import java.io.File
 import java.util.*
 import javax.inject.Inject
@@ -28,6 +34,9 @@ class CreateActionPresenter @Inject
 constructor(private val networkService: NetworkService, private val dbService: DatabaseService, private val mediaService: MediaService) : BasePresenter<CreateActionPresenter.CreateActionView>() {
 
     var task: Task? = null
+        private set
+
+    var group: Group? = null
         private set
 
     private var currentMediaFileUid: String? = null
@@ -48,7 +57,7 @@ constructor(private val networkService: NetworkService, private val dbService: D
     }
 
     enum class ActionType {
-        Meeting, LivewireAlert
+        Meeting, LivewireAlert, Vote, Todo, Group
     }
 
     fun initTask(type: ActionType) {
@@ -57,18 +66,45 @@ constructor(private val networkService: NetworkService, private val dbService: D
                 task = Meeting()
                 task!!.uid = UUID.randomUUID().toString()
             }
+            CreateActionPresenter.ActionType.Todo -> {
+                task = Todo()
+                task!!.uid = UUID.randomUUID().toString()
+            }
+            CreateActionPresenter.ActionType.Vote -> {
+                task = Vote()
+                task!!.uid = UUID.randomUUID().toString()
+            }
             CreateActionPresenter.ActionType.LivewireAlert -> alert = LiveWireAlert()
         }
     }
 
-    fun createMeeting() {
+    fun initGroup(): String {
+        group = Group()
+        group!!.uid = UUID.randomUUID().toString()
+        group!!.userRole = "CLOSED_GROUP"
+        return group!!.uid
+    }
+
+    fun createTask(Type: GrassrootEntityType) {
         view.showProgressBar()
         disposableOnDetach(networkService.createTask(task!!).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe({ task ->
+            Timber.e("subscriber completed, task created")
             view.closeProgressBar()
-            view.uploadSuccessfull(GrassrootEntityType.MEETING)
+            view.uploadSuccessfull(Type)
         }) { throwable ->
             view.closeProgressBar()
-            view.uploadSuccessfull(GrassrootEntityType.MEETING)
+            view.uploadSuccessfull(Type)
+        })
+    }
+
+    fun createGroup(groupUid: String) {
+        view.showProgressBar()
+        disposableOnDetach(networkService.createGroup(group!!).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe({ group ->
+            view.closeProgressBar()
+            GroupDetailsActivity.start(view.activity, groupUid)
+        }) { throwable ->
+            view.closeProgressBar()
+            view.uploadSuccessfull(GrassrootEntityType.GROUP)
         })
     }
 
@@ -105,17 +141,61 @@ constructor(private val networkService: NetworkService, private val dbService: D
         }
     }
 
-    fun setMeetingDate(date: Long?) {
-        (task as Meeting).deadlineMillis = date!!
-        (task as Meeting).setCreatedDate(System.currentTimeMillis())
+    fun setMeetingSubject(subject: String) {
+        (task as Meeting).setName(subject)
+    }
+
+    fun setTaskDate(t: ActionType, date: Long?) {
+        when (t) {
+            CreateActionPresenter.ActionType.Meeting -> {
+                (task as Meeting).deadlineMillis = date!!
+                (task as Meeting).setCreatedDate(System.currentTimeMillis())
+            }
+            CreateActionPresenter.ActionType.Vote -> {
+                (task as Vote).deadlineMillis = date!!
+                (task as Vote).setCreatedDate(System.currentTimeMillis())
+            }
+            CreateActionPresenter.ActionType.Todo -> {
+                (task as Todo).deadlineMillis = date!!
+                (task as Todo).setCreatedDate(System.currentTimeMillis())
+            }
+        }
     }
 
     fun setMeetingLocation(location: String) {
         (task as Meeting).locationDescription = location
     }
 
-    fun setSubject(subject: String) {
-        (task as Meeting).setSubject(subject)
+    fun setVoteOptions(options: List<String>) {
+        (task as Vote).setVoteOptions(options)
+    }
+
+    fun setTodoSubject(subject: String) {
+        (task as Todo).setSubject(subject)
+    }
+
+    fun setVoteSubject(subject: String) {
+        (task as Vote).setSubject(subject)
+    }
+
+    fun setTodoType(type: String) {
+        (task as Todo).setTodoType(type)
+    }
+
+    fun setTodoResponseTag(responseTag: String) {
+        (task as Todo).responseTag = responseTag
+    }
+
+    fun setGroupName(groupName: String) {
+        (group as Group).name = groupName
+    }
+
+    fun setGroupDescription(description: String) {
+        (group as Group).setDescription(description)
+    }
+
+    fun setVoteDescription(description: String) {
+        (task as Vote).setDescription(description)
     }
 
     fun setGroupUid(group: Group) {

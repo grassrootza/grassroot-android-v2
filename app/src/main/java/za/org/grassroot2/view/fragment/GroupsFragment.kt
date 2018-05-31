@@ -41,7 +41,7 @@ class GroupsFragment : GrassrootFragment(), GroupFragmentPresenter.GroupFragment
         super.onActivityCreated(savedInstanceState)
         (activity as AppCompatActivity).setSupportActionBar(toolbar)
         (activity as AppCompatActivity).supportActionBar!!.setTitle(R.string.title_groups)
-        fab.setOnClickListener { CreateActionActivity.start(activity, null) }
+        fab.setOnClickListener { CreateActionActivity.startFromHome(activity) }
         refreshLayout.setOnRefreshListener { presenter.refreshGroups() }
         presenter.attach(this)
         presenter.onViewCreated()

@@ -60,7 +60,6 @@ class MePresenter(private val dbService: DatabaseService,
                             view.cameraForResult(mediaFile.contentProviderPath, s)
                         },
                                 { throwable ->
-                                    view.closeProgressBar()
                                     view.showErrorDialog(R.string.me_error_updating_photo)
                                     Timber.e(throwable, "Error creating file")
                                 }
@@ -80,7 +79,6 @@ class MePresenter(private val dbService: DatabaseService,
                             view.pickFromGallery()
                         },
                         {
-                            view.closeProgressBar()
                             view.showErrorDialog(R.string.me_error_updating_photo)
                             it.printStackTrace()
                         }
@@ -89,7 +87,6 @@ class MePresenter(private val dbService: DatabaseService,
     }
 
     fun cameraResult() {
-        view.showProgressBar()
         disposableOnDetach(mediaService.captureMediaFile(currentMediaFileUid, 500, 500)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
@@ -106,7 +103,6 @@ class MePresenter(private val dbService: DatabaseService,
     }
 
     fun handlePickResult(data: Uri) {
-        view.showProgressBar()
         disposableOnDetach(mediaService.storeGalleryFile(currentMediaFileUid, data, 500, 500)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -124,7 +120,6 @@ class MePresenter(private val dbService: DatabaseService,
     }
 
     fun updateProfileData(displayName: String, phoneNumber: String, email: String, languageCode: String) {
-        view.showProgressBar()
         grassrootUserApi.updateProfileData(displayName, phoneNumber, email, languageCode)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -133,7 +128,6 @@ class MePresenter(private val dbService: DatabaseService,
                             storeSuccessfulAuthAndProceed(result)
                         },
                         {
-                            view.closeProgressBar()
                             view.showErrorDialog(R.string.me_error_updating_data)
                             Timber.e(it)
                         }
@@ -141,14 +135,11 @@ class MePresenter(private val dbService: DatabaseService,
     }
 
     private fun handleMediaError(throwable: Throwable) {
-        view.closeProgressBar()
         view.showErrorDialog(R.string.me_error_updating_photo)
-        view.closeProgressBar()
         Timber.e(throwable)
     }
 
     private fun uploadProfilePhoto(mediaFile: MediaFile) {
-        view.showProgressBar()
         mediaFile.initUploading()
         dbService.storeObject(MediaFile::class.java, mediaFile)
 
@@ -160,13 +151,11 @@ class MePresenter(private val dbService: DatabaseService,
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                         { result ->
-                            view.closeProgressBar()
                             if (result.isSuccessful) {
                                 view.invalidateProfilePicCache(userProfile.uid)
                             }
                         },
                         { error ->
-                            view.closeProgressBar()
                             view.showErrorDialog(R.string.me_error_updating_photo)
                             Timber.e(error)
                         }
@@ -201,10 +190,8 @@ class MePresenter(private val dbService: DatabaseService,
                                     { upd ->
                                         this.userProfile = upd
                                         view.displayUserData(this.userProfile)
-                                        view.closeProgressBar()
                                     },
                                     {
-                                        view.closeProgressBar()
                                         view.showErrorDialog(R.string.me_error_updating_data)
                                         Timber.e(it)
                                     }

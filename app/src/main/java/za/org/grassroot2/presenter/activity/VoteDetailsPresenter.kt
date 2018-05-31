@@ -27,6 +27,7 @@ constructor(private val databaseService: DatabaseService, private val networkSer
 
     fun loadData() {
         if (forceSync) {
+            Timber.d("Showing progress bar 1 in VoteDetailsPresenter")
             view.showProgressBar()
             val voteUidAndType = mapOf(voteUid to "VOTE")
             disposableOnDetach(networkService.getTasksByUids(voteUidAndType)
@@ -54,6 +55,7 @@ constructor(private val databaseService: DatabaseService, private val networkSer
     }
 
     fun respondToVote(uid: String, response: String) {
+        Timber.d("Showing progres bar 2 in VoteDetailsPresenter")
         view.showProgressBar()
         disposableOnDetach(networkService.respondToVote(uid, response).subscribeOn(io()).observeOn(main()).subscribe({ networkResponse ->
             view.closeProgressBar()

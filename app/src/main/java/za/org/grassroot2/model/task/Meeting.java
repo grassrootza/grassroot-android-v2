@@ -8,7 +8,10 @@ import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.field.ForeignCollectionField;
 import com.j256.ormlite.table.DatabaseTable;
 
+import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import za.org.grassroot2.model.AroundItem;
 import za.org.grassroot2.model.ExcludeFromSerialization;
@@ -35,10 +38,11 @@ public class Meeting implements Task, Syncable, AroundItem {
     @DatabaseField
     private GrassrootEntityType parentEntityType;
 
-    @SerializedName("title")
+    @SerializedName("subject")
     @DatabaseField(canBeNull = false)
     private String subject;
 
+    @SerializedName("description")
     @DatabaseField
     private String description;
 
@@ -51,24 +55,30 @@ public class Meeting implements Task, Syncable, AroundItem {
     private String locationDescription;
 
     @DatabaseField
+    @SerializedName("assignedMemberUids")
+    private List<String> assignedMemberUids;
+
+    @DatabaseField
+    @SerializedName("mediaFileUid")
+    private String mediaFileUid;
+
+    @DatabaseField
     @SerializedName("createdDate")
     private long createdDate;
+
+    @DatabaseField
+    @SerializedName("creationDate")
+    private long creationDate;
+
     @DatabaseField
     @SerializedName("deadlineMillis")
     private long deadlineMillis;
+
     @DatabaseField
     private long lastChangeTimeServerMillis;
 
     @ForeignCollectionField
     private ForeignCollection<Post> posts;
-
-    public String getResponse() {
-        return response;
-    }
-
-    public void setResponse(String response) {
-        this.response = response;
-    }
 
     @DatabaseField
     private String response;
@@ -111,6 +121,10 @@ public class Meeting implements Task, Syncable, AroundItem {
 
     @Override
     public Date getCreatedDateTime() {
+        return new Date(createdDate);
+    }
+
+    public Date getCreatedDate() {
         return new Date(createdDate);
     }
 
@@ -168,7 +182,11 @@ public class Meeting implements Task, Syncable, AroundItem {
         this.parentUid = parentUid;
     }
 
-    public void setSubject(String subject) {
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public void setName(String subject) {
         this.subject = subject;
     }
 
@@ -180,12 +198,44 @@ public class Meeting implements Task, Syncable, AroundItem {
         this.deadlineMillis = deadlineMillis;
     }
 
+    public List<String> getAssignedMemberUids() {
+        return assignedMemberUids;
+    }
+
+    public void setAssignedMemberUids(List assignedMemberUids) {
+        this.assignedMemberUids = assignedMemberUids;
+    }
+
+    public long getCreationDate() {
+        return creationDate;
+    }
+
+    public void setCreationDate(long creationDate) {
+        this.creationDate = creationDate;
+    }
+
+    public String getMediaFileUid() {
+        return mediaFileUid;
+    }
+
+    public void setMediaFileUid(String mediaFileUid) {
+        this.mediaFileUid = mediaFileUid;
+    }
+
     public void setLocationDescription(String locationDescription) {
         this.locationDescription = locationDescription;
     }
 
     public String getLocationDescription() {
         return locationDescription;
+    }
+
+    public String getResponse() {
+        return response;
+    }
+
+    public void setResponse(String response) {
+        this.response = response;
     }
 
     @Override

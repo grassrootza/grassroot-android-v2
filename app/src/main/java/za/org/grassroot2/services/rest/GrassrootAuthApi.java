@@ -16,30 +16,31 @@ import za.org.grassroot2.model.TokenResponse;
 public interface GrassrootAuthApi {
 
     // Some authentication related methods
-    @GET("/api/auth/token/refresh")
+    @GET("/v2/api/auth/token/refresh")
     Observable<Response<RestResponse<String>>> refreshOtp(@Query("oldToken") String oldToken,
                                                           @Query("durationMillis") Long expiresIn);
 
-    @GET("/api/auth/token/validate")
+    @GET("/v2/api/auth/token/validate")
     Single<RestResponse> validateToken(@Query("token") String token);
 
-    @GET("/api/auth/login-password")
+    @GET("/v2/api/auth/login-password")
     Observable<Response<AuthorizationResponse>> login(@Query("username") String msisdn,
-                                                      @Query("password") String password);
+                                                      @Query("password") String password,
+                                                      @Query("interfaceType") String interfaceType);
 
 
-    @GET("/api/auth/register")
+    @GET("/v2/api/auth/register")
     Observable<RestResponse<String>> register(@Query("phoneNumber") String phoneNumber,
                                               @Query("displayName") String displayName,
                                               @Query("password") String password);
 
-    @GET("/api/auth/register/verify/{phoneNumber}/{code}")
+    @GET("/v2/api/auth/register/verify/{phoneNumber}/{code}")
     Observable<RestResponse<TokenResponse>> verifyRegistrationCode(@Path("phoneNumber") String phoneNumber, @Path("code") String code);
 
-    @GET("/api/auth/reset-password-request")
+    @GET("/v2/api/auth/reset-password-request")
     Observable<RestResponse<String>> resetPasswordRequest(@Query("phoneNumber") String phoneNumber);
 
-    @GET("/api/auth/reset-password-confirm")
+    @GET("/v2/api/auth/reset-password-confirm")
     Observable<RestResponse<String>> resetPasswordConfirm(@Query("phoneNumber") String phoneNumber,
                                                           @Query("password") String newPassword,
                                                           @Query("code") String otpCode);
