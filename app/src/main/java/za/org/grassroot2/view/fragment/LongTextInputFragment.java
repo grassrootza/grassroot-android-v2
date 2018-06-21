@@ -9,13 +9,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
+import com.jakewharton.rxbinding2.view.RxView;
+
 import org.greenrobot.eventbus.EventBus;
 
 import butterknife.BindView;
 import za.org.grassroot2.R;
 import za.org.grassroot2.dagger.activity.ActivityComponent;
-import za.org.grassroot2.dagger.fragment.FragmentComponent;
-import za.org.grassroot2.rxbinding.RxView;
 import za.org.grassroot2.view.SingleInputNextOtherView;
 
 /**

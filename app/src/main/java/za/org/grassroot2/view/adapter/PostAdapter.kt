@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import com.jakewharton.rxbinding2.view.RxView
 import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.item_post.view.*
@@ -14,7 +15,6 @@ import za.org.grassroot2.R
 import za.org.grassroot2.extensions.getHtml
 import za.org.grassroot2.model.HomeFeedItem
 import za.org.grassroot2.model.Post
-import za.org.grassroot2.rxbinding.RxView
 import za.org.grassroot2.util.LastModifiedFormatter
 import javax.inject.Inject
 

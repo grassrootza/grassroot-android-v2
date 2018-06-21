@@ -4,22 +4,19 @@ import android.accounts.AccountManager
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import com.jakewharton.rxbinding2.widget.RxTextView
 import io.reactivex.annotations.NonNull
 import io.reactivex.disposables.Disposable
-import kotlinx.android.synthetic.main.activity_login2.*
+import kotlinx.android.synthetic.main.activity_login.*
 import timber.log.Timber
 import za.org.grassroot2.R
 import za.org.grassroot2.dagger.activity.ActivityComponent
 import za.org.grassroot2.presenter.LoginPresenter
-import za.org.grassroot2.rxbinding.RxTextView
 import za.org.grassroot2.services.account.AuthConstants
 import za.org.grassroot2.view.LoginView
 import javax.inject.Inject
 
 class LoginActivity : GrassrootActivity(), LoginView {
-
-
-
 
     @Inject
     lateinit var presenter: LoginPresenter
@@ -31,7 +28,7 @@ class LoginActivity : GrassrootActivity(), LoginView {
     }
 
     override fun getLayoutResourceId(): Int {
-        return R.layout.activity_login2
+        return R.layout.activity_login
     }
 
 

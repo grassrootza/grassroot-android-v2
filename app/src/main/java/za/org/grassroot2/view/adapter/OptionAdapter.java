@@ -6,6 +6,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.jakewharton.rxbinding2.view.RxView;
+
 import java.util.List;
 
 import butterknife.BindView;
@@ -14,8 +16,6 @@ import io.reactivex.Observable;
 import io.reactivex.subjects.PublishSubject;
 import za.org.grassroot2.R;
 import za.org.grassroot2.model.dto.ActionOption;
-import za.org.grassroot2.rxbinding.RxView;
-import za.org.grassroot2.view.dialog.MediaPickerFragment;
 
 /**
  * Created by qbasso on 25.10.2017.

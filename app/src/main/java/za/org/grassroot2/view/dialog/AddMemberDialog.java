@@ -13,11 +13,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
 
-import io.reactivex.Observable;
+import com.jakewharton.rxbinding2.widget.RxTextView;
+
 import za.org.grassroot2.R;
-import za.org.grassroot2.model.contact.Contact;
-import za.org.grassroot2.rxbinding.RxTextView;
-import za.org.grassroot2.rxbinding.RxView;
 
 public class AddMemberDialog extends DialogFragment {
 

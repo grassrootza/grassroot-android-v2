@@ -4,11 +4,11 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.jakewharton.rxbinding2.view.RxView
 import kotlinx.android.synthetic.main.fragment_success.*
 import org.greenrobot.eventbus.EventBus
 import za.org.grassroot2.R
 import za.org.grassroot2.dagger.activity.ActivityComponent
-import za.org.grassroot2.rxbinding.RxView
 
 class SuccessFragment : GrassrootFragment() {
 
@@ -26,7 +26,6 @@ class SuccessFragment : GrassrootFragment() {
         lifecyclePublisher.onNext(GrassrootFragment.ACTION_FRAGMENT_VIEW_CREATED)
         return v
     }
-
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)

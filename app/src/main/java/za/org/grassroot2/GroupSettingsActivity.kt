@@ -71,7 +71,7 @@ class GroupSettingsActivity : GrassrootActivity(), GroupSettingsPresenter.GroupS
 
     private fun loadProfilePic(groupUid: String) {
         val url = BuildConfig.API_BASE + "group/image/view/" + groupUid
-        Picasso.with(this)
+        Picasso.get()
                 .load(url)
                 .resizeDimen(R.dimen.profile_photo_s_width, R.dimen.profile_photo_s_height)
                 .placeholder(R.drawable.group_5)
@@ -86,7 +86,7 @@ class GroupSettingsActivity : GrassrootActivity(), GroupSettingsPresenter.GroupS
                         groupPhoto.setImageDrawable(imageDrawable)
                     }
 
-                    override fun onError() {
+                    override fun onError(e: Exception?) {
                         groupPhoto.setImageResource(R.drawable.user)
                     }
                 })

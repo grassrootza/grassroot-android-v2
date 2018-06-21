@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
+import com.jakewharton.rxbinding2.widget.RxTextView
 import com.tbruyelle.rxpermissions2.RxPermissions
 import dagger.Lazy
 import io.reactivex.Observable
@@ -19,7 +20,6 @@ import za.org.grassroot2.model.HomeFeedItem
 import za.org.grassroot2.model.task.Meeting
 import za.org.grassroot2.model.task.Vote
 import za.org.grassroot2.presenter.activity.HomePresenter
-import za.org.grassroot2.rxbinding.RxTextView
 import za.org.grassroot2.view.activity.CreateActionActivity
 import za.org.grassroot2.view.activity.MeetingDetailsActivity
 import za.org.grassroot2.view.activity.VoteDetailsActivity

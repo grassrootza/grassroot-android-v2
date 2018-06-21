@@ -12,6 +12,9 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.jakewharton.rxbinding2.view.RxView;
+import com.jakewharton.rxbinding2.widget.RxTextView;
+
 import java.util.concurrent.TimeUnit;
 
 import butterknife.BindView;
@@ -21,8 +24,6 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.subjects.PublishSubject;
 import za.org.grassroot2.R;
 import za.org.grassroot2.dagger.activity.ActivityComponent;
-import za.org.grassroot2.rxbinding.RxTextView;
-import za.org.grassroot2.rxbinding.RxView;
 
 public class ActionSingleInputFragment extends GrassrootFragment {
 

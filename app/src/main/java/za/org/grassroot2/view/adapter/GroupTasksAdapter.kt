@@ -9,11 +9,9 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.ProgressBar
 import android.widget.TextView
-
-import java.util.HashMap
-
 import butterknife.BindView
 import butterknife.ButterKnife
+import com.jakewharton.rxbinding2.view.RxView
 import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
 import za.org.grassroot2.R
@@ -22,8 +20,8 @@ import za.org.grassroot2.model.task.Meeting
 import za.org.grassroot2.model.task.Task
 import za.org.grassroot2.model.task.Todo
 import za.org.grassroot2.model.task.Vote
-import za.org.grassroot2.rxbinding.RxView
 import za.org.grassroot2.util.LastModifiedFormatter
+import java.util.*
 
 class GroupTasksAdapter(private val context: Context, private var data: List<Task>?, private val olderTimestamp: Long) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 

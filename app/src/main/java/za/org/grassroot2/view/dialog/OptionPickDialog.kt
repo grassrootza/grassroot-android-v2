@@ -9,32 +9,15 @@ import android.support.v4.content.ContextCompat
 import android.support.v7.app.AlertDialog
 import android.support.v7.widget.DividerItemDecoration
 import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
-import android.text.TextUtils
-import android.util.Patterns
 import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
-import android.widget.Button
-import android.widget.EditText
-
-import java.util.ArrayList
-import java.util.HashMap
-import java.util.LinkedHashMap
-
-import butterknife.BindView
-import butterknife.ButterKnife
-import butterknife.OnClick
 import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
-import kotlinx.android.synthetic.main.fragment_multi_option_pick.*
 import kotlinx.android.synthetic.main.fragment_multi_option_pick.view.*
 import za.org.grassroot2.R
-import za.org.grassroot2.model.Group
 import za.org.grassroot2.model.dto.ActionOption
-import za.org.grassroot2.model.util.GroupPermissionChecker
-import za.org.grassroot2.rxbinding.RxTextView
 import za.org.grassroot2.view.adapter.OptionAdapter
+import java.util.*
 
 class OptionPickDialog : DialogFragment() {
     private val actionSubject = PublishSubject.create<Int>()

@@ -71,8 +71,8 @@
                 android:textSize="14sp"
                 android:paddingTop="17dp"
                 android:paddingBottom="17dp"
-                android:paddingLeft="7dp"
-                android:paddingRight="7dp"
+                android:paddingLeft="72dp"
+                android:paddingRight="72dp"
                 android:fontFamily="sans-serif-medium"
                 android:textColor="#ffffff"
                 android:gravity="center"
@@ -108,6 +108,7 @@
                     android:lineSpacingExtra="7sp"
                     android:gravity="center_horizontal"
                     android:layout_marginLeft="10dp"
+                    android:layout_marginStart="10dp"
                     android:text="Sign in HERE" />
 
             </LinearLayout>

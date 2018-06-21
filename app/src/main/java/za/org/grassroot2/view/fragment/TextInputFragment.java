@@ -5,10 +5,11 @@ import android.support.annotation.Nullable;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.jakewharton.rxbinding2.widget.RxTextView;
+
 import butterknife.BindView;
 import io.reactivex.Observable;
 import za.org.grassroot2.R;
-import za.org.grassroot2.rxbinding.RxTextView;
 import za.org.grassroot2.view.SingleTextView;
 
 /**

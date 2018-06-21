@@ -8,16 +8,15 @@ import android.support.v7.widget.LinearLayoutManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.jakewharton.rxbinding2.view.RxView
 import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
-import kotlinx.android.synthetic.main.fragment_pick_media.*
 import kotlinx.android.synthetic.main.fragment_pick_media.view.*
 import za.org.grassroot2.R
 import za.org.grassroot2.dagger.activity.ActivityComponent
 import za.org.grassroot2.model.Group
 import za.org.grassroot2.model.dto.ActionOption
 import za.org.grassroot2.model.util.GroupPermissionChecker
-import za.org.grassroot2.rxbinding.RxView
 import za.org.grassroot2.view.adapter.OptionAdapter
 import za.org.grassroot2.view.fragment.GrassrootFragment
 import java.util.*

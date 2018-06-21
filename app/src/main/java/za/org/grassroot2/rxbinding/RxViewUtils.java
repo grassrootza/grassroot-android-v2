@@ -4,9 +4,9 @@ import android.view.MenuItem;
 import android.view.inputmethod.EditorInfo;
 import android.widget.TextView;
 
+import com.jakewharton.rxbinding2.widget.RxTextView;
+
 import io.reactivex.Observable;
-import io.reactivex.annotations.NonNull;
-import io.reactivex.functions.Function;
 import io.reactivex.functions.Predicate;
 
 /**
@@ -23,11 +23,11 @@ public final class RxViewUtils {
                 || integer == EditorInfo.IME_ACTION_GO;
     }
 
-    public static Observable<Boolean> nullSafeMenuClick(MenuItem menuItem) {
-        return menuItem == null ? Observable.just(false) :
-                RxMenuItem.clicks(menuItem)
-                        .map(o -> true);
-    }
+//    public static Observable<Boolean> nullSafeMenuClick(MenuItem menuItem) {
+//        return menuItem == null ? Observable.just(false) :
+//                RxMenuItem.clicks(menuItem)
+//                        .map(o -> true);
+//    }
 
     public static Observable<CharSequence> nullSafeTextViewNextDone(final TextView textView) {
         return textView == null ? Observable.<CharSequence>empty() :

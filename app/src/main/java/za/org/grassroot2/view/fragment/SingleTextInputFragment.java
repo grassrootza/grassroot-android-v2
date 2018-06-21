@@ -10,15 +10,15 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
+import com.jakewharton.rxbinding2.view.RxView;
+import com.jakewharton.rxbinding2.widget.RxTextView;
+
 import org.greenrobot.eventbus.EventBus;
 
 import butterknife.BindView;
 import io.reactivex.Observable;
 import za.org.grassroot2.R;
 import za.org.grassroot2.dagger.activity.ActivityComponent;
-import za.org.grassroot2.dagger.fragment.FragmentComponent;
-import za.org.grassroot2.rxbinding.RxTextView;
-import za.org.grassroot2.rxbinding.RxView;
 import za.org.grassroot2.rxbinding.RxViewUtils;
 import za.org.grassroot2.view.SingleInputNextOtherView;
 

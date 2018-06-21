@@ -6,6 +6,8 @@ import android.content.Context
 import android.os.Bundle
 import android.view.inputmethod.EditorInfo
 import butterknife.OnClick
+import com.jakewharton.rxbinding2.view.RxView
+import com.jakewharton.rxbinding2.widget.RxTextView
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.subjects.PublishSubject
@@ -13,8 +15,6 @@ import kotlinx.android.synthetic.main.fragment_meeting_date.*
 import za.org.grassroot2.R
 import za.org.grassroot2.dagger.activity.ActivityComponent
 import za.org.grassroot2.presenter.fragment.MeetingDatePresenter
-import za.org.grassroot2.rxbinding.RxTextView
-import za.org.grassroot2.rxbinding.RxView
 import java.util.*
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject

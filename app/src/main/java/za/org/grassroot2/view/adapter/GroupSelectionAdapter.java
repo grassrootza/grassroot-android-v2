@@ -6,6 +6,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.jakewharton.rxbinding2.view.RxView;
+
 import java.util.List;
 
 import butterknife.BindView;
@@ -15,7 +17,6 @@ import io.reactivex.subjects.PublishSubject;
 import za.org.grassroot2.R;
 import za.org.grassroot2.model.Group;
 import za.org.grassroot2.model.SelectableItem;
-import za.org.grassroot2.rxbinding.RxView;
 
 /**
  * Created by luke on 2017/08/19.

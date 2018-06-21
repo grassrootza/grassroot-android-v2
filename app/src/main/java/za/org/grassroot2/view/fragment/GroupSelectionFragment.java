@@ -8,6 +8,8 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.EditText;
 
+import com.jakewharton.rxbinding2.widget.RxTextView;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,7 +24,6 @@ import za.org.grassroot2.dagger.activity.ActivityComponent;
 import za.org.grassroot2.model.Group;
 import za.org.grassroot2.model.SelectableItem;
 import za.org.grassroot2.presenter.fragment.GroupSelectionPresenter;
-import za.org.grassroot2.rxbinding.RxTextView;
 import za.org.grassroot2.view.adapter.GroupSelectionAdapter;
 
 /**

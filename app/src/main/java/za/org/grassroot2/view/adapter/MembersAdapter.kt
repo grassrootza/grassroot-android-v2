@@ -7,13 +7,13 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Filter
 import android.widget.Filterable
+import com.jakewharton.rxbinding2.view.RxView
 import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.item_member.view.*
 import za.org.grassroot2.R
 import za.org.grassroot2.model.Membership
 import za.org.grassroot2.model.util.PhoneNumberFormatter
-import za.org.grassroot2.rxbinding.RxView
 import javax.inject.Inject
 
 /**

@@ -23,7 +23,7 @@ constructor(private val context: Context, private var data: List<VoteResult>) : 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder =
             VoteResultViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.item_vote_result, parent, false))
 
-    override fun onBindViewHolder(holder: RecyclerView.ViewHolder?, position: Int) {
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val item = data[position]
         Timber.d("The contents of item.option are: %s", item.option)
         val resultHolder = holder as VoteResultViewHolder

@@ -6,6 +6,8 @@ import android.support.annotation.Nullable;
 import android.view.View;
 import android.widget.TextView;
 
+import com.jakewharton.rxbinding2.view.RxView;
+
 import butterknife.BindView;
 import butterknife.OnClick;
 import io.reactivex.Observable;
@@ -13,7 +15,6 @@ import io.reactivex.subjects.PublishSubject;
 import za.org.grassroot2.R;
 import za.org.grassroot2.dagger.activity.ActivityComponent;
 import za.org.grassroot2.model.alert.LiveWireAlert;
-import za.org.grassroot2.rxbinding.RxView;
 
 public class LivewireConfirmFragment extends GrassrootFragment {
 

@@ -320,5 +320,7 @@
     <string name="member_changed_other">A change was made to %1$s on %2$s</string>
     <string name="abstain">Abstain</string>
     <string name="vote_results_header">RESULTS</string>
+    <string name="sign_in">Sign in</string>
+    <string name="forgot_password">I FORGOT MY PASSWORD</string>
 
 </resources>

@@ -5,13 +5,13 @@ import android.support.v7.widget.LinearLayoutManager
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.View
+import com.jakewharton.rxbinding2.widget.RxTextView
 import io.reactivex.Observable
 import kotlinx.android.synthetic.main.fragment_member_list.*
 import za.org.grassroot2.R
 import za.org.grassroot2.dagger.activity.ActivityComponent
 import za.org.grassroot2.model.MembershipLog
 import za.org.grassroot2.presenter.fragment.MemberLogsPresenter
-import za.org.grassroot2.rxbinding.RxTextView
 import za.org.grassroot2.view.adapter.MemberLogsAdapter
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject

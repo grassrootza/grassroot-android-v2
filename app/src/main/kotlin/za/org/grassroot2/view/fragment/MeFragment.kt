@@ -123,7 +123,7 @@ class MeFragment : GrassrootFragment(), MeView {
 
 
     fun showPopup(v: View) {
-        val popup = PopupMenu(activity, v)
+        val popup = PopupMenu(activity!!, v)
         val inflater = popup.menuInflater
         inflater.inflate(R.menu.change_image_options, popup.menu)
         popup.setOnMenuItemClickListener { item ->
@@ -185,13 +185,13 @@ class MeFragment : GrassrootFragment(), MeView {
 
     override fun invalidateProfilePicCache(userUid: String) {
         val url = BuildConfig.API_BASE + "user/profile/image/view/" + userUid
-        Picasso.with(context).invalidate(url)
+        Picasso.get().invalidate(url)
         loadProfilePic(userUid)
     }
 
     private fun loadProfilePic(userUid: String) {
         val url = BuildConfig.API_BASE + "user/profile/image/view/" + userUid
-        Picasso.with(context)
+        Picasso.get()
                 .load(url)
                 .resizeDimen(R.dimen.profile_photo_width, R.dimen.profile_photo_height)
                 .placeholder(R.drawable.user)
@@ -206,7 +206,7 @@ class MeFragment : GrassrootFragment(), MeView {
                         profilePhoto.setImageDrawable(imageDrawable)
                     }
 
-                    override fun onError() {
+                    override fun onError(e: Exception?) {
                         profilePhoto?.setImageResource(R.drawable.user)
                     }
                 })
@@ -268,6 +268,6 @@ class MeFragment : GrassrootFragment(), MeView {
         val intent = Intent(context, WelcomeActivity::class.java)
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         startActivity(intent)
-        activity.finish()
+        activity?.finish()
     }
 }
