@@ -20,9 +20,7 @@ import za.org.grassroot2.model.language.NluResponse
 import za.org.grassroot2.model.network.EntityForDownload
 import za.org.grassroot2.model.network.EntityForUpload
 import za.org.grassroot2.model.request.MemberRequest
-import za.org.grassroot2.model.task.Meeting
-import za.org.grassroot2.model.task.Task
-import za.org.grassroot2.model.task.Vote
+import za.org.grassroot2.model.task.*
 import za.org.grassroot2.services.rest.ApiError
 import za.org.grassroot2.services.rest.GrassrootUserApi
 import za.org.grassroot2.services.rest.RestResponse
@@ -61,7 +59,7 @@ constructor(private val userDetailsService: UserDetailsService,
 
     override fun downloadAllChangedOrNewGroups(): Observable<List<Group>> {
         return grassrootUserApi
-                .fetchUserGroups(currentUserUid, databaseService.loadExistingObjectsWithLastChangeTime(Group::class.java))
+                .fetchUserGroups(databaseService.loadExistingObjectsWithLastChangeTime(Group::class.java))
                 .doOnError({ Timber.e(it) })
                 .filter { listRestResponse ->
                     Timber.e("filtering if group list empty, what does map look like? %s", listRestResponse)
@@ -70,7 +68,7 @@ constructor(private val userDetailsService: UserDetailsService,
                 .concatMap { groups ->
                     Timber.e("getting group info for remainder")
                     val changedUids = groups.indices.map { groups[it].uid }
-                    grassrootUserApi.fetchGroupsInfo(currentUserUid, changedUids)
+                    grassrootUserApi.fetchGroupsInfo(changedUids)
                 }
                 .doOnError({ Timber.e(it) })
                 .flatMap { listRestResponse ->
@@ -90,6 +88,12 @@ constructor(private val userDetailsService: UserDetailsService,
     override fun downloadTaskMinimumInfo(): Observable<List<Task>> {
         return grassrootUserApi
                 .fetchUserTasksMinimumInfo(databaseService.getAllTasksLastChangedTimestamp())
+                .doOnError({ Timber.e(it) })
+    }
+
+    override fun fetchPendingResponses(): Observable<PendingResponseDTO> {
+        return grassrootUserApi
+                .fetchPendingResponses()
                 .doOnError({ Timber.e(it) })
     }
 
@@ -159,23 +163,96 @@ constructor(private val userDetailsService: UserDetailsService,
         }
     }
 
+    override fun fetchTodoResponses(taskUid: String): Observable<Map<String, String>> {
+        var responses = grassrootUserApi
+                .fetchTodoResponses(taskUid)
+                .doOnError({ Timber.e(it)})
+        return responses
+    }
+
+    override fun downloadTodoResponses(taskUid: String): Observable<ByteArray>? {
+        return grassrootUserApi
+                .downloadTodoResponses(taskUid)
+                .doOnError({ Timber.e(it)})
+    }
+
     override fun getTasksByUids(uids: Map<String, String>): Observable<List<Task>> {
         return grassrootUserApi
                 .fetchTasksByUid(uids)
                 .doOnError({ Timber.e(it) })
     }
 
+    override fun createGroup(group: Group): Observable<Resource<Group>> {
+        return Observable.create { e ->
+            object : ResourceToStore<Group, Group>(group, e) {
+                override fun uploadRemote(localObject: Group?): Observable<Response<Group>> {
+                    val group = localObject as Group
+                    Timber.d("Sending new group to server.")
+                    return grassrootUserApi.createGroup(group.name, group.description, group.userRole, group.reminderMinutes, group.isHidden, group.isDefaultAddToAccount, group.isPinned )
+                }
+                override fun uploadFailed(localObject: Group) {
+                    Timber.d("createGroup uploadFailed")
+                    val g = localObject as Group
+                    g.isSynced = false
+                    //databaseService.storeGroupWithMembers(group)
+                }
+
+                override fun saveResult(data: Group) {
+                    databaseService.storeGroupWithMembers(group).toObservable()
+                    Timber.d("Saving result from server")
+                }
+            }
+        }
+    }
+
     override fun createTask(t: Task): Observable<Resource<Task>> {
+        Timber.e("Task type is: %s", t.type.toString())
         return Observable.create { e ->
             object : ResourceToStore<Task, Task>(t, e) {
                 override fun uploadRemote(localObject: Task): Observable<Response<Task>> {
-                    val m = localObject as Meeting
-                    return grassrootUserApi.createTask("GROUP", currentUserUid, t.parentUid, m.name, m.locationDescription, t.deadlineMillis)
+                    if (t.type.toString() == "MEETING") {
+                        val m = localObject as Meeting
+                        Timber.d("Here's what I'm sending: %s", m.toString())
+                        return grassrootUserApi.createMeeting("GROUP", m.parentUid, m.name,m.locationDescription, m.deadlineMillis, m.description, true, m.latitude, m.longitude,  m.assignedMemberUids, m.mediaFileUid)
+                    }
+                    else if (t.type.toString() == "VOTE") {
+                        val v = localObject as Vote
+                        Timber.d("Here's what I'm sending: %s", v.toString())
+                        return grassrootUserApi.createVote("GROUP", v.parentUid, v.name, v.voteOptions, v.description, v.deadlineMillis, v.mediaFileUid, v.assignedMemberUids)
+                    }
+                    else if (t.type.toString() == "TODO") {
+                        val todo = localObject as Todo
+                        Timber.d("Here's what I'm sending: %s", todo.toString())
+                        // as there are 4 different To-do creation api paths we must distinguish between todos
+                        if (todo.todoType == "ACTION_REQUIRED") {
+                            return grassrootUserApi.createActionTodo("GROUP", todo.parentUid, todo.name, todo.deadlineMillis, todo.isRecurring, todo.recurringPeriodMillis, todo.assignedMemberUids, todo.mediaFileUids)
+                        }
+                        else if (todo.todoType == "INFORMATION_REQUIRED") {
+                            return grassrootUserApi.createInformationTodo("GROUP", todo.parentUid, todo.name, todo.responseTag, todo.deadlineMillis, todo.assignedMemberUids, todo.mediaFileUids)
+                        }
+                        else if (todo.todoType == "VALIDATION_REQUIRED") {
+                            return grassrootUserApi.createConfirmationTodo("GROUP", todo.parentUid, todo.name, todo.deadlineMillis, todo.isRequireImages, todo.assignedMemberUids, todo.confirmingMemberUids, todo.isRecurring, todo.recurringPeriodMillis, todo.mediaFileUids)
+                        }
+                        else if (todo.todoType == "VOLUNTEERS_NEEDED") {
+                            return grassrootUserApi.createVolunteerTodo("GROUP", todo.parentUid, todo.name, todo.deadlineMillis, todo.assignedMemberUids, todo.mediaFileUids)
+                        }
+                    }
+                    throw IllegalArgumentException("Error, no task type.")
                 }
 
                 override fun uploadFailed(localObject: Task) {
-                    val m = localObject as Meeting
-                    m.isSynced = false
+                    if (localObject.parentEntityType == GrassrootEntityType.MEETING) {
+                        val m = localObject as Meeting
+                        m.isSynced = false
+                    }
+                    else if (localObject.parentEntityType == GrassrootEntityType.VOTE) {
+                        val v = localObject as Vote
+                        v.isSynced = false
+                    }
+                    else if (localObject.parentEntityType == GrassrootEntityType.TODO) {
+                        val td = localObject as Todo
+                        td.isSynced = false
+                    }
                     databaseService.storeTasks(listOf<Task>(localObject))
                 }
 
@@ -299,6 +376,20 @@ constructor(private val userDetailsService: UserDetailsService,
         }
     }
 
+    override fun respondToTodo(todoUid: String, response: String): Observable<Todo> {
+        return grassrootUserApi.respondToTodo(todoUid, response).flatMap { serverResponse ->
+            if (serverResponse.isSuccessful) {
+                Observable.just(serverResponse.body())
+            } else {
+                when (ApiError(serverResponse.errorBody()).errorCode) {
+                    "USER_NOT_PART_OF_TODO" -> throw UserNotPartOfTaskException()
+                    "TODO_ALREADY_CLOSED" -> throw IllegalArgumentException()
+                    else -> throw GenericApiException(serverResponse.errorBody())
+                }
+            }
+        }
+    }
+
     override fun uploadMeetingPost(meetingUid: String, description: String, mediaFile: MediaFile?): Observable<Response<Void>> {
         return grassrootUserApi.uploadPost(
                 currentUserUid,
@@ -354,12 +445,11 @@ constructor(private val userDetailsService: UserDetailsService,
 
     }
 
-
     private fun getFileFromPath(mediaFile: MediaFile, paramName: String): MultipartBody.Part? {
         return try {
-            Timber.i("getting image from path : " + mediaFile.absolutePath)
+            Timber.i("getting image from path : %s", mediaFile.absolutePath)
             val file = File(mediaFile.absolutePath)
-            Timber.d("file size : " + file.length() / 1024)
+            Timber.d("file size : %s", file.length() / 1024)
             val requestFile = RequestBody.create(MediaType.parse(mediaFile.mimeType), file)
             MultipartBody.Part.createFormData(paramName, file.name, requestFile)
         } catch (e: Exception) {
@@ -370,9 +460,9 @@ constructor(private val userDetailsService: UserDetailsService,
 
     private fun getFileFromPath(filePath: String, paramName: String): MultipartBody.Part? {
         return try {
-            Timber.i("getting image from path : " + filePath)
+            Timber.i("getting image from path : %s", filePath)
             val file = File(filePath)
-            Timber.d("file size : " + file.length() / 1024)
+            Timber.d("file size : %s", file.length() / 1024)
             val requestFile = RequestBody.create(MediaType.parse(""), file)
             MultipartBody.Part.createFormData(paramName, file.name, requestFile)
         } catch (e: Exception) {

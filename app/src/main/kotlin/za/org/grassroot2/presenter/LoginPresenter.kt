@@ -29,8 +29,9 @@ class LoginPresenter @Inject constructor(val grassrootAuthApi: GrassrootAuthApi,
         val username = if (PhoneNumberUtil.isPossibleNumber(phoneNumber))
             PhoneNumberUtil.convertToMsisdn(phoneNumber) else phoneNumber
         view.showProgressBar()
+        var interfaceType: String = "ANDROID_2"
         disposableOnDetach(grassrootAuthApi
-                .login(username, password)
+                .login(username, password, interfaceType)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(this::routeAuthenticationResponse, this::handleLoginError)

@@ -90,7 +90,7 @@ class GroupTasksAdapter(private val context: Context, private var data: List<Tas
     private fun bindVote(holder: VoteViewHolder, item: Vote) {
         holder.lastModified!!.text = LastModifiedFormatter.lastSeen(context, item.deadlineMillis)
         holder.title!!.text = context.getString(R.string.text_vote_title, item.callerName, item.name)
-        renderOptions(item.voteOptions, holder)
+        renderOptions(item.voteResults, holder)
         setupClick(holder.root, item)
     }
 

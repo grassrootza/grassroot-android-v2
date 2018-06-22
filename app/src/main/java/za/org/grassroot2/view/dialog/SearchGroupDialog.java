@@ -45,9 +45,10 @@ public class SearchGroupDialog extends DialogFragment {
             actionSubject.onComplete();
         };
         v.findViewById(R.id.dictate).setOnClickListener(clickListener);
-        v.findViewById(R.id.createTodo).setOnClickListener(clickListener);
-        v.findViewById(R.id.takeVote).setOnClickListener(clickListener);
-        v.findViewById(R.id.callMeeting).setOnClickListener(clickListener);
+        // todo : something has gone wrong in PR merge, restore these
+//        v.findViewById(R.id.createTodo).setOnClickListener(clickListener);
+//        v.findViewById(R.id.takeVote).setOnClickListener(clickListener);
+//        v.findViewById(R.id.callMeeting).setOnClickListener(clickListener);
         v.findViewById(R.id.close).setOnClickListener(v1 -> {
             actionSubject.onComplete();
             dismiss();

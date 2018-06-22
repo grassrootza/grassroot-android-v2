@@ -143,6 +143,7 @@ public abstract class GrassrootFragment extends Fragment implements FragmentView
 
     @Override
     public void showProgressBar() {
+        Timber.d("showing progress bar in fragment");
         if (progress!=null) {
             ViewAnimation.fadeIn(progress);
         }

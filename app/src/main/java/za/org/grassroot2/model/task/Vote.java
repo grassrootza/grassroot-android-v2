@@ -6,18 +6,20 @@ import com.google.gson.annotations.SerializedName;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
+import java.lang.reflect.Array;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
 import za.org.grassroot2.model.MediaFile;
 import za.org.grassroot2.model.enums.GrassrootEntityType;
+import za.org.grassroot2.model.network.Syncable;
 
 /**
  * Created by luke on 2017/09/21.
  */
 @DatabaseTable(tableName = "votes")
-public class Vote implements Task {
+public class Vote implements Task, Syncable {
 
     @DatabaseField(id = true)
     @SerializedName("taskUid")
@@ -42,12 +44,54 @@ public class Vote implements Task {
     private String callerName;
 
     @DatabaseField
-    @SerializedName("createdDateTimeMillis")
+    @SerializedName("createdDate")
     private long createdDate;
+
+    @DatabaseField
+    @SerializedName("createdDateTimeMillis")
+    private long createdDateTimeMillis;
+
+    @DatabaseField
+    @SerializedName("mediaFileUid")
+    private String mediaFileUid;
+
+    @DatabaseField
+    @SerializedName("assignedMemberUids")
+    private List<String> assignedMemberUids;
+
+    @DatabaseField
+    @SerializedName("voteOptions")
+    private List<String> voteOptions;
 
     @DatabaseField
     @SerializedName("deadlineMillis")
     private long deadlineMillis;
+
+    @Override
+    public String toString() {
+        return "Vote{" +
+                "uid='" + uid + '\'' +
+                ", parentUid='" + parentUid + '\'' +
+                ", parentEntityType=" + parentEntityType +
+                ", subject='" + subject + '\'' +
+                ", description='" + description + '\'' +
+                ", callerName='" + callerName + '\'' +
+                ", createdDate=" + createdDate +
+                ", createdDateTimeMillis=" + createdDateTimeMillis +
+                ", mediaFileUid='" + mediaFileUid + '\'' +
+                ", assignedMemberUids=" + assignedMemberUids +
+                ", voteOptions=" + voteOptions +
+                ", deadlineMillis=" + deadlineMillis +
+                ", lastChangeTimeServerMillis=" + lastChangeTimeServerMillis +
+                ", ancestorGroupName='" + ancestorGroupName + '\'' +
+                ", voteResults=" + voteResults +
+                ", voteResponse='" + voteResponse + '\'' +
+                ", tags=" + tags +
+                ", mediaFile=" + mediaFile +
+                ", synced=" + synced +
+                '}';
+    }
+
     @DatabaseField
     private long lastChangeTimeServerMillis;
 
@@ -56,7 +100,7 @@ public class Vote implements Task {
 
     @SerializedName("voteResults")
     @DatabaseField
-    private HashMap<String, Integer> voteOptions;
+    private HashMap<String, Integer> voteResults;
 
     @DatabaseField
     private String voteResponse;
@@ -98,6 +142,24 @@ public class Vote implements Task {
     @Override
     public String getName() {
         return subject;
+    }
+
+    @Override
+    public boolean isSynced() {
+        return synced;
+    }
+
+    public void setSynced(boolean synced) {
+        this.synced = synced;
+    }
+
+    @Override
+    public long createdDate() {
+        return createdDate;
+    }
+
+    public void setCreatedDate(long createdDate) {
+        this.createdDate = createdDate;
     }
 
     @Override
@@ -151,6 +213,10 @@ public class Vote implements Task {
         return true;
     }
 
+    public void setSubject(String subject) {
+        this.subject = subject;
+    }
+
     public String getVoteResponse() {
         return voteResponse;
     }
@@ -172,12 +238,56 @@ public class Vote implements Task {
         return callerName;
     }
 
-    public HashMap<String, Integer> getVoteOptions() {
-        return voteOptions;
+    public HashMap<String, Integer> getVoteResults() {
+        return voteResults;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public long getCreatedDateTimeMillis() {
+        return createdDateTimeMillis;
+    }
+
+    public void setCreatedDateTimeMillis(long createdDateTimeMillis) {
+        this.createdDateTimeMillis = createdDateTimeMillis;
     }
 
     public String getAncestorGroupName() {
         return ancestorGroupName;
+    }
+
+    public void setParentEntityType(GrassrootEntityType parentEntityType) {
+        this.parentEntityType = parentEntityType;
+    }
+
+    public void setDeadlineMillis(long deadlineMillis) {
+        this.deadlineMillis = deadlineMillis;
+    }
+
+    public void setVoteOptions(List voteOptions) {
+        this.voteOptions = voteOptions;
+    }
+
+    public List<String> getVoteOptions() {
+        return voteOptions;
+    }
+
+    public String getMediaFileUid() {
+        return mediaFileUid;
+    }
+
+    public void setMediaFileUid(String mediaFileUid) {
+        this.mediaFileUid = mediaFileUid;
+    }
+
+    public List<String> getAssignedMemberUids() {
+        return assignedMemberUids;
+    }
+
+    public void setAssignedMemberUids(List assignedMemberUids) {
+        this.assignedMemberUids = assignedMemberUids;
     }
 
     public void setAncestorGroupName(String ancestorGroupName) {

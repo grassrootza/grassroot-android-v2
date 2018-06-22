@@ -2,12 +2,15 @@ package za.org.grassroot2.view.fragment
 
 import android.Manifest
 import android.os.Bundle
+import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
+import android.widget.Button
+import android.widget.TextView
 import com.jakewharton.rxbinding2.widget.RxTextView
 import com.tbruyelle.rxpermissions2.RxPermissions
 import dagger.Lazy
@@ -18,10 +21,13 @@ import za.org.grassroot2.R
 import za.org.grassroot2.dagger.activity.ActivityComponent
 import za.org.grassroot2.model.HomeFeedItem
 import za.org.grassroot2.model.task.Meeting
+import za.org.grassroot2.model.task.PendingResponseDTO
+import za.org.grassroot2.model.task.Todo
 import za.org.grassroot2.model.task.Vote
 import za.org.grassroot2.presenter.activity.HomePresenter
 import za.org.grassroot2.view.activity.CreateActionActivity
 import za.org.grassroot2.view.activity.MeetingDetailsActivity
+import za.org.grassroot2.view.activity.TodoDetailsActivity
 import za.org.grassroot2.view.activity.VoteDetailsActivity
 import za.org.grassroot2.view.adapter.HomeAdapter
 import java.util.concurrent.TimeUnit
@@ -63,6 +69,38 @@ class HomeFragment : GrassrootFragment(), HomePresenter.HomeView {
         presenter.detach(this)
     }
 
+    override fun displayAlert(pending: PendingResponseDTO) {
+        Timber.d("This is what I got: %s", pending.toString())
+        Timber.e("Attempting to display dialogView in HomeFragment")
+
+        val dialogBuilder = AlertDialog.Builder(activity!!)
+        val inflater = this.layoutInflater
+        val dialogView = inflater.inflate(R.layout.fragment_pending_task, null)
+        dialogBuilder.setView(dialogView)
+
+        val entity = dialogView.findViewById(R.id.pending_entity_type) as TextView
+        entity.setText(pending.entityType)
+
+        val creator = dialogView.findViewById(R.id.creatorField) as TextView
+        creator.text = "Created by: " + pending.creatorName
+
+        val pendingDescription = dialogView.findViewById(R.id.contentField) as TextView
+        pendingDescription.setText(pending.title)
+
+
+        (dialogView.findViewById(R.id.pending_task_open) as Button).setOnClickListener { _ ->
+            openPendingTask(pending)
+        }
+
+        (dialogView.findViewById(R.id.pending_task_close) as Button).setOnClickListener { _ ->
+            // pass
+            Timber.d("Exiting alertDialog")
+        }
+        
+        val alertDialog = dialogBuilder.create()
+        alertDialog.show()
+    }
+
     override fun getLayoutResourceId(): Int {
         return R.layout.fragment_home
     }
@@ -77,6 +115,7 @@ class HomeFragment : GrassrootFragment(), HomePresenter.HomeView {
         refreshLayout.setOnRefreshListener { reloadView() }
         presenter.onViewCreated()
         refreshView()
+
     }
 
     override fun initiateCreateAction(actionToInitiate: Int) {
@@ -117,5 +156,23 @@ class HomeFragment : GrassrootFragment(), HomePresenter.HomeView {
 
     override fun openVoteDetails(vote: Vote) {
         activity?.let { VoteDetailsActivity.start(it, vote.uid) }
+    }
+
+    override fun openTodoDetails(todo: Todo) {
+        activity?.let { TodoDetailsActivity.start(it, todo.uid) }
+    }
+
+    fun openPendingTask(task: PendingResponseDTO) {
+        Timber.d("This is what PendingResponseDTO looks like in HomeFragment: %s", task.toString())
+        Timber.d("enityType = %s", task.entityType)
+        if (task.entityType == "TODO") {
+            activity?.let { TodoDetailsActivity.start(it, task.entityUid) }
+        }
+        else if (task.entityType == "VOTE") {
+            activity?.let { VoteDetailsActivity.start(it, task.entityUid) }
+        }
+        else if (task.entityType == "VOTE") {
+            activity?.let { MeetingDetailsActivity.start(it, task.entityUid) }
+        }
     }
 }
