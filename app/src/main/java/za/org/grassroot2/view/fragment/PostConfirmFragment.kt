@@ -24,8 +24,8 @@ class PostConfirmFragment : GrassrootFragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        title = arguments.getString(EXTRA_TITLE)
-        val hasFile = arguments.getBoolean(EXTRA_HAS_MEDIA)
+        title = arguments!!.getString(EXTRA_TITLE)
+        val hasFile = arguments!!.getBoolean(EXTRA_HAS_MEDIA)
         desc.text = if (hasFile) getString(R.string.post_confirm_text_media, title) else getString(R.string.post_confirm_text_no_media, title)
         RxView.clicks(next).map { _ -> true }.subscribe(actionSubject)
         backNav.setOnClickListener { listener!!.backPressedAndRemoveLast() }

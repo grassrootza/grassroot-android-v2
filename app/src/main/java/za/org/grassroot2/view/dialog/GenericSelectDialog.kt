@@ -11,39 +11,41 @@ import android.view.LayoutInflater
 import android.view.View
 import android.widget.Button
 import android.widget.TextView
+import kotlinx.android.synthetic.main.dialog_generic_select.*
 import za.org.grassroot2.R
 import java.util.*
 
 class GenericSelectDialog : DialogFragment() {
     private var listeners = ArrayList<View.OnClickListener>()
 
+    // note: may need to switch these back to v.findByViewId from synthetic extensions (see generic success dialog)
     private val pickDialog: Dialog
         get() {
-            val builder = AlertDialog.Builder(activity)
+            val builder = activity?.let { AlertDialog.Builder(it) }
             val v = LayoutInflater.from(activity).inflate(R.layout.dialog_generic_select, null, false)
             val b = arguments
-            b.getString(TITLE_TEXTS_ID_ARG)?.let {
+            b?.getString(TITLE_TEXTS_ID_ARG)?.let {
                 val title = v.findViewById(R.id.selectTitle) as TextView
                 title.visibility = View.VISIBLE
                 title.text = b.getString(TITLE_TEXTS_ID_ARG)
-                v.findViewById(R.id.titleSeparator).visibility = View.VISIBLE
+                titleSeparator.visibility = View.VISIBLE
             }
-            val buttonTextResources = b.getIntArray(BTN_TEXTS_ID_ARG)
-            (v.findViewById(R.id.buttonOne) as Button).setText(buttonTextResources!![0])
-            v.findViewById(R.id.buttonOne).setOnClickListener(listeners[0])
-            (v.findViewById(R.id.buttonTwo) as Button).setText(buttonTextResources[1])
-            v.findViewById(R.id.buttonTwo).setOnClickListener(listeners[1])
+            val buttonTextResources = b?.getIntArray(BTN_TEXTS_ID_ARG)
+            buttonOne.setText(buttonTextResources!![0])
+            buttonOne.setOnClickListener(listeners[0])
+            buttonTwo.setText(buttonTextResources[1])
+            buttonTwo.setOnClickListener(listeners[1])
             if (buttonTextResources.size == 3) {
                 val btnThree = v.findViewById(R.id.buttonThree) as Button
                 btnThree.visibility = View.VISIBLE
                 btnThree.setText(buttonTextResources[2])
                 btnThree.setOnClickListener(listeners[2])
-                v.findViewById(R.id.buttonsTwoThreeSeparator).visibility = View.VISIBLE
+                buttonsTwoThreeSeparator.visibility = View.VISIBLE
             }
-            v.findViewById(R.id.close).setOnClickListener { v1 -> dismiss() }
-            builder.setView(v)
-            val d = builder.create()
-            d.window!!.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+            close.setOnClickListener { v1 -> dismiss() }
+            builder?.setView(v)
+            val d = builder?.create()
+            d?.window!!.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
             return d
         }
 

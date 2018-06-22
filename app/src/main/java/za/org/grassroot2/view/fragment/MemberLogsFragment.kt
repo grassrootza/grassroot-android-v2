@@ -63,7 +63,7 @@ class MemberLogsFragment : GrassrootFragment(), MemberLogsPresenter.MemberLogsFr
     override fun render(memberLogs: List<MembershipLog>) {
         memberRecyclerView.visibility = View.VISIBLE
         memberRecyclerView.layoutManager = LinearLayoutManager(activity)
-        memberLogsAdapter = MemberLogsAdapter(activity, memberLogs)
+        memberLogsAdapter = MemberLogsAdapter(activity!!, memberLogs)
         memberRecyclerView.adapter = memberLogsAdapter
     }
 

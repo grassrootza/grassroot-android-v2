@@ -7,7 +7,6 @@ import android.content.Intent
 import android.media.RingtoneManager
 import android.os.Bundle
 import android.support.v4.app.NotificationCompat
-import android.support.v7.app.NotificationCompat
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.google.android.gms.gcm.GcmListenerService
 import com.google.android.gms.gcm.GoogleCloudMessaging

@@ -24,8 +24,8 @@ class ItemCreatedFragment : GrassrootFragment(), ItemCalledPresenter.MeetingCall
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        okButton.setOnClickListener { activity.finish() }
-        presenter.loadGroupData(arguments.getString(EXTRA_GROUP_UID), arguments.getSerializable(EXTRA_ENTITY_TYPE) as GrassrootEntityType)
+        okButton.setOnClickListener { activity?.finish() }
+        presenter.loadGroupData(arguments!!.getString(EXTRA_GROUP_UID), arguments!!.getSerializable(EXTRA_ENTITY_TYPE) as GrassrootEntityType)
     }
 
     override fun onInject(activityComponent: ActivityComponent) {

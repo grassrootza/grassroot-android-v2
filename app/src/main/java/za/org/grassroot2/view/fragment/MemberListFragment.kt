@@ -64,7 +64,7 @@ class MemberListFragment : GrassrootFragment(), MemberListPresenter.MemberListFr
     override fun render(members: List<Membership>) {
         memberRecyclerView.visibility = View.VISIBLE
         memberRecyclerView.layoutManager = LinearLayoutManager(activity)
-        membersAdapter = MembersAdapter(activity, members)
+        membersAdapter = MembersAdapter(activity!!, members)
         memberRecyclerView.adapter = membersAdapter
     }
 

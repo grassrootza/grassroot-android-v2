@@ -53,7 +53,7 @@ class HomeFragment : GrassrootFragment(), HomePresenter.HomeView {
         get().inject(this)
     }
 
-    override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         presenter.attach(this)
         return super.onCreateView(inflater, container, savedInstanceState)
     }
@@ -72,7 +72,7 @@ class HomeFragment : GrassrootFragment(), HomePresenter.HomeView {
         homeItemList.layoutManager = LinearLayoutManager(activity)
         homeItemList.adapter = adapter
         (activity as AppCompatActivity).setSupportActionBar(toolbar)
-        fab.setOnClickListener({ _ -> CreateActionActivity.startFromHome(activity) })
+        fab.setOnClickListener({ _ -> CreateActionActivity.startFromHome(activity as AppCompatActivity) })
         toolbar.setTitle(R.string.title_home)
         refreshLayout.setOnRefreshListener { reloadView() }
         presenter.onViewCreated()
@@ -80,8 +80,8 @@ class HomeFragment : GrassrootFragment(), HomePresenter.HomeView {
     }
 
     override fun initiateCreateAction(actionToInitiate: Int) {
-        Timber.d("initiating create action activity, with actionToInitiate ... " + actionToInitiate)
-        CreateActionActivity.startOnAction(activity, actionToInitiate, null)
+        Timber.d("initiating create action activity, with actionToInitiate ... %s", actionToInitiate)
+        activity?.let { CreateActionActivity.startOnAction(it, actionToInitiate, null) }
     }
 
     private fun refreshView() {
@@ -112,10 +112,10 @@ class HomeFragment : GrassrootFragment(), HomePresenter.HomeView {
     override fun listItemClick(): Observable<HomeFeedItem> = adapter.viewClickObservable
 
     override fun openMeetingDetails(meeting: Meeting) {
-        MeetingDetailsActivity.start(activity, meeting.uid)
+        activity?.let { MeetingDetailsActivity.start(it, meeting.uid) }
     }
 
     override fun openVoteDetails(vote: Vote) {
-        VoteDetailsActivity.start(activity, vote.uid)
+        activity?.let { VoteDetailsActivity.start(it, vote.uid) }
     }
 }

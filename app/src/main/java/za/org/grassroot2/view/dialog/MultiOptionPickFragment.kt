@@ -35,12 +35,12 @@ class MultiOptionPickFragment : GrassrootFragment() {
     @OnClick(R.id.close)
     internal fun closeClick() {
         actionSubject.onComplete()
-        activity.finish()
+        activity?.finish()
     }
 
-    override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val v = super.onCreateView(inflater, container, savedInstanceState)
-        options = arguments.getSerializable(EXTRA_OPTIONS) as HashMap<Int, ActionOption>
+        options = arguments!!.getSerializable(EXTRA_OPTIONS) as HashMap<Int, ActionOption>
         initView()
         setupAdapter()
         return v
@@ -48,7 +48,7 @@ class MultiOptionPickFragment : GrassrootFragment() {
 
     private fun setupAdapter() {
         val itemDecoration = DividerItemDecoration(activity, DividerItemDecoration.VERTICAL)
-        itemDecoration.setDrawable(ContextCompat.getDrawable(activity, R.drawable.item_divider))
+        ContextCompat.getDrawable(activity!!, R.drawable.item_divider)?.let { itemDecoration.setDrawable(it) }
         list?.addItemDecoration(itemDecoration)
         list?.layoutManager = LinearLayoutManager(activity)
         val adapter = OptionAdapter(ArrayList(options!!.values))
@@ -57,8 +57,8 @@ class MultiOptionPickFragment : GrassrootFragment() {
     }
 
     private fun initView() {
-        arguments.getSerializable(EXTRA_GROUP)?.let {
-            val g = arguments.getSerializable(EXTRA_GROUP) as Group
+        arguments?.getSerializable(EXTRA_GROUP)?.let {
+            val g = arguments?.getSerializable(EXTRA_GROUP) as Group
             if (!GroupPermissionChecker.canCallMeeting(g)) {
                 options!!.remove(R.id.callMeeting)
             }

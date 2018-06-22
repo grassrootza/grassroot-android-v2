@@ -23,17 +23,17 @@ class OptionPickDialog : DialogFragment() {
     private val actionSubject = PublishSubject.create<Int>()
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        val builder = AlertDialog.Builder(activity)
+        val builder = activity?.let { AlertDialog.Builder(it) }
         val v = LayoutInflater.from(activity).inflate(R.layout.fragment_multi_option_pick, null, false)
-        val options = arguments.getSerializable(EXTRA_OPTIONS) as HashMap<Int, ActionOption>
+        val options = arguments!!.getSerializable(EXTRA_OPTIONS) as HashMap<Int, ActionOption>
         setupAdapter(v, options)
         v.close.setOnClickListener {
             actionSubject.onComplete()
             dismiss()
         }
-        builder.setView(v)
-        val d = builder.create()
-        d.window!!.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        builder?.setView(v)
+        val d = builder?.create()
+        d?.window!!.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         return d
     }
 
@@ -41,7 +41,7 @@ class OptionPickDialog : DialogFragment() {
 
     private fun setupAdapter(view: View, options: HashMap<Int, ActionOption>) {
         val itemDecoration = DividerItemDecoration(activity, DividerItemDecoration.VERTICAL)
-        itemDecoration.setDrawable(ContextCompat.getDrawable(activity, R.drawable.item_divider))
+        ContextCompat.getDrawable(activity!!, R.drawable.item_divider)?.let { itemDecoration.setDrawable(it) }
         view.list.addItemDecoration(itemDecoration)
         view.list.layoutManager = LinearLayoutManager(activity)
         val adapter = OptionAdapter(ArrayList(options.values))

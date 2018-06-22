@@ -10,6 +10,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import kotlinx.android.synthetic.main.dialog_generic_error.*
 
 import za.org.grassroot2.R
 
@@ -17,19 +18,19 @@ class GenericErrorDialog : DialogFragment() {
 
     private val errorDialog: Dialog
         get() {
-            val builder = AlertDialog.Builder(activity)
+            val builder = activity?.let { AlertDialog.Builder(it) }
             val v = LayoutInflater.from(activity).inflate(R.layout.dialog_generic_error, null, false)
-            val errorMsgResID = arguments.getInt(MSG_RES_ID_ARG)
-            (v.findViewById(R.id.title) as TextView).setText(errorMsgResID)
-            v.findViewById(R.id.close).setOnClickListener { v1 -> dismiss() }
-            v.findViewById(R.id.done).setOnClickListener { v1 -> dismiss() }
-            builder.setView(v)
-            val d = builder.create()
-            d.window!!.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+            val errorMsgResID = arguments?.getInt(MSG_RES_ID_ARG)
+            errorMsgResID?.let { title.setText(it) }
+            close.setOnClickListener { v1 -> dismiss() }
+            done.setOnClickListener { v1 -> dismiss() }
+            builder?.setView(v)
+            val d = builder?.create()
+            d?.window!!.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
             return d
         }
 
-    override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return super.onCreateView(inflater, container, savedInstanceState)
     }
 

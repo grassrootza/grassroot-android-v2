@@ -9,6 +9,7 @@ import android.support.v7.app.AlertDialog
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.TextView
 import za.org.grassroot2.R
 
@@ -18,18 +19,18 @@ class GenericSuccessDialog : DialogFragment() {
 
     private val successDialog: Dialog
         get() {
-            val builder = AlertDialog.Builder(activity)
+            val builder = activity?.let { AlertDialog.Builder(it) }
             val v = LayoutInflater.from(activity).inflate(R.layout.dialog_generic_success, null, false)
             // note: use these instead of synthetic extensions as need to be finding within view returned from inflater
-            (v.findViewById(R.id.title) as TextView).setText(arguments.getInt(TITLE_RES_ID_ARG))
-            v.findViewById(R.id.okButton).setOnClickListener(okayListener)
-            builder.setView(v)
-            val d = builder.create()
-            d.window!!.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+            arguments?.let { (v.findViewById(R.id.title) as TextView).setText(it.getInt(TITLE_RES_ID_ARG)) }
+            (v.findViewById(R.id.okButton) as Button).setOnClickListener(okayListener)
+            builder?.setView(v)
+            val d = builder?.create()
+            d?.window!!.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
             return d
         }
 
-    override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return super.onCreateView(inflater, container, savedInstanceState)
     }
 

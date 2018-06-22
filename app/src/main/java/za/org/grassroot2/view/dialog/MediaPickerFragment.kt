@@ -1,6 +1,5 @@
 package za.org.grassroot2.view.dialog
 
-import android.os.Build
 import android.os.Bundle
 import android.support.v4.content.ContextCompat
 import android.support.v7.widget.DividerItemDecoration
@@ -32,13 +31,13 @@ class MediaPickerFragment : GrassrootFragment() {
 
     fun clickAction(): Observable<Int> = actionSubject
 
-    override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val v = super.onCreateView(inflater, container, savedInstanceState)
-        options = arguments.getSerializable(EXTRA_OPTIONS) as HashMap<Int, ActionOption>
+        options = arguments!!.getSerializable(EXTRA_OPTIONS) as HashMap<Int, ActionOption>
         initView()
         setupAdapter(v!!)
-        if (arguments.getBoolean(EXTRA_SKIP_BUTTON_ENABLED, true)) {
-            v.skip.visibility = View.GONE
+        if (arguments!!.getBoolean(EXTRA_SKIP_BUTTON_ENABLED, true)) {
+                v.skip.visibility = View.GONE
         } else {
             RxView.clicks(v.skip!!).map { v.skip!!.id }.subscribe(actionSubject)
         }
@@ -47,7 +46,7 @@ class MediaPickerFragment : GrassrootFragment() {
 
     private fun setupAdapter(v: View) {
         val itemDecoration = DividerItemDecoration(activity, DividerItemDecoration.VERTICAL)
-        itemDecoration.setDrawable(ContextCompat.getDrawable(activity, R.drawable.item_divider))
+        ContextCompat.getDrawable(activity!!, R.drawable.item_divider)?.let { itemDecoration.setDrawable(it) }
         v.list!!.addItemDecoration(itemDecoration)
         v.list!!.layoutManager = LinearLayoutManager(activity)
         val adapter = OptionAdapter(ArrayList(options!!.values))
@@ -56,7 +55,7 @@ class MediaPickerFragment : GrassrootFragment() {
     }
 
     private fun initView() {
-        val g = arguments.getSerializable(EXTRA_GROUP) as Group?
+        val g = arguments?.getSerializable(EXTRA_GROUP) as Group?
         g?.let {
             if (!GroupPermissionChecker.canCallMeeting(g)) {
                 options!!.remove(R.id.callMeeting)
@@ -80,9 +79,6 @@ class MediaPickerFragment : GrassrootFragment() {
             val options = LinkedHashMap<Int, ActionOption>()
             options.put(R.id.photo, ActionOption(R.id.photo, R.string.take_photo, 0))
             options.put(R.id.gallery, ActionOption(R.id.gallery, R.string.pick_gallery, 0))
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD_MR1) {
-                options.put(R.id.audio, ActionOption(R.id.audio, R.string.take_audio, 0))
-            }
             options.put(R.id.video, ActionOption(R.id.video, R.string.take_video, 0))
             val f = MediaPickerFragment()
             val b = Bundle()

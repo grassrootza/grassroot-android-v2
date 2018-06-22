@@ -45,12 +45,12 @@ class AroundMeFragment : GrassrootFragment(), AroundMePresenter.AroundMeView, Go
         return R.layout.fragment_around_me
     }
 
-    override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         setHasOptionsMenu(false)
         return super.onCreateView(inflater, container, savedInstanceState)
     }
 
-    override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         presenter.attach(this)
         initToolbar()
@@ -115,7 +115,7 @@ class AroundMeFragment : GrassrootFragment(), AroundMePresenter.AroundMeView, Go
     }
 
     override fun openGroupDetails(uid: String) {
-        GroupDetailsActivity.start(activity, uid)
+        activity?.let { GroupDetailsActivity.start(it, uid) }
     }
 
     private fun renderLivewireMarker(item: AroundEntity) {

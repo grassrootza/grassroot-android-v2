@@ -39,7 +39,7 @@ class MeetingDateFragment : GrassrootFragment(), MeetingDatePresenter.MeetingDat
 
     @OnClick(R.id.cancel)
     internal fun close() {
-        activity.finish()
+        activity?.finish()
     }
 
     @OnClick(R.id.pickDate)

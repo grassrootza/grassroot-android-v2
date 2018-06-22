@@ -3,18 +3,9 @@ package za.org.grassroot2.view.fragment
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
-
-import java.util.ArrayList
-import java.util.concurrent.TimeUnit
-
-import javax.inject.Inject
-
-import butterknife.BindView
 import io.reactivex.Observable
 import kotlinx.android.synthetic.main.fragment_group_items.*
 import kotlinx.android.synthetic.main.fragment_groups.*
@@ -26,6 +17,9 @@ import za.org.grassroot2.presenter.fragment.GroupTasksPresenter
 import za.org.grassroot2.view.activity.MeetingDetailsActivity
 import za.org.grassroot2.view.activity.VoteDetailsActivity
 import za.org.grassroot2.view.adapter.GroupTasksAdapter
+import java.util.*
+import java.util.concurrent.TimeUnit
+import javax.inject.Inject
 
 class GroupTasksFragment : GrassrootFragment(), GroupTasksPresenter.AllFragmentView {
 
@@ -38,7 +32,7 @@ class GroupTasksFragment : GrassrootFragment(), GroupTasksPresenter.AllFragmentV
         activityComponent.inject(this)
     }
 
-    override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         presenter.attach(this)
         return super.onCreateView(inflater, container, savedInstanceState)
     }
@@ -54,19 +48,19 @@ class GroupTasksFragment : GrassrootFragment(), GroupTasksPresenter.AllFragmentV
         super.onActivityCreated(savedInstanceState)
         oldAfter = System.currentTimeMillis() - TimeUnit.DAYS.toMillis(7)
         allRecyclerView!!.layoutManager = LinearLayoutManager(activity)
-        adapter = GroupTasksAdapter(activity, ArrayList(), oldAfter)
+        adapter = GroupTasksAdapter(activity!!, ArrayList(), oldAfter)
         adapter.viewClickObservable
         allRecyclerView!!.adapter = adapter
-        presenter.init(arguments.getString(EXTRA_GROUP_UID)!!, arguments.getSerializable(EXTRA_TYPE) as? GrassrootEntityType)
+        presenter.init(arguments!!.getString(EXTRA_GROUP_UID)!!, arguments!!.getSerializable(EXTRA_TYPE) as? GrassrootEntityType)
         presenter.loadTasks()
     }
 
     override fun showMeetingDetails(uid: String) {
-        MeetingDetailsActivity.start(activity, uid)
+        activity?.let { MeetingDetailsActivity.start(it, uid) }
     }
 
     override fun showVoteDetails(uid: String) {
-        VoteDetailsActivity.start(activity, uid)
+        activity?.let { VoteDetailsActivity.start(it, uid) }
     }
 
     override fun render(tasks: List<Task>) {

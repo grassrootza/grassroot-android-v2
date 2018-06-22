@@ -41,7 +41,7 @@ class GroupsFragment : GrassrootFragment(), GroupFragmentPresenter.GroupFragment
         super.onActivityCreated(savedInstanceState)
         (activity as AppCompatActivity).setSupportActionBar(toolbar)
         (activity as AppCompatActivity).supportActionBar!!.setTitle(R.string.title_groups)
-        fab.setOnClickListener { CreateActionActivity.start(activity, null) }
+        fab.setOnClickListener { CreateActionActivity.start(activity as AppCompatActivity, null) }
         refreshLayout.setOnRefreshListener { presenter.refreshGroups() }
         presenter.attach(this)
         presenter.onViewCreated()
@@ -85,7 +85,7 @@ class GroupsFragment : GrassrootFragment(), GroupFragmentPresenter.GroupFragment
     }
 
     override fun openDetails(groupUid: String) {
-        GroupDetailsActivity.start(activity, groupUid)
+        activity?.let { GroupDetailsActivity.start(it, groupUid) }
     }
 
     private fun displayEmptyLayout() {
