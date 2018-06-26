@@ -133,7 +133,7 @@ constructor(private val context: Context, private var data: List<HomeFeedItem>) 
         holder.header.text = item.ancestorGroupName
         holder.header.setTextColor(context.getColorCompat(R.color.white))
         holder.options.visibility = View.GONE
-        holder.title.text = context.getHtml(R.string.home_vote_title, item.callerName)
+        holder.title.text = context.getHtml(R.string.home_vote_title, item.callerName!!)
         holder.lastModified.text = LastModifiedFormatter.lastSeen(context, item.deadlineMillis)
         holder.subtitle.text = item.name
         setupClick(holder.root, item)

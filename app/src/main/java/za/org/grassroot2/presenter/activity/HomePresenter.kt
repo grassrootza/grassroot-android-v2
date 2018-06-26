@@ -112,8 +112,12 @@ constructor(private val locationManager: LocationManager, private val dbService:
         disposableOnDetach(networkService.fetchPendingResponses()
                 .subscribeOn(io()).observeOn(main()).subscribe({ task ->
                     currentTask = task
-                    view.displayAlert(currentTask)
-                    Timber.d("Contents of task are %s", task.toString())
+                    if (task.hasPendingResponse != false) {
+                        Timber.d("Pending response detected. Looks like: %s", task.toString())
+                        view.displayAlert(currentTask)
+                    } else {
+                        Timber.e("No pending response detected. Moving on.")
+                    }
                 }, { t -> t.printStackTrace() }))
         Timber.d("Network request sent?")
         //view.displayAlert(currentTask)

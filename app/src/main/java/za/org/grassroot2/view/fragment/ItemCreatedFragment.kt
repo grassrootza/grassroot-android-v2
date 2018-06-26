@@ -38,6 +38,8 @@ class ItemCreatedFragment : GrassrootFragment(), ItemCalledPresenter.MeetingCall
         when (type) {
             GrassrootEntityType.MEETING -> title.setText(R.string.meeting_called)
             GrassrootEntityType.POST -> title.setText(R.string.post_created)
+            GrassrootEntityType.TODO -> title.setText(R.string.todo_created)
+            GrassrootEntityType.VOTE -> title.setText(R.string.vote_created)
             GrassrootEntityType.LIVE_WIRE_ALERT -> title.setText(R.string.lwire_alert_sent)
         }
         text.text = resources.getQuantityString(R.plurals.notification_sent, memberCount!!, memberCount)

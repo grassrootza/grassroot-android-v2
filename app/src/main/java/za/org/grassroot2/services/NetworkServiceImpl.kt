@@ -264,6 +264,15 @@ constructor(private val userDetailsService: UserDetailsService,
         }
     }
 
+    override fun sendNLURequest(request: String): Observable<NluParseResult> {
+        var response = grassrootUserApi
+                .sendNLURequest(request)
+                .doOnError({ Timber.e(it)})
+        Timber.e("Fresh from the server: %s", response.toString())
+        return response
+    }
+
+
     private fun routeUpload(entity: EntityForUpload, forceUpload: Boolean): Observable<UploadResult> {
         if (entity.isUploading) {
             return Observable.just(UploadResult(entity.type, EntityAlreadyUploadingException()))

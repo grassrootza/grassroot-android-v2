@@ -45,9 +45,9 @@ public class SearchGroupDialog extends DialogFragment {
             actionSubject.onComplete();
         };
         v.findViewById(R.id.dictate).setOnClickListener(clickListener);
-        v.findViewById(R.id.createTodo).setOnClickListener(clickListener);
-        v.findViewById(R.id.takeVote).setOnClickListener(clickListener);
-        v.findViewById(R.id.callMeeting).setOnClickListener(clickListener);
+        v.findViewById(R.id.create_todo).setOnClickListener(clickListener);
+        v.findViewById(R.id.take_vote).setOnClickListener(clickListener);
+        v.findViewById(R.id.call_meeting).setOnClickListener(clickListener);
         v.findViewById(R.id.close).setOnClickListener(v1 -> {
             actionSubject.onComplete();
             dismiss();

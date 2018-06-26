@@ -54,7 +54,13 @@ class CreateActionActivity : GrassrootActivity(), BackNavigationListener, Create
         presenter.attach(this)
         if (intent.hasExtra(EXTRA_FROM_HOME)) {
             addHomeActionTypeFragment()
-        } else {
+        } else if (intent.hasExtra(EXTRA_START_ON_ACTION)) {
+            Timber.e("Started with acrion %s", intent.action)
+            //if (intent.action == "set_meeting") {
+                launchMeetingSequence(null)
+            //}
+        }
+        else {
             presenter.verifyGroupPermissions(intent.getStringExtra(EXTRA_GROUP_UID))
         }
     }
@@ -380,7 +386,7 @@ class CreateActionActivity : GrassrootActivity(), BackNavigationListener, Create
         nextStep()
     }
 
-    private fun launchMeetingSequence(group: Group?) {
+    fun launchMeetingSequence(group: Group?) {
         removeAllViewsAboveCurrent()
         presenter.initTask(CreateActionPresenter.ActionType.Meeting)
         if (group == null) {
@@ -520,7 +526,6 @@ class CreateActionActivity : GrassrootActivity(), BackNavigationListener, Create
             i.putExtra(groupUid, groupUid)
             c.startActivity(i)
         }
-
     }
 
 }
