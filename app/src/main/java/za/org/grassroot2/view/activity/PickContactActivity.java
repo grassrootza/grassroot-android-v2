@@ -2,10 +2,13 @@ package za.org.grassroot2.view.activity;
 
 
 import android.app.Activity;
+import android.app.SearchManager;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -24,7 +27,7 @@ import za.org.grassroot2.model.contact.Contact;
 import za.org.grassroot2.presenter.activity.PickContactPresenter;
 import za.org.grassroot2.view.adapter.ContactsAdapter;
 
-public class PickContactActivity extends GrassrootActivity implements PickContactPresenter.PickContactView {
+public class PickContactActivity extends GrassrootActivity implements PickContactPresenter.PickContactView{
 
     public static final String EXTRA_CONTACTS = "contacts";
     @BindView(R.id.contactList) RecyclerView contactList;
@@ -63,6 +66,30 @@ public class PickContactActivity extends GrassrootActivity implements PickContac
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.pick_contact, menu);
+
+        SearchManager searchManager = (SearchManager)getSystemService(Context.SEARCH_SERVICE);
+
+        final MenuItem searchItem = menu.findItem(R.id.action_search);
+        final SearchView searchView = (SearchView) searchItem.getActionView();
+
+        searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
+
+        searchView.setMaxWidth(Integer.MAX_VALUE);
+
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                adapter.getFilter().filter(query);
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                adapter.getFilter().filter(newText);
+                return false;
+            }
+        });
+
         return super.onCreateOptionsMenu(menu);
     }
 
