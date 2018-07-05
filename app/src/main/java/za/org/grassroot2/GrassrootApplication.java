@@ -24,14 +24,14 @@ public class GrassrootApplication extends MultiDexApplication {
 
     private AppComponent appComponent;
 
-    private BroadcastReceiver connectivityChangeReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            if (NetworkUtil.hasInternetAccess(context)) {
-                startService(new Intent(context, SyncOfflineDataService.class));
-            }
-        }
-    };
+//    private BroadcastReceiver connectivityChangeReceiver = new BroadcastReceiver() {
+//        @Override
+//        public void onReceive(Context context, Intent intent) {
+//            if (NetworkUtil.hasInternetAccess(context)) {
+//                startService(new Intent(context, SyncOfflineDataService.class));
+//            }
+//        }
+//    };
 
     protected AppComponent initDagger(GrassrootApplication application) {
         return DaggerAppComponent.builder()
@@ -55,12 +55,12 @@ public class GrassrootApplication extends MultiDexApplication {
         } else {
             Fabric.with(this, new Crashlytics());
         }
-        registerReceiver(connectivityChangeReceiver, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
+        //registerReceiver(connectivityChangeReceiver, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
     }
 
     @Override
     public void onTerminate() {
-        unregisterReceiver(connectivityChangeReceiver);
+        //unregisterReceiver(connectivityChangeReceiver);
         super.onTerminate();
     }
 

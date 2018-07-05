@@ -6,6 +6,7 @@ import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
@@ -21,6 +22,7 @@ import java.util.List;
 import javax.inject.Inject;
 
 import butterknife.BindView;
+import timber.log.Timber;
 import za.org.grassroot2.R;
 import za.org.grassroot2.dagger.activity.ActivityComponent;
 import za.org.grassroot2.model.contact.Contact;
@@ -90,12 +92,24 @@ public class PickContactActivity extends GrassrootActivity implements PickContac
             }
         });
 
+        FloatingActionButton actionButton = findViewById(R.id.done);
+        actionButton.setOnClickListener(v -> {
+            List<Long> selectedItems = adapter.getSelectedItems();
+            if (!selectedItems.isEmpty()) {
+                List<Contact> contacts = presenter.loadContactsForIds(selectedItems);
+                Intent data = new Intent();
+                data.putExtra(EXTRA_CONTACTS, (ArrayList<Contact>)contacts);
+                setResult(RESULT_OK, data);
+                finish();
+            }
+        });
+
         return super.onCreateOptionsMenu(menu);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
+        /*switch (item.getItemId()) {
             default:
                 List<Long> selectedItems = adapter.getSelectedItems();
                 if (!selectedItems.isEmpty()) {
@@ -106,7 +120,8 @@ public class PickContactActivity extends GrassrootActivity implements PickContac
                     finish();
                 }
                 return true;
-        }
+        }*/
+        return true;
     }
 
     @Override

@@ -40,6 +40,7 @@ public class ContactsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
     public void update(List<Contact> data) {
         this.data = data;
+        this.contactListFiltered = data;
         notifyDataSetChanged();
     }
 

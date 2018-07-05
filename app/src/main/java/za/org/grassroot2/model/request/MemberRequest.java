@@ -27,7 +27,7 @@ public class MemberRequest implements Syncable {
     public String emailAddress;
 
     @DatabaseField
-    public String memberMsisdn;
+    public String phoneNumber;
 
     @DatabaseField
     public String roleName;
@@ -53,7 +53,7 @@ public class MemberRequest implements Syncable {
                 ", alternateNumbers=" + alternateNumbers +
                 ", displayName='" + displayName + '\'' +
                 ", emailAddress='" + emailAddress + '\'' +
-                ", memberMsisdn='" + memberMsisdn + '\'' +
+                ", phoneNumber='" + phoneNumber + '\'' +
                 ", roleName='" + roleName + '\'' +
                 ", createdDate=" + createdDate +
                 '}';

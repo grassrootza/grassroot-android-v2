@@ -28,4 +28,15 @@
 
     <include layout="@layout/include_empty_info" />
 
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/done"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end|bottom"
+        android:layout_margin="16dp"
+        app:backgroundTint="@color/colorPrimary"
+        app:layout_anchorGravity="bottom|end"
+        app:layout_behavior="za.org.grassroot2.view.ScrollingFabBehavior"
+        app:srcCompat="@drawable/ic_check_white_24dp" />
+
 </android.support.design.widget.CoordinatorLayout>

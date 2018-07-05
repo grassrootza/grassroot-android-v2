@@ -101,7 +101,7 @@ constructor(private val userDetailsService: UserDetailsService,
         return Observable.create { e: ObservableEmitter<Response<Void>> ->
             object : UploadResource<List<MemberRequest>>(contacts, e) {
                 override fun uploadRemote(localObject: List<MemberRequest>): Observable<Response<Void>> =
-                        grassrootUserApi.addMembersToGroup(currentUserUid, groupId, localObject)
+                        grassrootUserApi.addMembersToGroup( groupId, localObject)
 
                 override fun uploadFailed(localObject: List<MemberRequest>) {
                     databaseService.storeMembersInvites(localObject)
