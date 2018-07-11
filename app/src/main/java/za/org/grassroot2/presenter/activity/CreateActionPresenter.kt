@@ -1,6 +1,5 @@
 package za.org.grassroot2.presenter.activity
 
-import android.app.Activity
 import android.net.Uri
 import android.text.TextUtils
 import io.reactivex.Maybe
@@ -9,21 +8,19 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import timber.log.Timber
 import za.org.grassroot2.R
-import za.org.grassroot2.R.string.activity
 import za.org.grassroot2.database.DatabaseService
-import za.org.grassroot2.model.Group
-import za.org.grassroot2.model.MediaFile
+import za.org.grassroot2.model.*
 import za.org.grassroot2.model.alert.LiveWireAlert
 import za.org.grassroot2.model.enums.GrassrootEntityType
 import za.org.grassroot2.model.task.Meeting
 import za.org.grassroot2.model.task.Task
 import za.org.grassroot2.model.task.Todo
 import za.org.grassroot2.model.task.Vote
+import za.org.grassroot2.model.util.GroupPermissionChecker
 import za.org.grassroot2.services.MediaService
 import za.org.grassroot2.services.NetworkService
 import za.org.grassroot2.util.MediaRecorderWrapper
 import za.org.grassroot2.view.GrassrootView
-import za.org.grassroot2.view.activity.CreateActionActivity
 import za.org.grassroot2.view.activity.GroupDetailsActivity
 import java.io.File
 import java.util.*
@@ -140,6 +137,18 @@ constructor(private val networkService: NetworkService, private val dbService: D
             view.proceedWithRender(null)
         }
     }
+
+    fun hasCreatePermission():Boolean{
+        val groups:List<Group> = dbService.loadGroupsSorted()
+        var canCreate = false
+        if(!groups.isEmpty()){
+            val group:Group = groups.first()
+
+            canCreate = GroupPermissionChecker.hasCreatePermission(group)
+        }
+        return canCreate
+    }
+
 
     fun setMeetingSubject(subject: String) {
         (task as Meeting).setName(subject)

@@ -80,18 +80,24 @@ class MultiOptionPickFragment : GrassrootFragment() {
     private fun initView() {
         Timber.d("Initialising MultiOption view")
         (arguments!!.getSerializable(EXTRA_GROUP) as? Group).let {g ->
-            if (!GroupPermissionChecker.canCallMeeting(g)) {
-                options!!.remove(R.id.call_meeting)
-                Timber.d("Current user does not have callMeeting permissions")
-            }
-            if (!GroupPermissionChecker.canCreateTodo(g)) {
-                options!!.remove(R.id.create_todo)
-                Timber.d("Current user does not have createTodo permissions")
-            }
-            if (!GroupPermissionChecker.canCreateVote(g)) {
-                options!!.remove(R.id.take_vote)
-                Timber.d("Current user does not have takeVote permissions")
-            }
+           if(g != null){
+               removeViewsForNoGroup(g)
+           }
+        }
+    }
+
+    private fun removeViewsForNoGroup(g:Group?){
+        if (!GroupPermissionChecker.canCallMeeting(g)) {
+            options!!.remove(R.id.call_meeting)
+            Timber.d("Current user does not have callMeeting permissions")
+        }
+        if (!GroupPermissionChecker.canCreateTodo(g)) {
+            options!!.remove(R.id.create_todo)
+            Timber.d("Current user does not have createTodo permissions")
+        }
+        if (!GroupPermissionChecker.canCreateVote(g)) {
+            options!!.remove(R.id.take_vote)
+            Timber.d("Current user does not have takeVote permissions")
         }
     }
 
@@ -99,6 +105,7 @@ class MultiOptionPickFragment : GrassrootFragment() {
 
         private val EXTRA_GROUP = "group"
         private val EXTRA_OPTIONS = "options"
+
 
         fun getActionPicker(group: Group?): MultiOptionPickFragment {
             val options = LinkedHashMap<Int, ActionOption>()
@@ -116,16 +123,22 @@ class MultiOptionPickFragment : GrassrootFragment() {
             return f
         }
 
-        val homeActionPicker: MultiOptionPickFragment
-            get() {
+
+        fun homeActionPicker(hasCreatePermissions:Boolean): MultiOptionPickFragment
+             {
                 Timber.d("In homeActionPicker within MultiOptionFragment")
                 val options = LinkedHashMap<Int, ActionOption>()
                 options.put(R.id.dictate, ActionOption(R.id.dictate, R.string.dictate_my_action, R.drawable.ic_mic_24dp))
-                options.put(R.id.take_vote, ActionOption(R.id.take_vote, R.string.take_vote, R.drawable.ic_format_list_bulleted_24dp))
-                options.put(R.id.create_todo, ActionOption(R.id.create_todo, R.string.create_todo, R.drawable.ic_format_list_bulleted_24dp))
+
+                if (hasCreatePermissions) {
+                    options.put(R.id.take_vote, ActionOption(R.id.take_vote, R.string.take_vote, R.drawable.ic_format_list_bulleted_24dp))
+                    options.put(R.id.create_todo, ActionOption(R.id.create_todo, R.string.create_todo, R.drawable.ic_format_list_bulleted_24dp))
+                    options.put(R.id.call_meeting, ActionOption(R.id.call_meeting, R.string.call_meeting, R.drawable.ic_date_range_green_24dp))
+                    options.put(R.id.create_livewire_alert, ActionOption(R.id.create_livewire_alert, R.string.create_livewire_alert, R.drawable.ic_format_list_bulleted_24dp))
+                }
+
                 options.put(R.id.create_group, ActionOption(R.id.create_group, R.string.create_group, R.drawable.ic_format_list_bulleted_24dp))
-                options.put(R.id.call_meeting, ActionOption(R.id.call_meeting, R.string.call_meeting, R.drawable.ic_date_range_green_24dp))
-                options.put(R.id.create_livewire_alert, ActionOption(R.id.create_livewire_alert, R.string.create_livewire_alert, R.drawable.ic_format_list_bulleted_24dp))
+
                 val f = MultiOptionPickFragment()
                 val b = Bundle()
                 b.putSerializable(EXTRA_OPTIONS, options)

@@ -60,7 +60,7 @@ class CreateActionActivity : GrassrootActivity(), BackNavigationListener, Create
     }
 
     private fun addHomeActionTypeFragment() {
-        val createActionFragment = MultiOptionPickFragment.homeActionPicker
+        val createActionFragment = MultiOptionPickFragment.homeActionPicker(presenter.hasCreatePermission())
         disposables.add(createActionFragment.clickAction().subscribe { integer ->
             when (integer) {
                 R.id.dictate -> {

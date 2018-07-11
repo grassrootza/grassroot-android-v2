@@ -359,7 +359,7 @@ fieldName=displayName
 fieldName=emailAddress
 # --field-end--
 # --field-start--
-fieldName=memberMsisdn
+fieldName=phoneNumber
 # --field-end--
 # --field-start--
 fieldName=roleName
