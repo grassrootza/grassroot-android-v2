@@ -17,6 +17,7 @@ import org.greenrobot.eventbus.EventBus;
 
 import butterknife.BindView;
 import io.reactivex.Observable;
+import timber.log.Timber;
 import za.org.grassroot2.R;
 import za.org.grassroot2.dagger.activity.ActivityComponent;
 import za.org.grassroot2.rxbinding.RxViewUtils;
@@ -64,6 +65,8 @@ public class SingleTextInputFragment extends TextInputFragment implements Single
             inputLabelRes = args.getInt(INPUT_LABEL_RES);
             inputHintRes = args.getInt(INPUT_HINT_RES);
         }
+
+
     }
 
     @Override
