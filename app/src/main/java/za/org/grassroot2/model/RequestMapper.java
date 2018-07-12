@@ -14,7 +14,7 @@ public class RequestMapper {
         result.displayName = c.getDisplayName();
         result.emailAddress = c.getEmailAddresses().isEmpty() ? null : c.getEmailAddresses().get(0);
         result.alternateNumbers.addAll(c.getPhoneNumbers());
-        result.memberMsisdn = PhoneNumberFormatter.formatNumberToE164(c.getPhoneNumbers().get(0));
+        result.phoneNumber = PhoneNumberFormatter.formatNumberToE164(c.getPhoneNumbers().get(0));
         result.createdDate = System.currentTimeMillis();
         return result;
     }

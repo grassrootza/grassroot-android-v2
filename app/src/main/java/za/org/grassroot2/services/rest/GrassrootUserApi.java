@@ -85,8 +85,8 @@ public interface GrassrootUserApi {
     @POST("/v2/api/task/fetch/updated")
     Observable<List<Task>> fetchUserTasksMinimumInfo(@Body Map<String, Long> timestamps);
 
-    @POST("/v2/api/group/modify/members/add/{userUid}/{groupUid}")
-    Observable<Response<Void>> addMembersToGroup(@Path("userUid") String userId, @Path("groupUid") String groupId, @Body List<MemberRequest> request);
+    @POST("/v2/api/group/modify/members/add/{groupUid}")
+    Observable<Response<Void>> addMembersToGroup(@Path("groupUid") String groupId, @Body List<MemberRequest> request);
 
     @POST("/v2/api/group/modify/hide/{groupUid}")
     Observable<Response<Void>> hideGroup(@Path("groupUid") String groupUid);

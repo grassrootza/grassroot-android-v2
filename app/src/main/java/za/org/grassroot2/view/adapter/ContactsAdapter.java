@@ -10,6 +10,8 @@ import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Filter;
+import android.widget.Filterable;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -17,24 +19,28 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import timber.log.Timber;
 import za.org.grassroot2.R;
 import za.org.grassroot2.model.contact.Contact;
 import za.org.grassroot2.util.ContactHelper;
 
-public class ContactsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+public class ContactsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements Filterable {
 
     private final Context       context;
     private       List<Contact> data;
+    private List<Contact> contactListFiltered;
     private SparseBooleanArray selectedItems = new SparseBooleanArray();
 
     public ContactsAdapter(Context c, List<Contact> data) {
         super();
         context = c;
         this.data = data;
+        this.contactListFiltered = data;
     }
 
     public void update(List<Contact> data) {
         this.data = data;
+        this.contactListFiltered = data;
         notifyDataSetChanged();
     }
 
@@ -63,7 +69,7 @@ public class ContactsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
     @Override
     public void onBindViewHolder(final RecyclerView.ViewHolder holder, int position) {
-        Contact item = data.get(position);
+        Contact item = contactListFiltered.get(position);
         if (item != null) {
             ((ContactViewHolder) holder).bind(item, position);
         }
@@ -71,7 +77,37 @@ public class ContactsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
     @Override
     public int getItemCount() {
-        return data.size();
+        return contactListFiltered.size();
+    }
+
+    @Override
+    public Filter getFilter() {
+        return new Filter() {
+            @Override
+            protected FilterResults performFiltering(CharSequence charSequence) {
+                String charString = charSequence.toString();
+                if(charString.isEmpty()){
+                    contactListFiltered = data;
+                }else{
+                    List<Contact> filteredList = new ArrayList<>();
+                    for(Contact contact:data){
+                        if(contact.getDisplayName().toLowerCase().contains(charString.toLowerCase())){
+                            filteredList.add(contact);
+                        }
+                    }
+                    contactListFiltered = filteredList;
+                }
+                FilterResults filterResults = new FilterResults();
+                filterResults.values = contactListFiltered;
+                return filterResults;
+            }
+
+            @Override
+            protected void publishResults(CharSequence constraint, FilterResults results) {
+                contactListFiltered = (ArrayList<Contact>) results.values;
+                notifyDataSetChanged();
+            }
+        };
     }
 
     class ContactViewHolder extends RecyclerView.ViewHolder {
