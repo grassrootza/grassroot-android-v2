@@ -11,6 +11,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
+import timber.log.Timber
 import za.org.grassroot2.R
 
 class GenericSuccessDialog : DialogFragment() {
@@ -22,6 +23,7 @@ class GenericSuccessDialog : DialogFragment() {
             val builder = activity?.let { AlertDialog.Builder(it) }
             val v = LayoutInflater.from(activity).inflate(R.layout.dialog_generic_success, null, false)
             // note: use these instead of synthetic extensions as need to be finding within view returned from inflater
+            Timber.d("Args ## %s",arguments)
             arguments?.let { (v.findViewById(R.id.title) as TextView).setText(it.getInt(TITLE_RES_ID_ARG)) }
             (v.findViewById(R.id.okButton) as Button).setOnClickListener(okayListener)
             builder?.setView(v)
@@ -43,7 +45,7 @@ class GenericSuccessDialog : DialogFragment() {
         private val TITLE_RES_ID_ARG = "TITLE_RES_ID_ARG"
 
         // todo: once migrate GrassrootActivity to Kotlin (one of only complex migrations, maybe), switch to operator
-        @JvmStatic fun newInstance(titleRes: Int, okListener: View.OnClickListener): DialogFragment {
+        @JvmStatic fun newInstance(titleRes: Int,okListener: View.OnClickListener): DialogFragment {
             val dialog = GenericSuccessDialog()
             val args = Bundle()
             args.putInt(TITLE_RES_ID_ARG, titleRes)

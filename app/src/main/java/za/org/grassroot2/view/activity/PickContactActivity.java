@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.DialogFragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
@@ -28,6 +29,8 @@ import za.org.grassroot2.dagger.activity.ActivityComponent;
 import za.org.grassroot2.model.contact.Contact;
 import za.org.grassroot2.presenter.activity.PickContactPresenter;
 import za.org.grassroot2.view.adapter.ContactsAdapter;
+import za.org.grassroot2.view.dialog.GenericMessageDialog;
+import za.org.grassroot2.view.dialog.GenericSuccessDialog;
 
 public class PickContactActivity extends GrassrootActivity implements PickContactPresenter.PickContactView{
 
@@ -100,7 +103,15 @@ public class PickContactActivity extends GrassrootActivity implements PickContac
                 Intent data = new Intent();
                 data.putExtra(EXTRA_CONTACTS, (ArrayList<Contact>)contacts);
                 setResult(RESULT_OK, data);
-                finish();
+
+                String mesage = getString(R.string.members_added,contacts.size());
+
+                DialogFragment dialogFragment = GenericSuccessDialog.newInstance(R.string.members_added,
+                        v1 -> {
+                            finish();
+                        });
+
+                dialogFragment.show(getSupportFragmentManager(),"dialog");
             }
         });
 

@@ -4,6 +4,7 @@ import io.reactivex.Observable;
 import io.reactivex.Single;
 import retrofit2.Response;
 import retrofit2.http.GET;
+import retrofit2.http.POST;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
 import za.org.grassroot2.model.AuthorizationResponse;
@@ -23,13 +24,13 @@ public interface GrassrootAuthApi {
     @GET("/v2/api/auth/token/validate")
     Single<RestResponse> validateToken(@Query("token") String token);
 
-    @GET("/v2/api/auth/login-password")
+    @POST("/v2/api/auth/login-password")
     Observable<Response<AuthorizationResponse>> login(@Query("username") String msisdn,
                                                       @Query("password") String password,
                                                       @Query("interfaceType") String interfaceType);
 
 
-    @GET("/v2/api/auth/register")
+    @POST("/v2/api/auth/register")
     Observable<RestResponse<String>> register(@Query("phoneNumber") String phoneNumber,
                                               @Query("displayName") String displayName,
                                               @Query("password") String password);

@@ -24,6 +24,7 @@ import za.org.grassroot2.view.GrassrootView
 import za.org.grassroot2.view.activity.GroupDetailsActivity
 import java.io.File
 import java.util.*
+import java.util.function.Predicate
 import javax.inject.Inject
 
 
@@ -138,13 +139,29 @@ constructor(private val networkService: NetworkService, private val dbService: D
         }
     }
 
-    fun hasCreatePermission():Boolean{
+    fun canCreateMeeting():Boolean{
         val groups:List<Group> = dbService.loadGroupsSorted()
         var canCreate = false
         if(!groups.isEmpty()){
-            val group:Group = groups.first()
+            canCreate = groups.any { group -> group.permissions.contains(GroupPermission.CREATE_GROUP_MEETING) }
+        }
+        return canCreate
+    }
 
-            canCreate = GroupPermissionChecker.hasCreatePermission(group)
+    fun canCreateTodo():Boolean{
+        val groups:List<Group> = dbService.loadGroupsSorted()
+        var canCreate = false
+        if(!groups.isEmpty()){
+            canCreate = groups.any { group -> group.permissions.contains(GroupPermission.CREATE_GROUP_ENTRY) }
+        }
+        return canCreate
+    }
+
+    fun canCreateVote():Boolean{
+        val groups:List<Group> = dbService.loadGroupsSorted()
+        var canCreate = false
+        if(!groups.isEmpty()){
+            canCreate = groups.any { group -> group.permissions.contains(GroupPermission.CREATE_GROUP_VOTE) }
         }
         return canCreate
     }
