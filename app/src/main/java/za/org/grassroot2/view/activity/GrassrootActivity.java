@@ -194,7 +194,7 @@ public abstract class GrassrootActivity extends AppCompatActivity implements Gra
 
     @Override
     public void showSuccessDialog(int titleRes, @NotNull View.OnClickListener okayListener) {
-        DialogFragment dialog = GenericSuccessDialog.newInstance(titleRes, okayListener);
+        DialogFragment dialog = GenericSuccessDialog.newInstance(titleRes,null, okayListener);
         dialog.show(getSupportFragmentManager(), DIALOG_TAG);
     }
 

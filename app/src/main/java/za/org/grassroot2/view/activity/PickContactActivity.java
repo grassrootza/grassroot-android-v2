@@ -104,9 +104,9 @@ public class PickContactActivity extends GrassrootActivity implements PickContac
                 data.putExtra(EXTRA_CONTACTS, (ArrayList<Contact>)contacts);
                 setResult(RESULT_OK, data);
 
-                String mesage = getString(R.string.members_added,contacts.size());
+                String message = getString(R.string.members_added,contacts.size());
 
-                DialogFragment dialogFragment = GenericSuccessDialog.newInstance(R.string.members_added,
+                DialogFragment dialogFragment = GenericSuccessDialog.newInstance(R.string.members_added,message,
                         v1 -> {
                             finish();
                         });
