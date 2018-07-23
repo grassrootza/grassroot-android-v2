@@ -18,6 +18,7 @@ import za.org.grassroot2.model.Group
 import za.org.grassroot2.model.contact.Contact
 import za.org.grassroot2.model.enums.GrassrootEntityType
 import za.org.grassroot2.presenter.activity.GroupDetailsPresenter
+import za.org.grassroot2.presenter.fragment.GroupFragmentPresenter
 import za.org.grassroot2.view.adapter.GenericViewPagerAdapter
 import za.org.grassroot2.view.dialog.AddMemberDialog
 import za.org.grassroot2.view.fragment.GroupTasksFragment
@@ -30,6 +31,7 @@ class GroupDetailsActivity : GrassrootActivity(), GroupDetailsPresenter.GroupDet
 
     @Inject lateinit var presenter: GroupDetailsPresenter
     @Inject lateinit var rxPermissions: RxPermissions
+    @Inject lateinit var groupFragmentPresenter:GroupFragmentPresenter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -106,7 +108,12 @@ class GroupDetailsActivity : GrassrootActivity(), GroupDetailsPresenter.GroupDet
     private fun initToolbar() {
         setSupportActionBar(toolbar)
         toolbar.setNavigationIcon(R.drawable.ic_arrow_left_white_24dp)
-        toolbar.setNavigationOnClickListener { v -> finish() }
+        toolbar.setNavigationOnClickListener { v ->
+            run {
+                groupFragmentPresenter.refreshGroups()
+                finish()
+            }
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {

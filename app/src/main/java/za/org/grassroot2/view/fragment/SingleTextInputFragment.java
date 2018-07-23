@@ -64,6 +64,8 @@ public class SingleTextInputFragment extends TextInputFragment implements Single
             inputLabelRes = args.getInt(INPUT_LABEL_RES);
             inputHintRes = args.getInt(INPUT_HINT_RES);
         }
+
+
     }
 
     @Override
