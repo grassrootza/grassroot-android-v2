@@ -313,6 +313,8 @@
     <string name="group_left_done">Done! You won\'t receive anything from that group anymore</string>
     <string name="group_leaving_error">Sorry, there was an error unsubscribing you from the group</string>
 
+    <string name="members_added">Done!%1$d member(s) added to group</string>
+
     <string name="group_export_select">File downloaded! What next?</string>
     <string name="open_file">Try open file</string>
     <string name="share_file">Share file</string>
