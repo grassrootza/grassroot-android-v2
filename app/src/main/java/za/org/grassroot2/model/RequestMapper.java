@@ -21,10 +21,12 @@ public class RequestMapper {
 
     public static List<MemberRequest> map(String groupUid, List<Contact> contacts) {
         List<MemberRequest> body = new ArrayList<>();
-        for (Contact c : contacts) {
-            MemberRequest request = map(c);
-            request.groupUid = groupUid;
-            body.add(request);
+        if(contacts != null){
+            for (Contact c : contacts) {
+                MemberRequest request = map(c);
+                request.groupUid = groupUid;
+                body.add(request);
+            }
         }
         return body;
     }

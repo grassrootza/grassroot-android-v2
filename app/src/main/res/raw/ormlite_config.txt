@@ -241,6 +241,9 @@ foreignCollection=true
 fieldName=membershipLogs
 foreignCollection=true
 # --field-end--
+# --field-start--
+fieldName=profileImageUrl
+# --field-end--
 # --table-fields-end--
 # --table-end--
 #################################

@@ -3,11 +3,14 @@ package za.org.grassroot2.view.activity
 import android.Manifest
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
 import android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI
 import android.support.design.widget.Snackbar
+import android.support.v4.app.ActivityCompat
+import android.support.v4.content.ContextCompat
 import com.tbruyelle.rxpermissions2.RxPermissions
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -404,7 +407,13 @@ class CreateActionActivity : GrassrootActivity(), BackNavigationListener, Create
         val mediaPickerFragment = MediaPickerFragment.get()
         disposables.add(mediaPickerFragment.clickAction().subscribe { integer ->
             when (integer) {
-                R.id.photo -> presenter.takePhoto()
+                R.id.photo -> {
+                    if(ContextCompat.checkSelfPermission(this,Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED){
+                        ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.CAMERA), REQUEST_TAKE_PHOTO)
+                    }else {
+                        presenter.takePhoto()
+                    }
+                }
                 R.id.video -> {
                     val takeVideoIntent = Intent(MediaStore.ACTION_VIDEO_CAPTURE)
                     if (takeVideoIntent.resolveActivity(packageManager) != null) {

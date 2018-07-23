@@ -85,8 +85,8 @@ public class ActivityModule {
 
     @Provides
     @PerActivity
-    GroupDetailsPresenter provideGroupDetailsPresenter(DatabaseService dbService, NetworkService networkService) {
-        return new GroupDetailsPresenter(dbService, networkService);
+    GroupDetailsPresenter provideGroupDetailsPresenter(DatabaseService dbService, NetworkService networkService,MediaService mediaService) {
+        return new GroupDetailsPresenter(dbService, networkService,mediaService);
     }
 
     @Provides

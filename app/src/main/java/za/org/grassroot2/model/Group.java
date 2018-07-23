@@ -96,6 +96,9 @@ public class Group implements EntityForDownload, SelectableItem, Serializable, A
     @SerializedName("memberHistory")
     private Collection<MembershipLog> membershipLogs;
 
+    @DatabaseField
+    private String profileImageUrl;
+
     public Group() {
     }
 
