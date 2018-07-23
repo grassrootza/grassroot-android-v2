@@ -84,7 +84,7 @@ class GroupDetailsActivity : GrassrootActivity(), GroupDetailsPresenter.GroupDet
 
     private fun showFillDialog() {
         val df = AddMemberDialog.newInstance(AddMemberDialog.TYPE_INSERT_MANUAL)
-        df.setContactListener { name, phone -> presenter.inviteContact(name, phone) }
+//        df.setContactListener { name: String, phone: String -> presenter.inviteContact(name, phone) }
         df.show(supportFragmentManager, GrassrootActivity.DIALOG_TAG)
     }
 

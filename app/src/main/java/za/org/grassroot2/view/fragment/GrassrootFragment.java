@@ -117,9 +117,9 @@ public abstract class GrassrootFragment extends Fragment implements FragmentView
         if (!userPreference.connectionInfoDisplayed()) {
             DialogFragment dialog;
             if (loggedIn()) {
-                dialog = NoConnectionDialog.newInstance(NoConnectionDialog.TYPE_AUTHORIZED);
+                dialog = NoConnectionDialog.Companion.newInstance(NoConnectionDialog.TYPE_AUTHORIZED);
             } else {
-                dialog = NoConnectionDialog.newInstance(NoConnectionDialog.TYPE_NOT_AUTHORIZED);
+                dialog = NoConnectionDialog.Companion.newInstance(NoConnectionDialog.TYPE_NOT_AUTHORIZED);
             }
             dialog.show(getChildFragmentManager(), DIALOG_TAG);
             userPreference.setNoConnectionInfoDisplayed(true);

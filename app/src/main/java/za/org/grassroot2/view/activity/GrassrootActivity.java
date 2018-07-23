@@ -55,7 +55,6 @@ import za.org.grassroot2.dagger.activity.ActivityComponent;
 import za.org.grassroot2.dagger.activity.ActivityModule;
 import za.org.grassroot2.model.task.Meeting;
 import za.org.grassroot2.service.GCMPreferences;
-import za.org.grassroot2.service.GCMRegistrationService;
 import za.org.grassroot2.services.OfflineReceiver;
 import za.org.grassroot2.services.SyncOfflineDataService;
 import za.org.grassroot2.services.account.AuthConstants;
@@ -157,9 +156,9 @@ public abstract class GrassrootActivity extends AppCompatActivity implements Gra
         if (!userPreference.connectionInfoDisplayed()) {
             DialogFragment dialog;
             if (loggedIn()) {
-                dialog = NoConnectionDialog.newInstance(NoConnectionDialog.TYPE_AUTHORIZED);
+                dialog = NoConnectionDialog.Companion.newInstance(NoConnectionDialog.TYPE_AUTHORIZED);
             } else {
-                dialog = NoConnectionDialog.newInstance(NoConnectionDialog.TYPE_NOT_AUTHORIZED);
+                dialog = NoConnectionDialog.Companion.newInstance(NoConnectionDialog.TYPE_NOT_AUTHORIZED);
             }
             dialog.show(getSupportFragmentManager(), DIALOG_TAG);
             userPreference.setNoConnectionInfoDisplayed(true);

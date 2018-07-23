@@ -54,8 +54,8 @@ class NoConnectionDialog : DialogFragment() {
 
     companion object {
 
-        val TYPE_NOT_AUTHORIZED = 0
-        val TYPE_AUTHORIZED = 1
+        const val TYPE_NOT_AUTHORIZED = 0
+        const val TYPE_AUTHORIZED = 1
         private val EXTRA_TYPE = "type"
 
         fun newInstance(dialogType: Int): DialogFragment {
