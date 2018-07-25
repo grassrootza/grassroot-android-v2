@@ -21,33 +21,30 @@ import za.org.grassroot2.model.SelectableItem
  * Created by luke on 2017/08/19.
  */
 
-class GroupSelectionAdapter(data: List<SelectableItem>) : RecyclerView.Adapter<GroupSelectionAdapter.SelectableItemViewHolder>() {
+class GroupSelectionAdapter(private var data: List<SelectableItem>) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
-    private var data: List<SelectableItem>? = null
     private val viewClickSubject = PublishSubject.create<Group>()
 
     val viewClickObservable: Observable<Group>
         get() = viewClickSubject
 
-    init {
-        this.data = data
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder =
+            SelectableGroupViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.group_item_row, parent, false))
+
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+        val item = data[position]
+        bindGroup(holder as SelectableGroupViewHolder, item)
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SelectableGroupViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.group_item_row, parent, false)
-        return SelectableGroupViewHolder(view)
-    }
-
-    override fun onBindViewHolder(holder: SelectableGroupViewHolder, position: Int) {
-        val item = data!![position]
-        holder.update(item)
-        RxView.clicks(holder.name!!)
+    private fun bindGroup(holder: SelectableGroupViewHolder, item: SelectableItem) {
+        holder.name.text = item.name
+        RxView.clicks(holder.name)
                 .map { o -> item as Group }
                 .subscribe(viewClickSubject)
     }
 
     override fun getItemCount(): Int {
-        return data!!.size
+        return data.size
     }
 
     fun updateData(data: List<SelectableItem>) {

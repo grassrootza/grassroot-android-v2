@@ -35,6 +35,11 @@ class VoteDetailsActivity : GrassrootActivity(), VoteDetailsPresenter.VoteDetail
     @Inject lateinit var resultsAdapter: VoteResultsAdapter
     @Inject lateinit var postAdapter: PostAdapter
 
+    override val layoutResourceId: Int
+        get(): Int = R.layout.activity_vote_details
+
+    override fun onInject(component: ActivityComponent) = component.inject(this)
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -65,12 +70,6 @@ class VoteDetailsActivity : GrassrootActivity(), VoteDetailsPresenter.VoteDetail
         super.onResume()
         presenter.loadData()
     }
-
-    override fun onInject(component: ActivityComponent) {
-        component.inject(this)
-    }
-
-    override fun getLayoutResourceId(): Int = R.layout.activity_vote_details
 
     override fun onDestroy() {
         super.onDestroy()

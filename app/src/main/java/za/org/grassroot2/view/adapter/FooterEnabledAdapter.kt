@@ -4,19 +4,13 @@ import android.support.v7.widget.RecyclerView
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
+import java.util.*
 
-import java.util.ArrayList
+abstract class FooterEnabledAdapter<E>(protected var items: List<E>) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
-abstract class FooterEnabledAdapter<E>(data: List<E>) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
-
-    protected var items: List<E> = ArrayList()
     internal var footers: MutableList<View> = ArrayList()
 
-    init {
-        items = data
-    }
-
-    override fun onCreateViewHolder(viewGroup: ViewGroup, type: Int): RecyclerView.ViewHolder {
+    protected fun createFooterEnabledViewHolder(viewGroup: ViewGroup, type: Int): RecyclerView.ViewHolder? {
         if (type == TYPE_FOOTER) {
             val frameLayout = FrameLayout(viewGroup.context)
             //make sure it fills the space
@@ -69,16 +63,11 @@ abstract class FooterEnabledAdapter<E>(data: List<E>) : RecyclerView.Adapter<Rec
         }
     }
 
-    class FooterViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        internal var base: FrameLayout
-
-        init {
-            this.base = itemView as FrameLayout
-        }
+    protected class FooterViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        internal var base: FrameLayout = itemView as FrameLayout
     }
 
     companion object {
-
         val TYPE_FOOTER = 222
         val TYPE_ITEM = 333
     }

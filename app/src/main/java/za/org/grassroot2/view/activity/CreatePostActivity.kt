@@ -33,7 +33,8 @@ class CreatePostActivity : GrassrootActivity(), BackNavigationListener, CreatePo
     private lateinit var groupUid: String
     private lateinit var taskUid: String
 
-    override fun getLayoutResourceId(): Int = R.layout.activity_create_action
+    override val layoutResourceId: Int
+        get(): Int = R.layout.activity_create_action
 
     private fun nextStep() {
         val current = viewPager.currentItem
@@ -44,8 +45,8 @@ class CreatePostActivity : GrassrootActivity(), BackNavigationListener, CreatePo
         }
     }
 
-    override fun onCreate(icicle: Bundle?) {
-        super.onCreate(icicle)
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
         adapter = GenericViewPagerAdapter(supportFragmentManager)
         taskUid = intent.getStringExtra(EXTRA_TASK_UID)
         groupUid = intent.getStringExtra(EXTRA_GROUP_UID)

@@ -36,7 +36,8 @@ class CreateActionActivity : GrassrootActivity(), BackNavigationListener, Create
     private var created: Boolean = false
     private var shouldRemoveLast: Boolean = false
 
-    override fun getLayoutResourceId(): Int = R.layout.activity_create_action
+    override val layoutResourceId: Int
+        get(): Int = R.layout.activity_create_action
 
     private fun nextStep() {
         val current = viewPager.currentItem
@@ -47,8 +48,8 @@ class CreateActionActivity : GrassrootActivity(), BackNavigationListener, Create
         }
     }
 
-    override fun onCreate(icicle: Bundle?) {
-        super.onCreate(icicle)
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
         adapter = GenericViewPagerAdapter(supportFragmentManager)
         viewPager.adapter = adapter
         presenter.attach(this)

@@ -34,6 +34,8 @@ import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 class HomeFragment : GrassrootFragment(), HomePresenter.HomeView {
+    override val layoutResourceId: Int
+        get() = R.layout.fragment_home
 
     override fun stopRefreshing() {
         refreshLayout.isRefreshing = false
@@ -99,10 +101,6 @@ class HomeFragment : GrassrootFragment(), HomePresenter.HomeView {
         
         val alertDialog = dialogBuilder.create()
         alertDialog.show()
-    }
-
-    override fun getLayoutResourceId(): Int {
-        return R.layout.fragment_home
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {

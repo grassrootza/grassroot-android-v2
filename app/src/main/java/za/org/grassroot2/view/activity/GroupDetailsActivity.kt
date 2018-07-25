@@ -31,6 +31,11 @@ class GroupDetailsActivity : GrassrootActivity(), GroupDetailsPresenter.GroupDet
     @Inject lateinit var presenter: GroupDetailsPresenter
     @Inject lateinit var rxPermissions: RxPermissions
 
+    override val layoutResourceId: Int
+        get(): Int = R.layout.activity_group_details
+
+    override fun onInject(component: ActivityComponent) = component.inject(this)
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         groupUid = intent.getStringExtra(EXTRA_GROUP_UID)
@@ -45,14 +50,6 @@ class GroupDetailsActivity : GrassrootActivity(), GroupDetailsPresenter.GroupDet
     override fun onResume() {
         super.onResume()
         presenter.loadData()
-    }
-
-    override fun onInject(component: ActivityComponent) {
-        component.inject(this)
-    }
-
-    override fun getLayoutResourceId(): Int {
-        return R.layout.activity_group_details
     }
 
     override fun onDestroy() {

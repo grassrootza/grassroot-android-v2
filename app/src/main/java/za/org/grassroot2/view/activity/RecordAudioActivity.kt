@@ -20,11 +20,10 @@ class RecordAudioActivity : GrassrootActivity(), RecordAudioPresenter.RecordAudi
     @Inject lateinit var rxPermission : RxPermissions
     @Inject lateinit var presenter: RecordAudioPresenter
 
-    override fun onInject(component: ActivityComponent) {
-        component.inject(this)
-    }
+    override val layoutResourceId: Int
+        get(): Int = R.layout.activity_record_audio
 
-    override fun getLayoutResourceId(): Int = R.layout.activity_record_audio
+    override fun onInject(component: ActivityComponent) = component.inject(this)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

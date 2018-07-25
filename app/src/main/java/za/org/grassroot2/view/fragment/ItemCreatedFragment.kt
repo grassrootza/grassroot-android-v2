@@ -9,8 +9,12 @@ import za.org.grassroot2.presenter.fragment.ItemCalledPresenter
 import javax.inject.Inject
 
 class ItemCreatedFragment : GrassrootFragment(), ItemCalledPresenter.MeetingCalledView {
+    override val layoutResourceId: Int
+        get() = R.layout.fragment_item_created
 
     @Inject lateinit internal var presenter: ItemCalledPresenter
+
+    override fun onInject(activityComponent: ActivityComponent) = activityComponent.inject(this)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -28,25 +32,19 @@ class ItemCreatedFragment : GrassrootFragment(), ItemCalledPresenter.MeetingCall
         presenter.loadGroupData(arguments!!.getString(EXTRA_GROUP_UID), arguments!!.getSerializable(EXTRA_ENTITY_TYPE) as GrassrootEntityType)
     }
 
-    override fun onInject(activityComponent: ActivityComponent) {
-        activityComponent.inject(this)
-    }
-
-    override fun getLayoutResourceId(): Int = R.layout.fragment_item_created
-
     override fun showDescription(memberCount: Int?, type: GrassrootEntityType) {
         when (type) {
             GrassrootEntityType.MEETING -> title.setText(R.string.meeting_called)
             GrassrootEntityType.POST -> title.setText(R.string.post_created)
             GrassrootEntityType.LIVE_WIRE_ALERT -> title.setText(R.string.lwire_alert_sent)
+            else -> text.text = resources.getQuantityString(R.plurals.notification_sent, memberCount!!, memberCount)
         }
-        text.text = resources.getQuantityString(R.plurals.notification_sent, memberCount!!, memberCount)
     }
 
     companion object {
 
-        private val EXTRA_GROUP_UID = "group_uid"
-        private val EXTRA_ENTITY_TYPE = "entity_type"
+        private const val EXTRA_GROUP_UID = "group_uid"
+        private const val EXTRA_ENTITY_TYPE = "entity_type"
 
         operator fun get(groupUid: String, type: GrassrootEntityType): ItemCreatedFragment {
             val f = ItemCreatedFragment()

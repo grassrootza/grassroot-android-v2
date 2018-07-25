@@ -27,6 +27,11 @@ class MeetingDetailsActivity : GrassrootActivity(), MeetingDetailsPresenter.Meet
     @Inject lateinit var rxPermissions: RxPermissions
     @Inject lateinit var postAdapter: PostAdapter
 
+    override val layoutResourceId: Int
+        get(): Int = R.layout.activity_meeting_details
+
+    override fun onInject(component: ActivityComponent) = component.inject(this)
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -61,12 +66,6 @@ class MeetingDetailsActivity : GrassrootActivity(), MeetingDetailsPresenter.Meet
         super.onResume()
         presenter.loadData()
     }
-
-    override fun onInject(component: ActivityComponent) {
-        component.inject(this)
-    }
-
-    override fun getLayoutResourceId(): Int = R.layout.activity_meeting_details
 
     override fun onDestroy() {
         super.onDestroy()
