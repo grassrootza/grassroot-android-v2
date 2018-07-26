@@ -3,10 +3,9 @@ package za.org.grassroot2.view.activity
 import android.Manifest
 import android.app.Activity
 import android.app.AlertDialog
-import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.graphics.Bitmap
+import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
@@ -17,23 +16,24 @@ import android.view.Gravity
 import android.view.Menu
 import android.view.View
 import com.github.florent37.viewtooltip.ViewTooltip
+import com.squareup.picasso.Callback
+import com.squareup.picasso.Picasso
 import com.tbruyelle.rxpermissions2.RxPermissions
 import kotlinx.android.synthetic.main.activity_group_details.*
 import timber.log.Timber
 import za.org.grassroot2.GroupSettingsActivity
 import za.org.grassroot2.R
-import za.org.grassroot2.dagger.ApplicationContext
 import za.org.grassroot2.dagger.activity.ActivityComponent
 import za.org.grassroot2.extensions.getColorCompat
 import za.org.grassroot2.model.Group
 import za.org.grassroot2.model.contact.Contact
 import za.org.grassroot2.model.enums.GrassrootEntityType
-import za.org.grassroot2.presenter.activity.CreateActionPresenter
 import za.org.grassroot2.presenter.activity.GroupDetailsPresenter
 import za.org.grassroot2.presenter.fragment.GroupFragmentPresenter
 import za.org.grassroot2.view.adapter.GenericViewPagerAdapter
 import za.org.grassroot2.view.dialog.AddMemberDialog
 import za.org.grassroot2.view.fragment.GroupTasksFragment
+import java.lang.Exception
 import java.util.*
 import javax.inject.Inject
 
@@ -47,6 +47,7 @@ class GroupDetailsActivity : GrassrootActivity(), GroupDetailsPresenter.GroupDet
 
     private val REQUEST_TAKE_PHOTO = 1
     private val REQUEST_GALLERY = 2
+    private var groupImageUrl:String = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -66,6 +67,8 @@ class GroupDetailsActivity : GrassrootActivity(), GroupDetailsPresenter.GroupDet
                 uploadImage()
             }
         })
+
+
     }
 
     private fun uploadImage(){
@@ -76,8 +79,8 @@ class GroupDetailsActivity : GrassrootActivity(), GroupDetailsPresenter.GroupDet
         alertDialog.setItems(items) { _, which ->
             val selected = items[which]
             if(selected.equals("Camera")){
-                val intent:Intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-                startActivityForResult(intent,REQUEST_TAKE_PHOTO)
+                /*val intent:Intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+                startActivityForResult(intent,REQUEST_TAKE_PHOTO)*/
                 presenter.takePhoto()
             } else if(selected.equals("Gallery")){
                 val intent = Intent(Intent.ACTION_PICK, EXTERNAL_CONTENT_URI)
@@ -91,8 +94,10 @@ class GroupDetailsActivity : GrassrootActivity(), GroupDetailsPresenter.GroupDet
     }
 
     override fun cameraForResult(contentProviderPath: String, s: String) {
-        Timber.d("Dintshang golo nyana mo???????? 1 = %s 2 = %s",contentProviderPath,s)
-        Timber.d("What is the group uid here ???????????????????????????????????????? %s",groupUid)
+        val intent:Intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.parse(contentProviderPath))
+        intent.putExtra("MY_UID", s)
+        startActivityForResult(intent,REQUEST_TAKE_PHOTO)
     }
 
     override fun onResume() {
@@ -172,28 +177,47 @@ class GroupDetailsActivity : GrassrootActivity(), GroupDetailsPresenter.GroupDet
         return super.onCreateOptionsMenu(menu)
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent) {
-        if (requestCode == REQUEST_PICK_CONTACTS && resultCode == Activity.RESULT_OK) {
-            val contacts = data.getSerializableExtra(PickContactActivity.EXTRA_CONTACTS) as? ArrayList<Contact>
-            presenter.inviteContacts(contacts)
-        }
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
 
         if(resultCode == Activity.RESULT_OK){
             if(requestCode == REQUEST_TAKE_PHOTO){
-                val bundle:Bundle = data.extras
-                val bitMap:Bitmap? = bundle.get("data") as? Bitmap
-                image.setImageBitmap(bitMap)
+                presenter.cameraResult()
+                //setImage(groupImageUrl)
             } else if(requestCode == REQUEST_GALLERY){
-                val imageUri:Uri = data.data
+                val imageUri:Uri = data!!.data
+                Timber.d("IMage URI------------------------>>>>>>>>>>>>>>>>>>>>>>>>>>>>>%s",imageUri)
                 image.setImageURI(imageUri)
+            } else if (requestCode == REQUEST_PICK_CONTACTS && resultCode == Activity.RESULT_OK) {
+                val contacts = data!!.getSerializableExtra(PickContactActivity.EXTRA_CONTACTS) as? ArrayList<Contact>
+                presenter.inviteContacts(contacts)
             }
         }
 
         Timber.d("Request code is ############# %s",requestCode)
     }
 
+    override fun setImage(imageUrl:String){
+        val imageUri:Uri = Uri.parse(imageUrl)
+        Picasso.get()
+                .load(imageUri)
+                .into(image, object: Callback {
+                    override fun onSuccess() {
+                        val imageBitmap = (image.drawable as BitmapDrawable).bitmap
+                        image.setImageBitmap(imageBitmap)
+                    }
+
+                    override fun onError(e: Exception?) {
+                    }
+
+                })
+    }
+
     override fun render(group: Group) {
         groupTitle.text = group.name
+        if(group.profileImageUrl != null){
+            groupImageUrl = group.profileImageUrl
+            setImage(groupImageUrl)
+        }
     }
 
     override fun emptyData() {

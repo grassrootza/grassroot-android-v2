@@ -28,6 +28,7 @@ import za.org.grassroot2.services.MediaServiceImpl;
 import za.org.grassroot2.services.NetworkService;
 import za.org.grassroot2.services.UserDetailsService;
 import za.org.grassroot2.services.rest.GrassrootAuthApi;
+import za.org.grassroot2.services.rest.GrassrootUserApi;
 import za.org.grassroot2.util.ContactHelper;
 import za.org.grassroot2.util.ImageUtil;
 import za.org.grassroot2.util.MediaRecorderWrapper;
@@ -85,8 +86,8 @@ public class ActivityModule {
 
     @Provides
     @PerActivity
-    GroupDetailsPresenter provideGroupDetailsPresenter(DatabaseService dbService, NetworkService networkService,MediaService mediaService) {
-        return new GroupDetailsPresenter(dbService, networkService,mediaService);
+    GroupDetailsPresenter provideGroupDetailsPresenter(DatabaseService dbService, NetworkService networkService, MediaService mediaService, GrassrootUserApi grassrootUserApi) {
+        return new GroupDetailsPresenter(dbService, networkService,mediaService,grassrootUserApi);
     }
 
     @Provides

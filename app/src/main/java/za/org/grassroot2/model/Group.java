@@ -218,6 +218,14 @@ public class Group implements EntityForDownload, SelectableItem, Serializable, A
         this.membershipLogs = membershipLogs;
     }
 
+    public String getProfileImageUrl() {
+        return profileImageUrl;
+    }
+
+    public void setProfileImageUrl(String profileImageUrl) {
+        this.profileImageUrl = profileImageUrl;
+    }
+
     @Override
     public long getLastTimeChangedServer() {
         return lastTimeChangedServer;

@@ -9,6 +9,9 @@ import javax.inject.Inject
 
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
+import okhttp3.MediaType
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
 import timber.log.Timber
 import za.org.grassroot2.R
 import za.org.grassroot2.database.DatabaseService
@@ -19,11 +22,16 @@ import za.org.grassroot2.model.contact.Contact
 import za.org.grassroot2.model.util.GroupPermissionChecker
 import za.org.grassroot2.services.MediaService
 import za.org.grassroot2.services.NetworkService
+import za.org.grassroot2.services.rest.GrassrootUserApi
 import za.org.grassroot2.view.GrassrootView
+import java.io.File
 
 
 class GroupDetailsPresenter @Inject
-constructor(private val databaseService: DatabaseService, private val networkService: NetworkService,private val mediaService: MediaService) : BasePresenter<GroupDetailsPresenter.GroupDetailsView>() {
+constructor(private val databaseService: DatabaseService,
+            private val networkService: NetworkService,
+            private val mediaService: MediaService,
+            private val grassrootUserApi: GrassrootUserApi) : BasePresenter<GroupDetailsPresenter.GroupDetailsView>() {
 
     private var groupUid: String? = null
     private var currentMediaFileUid: String? = null
@@ -73,35 +81,82 @@ constructor(private val databaseService: DatabaseService, private val networkSer
     }
 
     fun takePhoto() {
-        disposableOnDetach(mediaService.createFileForMedia("image/jpeg", MediaFile.FUNCTION_GROUP_PROFILE_PHOTO).subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({ s ->
-                    val mediaFile = databaseService.loadObjectByUid(MediaFile::class.java, s)
-                    Timber.e("mediaFile stored and retrieved, = " + mediaFile!!)
-                    // for some reason, sometimes it comes back null ...
-                    Timber.d("media URI passed to intent: " + Uri.parse(mediaFile.contentProviderPath))
-                    currentMediaFileUid = s
-                    Timber.d("What does this s contain #############  %s",s)
-                    Timber.d("What is the group uid here in Presenter ???????????????????????????????????????? %s",groupUid)
-                    Timber.d("Media file uid is ------------->>>>>> %s",mediaFile.serverUid)
+        disposableOnDetach(
+                mediaService
+                        .createFileForMedia("image/jpeg", MediaFile.FUNCTION_GROUP_PROFILE_PHOTO)
+                        .subscribeOn(io())
+                        .observeOn(main())
+                        .subscribe({ s ->
+                            val mediaFile = databaseService.loadObjectByUid(MediaFile::class.java, s)
+                            Timber.e("mediaFile stored and retrieved, = " + mediaFile!!)
+                            // for some reason, sometimes it comes back null ...
+                            Timber.d("media URI passed to intent: " + Uri.parse(mediaFile.contentProviderPath))
+                            currentMediaFileUid = s
 
-                    view.cameraForResult(mediaFile.contentProviderPath, s)
-                }) { throwable ->
-                    Timber.e(throwable, "Error creating file")
-                    view.showErrorSnackbar(R.string.error_file_creation)
-                })
+                            view.cameraForResult(mediaFile.contentProviderPath, s)
+                        }) { throwable ->
+                            Timber.e(throwable, "Error creating file")
+                            view.showErrorSnackbar(R.string.error_file_creation)
+                        })
     }
 
-    /*fun cameraResult(){
-        disposableOnDetach(mediaService.captureMediaFile(currentMediaFileUid!!)
-                .subscribe({}))
-    }*/
+    private fun uploadProfilePhoto(mediaFile: MediaFile){
+        val fileMultipart = getFileMultipart(mediaFile, "image")
+        Timber.d("E kaba ra fihla mo nang?????????")
+
+        disposableOnDetach(
+                grassrootUserApi.uploadGroupProfilePhoto(groupUid,fileMultipart)
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                { result ->
+                                    Timber.d("What am i getting here @@@@@ ----->>>>>  %S",result)
+                                    val group = databaseService.loadGroup(groupUid as String)
+
+                                    Timber.d("Group profileImageUrl---------------------------->>>>>>>>>>>>>>>>>>>>>> %s",group?.profileImageUrl)
+                                },
+                                { error ->
+                                    //view.showErrorDialog(R.string.me_error_updating_photo)
+                                    Timber.d("It gets here_______________>>>>>>>>>>>>>>>>>>>>>")
+                                    Timber.e(error)
+                                }
+                        )
+        )
+    }
+
+    private fun getFileMultipart(mediaFile: MediaFile, paramName: String): MultipartBody.Part? {
+        return try {
+            val file = File(mediaFile.absolutePath)
+            val requestFile = RequestBody.create(MediaType.parse(mediaFile.mimeType), file)
+            MultipartBody.Part.createFormData(paramName, file.name, requestFile)
+        } catch (e: Exception) {
+            Timber.e(e)
+            null
+        }
+    }
+
+    fun cameraResult(){
+        disposableOnDetach(mediaService.captureMediaFile(currentMediaFileUid!!,500,500)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        {
+                            val mediaFile = databaseService.loadObjectByUid(MediaFile::class.java, currentMediaFileUid!!)
+                            if (mediaFile != null)
+                                uploadProfilePhoto(mediaFile)
+                        },
+                        {
+                            Timber.d(it)
+                        }
+                )
+        )
+    }
 
     interface GroupDetailsView : GrassrootView {
         fun render(group: Group)
         fun emptyData()
         fun displayFab()
         fun cameraForResult(contentProviderPath: String, s: String)
+        fun setImage(imageUrl:String)
     }
 
     class TasksUpdatedEvent

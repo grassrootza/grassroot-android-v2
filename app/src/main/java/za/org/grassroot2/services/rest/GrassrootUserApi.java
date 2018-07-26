@@ -96,7 +96,13 @@ public interface GrassrootUserApi {
 
     @Multipart
     @POST("/v2/api/group/modify/image/upload/{groupUid}")
-    Observable<Response<RestResponse<String>>> uploadGroupProfilePhoto(@Path("groupUid") String groupUid, @Part MultipartBody.Part image);
+    Observable<Response<String>> uploadGroupProfilePhoto(@Path("groupUid") String groupUid,
+                                                                       @Part MultipartBody.Part image);
+
+//    @Multipart
+//    @POST("/v2/api/user/profile/image/change")
+//    Observable<Response<RestResponse<String>>> uploadProfilePhoto(@Part MultipartBody.Part file);
+
 
     // not bothering to stream since the XLS generated is tiny (< 20kb for large groups)
     @GET("/v2/api/group/fetch/export/{groupUid}")
