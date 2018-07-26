@@ -17,6 +17,7 @@ import za.org.grassroot2.R
 import za.org.grassroot2.database.DatabaseService
 import za.org.grassroot2.model.Group
 import za.org.grassroot2.model.MediaFile
+import za.org.grassroot2.model.MediaUploadResult
 import za.org.grassroot2.model.RequestMapper
 import za.org.grassroot2.model.contact.Contact
 import za.org.grassroot2.model.util.GroupPermissionChecker
@@ -48,6 +49,11 @@ constructor(private val databaseService: DatabaseService,
                     view.displayFab()
                     Timber.d("User has create groups permissions. Proceed to the get down.")
                 }
+
+                if(group.profileImageUrl != null){
+                    view.setImage(group.profileImageUrl)
+                }
+
                 view.render(group)
             }
         }, { it.printStackTrace() }))
@@ -102,7 +108,6 @@ constructor(private val databaseService: DatabaseService,
 
     private fun uploadProfilePhoto(mediaFile: MediaFile){
         val fileMultipart = getFileMultipart(mediaFile, "image")
-        Timber.d("E kaba ra fihla mo nang?????????")
 
         disposableOnDetach(
                 grassrootUserApi.uploadGroupProfilePhoto(groupUid,fileMultipart)
@@ -110,14 +115,12 @@ constructor(private val databaseService: DatabaseService,
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
                                 { result ->
-                                    Timber.d("What am i getting here @@@@@ ----->>>>>  %S",result)
+                                    Timber.d("What am i getting here @@@@@ ----->>>>>  %S",result.body())
                                     val group = databaseService.loadGroup(groupUid as String)
-
-                                    Timber.d("Group profileImageUrl---------------------------->>>>>>>>>>>>>>>>>>>>>> %s",group?.profileImageUrl)
+                                    val mediaUploadResult:MediaUploadResult? = result.body()
+                                    view.setImage(mediaUploadResult?.imageUrl as String)
                                 },
                                 { error ->
-                                    //view.showErrorDialog(R.string.me_error_updating_photo)
-                                    Timber.d("It gets here_______________>>>>>>>>>>>>>>>>>>>>>")
                                     Timber.e(error)
                                 }
                         )

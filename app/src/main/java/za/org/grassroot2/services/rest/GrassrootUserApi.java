@@ -18,6 +18,7 @@ import retrofit2.http.Path;
 import retrofit2.http.Query;
 import za.org.grassroot2.model.AroundEntity;
 import za.org.grassroot2.model.Group;
+import za.org.grassroot2.model.MediaUploadResult;
 import za.org.grassroot2.model.Post;
 import za.org.grassroot2.model.TokenResponse;
 import za.org.grassroot2.model.alert.LiveWireAlert;
@@ -96,8 +97,8 @@ public interface GrassrootUserApi {
 
     @Multipart
     @POST("/v2/api/group/modify/image/upload/{groupUid}")
-    Observable<Response<String>> uploadGroupProfilePhoto(@Path("groupUid") String groupUid,
-                                                                       @Part MultipartBody.Part image);
+    Observable<Response<MediaUploadResult>> uploadGroupProfilePhoto(@Path("groupUid") String groupUid,
+                                                                    @Part MultipartBody.Part image);
 
 //    @Multipart
 //    @POST("/v2/api/user/profile/image/change")

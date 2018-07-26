@@ -48,6 +48,7 @@ class GroupDetailsActivity : GrassrootActivity(), GroupDetailsPresenter.GroupDet
     private val REQUEST_TAKE_PHOTO = 1
     private val REQUEST_GALLERY = 2
     private var groupImageUrl:String = ""
+    private var group:Group? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -182,7 +183,7 @@ class GroupDetailsActivity : GrassrootActivity(), GroupDetailsPresenter.GroupDet
         if(resultCode == Activity.RESULT_OK){
             if(requestCode == REQUEST_TAKE_PHOTO){
                 presenter.cameraResult()
-                //setImage(groupImageUrl)
+
             } else if(requestCode == REQUEST_GALLERY){
                 val imageUri:Uri = data!!.data
                 Timber.d("IMage URI------------------------>>>>>>>>>>>>>>>>>>>>>>>>>>>>>%s",imageUri)
