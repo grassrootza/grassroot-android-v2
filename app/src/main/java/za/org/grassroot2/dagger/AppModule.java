@@ -16,7 +16,6 @@ import za.org.grassroot2.database.DatabaseServiceImpl;
 import za.org.grassroot2.services.UserDetailsService;
 import za.org.grassroot2.services.UserDetailsServiceImpl;
 import za.org.grassroot2.util.ContactHelper;
-import za.org.grassroot2.util.StringDescriptionProvider;
 import za.org.grassroot2.util.UserPreference;
 
 /**
@@ -65,12 +64,6 @@ public class AppModule {
     @Singleton
     DatabaseHelper provideDatabaseHelper(@ApplicationContext  Context context) {
         return new DatabaseHelper(context);
-    }
-
-    @Provides
-    @Singleton
-    StringDescriptionProvider provideDescriptionProvider(@ApplicationContext Context context) {
-        return new StringDescriptionProvider(context);
     }
 
     @Provides

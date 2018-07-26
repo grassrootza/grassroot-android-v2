@@ -27,7 +27,7 @@ public class GrassrootApplication extends MultiDexApplication {
     private BroadcastReceiver connectivityChangeReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            if (NetworkUtil.hasInternetAccess(context)) {
+            if (NetworkUtil.INSTANCE.hasInternetAccess(context)) {
                 startService(new Intent(context, SyncOfflineDataService.class));
             }
         }

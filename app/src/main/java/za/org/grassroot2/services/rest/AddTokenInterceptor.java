@@ -62,22 +62,22 @@ public final class AddTokenInterceptor implements Interceptor {
             invalidateToken();
         } else if (response.isSuccessful()) {
             userPreference.setNoConnectionInfoDisplayed(false);
-            AlarmManagerHelper.cancelAlarmForBroadcastReceiver(context, OfflineReceiver.class);
+            AlarmManagerHelper.INSTANCE.cancelAlarmForBroadcastReceiver(context, OfflineReceiver.class);
         }
     }
 
     private void invalidateToken() {
-        Account[] accounts = accountManager.getAccountsByType(AuthConstants.ACCOUNT_TYPE);
+        Account[] accounts = accountManager.getAccountsByType(AuthConstants.Companion.getACCOUNT_TYPE());
         if (accounts.length != 0) {
-            accountManager.invalidateAuthToken(AuthConstants.ACCOUNT_TYPE,
-                    accountManager.peekAuthToken(accounts[0], AuthConstants.AUTH_TOKENTYPE));
+            accountManager.invalidateAuthToken(AuthConstants.Companion.getACCOUNT_TYPE(),
+                    accountManager.peekAuthToken(accounts[0], AuthConstants.Companion.getAUTH_TOKENTYPE()));
             EventBus.getDefault().postSticky(new TokenRefreshEvent());
         }
     }
 
     private String getToken() {
-        Account[] accounts = accountManager.getAccountsByType(AuthConstants.ACCOUNT_TYPE);
-        return accounts.length == 0 ? null : accountManager.peekAuthToken(accounts[0], AuthConstants.AUTH_TOKENTYPE);
+        Account[] accounts = accountManager.getAccountsByType(AuthConstants.Companion.getACCOUNT_TYPE());
+        return accounts.length == 0 ? null : accountManager.peekAuthToken(accounts[0], AuthConstants.Companion.getAUTH_TOKENTYPE());
     }
 
     public static class TokenRefreshEvent {

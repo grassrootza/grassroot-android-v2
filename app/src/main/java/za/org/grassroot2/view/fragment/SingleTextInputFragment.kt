@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.EditorInfo
 import android.widget.TextView
 import com.jakewharton.rxbinding2.view.RxView
 import com.jakewharton.rxbinding2.widget.RxTextView
@@ -13,7 +14,6 @@ import org.greenrobot.eventbus.EventBus
 import timber.log.Timber
 import za.org.grassroot2.R
 import za.org.grassroot2.dagger.activity.ActivityComponent
-import za.org.grassroot2.rxbinding.RxViewUtils
 import za.org.grassroot2.view.SingleInputNextOtherView
 
 class SingleTextInputFragment : TextInputFragment(), SingleInputNextOtherView {
@@ -24,7 +24,14 @@ class SingleTextInputFragment : TextInputFragment(), SingleInputNextOtherView {
     private var inputLabelRes: Int = 0
     private var inputHintRes: Int = 0
 
+    private var imeNextDonePredicate: (integer: Int) -> Boolean = {
+        it == EditorInfo.IME_ACTION_NEXT
+        || it == EditorInfo.IME_ACTION_DONE
+        || it == EditorInfo.IME_ACTION_GO }
+
     override fun getInputText(): TextView = inputText
+
+    override fun onInject(activityComponent: ActivityComponent) {}
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -35,8 +42,6 @@ class SingleTextInputFragment : TextInputFragment(), SingleInputNextOtherView {
             inputHintRes = args.getInt(INPUT_HINT_RES)
         }
     }
-
-    override fun onInject(activityComponent: ActivityComponent) {}
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
@@ -55,7 +60,7 @@ class SingleTextInputFragment : TextInputFragment(), SingleInputNextOtherView {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         val editTextNext = RxTextView
-                .editorActions(inputText, RxViewUtils.imeNextDonePredicate())
+                .editorActions(inputText, imeNextDonePredicate)
                 .filter { integer ->
                     inputText != null // because Android
                 }

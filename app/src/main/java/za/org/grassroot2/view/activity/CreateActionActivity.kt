@@ -492,15 +492,15 @@ class CreateActionActivity : GrassrootActivity(), BackNavigationListener, Create
 
     companion object {
 
-        private val EXTRA_GROUP_UID = "groupUid"
-        private val EXTRA_FROM_HOME = "from_home"
-        private val EXTRA_START_ON_ACTION = "start_on_action"
+        private const val EXTRA_GROUP_UID = "groupUid"
+        private const val EXTRA_FROM_HOME = "from_home"
+        private const val EXTRA_START_ON_ACTION = "start_on_action"
 
-        private val REQUEST_TAKE_PHOTO = 1
-        private val REQUEST_RECORD_VIDEO = 2
-        private val REQUEST_GALLERY = 3
-        private val REQUEST_RECORD_AUDIO = 4
-        private val REQUEST_DICTATE = 5
+        private const val REQUEST_TAKE_PHOTO = 1
+        private const val REQUEST_RECORD_VIDEO = 2
+        private const val REQUEST_GALLERY = 3
+        private const val REQUEST_RECORD_AUDIO = 4
+        private const val REQUEST_DICTATE = 5
 
         fun start(c: Context, groupUid: String?) {
             val i = Intent(c, CreateActionActivity::class.java)

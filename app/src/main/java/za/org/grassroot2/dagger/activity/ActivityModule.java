@@ -110,7 +110,7 @@ public class ActivityModule {
     @Provides
     @PerActivity
     LiveWireService provideLiveWireService(DatabaseService databaseService, NetworkService networkService) {
-        return new LiveWireServiceImpl(databaseService, networkService);
+        return new LiveWireServiceImpl(databaseService);
     }
 
     @Provides
