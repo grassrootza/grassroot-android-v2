@@ -77,5 +77,7 @@ interface NetworkService {
 
     fun createGroup(group: Group): Observable<Resource<Group>>
 
+    fun sendNLURequest(request: String): Observable<NluParseResult>
+
     //fun getTodoPosts(taskUid: String): Flowable<Resource<List<Posts>>>
 }

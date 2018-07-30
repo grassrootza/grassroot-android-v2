@@ -54,7 +54,13 @@ class CreateActionActivity : GrassrootActivity(), BackNavigationListener, Create
         presenter.attach(this)
         if (intent.hasExtra(EXTRA_FROM_HOME)) {
             addHomeActionTypeFragment()
-        } else {
+        } else if (intent.hasExtra(EXTRA_START_ON_ACTION)) {
+            Timber.e("Started with action %s", intent.action)
+            //if (intent.action == "set_meeting") {
+            launchMeetingSequence(null)
+            //}
+        }
+        else {
             presenter.verifyGroupPermissions(intent.getStringExtra(EXTRA_GROUP_UID))
         }
     }

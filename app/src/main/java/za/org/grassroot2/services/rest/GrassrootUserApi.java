@@ -23,6 +23,7 @@ import za.org.grassroot2.model.TokenResponse;
 import za.org.grassroot2.model.alert.LiveWireAlert;
 import za.org.grassroot2.model.language.NluResponse;
 import za.org.grassroot2.model.request.MemberRequest;
+import za.org.grassroot2.model.task.NluParseResult;
 import za.org.grassroot2.model.task.PendingResponseDTO;
 import za.org.grassroot2.model.task.Task;
 import za.org.grassroot2.model.task.Vote;
@@ -61,6 +62,9 @@ public interface GrassrootUserApi {
                                      @Query("latitude") double latitude,
                                      @Query("longitude") double longitude,
                                      @Query("mediaFileKeys") Set<String> mediaFileUids);
+
+    @GET("/v2/api/language/parse/intent")
+    Observable<NluParseResult> sendNLURequest(@Query("text") String text);
 
     @GET("/v2/api/task/fetch/todo/responses/{taskUid}")
     Observable<Map<String, String>> fetchTodoResponses(@Path("taskUid") String taskUid);
