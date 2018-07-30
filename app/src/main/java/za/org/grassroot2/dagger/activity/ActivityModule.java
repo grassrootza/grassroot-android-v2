@@ -20,8 +20,6 @@ import za.org.grassroot2.presenter.activity.PickContactPresenter;
 import za.org.grassroot2.presenter.fragment.GroupFragmentPresenter;
 import za.org.grassroot2.presenter.fragment.MemberListPresenter;
 import za.org.grassroot2.presenter.fragment.SingleTextMultiButtonPresenter;
-import za.org.grassroot2.services.LiveWireService;
-import za.org.grassroot2.services.LiveWireServiceImpl;
 import za.org.grassroot2.services.LocationManager;
 import za.org.grassroot2.services.MediaService;
 import za.org.grassroot2.services.MediaServiceImpl;
@@ -105,12 +103,6 @@ public class ActivityModule {
     @PerActivity
     MemberListPresenter provideMemberListPresenter(DatabaseService dbService, NetworkService networkService) {
         return new MemberListPresenter(dbService, networkService);
-    }
-
-    @Provides
-    @PerActivity
-    LiveWireService provideLiveWireService(DatabaseService databaseService, NetworkService networkService) {
-        return new LiveWireServiceImpl(databaseService);
     }
 
     @Provides

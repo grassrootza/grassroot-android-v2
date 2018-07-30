@@ -3,19 +3,12 @@ package za.org.grassroot2.view.activity
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import android.support.design.widget.BottomNavigationView
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentManager
 import android.support.v4.app.FragmentPagerAdapter
 import android.support.v4.view.ViewPager
 import android.view.MenuItem
-
-import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx
 import com.tbruyelle.rxpermissions2.RxPermissions
-
-import javax.inject.Inject
-
-import butterknife.BindView
 import kotlinx.android.synthetic.main.activity_dashboard.*
 import za.org.grassroot2.R
 import za.org.grassroot2.dagger.activity.ActivityComponent
@@ -26,8 +19,11 @@ import za.org.grassroot2.view.fragment.AroundMeFragment
 import za.org.grassroot2.view.fragment.GroupsFragment
 import za.org.grassroot2.view.fragment.HomeFragment
 import za.org.grassroot2.view.fragment.MeFragment
+import javax.inject.Inject
 
 class DashboardActivity : GrassrootActivity() {
+    override val layoutResourceId: Int
+        get() = R.layout.activity_dashboard
 
     @Inject internal lateinit var rxPermissions: RxPermissions
     @Inject internal lateinit var manager: LocationManager
@@ -55,8 +51,6 @@ class DashboardActivity : GrassrootActivity() {
             else -> false
         }
     }
-
-    override fun getLayoutResourceId(): Int = R.layout.activity_dashboard
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

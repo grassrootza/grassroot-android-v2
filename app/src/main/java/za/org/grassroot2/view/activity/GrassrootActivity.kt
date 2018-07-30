@@ -23,14 +23,13 @@ import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.RelativeLayout
 import android.widget.Toast
-import butterknife.BindView
-import butterknife.ButterKnife
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
 import com.google.android.gms.gcm.GoogleCloudMessaging
 import dagger.Lazy
 import io.reactivex.disposables.CompositeDisposable
+import kotlinx.android.synthetic.main.include_progress_bar.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import timber.log.Timber
@@ -74,9 +73,6 @@ abstract class GrassrootActivity : AppCompatActivity(), GrassrootView {
     private var authResultBundle: Bundle? = null
     protected var disposables = CompositeDisposable()
 
-    @BindView(R.id.progress)
-    internal var progress: View? = null
-
     private var component: ActivityComponent? = null
 
     override val activity: Activity
@@ -101,7 +97,6 @@ abstract class GrassrootActivity : AppCompatActivity(), GrassrootView {
         AppCompatDelegate.setCompatVectorFromResourcesEnabled(true)
         setContentView(R.layout.base_progress_container)
         setContentLayout(layoutResourceId)
-        ButterKnife.bind(this)
         componenet.inject(this)
         onInject(componenet)
         authResponse = intent.getParcelableExtra(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE)
@@ -228,16 +223,12 @@ abstract class GrassrootActivity : AppCompatActivity(), GrassrootView {
 
     override fun showProgressBar() {
         Timber.d("showing progress bar 1 in activity: %s", activity.toString())
-        if (progress != null) {
-            ViewAnimation.fadeIn(progress!!)
-        }
+        progress?.let { ViewAnimation.fadeIn(progress!!) }
     }
 
     override fun closeProgressBar() {
         Timber.d("showing progress bar 2 inside activity")
-        if (progress != null) {
-            ViewAnimation.fadeOut(progress)
-        }
+        progress?.let { ViewAnimation.fadeOut(progress!!) }
     }
 
     override fun onPause() {

@@ -9,7 +9,7 @@ import javax.inject.Inject
 
 class OfflineReceiver : BroadcastReceiver() {
 
-    @Inject private lateinit var userPrefs: UserPreference
+    @Inject lateinit var userPrefs: UserPreference
 
     override fun onReceive(context: Context, intent: Intent) {
         (context.applicationContext as GrassrootApplication).appComponent.inject(this)

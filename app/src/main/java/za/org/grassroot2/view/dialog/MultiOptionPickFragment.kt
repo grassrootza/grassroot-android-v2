@@ -24,14 +24,14 @@ import java.util.*
 import kotlin.collections.LinkedHashMap
 
 class MultiOptionPickFragment : GrassrootFragment() {
+    override val layoutResourceId: Int
+        get() = R.layout.fragment_multi_option_pick
 
     private val actionSubject = PublishSubject.create<Int>()
     private var options: HashMap<Int, ActionOption>? = null
     private lateinit var recyclerView: RecyclerView
 
     override fun onInject(activityComponent: ActivityComponent) {}
-
-    override fun getLayoutResourceId(): Int  = R.layout.fragment_multi_option_pick
 
     fun clickAction(): Observable<Int> = actionSubject
 

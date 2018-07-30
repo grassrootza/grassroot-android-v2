@@ -24,6 +24,8 @@ import javax.inject.Inject
 
 
 class RegisterActivity : GrassrootActivity(), RegistrationView {
+    override val layoutResourceId: Int
+        get() = R.layout.activity_register
 
     private lateinit var userNameFragment: SingleTextInputFragment
     private lateinit var phoneNumberFragment: SingleTextInputFragment
@@ -34,17 +36,9 @@ class RegisterActivity : GrassrootActivity(), RegistrationView {
     private var debugOtp: String = ""
     private var userName: String = ""
 
-    @Inject
-    lateinit var presenter: RegistrationPresenter
+    @Inject lateinit var presenter: RegistrationPresenter
 
-    override fun onInject(component: ActivityComponent) {
-        component.inject(this)
-    }
-
-    override fun getLayoutResourceId(): Int {
-        return R.layout.activity_register
-    }
-
+    override fun onInject(component: ActivityComponent) = component.inject(this)
 
     override fun onCreate(savedInstanceState: Bundle?) {
 

@@ -101,16 +101,18 @@ constructor(@param:ApplicationContext private val applicationContext: Context,
         return Single.create { e ->
             val mediaFile = databaseService.loadObjectByUid(MediaFile::class.java, mediaFileUid)
             val localFileName = FileUtil.getLocalFileNameFromURI(fileUri, applicationContext)
-            if (mediaFile!!.isCompressOnSend) {
-                imageUtil.resizeImageFile(localFileName, mediaFile.absolutePath, targetImgWidth, targetImgHeight)
-            } else {
-                mediaFile.absolutePath = localFileName
-                mediaFile.contentProviderPath = fileUri.toString()
+            localFileName?.let {
+                if (mediaFile!!.isCompressOnSend) {
+                    imageUtil.resizeImageFile(it, mediaFile.absolutePath, targetImgWidth, targetImgHeight)
+                } else {
+                    mediaFile.absolutePath = localFileName
+                    mediaFile.contentProviderPath = fileUri.toString()
+                }
+                mediaFile.mimeType = getMimeType(fileUri)
+                mediaFile.setReadyToUpload(true)
+                e.onSuccess("DONE")
+                databaseService.storeObject(MediaFile::class.java, mediaFile)
             }
-            mediaFile.mimeType = getMimeType(fileUri)
-            mediaFile.setReadyToUpload(true)
-            e.onSuccess("DONE")
-            databaseService.storeObject(MediaFile::class.java, mediaFile)
         }
     }
 

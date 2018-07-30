@@ -17,20 +17,14 @@ import za.org.grassroot2.view.LoginView
 import javax.inject.Inject
 
 class LoginActivity : GrassrootActivity(), LoginView {
+    override val layoutResourceId: Int
+        get() = R.layout.activity_login
 
-    @Inject
-    lateinit var presenter: LoginPresenter
+    @Inject lateinit var presenter: LoginPresenter
 
     private lateinit var phoneNumberChangeObserver: Disposable
 
-    override fun onInject(component: ActivityComponent) {
-        component.inject(this)
-    }
-
-    override fun getLayoutResourceId(): Int {
-        return R.layout.activity_login
-    }
-
+    override fun onInject(component: ActivityComponent) = component.inject(this)
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
@@ -50,17 +44,17 @@ class LoginActivity : GrassrootActivity(), LoginView {
             passwordTf.setText(changecPassword)
         }
 
-        loginBtn.setOnClickListener({
+        loginBtn.setOnClickListener {
             val phoneNumber = phoneNumberTf.text.toString()
             val password = passwordTf.text.toString()
             presenter.login(phoneNumber, password)
-        })
+        }
 
-        forgotPassword.setOnClickListener({
+        forgotPassword.setOnClickListener {
             val intent = Intent(this, ForgotPasswordActivity::class.java)
             finish()
             startActivity(intent)
-        })
+        }
 
     }
 

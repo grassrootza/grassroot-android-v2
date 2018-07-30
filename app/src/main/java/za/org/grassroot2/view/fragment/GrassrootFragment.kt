@@ -125,16 +125,11 @@ abstract class GrassrootFragment : Fragment(), FragmentView {
     }
 
     override fun showProgressBar() {
-        Timber.d("showing progress bar in fragment")
-        if (progress != null) {
-            ViewAnimation.fadeIn(progress!!)
-        }
+        progress?.let { ViewAnimation.fadeOut(progress!!) }
     }
 
     override fun closeProgressBar() {
-        if (progress != null) {
-            ViewAnimation.fadeOut(progress)
-        }
+        progress?.let { ViewAnimation.fadeOut(progress!!) }
     }
 
     protected fun get(): FragmentComponent {

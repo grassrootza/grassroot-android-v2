@@ -37,17 +37,17 @@ class VoteOptionsSingleInputFragment : GrassrootFragment() {
         listener = activity as BackNavigationListener?
     }
 
-    @OnClick(R.id.vote_back_nav)
+    @OnClick(R.id.back)
     internal fun back() {
         listener!!.backPressed()
     }
 
-    @OnClick(R.id.add_vote_option_cancel)
+    @OnClick(R.id.cancel)
     internal fun close() {
         activity!!.finish()
     }
 
-    @OnClick(R.id.add_vote_response_button)
+    @OnClick(R.id.add)
     internal fun add() {
         val voteOptionInput = inputContainer!!.editText!!.text.toString()
         chosenOptionsList.add(voteOptionInput)

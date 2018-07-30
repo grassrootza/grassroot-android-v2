@@ -8,15 +8,12 @@ import za.org.grassroot2.dagger.activity.ActivityComponent
 
 
 class WelcomeActivity : GrassrootActivity() {
+    override val layoutResourceId: Int
+        get() = R.layout.activity_welcome
 
     override fun onInject(component: ActivityComponent) {
         component.inject(this)
     }
-
-    override fun getLayoutResourceId(): Int {
-        return R.layout.activity_welcome
-    }
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
@@ -28,17 +25,17 @@ class WelcomeActivity : GrassrootActivity() {
             return
         }
 
-        createAccBtn.setOnClickListener({
+        createAccBtn.setOnClickListener {
             val next = Intent(this, RegisterActivity::class.java)
             startActivity(next)
             finish()
-        })
+        }
 
-        signInTxt.setOnClickListener({
+        signInTxt.setOnClickListener {
             val next = Intent(this, LoginActivity::class.java)
             startActivity(next)
             finish()
-        })
+        }
     }
 
 
