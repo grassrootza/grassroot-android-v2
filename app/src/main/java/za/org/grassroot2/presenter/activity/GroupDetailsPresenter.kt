@@ -1,9 +1,7 @@
 package za.org.grassroot2.presenter.activity
 
-import android.net.Uri
+import io.reactivex.Observable
 import org.greenrobot.eventbus.EventBus
-
-import java.util.Collections
 
 import javax.inject.Inject
 
@@ -94,16 +92,31 @@ constructor(private val databaseService: DatabaseService,
                         .observeOn(main())
                         .subscribe({ s ->
                             val mediaFile = databaseService.loadObjectByUid(MediaFile::class.java, s)
-                            Timber.e("mediaFile stored and retrieved, = " + mediaFile!!)
-                            // for some reason, sometimes it comes back null ...
-                            Timber.d("media URI passed to intent: " + Uri.parse(mediaFile.contentProviderPath))
                             currentMediaFileUid = s
 
-                            view.cameraForResult(mediaFile.contentProviderPath, s)
+                            view.cameraForResult(mediaFile!!.contentProviderPath, s)
                         }) { throwable ->
                             Timber.e(throwable, "Error creating file")
                             view.showErrorSnackbar(R.string.error_file_creation)
                         })
+    }
+
+    fun pickFromGallery() {
+        disposableOnDetach(view.ensureWriteExteralStoragePermission().flatMapSingle { aBoolean ->
+            when {
+                aBoolean -> mediaService.createFileForMedia("image/jpeg", MediaFile.FUNCTION_GROUP_PROFILE_PHOTO)
+                else -> throw Exception("Permission not granted")
+            }
+        }.subscribeOn(io()).observeOn(main()).subscribe({ s ->
+            currentMediaFileUid = s
+            view.pickFromGallery()
+        }, { it.printStackTrace() }))
+    }
+
+    fun setGroupImageUrl(imageUrl:String?){
+        val group :Group = databaseService.loadGroup(groupUid as String) as Group
+        group?.profileImageUrl = imageUrl
+        databaseService.storeObject(Group::class.java,group)
     }
 
     private fun uploadProfilePhoto(mediaFile: MediaFile){
@@ -115,9 +128,9 @@ constructor(private val databaseService: DatabaseService,
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
                                 { result ->
-                                    Timber.d("What am i getting here @@@@@ ----->>>>>  %S",result.body())
-                                    val group = databaseService.loadGroup(groupUid as String)
                                     val mediaUploadResult:MediaUploadResult? = result.body()
+
+                                    setGroupImageUrl(mediaUploadResult?.imageUrl)
                                     view.setImage(mediaUploadResult?.imageUrl as String)
                                 },
                                 { error ->
@@ -160,6 +173,8 @@ constructor(private val databaseService: DatabaseService,
         fun displayFab()
         fun cameraForResult(contentProviderPath: String, s: String)
         fun setImage(imageUrl:String)
+        fun ensureWriteExteralStoragePermission(): Observable<Boolean>
+        fun pickFromGallery()
     }
 
     class TasksUpdatedEvent

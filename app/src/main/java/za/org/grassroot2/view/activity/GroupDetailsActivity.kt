@@ -19,8 +19,8 @@ import com.github.florent37.viewtooltip.ViewTooltip
 import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
 import com.tbruyelle.rxpermissions2.RxPermissions
+import io.reactivex.Observable
 import kotlinx.android.synthetic.main.activity_group_details.*
-import timber.log.Timber
 import za.org.grassroot2.GroupSettingsActivity
 import za.org.grassroot2.R
 import za.org.grassroot2.dagger.activity.ActivityComponent
@@ -44,11 +44,14 @@ class GroupDetailsActivity : GrassrootActivity(), GroupDetailsPresenter.GroupDet
     @Inject lateinit var presenter: GroupDetailsPresenter
     @Inject lateinit var rxPermissions: RxPermissions
     @Inject lateinit var groupFragmentPresenter:GroupFragmentPresenter
+    @Inject lateinit var rxPermission: RxPermissions
 
     private val REQUEST_TAKE_PHOTO = 1
     private val REQUEST_GALLERY = 2
     private var groupImageUrl:String = ""
-    private var group:Group? = null
+
+    private val DIALOG_CAMERA = "Camera"
+    private val DIALOG_GALLERY = "Gallery"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -68,25 +71,19 @@ class GroupDetailsActivity : GrassrootActivity(), GroupDetailsPresenter.GroupDet
                 uploadImage()
             }
         })
-
-
     }
 
     private fun uploadImage(){
-        val items = arrayOf<CharSequence>("Camera","Gallery")
+        val items = arrayOf<CharSequence>(DIALOG_CAMERA,DIALOG_GALLERY)
         val alertDialog:AlertDialog.Builder = AlertDialog.Builder(this)
         alertDialog.setTitle("Upload image")
 
         alertDialog.setItems(items) { _, which ->
             val selected = items[which]
-            if(selected.equals("Camera")){
-                /*val intent:Intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-                startActivityForResult(intent,REQUEST_TAKE_PHOTO)*/
+            if(selected.equals(DIALOG_CAMERA)){
                 presenter.takePhoto()
-            } else if(selected.equals("Gallery")){
-                val intent = Intent(Intent.ACTION_PICK, EXTERNAL_CONTENT_URI)
-                intent.type = "image/*"
-                startActivityForResult(intent, REQUEST_GALLERY)
+            } else if(selected.equals(DIALOG_GALLERY)){
+                presenter.pickFromGallery()
             }
         }
 
@@ -186,15 +183,14 @@ class GroupDetailsActivity : GrassrootActivity(), GroupDetailsPresenter.GroupDet
 
             } else if(requestCode == REQUEST_GALLERY){
                 val imageUri:Uri = data!!.data
-                Timber.d("IMage URI------------------------>>>>>>>>>>>>>>>>>>>>>>>>>>>>>%s",imageUri)
-                image.setImageURI(imageUri)
+
+                presenter.setGroupImageUrl(imageUri.toString())
+                setImage(imageUri.toString())
             } else if (requestCode == REQUEST_PICK_CONTACTS && resultCode == Activity.RESULT_OK) {
                 val contacts = data!!.getSerializableExtra(PickContactActivity.EXTRA_CONTACTS) as? ArrayList<Contact>
                 presenter.inviteContacts(contacts)
             }
         }
-
-        Timber.d("Request code is ############# %s",requestCode)
     }
 
     override fun setImage(imageUrl:String){
@@ -213,8 +209,19 @@ class GroupDetailsActivity : GrassrootActivity(), GroupDetailsPresenter.GroupDet
                 })
     }
 
+    override fun ensureWriteExteralStoragePermission(): Observable<Boolean> {
+        return rxPermission.request(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+    }
+
+    override fun pickFromGallery() {
+        val intent = Intent(Intent.ACTION_PICK, EXTERNAL_CONTENT_URI)
+        intent.type = "image/*"
+        startActivityForResult(intent, REQUEST_GALLERY)
+    }
+
     override fun render(group: Group) {
         groupTitle.text = group.name
+
         if(group.profileImageUrl != null){
             groupImageUrl = group.profileImageUrl
             setImage(groupImageUrl)
