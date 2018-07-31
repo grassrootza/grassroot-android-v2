@@ -26,7 +26,6 @@ class TodoDetailsActivity : GrassrootActivity(), TodoDetailsPresenter.TodoDetail
     @Inject lateinit var presenter: TodoDetailsPresenter
     @Inject lateinit var rxPermissions: RxPermissions
     @Inject lateinit var postAdapter: PostAdapter
-//    @Inject lateinit var resultsAdapter: TodoResponseAdapter
 
     override val layoutResourceId: Int
         get(): Int = R.layout.activity_todo_details

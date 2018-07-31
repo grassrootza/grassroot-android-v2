@@ -45,7 +45,6 @@ class MultiOptionPickFragment : GrassrootFragment() {
         return actionSubject
     }
 
-
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val v = super.onCreateView(inflater, container, savedInstanceState)
         Timber.d("in onCreateView about to do the thing")
@@ -79,16 +78,17 @@ class MultiOptionPickFragment : GrassrootFragment() {
 
     private fun initView() {
         Timber.d("Initialising MultiOption view")
-        (arguments!!.getSerializable(EXTRA_GROUP) as? Group).let {g ->
-            if (!GroupPermissionChecker.canCallMeeting(g)) {
+        val g = arguments!!.getSerializable(EXTRA_GROUP) as? Group
+        g?.let {
+            if (!GroupPermissionChecker.canCallMeeting(it)) {
                 options!!.remove(R.id.call_meeting)
                 Timber.d("Current user does not have callMeeting permissions")
             }
-            if (!GroupPermissionChecker.canCreateTodo(g)) {
+            if (!GroupPermissionChecker.canCreateTodo(it)) {
                 options!!.remove(R.id.create_todo)
                 Timber.d("Current user does not have createTodo permissions")
             }
-            if (!GroupPermissionChecker.canCreateVote(g)) {
+            if (!GroupPermissionChecker.canCreateVote(it)) {
                 options!!.remove(R.id.take_vote)
                 Timber.d("Current user does not have takeVote permissions")
             }

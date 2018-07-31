@@ -75,7 +75,7 @@ constructor(private val accountManager: AccountManager, private val databaseServ
                                   userDisplayName: String,
                                   userEmailAddress: String,
                                   userLanguageCode: String,
-                                  userSystemRole: String,
+                                  userSystemRole: String?,
                                   userToken: String): Single<UserProfile> {
         return Single.create { e ->
             val account = setAuthToken(userToken)

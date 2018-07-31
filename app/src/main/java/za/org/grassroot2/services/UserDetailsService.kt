@@ -24,7 +24,7 @@ interface UserDetailsService {
                          userDisplayName: String,
                          userEmailAddress: String,
                          userLanguageCode: String,
-                         userSystemRole: String,
+                         userSystemRole: String?,
                          userToken: String): Single<UserProfile>
 
     fun setAuthToken(userToken: String): Account
