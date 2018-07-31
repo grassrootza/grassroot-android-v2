@@ -23,6 +23,7 @@ import za.org.grassroot2.services.MediaService
 import za.org.grassroot2.services.NetworkService
 import za.org.grassroot2.services.rest.GrassrootUserApi
 import za.org.grassroot2.view.GrassrootView
+import za.org.grassroot2.view.dialog.SelectImageDialog
 import java.io.File
 
 

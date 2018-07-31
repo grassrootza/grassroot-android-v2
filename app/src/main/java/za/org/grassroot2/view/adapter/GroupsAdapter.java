@@ -5,6 +5,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.jakewharton.rxbinding2.view.RxView;
@@ -15,6 +16,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.reactivex.Observable;
 import io.reactivex.subjects.PublishSubject;
+import timber.log.Timber;
 import za.org.grassroot2.R;
 import za.org.grassroot2.model.Group;
 import za.org.grassroot2.util.LastModifiedFormatter;
@@ -58,6 +60,11 @@ public class GroupsAdapter extends FooterEnabledAdapter<Group> {
             RxView.clicks(holder.root)
                     .map(o -> item.getUid())
                     .subscribe(viewClickSubject);
+
+            holder.image.setOnClickListener(v -> {
+                Timber.d("IMAGE CLICKED------------------------->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+
+            });
         }
     }
 
@@ -69,6 +76,8 @@ public class GroupsAdapter extends FooterEnabledAdapter<Group> {
         @BindView(R.id.organiser)    TextView organiser;
         @BindView(R.id.count)        TextView count;
         @BindView(R.id.lastModified) TextView lastModified;
+        @BindView(R.id.image) ImageView image;
+
 
         private GroupViewHolder(View itemView) {
             super(itemView);

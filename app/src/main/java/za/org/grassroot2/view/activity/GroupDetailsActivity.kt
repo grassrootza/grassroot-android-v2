@@ -32,12 +32,14 @@ import za.org.grassroot2.presenter.activity.GroupDetailsPresenter
 import za.org.grassroot2.presenter.fragment.GroupFragmentPresenter
 import za.org.grassroot2.view.adapter.GenericViewPagerAdapter
 import za.org.grassroot2.view.dialog.AddMemberDialog
+import za.org.grassroot2.view.dialog.SelectImageDialog
 import za.org.grassroot2.view.fragment.GroupTasksFragment
 import java.lang.Exception
 import java.util.*
 import javax.inject.Inject
 
-class GroupDetailsActivity : GrassrootActivity(), GroupDetailsPresenter.GroupDetailsView {
+class GroupDetailsActivity : GrassrootActivity(), GroupDetailsPresenter.GroupDetailsView,SelectImageDialog.SelectImageDialogEvents {
+
 
     private var groupUid: String? = null
 
@@ -68,9 +70,18 @@ class GroupDetailsActivity : GrassrootActivity(), GroupDetailsPresenter.GroupDet
                 ActivityCompat.requestPermissions(this,
                         arrayOf(Manifest.permission.CAMERA),3)
             }else{
-                uploadImage()
+                //uploadImage()
+                SelectImageDialog.newInstance().show(supportFragmentManager, DIALOG_TAG)
             }
         })
+    }
+
+    override fun openCamera() {
+        presenter.takePhoto()
+    }
+
+    override fun pickImageFromGallery() {
+        presenter.pickFromGallery()
     }
 
     private fun uploadImage(){

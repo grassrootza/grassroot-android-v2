@@ -244,6 +244,7 @@
     <string name="home_quote_subtitle">&lt;b>\"%s\"&lt;/b></string>
     <string name="post_title">&lt;b>%s&lt;/b> wrote:</string>
     <string name="post_subtitle">&lt;b>\"%s\"&lt;/b></string>
+    <string name="select_image">Select image</string>
     <plurals name="notification_sent">
         <item quantity="one">A notification has been sent to %d member.</item>
         <item quantity="other">A notification has been sent to all %d members.</item>
