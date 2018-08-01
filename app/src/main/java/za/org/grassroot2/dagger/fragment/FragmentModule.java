@@ -18,8 +18,8 @@ public class FragmentModule {
 
     @Provides
     @PerFragment
-    GroupFragmentPresenter provideGroupFragmentPresenter(DatabaseService dbService, UserDetailsService networkService) {
-        return new GroupFragmentPresenter(dbService, networkService);
+    GroupFragmentPresenter provideGroupFragmentPresenter(DatabaseService dbService, UserDetailsService networkService,MediaService mediaService) {
+        return new GroupFragmentPresenter(dbService, networkService,mediaService);
     }
 
     @Provides

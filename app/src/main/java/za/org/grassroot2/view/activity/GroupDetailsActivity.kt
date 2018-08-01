@@ -71,7 +71,7 @@ class GroupDetailsActivity : GrassrootActivity(), GroupDetailsPresenter.GroupDet
                         arrayOf(Manifest.permission.CAMERA),3)
             }else{
                 //uploadImage()
-                SelectImageDialog.newInstance().show(supportFragmentManager, DIALOG_TAG)
+                SelectImageDialog.newInstance(R.string.select_image,false).show(supportFragmentManager, DIALOG_TAG)
             }
         })
     }

@@ -19,7 +19,6 @@
         android:fontFamily="sans-serif"
         android:gravity="left"
         android:padding="@dimen/padding_std_medium"
-        android:text="@string/select_image"
         android:textColor="@color/default_font_color"
         android:textSize="20sp"
         android:textStyle="normal"

@@ -26,9 +26,13 @@ public class GroupsAdapter extends FooterEnabledAdapter<Group> {
     private final Context context;
     private PublishSubject<String> viewClickSubject = PublishSubject.create();
 
+    private PublishSubject<String> groupImageClickSubject = PublishSubject.create();
+
     public Observable<String> getViewClickObservable() {
         return viewClickSubject;
     }
+
+    public Observable<String> getGroupImageClickObservable() {return groupImageClickSubject; }
 
     public GroupsAdapter(Context c, List<Group> data) {
         super(data);
@@ -61,10 +65,10 @@ public class GroupsAdapter extends FooterEnabledAdapter<Group> {
                     .map(o -> item.getUid())
                     .subscribe(viewClickSubject);
 
-            holder.image.setOnClickListener(v -> {
-                Timber.d("IMAGE CLICKED------------------------->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+            RxView.clicks(holder.image)
+                    .map(object -> item.getUid())
+                    .subscribe(groupImageClickSubject);
 
-            });
         }
     }
 

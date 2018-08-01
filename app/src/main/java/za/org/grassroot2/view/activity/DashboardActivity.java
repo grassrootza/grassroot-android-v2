@@ -16,6 +16,7 @@ import com.tbruyelle.rxpermissions2.RxPermissions;
 import javax.inject.Inject;
 
 import butterknife.BindView;
+import timber.log.Timber;
 import za.org.grassroot2.R;
 import za.org.grassroot2.dagger.activity.ActivityComponent;
 import za.org.grassroot2.services.LocationManager;
@@ -111,6 +112,17 @@ public class DashboardActivity extends GrassrootActivity {
         component.inject(this);
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if(resultCode == Activity.RESULT_OK){
+            if(requestCode == 1){
+                Timber.d("Nkhwai is taking a photo using a camera ----------->>>>>>>>>>>>>>>>>>>>>>>>>>>");
+            }else if(requestCode == 2){
+                Timber.d("Nkhwai is making use of Gallery this time ----------->>>>>>>>>>>>>>>>>>>>>>>>>>>");
+            }
+        }
+    }
+
     public static void start(Activity activity) {
         activity.startActivity(new Intent(activity, DashboardActivity.class));
     }
@@ -141,6 +153,8 @@ public class DashboardActivity extends GrassrootActivity {
             return 4;
         }
     }
+
+
 
     @Override
     protected void onDestroy() {
