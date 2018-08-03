@@ -1,19 +1,28 @@
 package za.org.grassroot2.view.fragment
 
 import android.Manifest
+import android.app.Activity
 import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
+import android.support.v4.graphics.drawable.RoundedBitmapDrawable
+import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.View
+import com.makeramen.roundedimageview.RoundedDrawable
+import com.squareup.picasso.Callback
+import com.squareup.picasso.Picasso
 import com.tbruyelle.rxpermissions2.RxPermissions
 import io.reactivex.Observable
 import kotlinx.android.synthetic.main.fragment_groups.*
+import kotlinx.android.synthetic.main.item_group.*
 import timber.log.Timber
 import za.org.grassroot2.R
 import za.org.grassroot2.dagger.activity.ActivityComponent
@@ -23,6 +32,7 @@ import za.org.grassroot2.view.activity.CreateActionActivity
 import za.org.grassroot2.view.activity.GroupDetailsActivity
 import za.org.grassroot2.view.adapter.GroupsAdapter
 import za.org.grassroot2.view.dialog.SelectImageDialog
+import java.lang.Exception
 import javax.inject.Inject
 
 class GroupsFragment : GrassrootFragment(), GroupFragmentPresenter.GroupFragmentView,SelectImageDialog.SelectImageDialogEvents {
@@ -34,6 +44,7 @@ class GroupsFragment : GrassrootFragment(), GroupFragmentPresenter.GroupFragment
     @Inject lateinit internal var presenter: GroupFragmentPresenter
     private lateinit var groupsAdapter: GroupsAdapter
     @Inject lateinit var rxPermission: RxPermissions
+
     private val REQUEST_TAKE_PHOTO = 1
     private val REQUEST_GALLERY = 2
 
@@ -55,6 +66,28 @@ class GroupsFragment : GrassrootFragment(), GroupFragmentPresenter.GroupFragment
         refreshLayout.setOnRefreshListener { presenter.refreshGroups() }
         presenter.attach(this)
         presenter.onViewCreated()
+    }
+
+    override fun setImage(imageUrl: String?) {
+        var url = imageUrl
+        Picasso.get()
+                .load(url)
+                .resizeDimen(R.dimen.profile_photo_width, R.dimen.profile_photo_height)
+                .centerCrop()
+                .into(image,object : Callback {
+                    override fun onSuccess() {
+                        val imageBitmap = (image.drawable as RoundedDrawable).toBitmap()
+                        val imageDrawable: RoundedBitmapDrawable = RoundedBitmapDrawableFactory.create(resources, imageBitmap)
+                        imageDrawable.isCircular = true
+                        imageDrawable.cornerRadius = Math.max(imageBitmap.width, imageBitmap.height) / 2.0f
+                        //image.setImageBitmap(imageBitmap)
+                        image.setImageDrawable(imageDrawable)
+                    }
+
+                    override fun onError(e: Exception?) {
+
+                    }
+                })
     }
 
     override fun getLayoutResourceId(): Int {
@@ -102,10 +135,10 @@ class GroupsFragment : GrassrootFragment(), GroupFragmentPresenter.GroupFragment
     }
 
     override fun cameraForResult(contentProviderPath: String, s: String) {
-        val intent: Intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+        val intent:Intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
         intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.parse(contentProviderPath))
         intent.putExtra("MY_UID", s)
-        activity?.startActivityForResult(intent,REQUEST_TAKE_PHOTO)
+        startActivityForResult(intent,REQUEST_TAKE_PHOTO)
     }
 
     override fun pickFromGallery() {
@@ -131,6 +164,20 @@ class GroupsFragment : GrassrootFragment(), GroupFragmentPresenter.GroupFragment
 
     override fun ensureWriteExteralStoragePermission(): Observable<Boolean> {
         return rxPermission.request(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+
+        if (resultCode == Activity.RESULT_OK) {
+            if (requestCode == REQUEST_TAKE_PHOTO) {
+                presenter.cameraResult()
+            } else if (requestCode == REQUEST_GALLERY) {
+                val imageUri:Uri = data!!.data
+
+                presenter.setGroupImageUrl(imageUri.toString())
+                setImage(imageUri.toString())
+            }
+        }
     }
 
     private fun displayEmptyLayout() {

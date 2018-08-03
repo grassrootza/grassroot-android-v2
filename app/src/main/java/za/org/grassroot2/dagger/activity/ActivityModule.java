@@ -80,8 +80,8 @@ public class ActivityModule {
 
     @Provides
     @PerActivity
-    GroupFragmentPresenter provideGroupFragmentPresenter(DatabaseService dbService, UserDetailsService networkService,MediaService mediaService) {
-        return new GroupFragmentPresenter(dbService, networkService,mediaService);
+    GroupFragmentPresenter provideGroupFragmentPresenter(DatabaseService dbService, UserDetailsService networkService,MediaService mediaService,GrassrootUserApi grassrootUserApi) {
+        return new GroupFragmentPresenter(dbService, networkService,mediaService,grassrootUserApi);
     }
 
     @Provides

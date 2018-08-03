@@ -1,6 +1,10 @@
 package za.org.grassroot2.view.adapter;
 
 import android.content.Context;
+import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
+import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,6 +13,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.jakewharton.rxbinding2.view.RxView;
+import com.makeramen.roundedimageview.RoundedDrawable;
+import com.squareup.picasso.Callback;
+import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
@@ -44,8 +51,10 @@ public class GroupsAdapter extends FooterEnabledAdapter<Group> {
         RecyclerView.ViewHolder v = super.onCreateViewHolder(parent, viewType);
         if (v == null) {
             final View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_group, parent, false);
+
             return new GroupViewHolder(view);
         }
+
         return v;
     }
 
@@ -53,6 +62,7 @@ public class GroupsAdapter extends FooterEnabledAdapter<Group> {
     protected void bindRegularViewHolder(RecyclerView.ViewHolder vh, int position) {
         Group item = items.get(position);
         GroupViewHolder holder = (GroupViewHolder) vh;
+
         if (item != null) {
             holder.name.setText(item.getName());
             holder.count.setText(holder.count.getContext().getResources().getQuantityString(R.plurals.member_count, item.getMemberCount(), item.getMemberCount()));
@@ -60,6 +70,14 @@ public class GroupsAdapter extends FooterEnabledAdapter<Group> {
             holder.organiser.setText("Placeholder");
             holder.letter.setText(item.getName().substring(0, 1));
             holder.letter.setVisibility(View.VISIBLE);
+
+            if(item.getProfileImageUrl() != null){
+                Picasso.get()
+                        .load(item.getProfileImageUrl())
+                        .resizeDimen(R.dimen.profile_photo_width, R.dimen.profile_photo_height)
+                        .centerCrop()
+                        .into(holder.image);
+            }
 
             RxView.clicks(holder.root)
                     .map(o -> item.getUid())
@@ -81,7 +99,6 @@ public class GroupsAdapter extends FooterEnabledAdapter<Group> {
         @BindView(R.id.count)        TextView count;
         @BindView(R.id.lastModified) TextView lastModified;
         @BindView(R.id.image) ImageView image;
-
 
         private GroupViewHolder(View itemView) {
             super(itemView);

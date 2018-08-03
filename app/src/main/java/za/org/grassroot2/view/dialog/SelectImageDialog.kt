@@ -19,6 +19,8 @@ import za.org.grassroot2.view.GrassrootView
 
 class SelectImageDialog : DialogFragment() {
 
+    private lateinit var selectImageDialogEvents: SelectImageDialogEvents
+
     private val selectImageDialog: Dialog
         get() {
             val builder = AlertDialog.Builder(activity!!)
@@ -35,15 +37,13 @@ class SelectImageDialog : DialogFragment() {
                 val btnPickFromGallery: Button = v.findViewById(R.id.pickFromGallery)
 
                 if(useFragment){
-                    val se:SelectImageDialogEvents = targetFragment as SelectImageDialogEvents
-                    btnOpenCamera.setOnClickListener { v1 -> se.openCamera() }
-
-                    btnPickFromGallery.setOnClickListener { v12 -> se.pickImageFromGallery() }
+                    selectImageDialogEvents = targetFragment as SelectImageDialogEvents
+                    btnOpenCamera.setOnClickListener { v1 -> selectImageDialogEvents.openCamera() }
+                    btnPickFromGallery.setOnClickListener { v12 -> selectImageDialogEvents.pickImageFromGallery() }
                 }else{
-                    val selectImageDialogEvents = activity as? SelectImageDialogEvents
-                    btnOpenCamera.setOnClickListener { v1 -> selectImageDialogEvents?.openCamera() }
-
-                    btnPickFromGallery.setOnClickListener { v12 -> selectImageDialogEvents?.pickImageFromGallery() }
+                    selectImageDialogEvents = activity as SelectImageDialogEvents
+                    btnOpenCamera.setOnClickListener { v1 -> selectImageDialogEvents.openCamera() }
+                    btnPickFromGallery.setOnClickListener { v12 -> selectImageDialogEvents.pickImageFromGallery() }
                 }
             } catch (e: ClassCastException) {
                 Timber.d(e)

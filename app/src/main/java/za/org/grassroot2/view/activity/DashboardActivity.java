@@ -114,13 +114,9 @@ public class DashboardActivity extends GrassrootActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if(resultCode == Activity.RESULT_OK){
-            if(requestCode == 1){
-                Timber.d("Nkhwai is taking a photo using a camera ----------->>>>>>>>>>>>>>>>>>>>>>>>>>>");
-            }else if(requestCode == 2){
-                Timber.d("Nkhwai is making use of Gallery this time ----------->>>>>>>>>>>>>>>>>>>>>>>>>>>");
-            }
-        }
+        super.onActivityResult(requestCode,resultCode,data);
+        GroupsFragment groupsFragment = (GroupsFragment)getSupportFragmentManager().getFragments().get(2);
+        groupsFragment.onActivityResult(requestCode,resultCode,data);
     }
 
     public static void start(Activity activity) {
