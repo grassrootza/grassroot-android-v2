@@ -188,7 +188,7 @@ interface GrassrootUserApi {
     @Multipart
     @POST("/v2/api/user/profile/image/change")
     fun uploadProfilePhoto(@Part file: MultipartBody.Part?): Observable<Response<RestResponse<String>>>
-    
+
     @POST("/v2/api/user/profile/data/update")
     fun updateProfileData(
             @Query("displayName") displayName: String,
