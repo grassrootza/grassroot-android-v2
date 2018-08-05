@@ -113,9 +113,9 @@ constructor(private val networkService: NetworkService, private val dbService: D
             if (currentMediaFileUid != null) {
                 alert!!.mediaFile = dbService.loadObjectByUid(MediaFile::class.java, currentMediaFileUid!!)
             }
-            disposableOnDetach(dbService.store<LiveWireAlert>(LiveWireAlert::class.java, alert!!).flatMapObservable { liveWireAlert1 -> networkService.uploadEntity(liveWireAlert1, false) }.flatMap { uploadResult ->
-                if (!TextUtils.isEmpty(uploadResult.getServerUid())) {
-                    alert!!.serverUid = uploadResult.getServerUid()
+            disposableOnDetach(dbService.store(LiveWireAlert::class.java, alert!!).flatMapObservable { liveWireAlert1 -> networkService.uploadEntity(liveWireAlert1, false) }.flatMap { uploadResult ->
+                if (!TextUtils.isEmpty(uploadResult.serverUid)) {
+                    alert!!.serverUid = uploadResult.serverUid
                 } else {
                     alert!!.isSynced = false
                 }
@@ -292,7 +292,7 @@ constructor(private val networkService: NetworkService, private val dbService: D
     interface CreateActionView : GrassrootView {
         fun ensureWriteExteralStoragePermission(): Observable<Boolean>
 
-        fun uploadSuccessfull(meeting: GrassrootEntityType)
+        fun uploadSuccessfull(type: GrassrootEntityType)
 
         fun closeScreen()
 

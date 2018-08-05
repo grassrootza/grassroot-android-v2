@@ -16,7 +16,6 @@ import javax.inject.Inject;
 import okhttp3.Interceptor;
 import okhttp3.Request;
 import okhttp3.Response;
-import okhttp3.internal.http.HttpMethod;
 import timber.log.Timber;
 import za.org.grassroot2.services.OfflineReceiver;
 import za.org.grassroot2.services.account.AuthConstants;
@@ -46,7 +45,7 @@ public final class AddTokenInterceptor implements Interceptor {
         Request.Builder requestBuilder = original.newBuilder();
         final String token = getToken();
         if (token != null) {
-            Timber.v("Adding header: " + token);
+            Timber.v("Adding header: %s", token);
             requestBuilder.addHeader("Authorization", "Bearer " + token);
         } else {
             EventBus.getDefault().postSticky(new TokenRefreshEvent());
@@ -62,7 +61,7 @@ public final class AddTokenInterceptor implements Interceptor {
             invalidateToken();
         } else if (response.isSuccessful()) {
             userPreference.setNoConnectionInfoDisplayed(false);
-            AlarmManagerHelper.cancelAlarmForBroadcastReceiver(context, OfflineReceiver.class);
+            AlarmManagerHelper.INSTANCE.cancelAlarmForBroadcastReceiver(context, OfflineReceiver.class);
         }
     }
 

@@ -19,6 +19,8 @@ import za.org.grassroot2.view.adapter.GroupsAdapter
 import javax.inject.Inject
 
 class GroupsFragment : GrassrootFragment(), GroupFragmentPresenter.GroupFragmentView {
+    override val layoutResourceId: Int
+        get() = R.layout.fragment_groups
 
     override fun stopRefreshing() {
         refreshLayout.isRefreshing = false
@@ -47,10 +49,6 @@ class GroupsFragment : GrassrootFragment(), GroupFragmentPresenter.GroupFragment
         presenter.onViewCreated()
     }
 
-    override fun getLayoutResourceId(): Int {
-        return R.layout.fragment_groups
-    }
-
     override fun onInject(activityComponent: ActivityComponent) {
         activityComponent.inject(this)
     }
@@ -64,7 +62,7 @@ class GroupsFragment : GrassrootFragment(), GroupFragmentPresenter.GroupFragment
         groupRecyclerView.visibility = View.VISIBLE
         emptyInfoContainer.visibility = View.GONE
         groupRecyclerView.layoutManager = LinearLayoutManager(activity)
-        groupsAdapter = GroupsAdapter(activity, groups)
+        groupsAdapter = GroupsAdapter(activity!!, groups)
         val footer = LayoutInflater.from(activity).inflate(R.layout.item_group_footer, null, false)
         groupsAdapter.addFooter(footer)
         groupRecyclerView.adapter = groupsAdapter

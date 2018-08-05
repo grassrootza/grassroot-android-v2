@@ -22,11 +22,10 @@ class RecordVideoActivity : GrassrootActivity(), RecordVideoPresenter.RecordVide
     @Inject lateinit var rxPermission : RxPermissions
     @Inject lateinit var presenter: RecordVideoPresenter
 
-    override fun onInject(component: ActivityComponent) {
-        component.inject(this)
-    }
+    override val layoutResourceId: Int
+        get(): Int = R.layout.activity_record_video
 
-    override fun getLayoutResourceId(): Int = R.layout.activity_record_video
+    override fun onInject(component: ActivityComponent) = component.inject(this)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

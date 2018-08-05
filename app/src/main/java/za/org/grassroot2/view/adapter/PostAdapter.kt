@@ -7,7 +7,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
-import com.jakewharton.rxbinding2.view.RxView
 import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.item_post.view.*
@@ -36,12 +35,6 @@ class PostAdapter @Inject constructor(private val context: Context, private var 
         holder.title.text = context.getHtml(R.string.post_title, item.userDisplayName)
         holder.subtitle.text = context.getHtml(R.string.home_quote_subtitle, item.caption)
         holder.lastModified.text = LastModifiedFormatter.lastSeen(context, item.creationTime)
-    }
-
-    private fun setupClick(view: View?, feedItem: HomeFeedItem) {
-        RxView.clicks(view!!)
-                .map { _ -> feedItem }
-                .subscribe(viewClickSubject)
     }
 
     override fun getItemCount(): Int = data.size

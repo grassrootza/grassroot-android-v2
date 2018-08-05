@@ -29,6 +29,8 @@ import za.org.grassroot2.view.activity.GroupDetailsActivity
 import javax.inject.Inject
 
 class AroundMeFragment : GrassrootFragment(), AroundMePresenter.AroundMeView, GoogleMap.InfoWindowAdapter {
+    override val layoutResourceId: Int
+        get() = R.layout.fragment_around_me
 
     @Inject internal lateinit var rxPermissions: Lazy<RxPermissions>
     @Inject internal lateinit var presenter: AroundMePresenter
@@ -39,10 +41,6 @@ class AroundMeFragment : GrassrootFragment(), AroundMePresenter.AroundMeView, Go
 
     override fun onInject(activityComponent: ActivityComponent) {
         get().inject(this)
-    }
-
-    override fun getLayoutResourceId(): Int {
-        return R.layout.fragment_around_me
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {

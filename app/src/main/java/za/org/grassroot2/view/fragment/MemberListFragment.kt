@@ -17,13 +17,11 @@ import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 class MemberListFragment : GrassrootFragment(), MemberListPresenter.MemberListFragmentView {
+    override val layoutResourceId: Int
+        get() = R.layout.fragment_member_list
 
     @Inject lateinit internal var presenter: MemberListPresenter
     private lateinit var membersAdapter: MembersAdapter
-
-    private var groupUid: String? = null
-
-    override fun getLayoutResourceId(): Int = R.layout.fragment_member_list
 
     override fun searchInputChanged(): Observable<String> =
             RxTextView.textChanges(searchInput).debounce(300, TimeUnit.MILLISECONDS).map { t -> t.toString() }
@@ -31,6 +29,8 @@ class MemberListFragment : GrassrootFragment(), MemberListPresenter.MemberListFr
     override fun filterData(searchQuery: String) {
         membersAdapter.filter.filter(searchQuery)
     }
+
+    override fun onInject(activityComponent: ActivityComponent) = activityComponent.inject(this)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -50,10 +50,6 @@ class MemberListFragment : GrassrootFragment(), MemberListPresenter.MemberListFr
         presenter.init(arguments!![GROUP_UID_EXTRA_FIELD] as String)
         presenter.attach(this)
         presenter.onViewCreated()
-    }
-
-    override fun onInject(activityComponent: ActivityComponent) {
-        activityComponent.inject(this)
     }
 
     override fun onDestroyView() {

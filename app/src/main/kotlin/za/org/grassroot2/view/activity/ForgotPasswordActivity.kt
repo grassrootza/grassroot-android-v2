@@ -18,27 +18,20 @@ import za.org.grassroot2.view.fragment.SuccessFragment
 import javax.inject.Inject
 
 class ForgotPasswordActivity : GrassrootActivity(), ForgottenPasswordView {
+    override val layoutResourceId: Int
+        get() = R.layout.activity_register
 
     private lateinit var phoneNumberFragment: SingleTextInputFragment
     private lateinit var passwordFragment: SingleTextInputFragment
     private lateinit var otpFragment: SingleTextInputFragment
     private lateinit var successFragment: SuccessFragment
 
-
     private var debugOtp = ""
     private var debugPassword = ""
 
-    @Inject
-    lateinit var presenter: ForgottenPasswordPresenter
+    @Inject lateinit var presenter: ForgottenPasswordPresenter
 
-    override fun onInject(component: ActivityComponent) {
-        component.inject(this)
-    }
-
-    override fun getLayoutResourceId(): Int {
-        return R.layout.activity_register
-    }
-
+    override fun onInject(component: ActivityComponent) = component.inject(this)
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
@@ -77,9 +70,9 @@ class ForgotPasswordActivity : GrassrootActivity(), ForgottenPasswordView {
 
 
         disposables.add(phoneNumberFragment.viewCreated().subscribe({ integer ->
-            disposables.add(phoneNumberFragment.textInputChanged().subscribe({ currentInput ->
+            disposables.add(phoneNumberFragment.textInputChanged().subscribe { currentInput ->
                 phoneNumberFragment.toggleNextDoneButton(PhoneNumberUtil.isPossibleNumber(currentInput))
-            }))
+            })
             phoneNumberFragment.toggleBackOtherButton(true)
             phoneNumberFragment.toggleNextDoneButton(false)
             phoneNumberFragment.setInputType(InputType.TYPE_CLASS_PHONE)

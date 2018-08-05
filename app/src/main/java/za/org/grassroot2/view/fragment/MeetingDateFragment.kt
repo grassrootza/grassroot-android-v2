@@ -20,12 +20,16 @@ import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 class MeetingDateFragment : GrassrootFragment(), MeetingDatePresenter.MeetingDateView {
+    override val layoutResourceId: Int
+        get() = R.layout.fragment_meeting_date
 
     @Inject lateinit var presenter: MeetingDatePresenter
     private val seletedDate = Calendar.getInstance()
 
     private val actionSubject = PublishSubject.create<Long>()
     private var listener: BackNavigationListener? = null
+
+    override fun onInject(activityComponent: ActivityComponent) = activityComponent.inject(this)
 
     override fun onAttach(context: Context?) {
         super.onAttach(context)
@@ -83,14 +87,6 @@ class MeetingDateFragment : GrassrootFragment(), MeetingDatePresenter.MeetingDat
 
     fun meetingDatePicked(): Observable<Long> {
         return actionSubject
-    }
-
-    override fun onInject(activityComponent: ActivityComponent) {
-        activityComponent.inject(this)
-    }
-
-    override fun getLayoutResourceId(): Int {
-        return R.layout.fragment_meeting_date
     }
 
     override fun dateInputConfirmed(): Observable<String> {

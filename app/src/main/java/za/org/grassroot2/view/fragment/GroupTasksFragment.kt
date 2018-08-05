@@ -23,6 +23,8 @@ import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 class GroupTasksFragment : GrassrootFragment(), GroupTasksPresenter.AllFragmentView {
+    override val layoutResourceId: Int
+        get() = R.layout.fragment_group_items
 
     private var oldAfter: Long = 0
 
@@ -42,8 +44,6 @@ class GroupTasksFragment : GrassrootFragment(), GroupTasksPresenter.AllFragmentV
         super.onDestroy()
         presenter.detach(this)
     }
-
-    override fun getLayoutResourceId(): Int = R.layout.fragment_group_items
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)

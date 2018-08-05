@@ -24,14 +24,14 @@ import java.util.*
 import kotlin.collections.LinkedHashMap
 
 class MultiOptionPickFragment : GrassrootFragment() {
+    override val layoutResourceId: Int
+        get() = R.layout.fragment_multi_option_pick
 
     private val actionSubject = PublishSubject.create<Int>()
     private var options: HashMap<Int, ActionOption>? = null
     private lateinit var recyclerView: RecyclerView
 
     override fun onInject(activityComponent: ActivityComponent) {}
-
-    override fun getLayoutResourceId(): Int  = R.layout.fragment_multi_option_pick
 
     fun clickAction(): Observable<Int> = actionSubject
 
@@ -44,7 +44,6 @@ class MultiOptionPickFragment : GrassrootFragment() {
     fun itemSelection(): PublishSubject<Int> {
         return actionSubject
     }
-
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val v = super.onCreateView(inflater, container, savedInstanceState)
@@ -79,14 +78,12 @@ class MultiOptionPickFragment : GrassrootFragment() {
 
     private fun initView() {
         Timber.d("Initialising MultiOption view")
-        (arguments!!.getSerializable(EXTRA_GROUP) as? Group).let {g ->
-           if(g != null){
-               removeViewsForNoGroup(g)
-           }
-        }
+        val g = arguments!!.getSerializable(EXTRA_GROUP) as? Group
+        g?.let { removeViewsForNoGroup(it) }
+
     }
 
-    private fun removeViewsForNoGroup(g:Group?){
+    private fun removeViewsForNoGroup(g:Group) {
         if (!GroupPermissionChecker.canCallMeeting(g)) {
             options!!.remove(R.id.call_meeting)
             Timber.d("Current user does not have callMeeting permissions")

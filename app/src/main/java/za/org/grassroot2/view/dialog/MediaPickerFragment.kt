@@ -21,13 +21,13 @@ import za.org.grassroot2.view.fragment.GrassrootFragment
 import java.util.*
 
 class MediaPickerFragment : GrassrootFragment() {
+    override val layoutResourceId: Int
+        get() = R.layout.fragment_pick_media
 
     private val actionSubject = PublishSubject.create<Int>()
     private var options: HashMap<Int, ActionOption>? = null
 
     override fun onInject(activityComponent: ActivityComponent) {}
-
-    override fun getLayoutResourceId(): Int = R.layout.fragment_pick_media
 
     fun clickAction(): Observable<Int> = actionSubject
 
