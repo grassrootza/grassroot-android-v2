@@ -181,6 +181,11 @@ class RegisterActivity : GrassrootActivity(), RegistrationView {
 
     }
 
+    private fun switchToWelcome(){
+        val welcome = Intent(this,WelcomeActivity::class.java)
+        startActivity(welcome)
+    }
+
 
     @Subscribe
     fun singleInput(e: SingleTextInputFragment.SingleInputTextEvent) {
@@ -201,11 +206,16 @@ class RegisterActivity : GrassrootActivity(), RegistrationView {
                     this.phoneNumberFragment -> swichToStep(userNameFragment)
                     this.passwordFragment -> swichToStep(phoneNumberFragment)
                     this.otpFragment -> swichToStep(phoneNumberFragment)
+                    this.userNameFragment -> switchToWelcome()
                 }
             }
         }
     }
 
-
+    override fun onBackPressed() {
+        super.onBackPressed()
+        val backToWelcome = Intent(this,WelcomeActivity::class.java)
+        startActivity(backToWelcome)
+    }
 
 }

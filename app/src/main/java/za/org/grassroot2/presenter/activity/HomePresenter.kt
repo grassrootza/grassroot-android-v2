@@ -109,14 +109,20 @@ constructor(private val locationManager: LocationManager, private val dbService:
         var currentTask: PendingResponseDTO = PendingResponseDTO()
         getTasks()
         Timber.d("About to run network request for pending todos")
-        disposableOnDetach(networkService.fetchPendingResponses()
+        /*disposableOnDetach(networkService.fetchPendingResponses()
                 .subscribeOn(io()).observeOn(main()).subscribe({ task ->
                     currentTask = task
-                    view.displayAlert(currentTask)
-                    Timber.d("Contents of task are %s", task.toString())
-                }, { t -> t.printStackTrace() }))
+                    if (task.hasPendingResponse != false) {
+                        Timber.d("Contents of task are %s", task.toString())
+                        view.closeProgressBar()
+                        view.displayAlert(currentTask)
+                    } else {
+                        view.closeProgressBar()
+                        Timber.e("No pending task found. MOving on..")
+                    }
+                }, { t -> t.printStackTrace() }))*/
+        view.closeProgressBar()
         Timber.d("Network request sent?")
-        //view.displayAlert(currentTask)
     }
 
     private fun getTasks() {

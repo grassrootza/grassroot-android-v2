@@ -6,20 +6,26 @@ import android.util.SparseBooleanArray
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Filter
+import android.widget.Filterable
 import android.widget.TextView
-import butterknife.BindView
-import butterknife.ButterKnife
 import kotlinx.android.synthetic.main.item_contact.view.*
 import za.org.grassroot2.R
 import za.org.grassroot2.model.contact.Contact
 import java.util.*
 
-class ContactsAdapter(private val context: Context, private var data: List<Contact>?) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class ContactsAdapter(private val context: Context, private var data: List<Contact>?) : RecyclerView.Adapter<RecyclerView.ViewHolder>(), Filterable {
 
+    private var contactListFiltered: List<Contact>? = null
     private val selectedItems = SparseBooleanArray()
+
+    init {
+        this.contactListFiltered = data
+    }
 
     fun update(data: List<Contact>) {
         this.data = data
+        this.contactListFiltered = data
         notifyDataSetChanged()
     }
 
@@ -40,16 +46,45 @@ class ContactsAdapter(private val context: Context, private var data: List<Conta
         return result
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder =
-            ContactViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.item_contact, parent, false))
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_contact, parent, false)
+        return ContactViewHolder(view)
+    }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        val item = data!![position]
+        val item = contactListFiltered!![position]
         (holder as ContactViewHolder).bind(item, position)
     }
 
     override fun getItemCount(): Int {
-        return data!!.size
+        return contactListFiltered!!.size
+    }
+
+    override fun getFilter(): Filter {
+        return object : Filter() {
+            override fun performFiltering(charSequence: CharSequence): Filter.FilterResults {
+                val charString = charSequence.toString()
+                if (charString.isEmpty()) {
+                    contactListFiltered = data
+                } else {
+                    val filteredList = ArrayList<Contact>()
+                    for (contact in data!!) {
+                        if (contact.displayName.toLowerCase().contains(charString.toLowerCase())) {
+                            filteredList.add(contact)
+                        }
+                    }
+                    contactListFiltered = filteredList
+                }
+                val filterResults = Filter.FilterResults()
+                filterResults.values = contactListFiltered
+                return filterResults
+            }
+
+            override fun publishResults(constraint: CharSequence, results: Filter.FilterResults) {
+                contactListFiltered = results.values as ArrayList<Contact>
+                notifyDataSetChanged()
+            }
+        }
     }
 
     internal inner class ContactViewHolder(view: View) : RecyclerView.ViewHolder(view) {

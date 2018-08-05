@@ -50,10 +50,9 @@ class ApiModule {
     }
 
     @Provides
-    internal fun provideNetworkService(userDetailsService: UserDetailsService,
-                                       grassrootUserApi: GrassrootUserApi,
+    internal fun provideNetworkService(grassrootUserApi: GrassrootUserApi,
                                        realmService: DatabaseService): NetworkService {
-        return NetworkServiceImpl(userDetailsService, grassrootUserApi, realmService)
+        return NetworkServiceImpl(grassrootUserApi, realmService)
     }
 
 }

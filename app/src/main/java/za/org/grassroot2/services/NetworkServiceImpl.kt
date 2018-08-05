@@ -34,22 +34,14 @@ import javax.inject.Inject
  */
 
 class NetworkServiceImpl @Inject
-constructor(private val userDetailsService: UserDetailsService,
-            private val grassrootUserApi: GrassrootUserApi,
+constructor(private val grassrootUserApi: GrassrootUserApi,
             private val databaseService: DatabaseService) : NetworkService {
-    private var currentUserUid: String? = null // given frequency of calling/using, best to stash
-
-    init {
-        currentUserUid = userDetailsService.currentUserUid
-    }
 
     override fun uploadEntity(entityForUpload: EntityForUpload, forceEvenIfPriorUploaded: Boolean): Observable<UploadResult> {
-        currentUserUid = userDetailsService.currentUserUid
         return routeUpload(entityForUpload, forceEvenIfPriorUploaded)
     }
 
     override fun <E : EntityForDownload> downloadAllChangedOrNewEntities(entityType: GrassrootEntityType, forceFullRefresh: Boolean): Observable<List<E>> {
-        Timber.e("user UID = ? %s", currentUserUid!!)
         when (entityType) {
             GrassrootEntityType.GROUP -> return downloadAllChangedOrNewGroups()
                     .flatMap { groups -> Observable.just(groups as List<E>) }
@@ -101,7 +93,7 @@ constructor(private val userDetailsService: UserDetailsService,
         return Observable.create { e: ObservableEmitter<Response<Void>> ->
             object : UploadResource<List<MemberRequest>>(contacts, e) {
                 override fun uploadRemote(localObject: List<MemberRequest>): Observable<Response<Void>> =
-                        grassrootUserApi.addMembersToGroup(currentUserUid!!, groupId, localObject)
+                        grassrootUserApi.addMembersToGroup(groupId, localObject)
 
                 override fun uploadFailed(localObject: List<MemberRequest>) {
                     databaseService.storeMembersInvites(localObject)
@@ -150,7 +142,7 @@ constructor(private val userDetailsService: UserDetailsService,
     }
 
     override fun getTasksForGroup(groupId: String): Observable<List<Task>> {
-        return grassrootUserApi.fetchGroupTasksMinimumInfo(currentUserUid!!, groupId, databaseService.getTasksLastChangedTimestamp(groupId)).flatMap { listRestResponse ->
+        return grassrootUserApi.fetchGroupTasksMinimumInfo(groupId, databaseService.getTasksLastChangedTimestamp(groupId)).flatMap { listRestResponse ->
             if (true) {
                 val uids = HashMap<String, String>()
                 for (t in listRestResponse) {
@@ -290,7 +282,6 @@ constructor(private val userDetailsService: UserDetailsService,
 
     private fun uploadLiveWireAlert(alert: LiveWireAlert): Observable<UploadResult> {
         return grassrootUserApi.createLiveWireAlert(
-                currentUserUid!!,
                 alert.headline,
                 alert.description,
                 alert.alertType,
@@ -333,7 +324,7 @@ constructor(private val userDetailsService: UserDetailsService,
     }
 
     override fun getAlertsAround(longitude: Double, latitude: Double, radius: Int): Observable<List<LiveWireAlert>> {
-        return grassrootUserApi.getAlertsAround(currentUserUid!!, longitude, latitude, radius)
+        return grassrootUserApi.getAlertsAround(longitude, latitude, radius)
     }
 
     override fun getAllAround(longitude: Double, latitude: Double, radius: Int): Flowable<Resource<List<AroundEntity>>> {
@@ -344,7 +335,7 @@ constructor(private val userDetailsService: UserDetailsService,
                 }
 
                 override fun remote(): Observable<List<AroundEntity>> =
-                        grassrootUserApi.getAllAround(currentUserUid!!, longitude, latitude, radius, "BOTH")
+                        grassrootUserApi.getAllAround(longitude, latitude, radius, "BOTH")
 
                 override fun saveResult(data: List<AroundEntity>) {
                     databaseService.deleteAll(AroundEntity::class.java)
@@ -359,7 +350,8 @@ constructor(private val userDetailsService: UserDetailsService,
 
     }
 
-    override fun respondToMeeting(meetingUid: String, response: String): Observable<Response<Void>> = grassrootUserApi.respondToMeeting(currentUserUid!!, meetingUid, response)
+    override fun respondToMeeting(meetingUid: String, response: String): Observable<Response<Void>> =
+            grassrootUserApi.respondToMeeting(meetingUid, response)
 
     override fun respondToVote(voteUid: String, response: String): Observable<Vote> {
         return grassrootUserApi.respondToVote(voteUid, response).flatMap { serverResponse ->
@@ -391,7 +383,6 @@ constructor(private val userDetailsService: UserDetailsService,
 
     override fun uploadMeetingPost(meetingUid: String, description: String, mediaFile: MediaFile?): Observable<Response<Void>> {
         return grassrootUserApi.uploadPost(
-                currentUserUid!!,
                 "MEETING",
                 meetingUid,
                 description,
@@ -406,7 +397,6 @@ constructor(private val userDetailsService: UserDetailsService,
         mediaFile.initUploading()
         databaseService.storeObject(MediaFile::class.java, mediaFile)
         return grassrootUserApi.sendMediaFile(
-                currentUserUid!!,
                 mediaFile.uid,
                 mediaFile.mediaFunction,
                 mediaFile.mimeType,
@@ -430,7 +420,7 @@ constructor(private val userDetailsService: UserDetailsService,
                 override fun local(): Maybe<List<Post>> = databaseService.getMeetings(taskUid)
 
                 override fun remote(): Observable<List<Post>> =
-                        grassrootUserApi.getPostsForTask(currentUserUid!!, "MEETING", taskUid)
+                        grassrootUserApi.getPostsForTask("MEETING", taskUid)
 
                 override fun saveResult(data: List<Post>) {
                     val meeting = databaseService.loadObjectByUid(Meeting::class.javaObjectType, taskUid)

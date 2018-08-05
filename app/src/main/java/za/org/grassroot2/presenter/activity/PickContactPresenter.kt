@@ -40,7 +40,7 @@ constructor(private val contactHelper: ContactHelper) : BasePresenter<PickContac
     }
 
     interface PickContactView : GrassrootView {
-        fun render(group: List<Contact>)
+        fun render(contacts: List<Contact>)
         fun emptyData()
     }
 

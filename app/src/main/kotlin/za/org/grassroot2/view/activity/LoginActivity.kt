@@ -14,6 +14,7 @@ import za.org.grassroot2.dagger.activity.ActivityComponent
 import za.org.grassroot2.presenter.LoginPresenter
 import za.org.grassroot2.services.account.AuthConstants
 import za.org.grassroot2.view.LoginView
+import za.org.grassroot2.view.fragment.HomeFragment
 import javax.inject.Inject
 
 class LoginActivity : GrassrootActivity(), LoginView {
@@ -77,5 +78,11 @@ class LoginActivity : GrassrootActivity(), LoginView {
         super.onDestroy()
         presenter.detach()
         phoneNumberChangeObserver.dispose()
+    }
+
+    override fun onBackPressed() {
+        super.onBackPressed()
+        val back = Intent(this,WelcomeActivity::class.java)
+        startActivity(back)
     }
 }

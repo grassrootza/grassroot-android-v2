@@ -1,11 +1,8 @@
 package za.org.grassroot2;
 
-import android.app.Application;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
-import android.net.ConnectivityManager;
 import android.support.multidex.MultiDex;
 import android.support.multidex.MultiDexApplication;
 
@@ -55,12 +52,12 @@ public class GrassrootApplication extends MultiDexApplication {
         } else {
             Fabric.with(this, new Crashlytics());
         }
-        registerReceiver(connectivityChangeReceiver, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
+        //registerReceiver(connectivityChangeReceiver, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
     }
 
     @Override
     public void onTerminate() {
-        unregisterReceiver(connectivityChangeReceiver);
+        //unregisterReceiver(connectivityChangeReceiver);
         super.onTerminate();
     }
 

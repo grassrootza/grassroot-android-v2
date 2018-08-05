@@ -175,7 +175,7 @@ abstract class GrassrootActivity : AppCompatActivity(), GrassrootView {
     }
 
     override fun showSuccessDialog(textRes: Int, okayListener: View.OnClickListener) {
-        val dialog = GenericSuccessDialog.newInstance(textRes, okayListener)
+        val dialog = GenericSuccessDialog.newInstance(textRes, null, okayListener)
         dialog.show(supportFragmentManager, DIALOG_TAG)
     }
 

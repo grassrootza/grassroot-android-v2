@@ -25,7 +25,10 @@ internal constructor(private val databaseService: DatabaseService) : BaseFragmen
         val data = ArrayList<SelectableItem>()
         data.addAll(databaseService.loadGroupsSorted())
         view.renderResults(data)
-        disposableOnDetach(view.searchChanged().debounce(500, TimeUnit.MILLISECONDS).subscribeOn(io()).flatMap { s -> Observable.just(databaseService.loadObjectsByName(Group::class.java, s)) }.observeOn(main()).subscribe({ groups -> view.renderResults(groups) }, { it.printStackTrace() }))
+        disposableOnDetach(view.searchChanged().debounce(500, TimeUnit.MILLISECONDS).subscribeOn(io())
+                .flatMap { s -> Observable.just(databaseService.loadObjectsByName(Group::class.java, s)) }
+                .observeOn(main())
+                .subscribe({ groups -> view.renderResults(groups) }, { it.printStackTrace() }))
         disposableOnDetach(view.groupClick().subscribe({ s -> view.groupSelected(s) }, { it.printStackTrace() }))
     }
 
