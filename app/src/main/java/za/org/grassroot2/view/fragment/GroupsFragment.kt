@@ -3,27 +3,18 @@ package za.org.grassroot2.view.fragment
 import android.Manifest
 import android.app.Activity
 import android.content.Intent
-import android.graphics.Bitmap
-import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
-import android.support.v4.graphics.drawable.RoundedBitmapDrawable
-import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.View
-import com.makeramen.roundedimageview.RoundedDrawable
-import com.squareup.picasso.Callback
-import com.squareup.picasso.Picasso
 import com.tbruyelle.rxpermissions2.RxPermissions
 import io.reactivex.Observable
 import kotlinx.android.synthetic.main.fragment_groups.*
-import kotlinx.android.synthetic.main.item_group.*
-import timber.log.Timber
 import za.org.grassroot2.R
 import za.org.grassroot2.dagger.activity.ActivityComponent
 import za.org.grassroot2.model.Group
@@ -32,7 +23,6 @@ import za.org.grassroot2.view.activity.CreateActionActivity
 import za.org.grassroot2.view.activity.GroupDetailsActivity
 import za.org.grassroot2.view.adapter.GroupsAdapter
 import za.org.grassroot2.view.dialog.SelectImageDialog
-import java.lang.Exception
 import javax.inject.Inject
 
 class GroupsFragment : GrassrootFragment(), GroupFragmentPresenter.GroupFragmentView,SelectImageDialog.SelectImageDialogEvents {
@@ -47,6 +37,8 @@ class GroupsFragment : GrassrootFragment(), GroupFragmentPresenter.GroupFragment
 
     private val REQUEST_TAKE_PHOTO = 1
     private val REQUEST_GALLERY = 2
+
+    private lateinit var selectImageDialog:SelectImageDialog
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -69,25 +61,8 @@ class GroupsFragment : GrassrootFragment(), GroupFragmentPresenter.GroupFragment
     }
 
     override fun setImage(imageUrl: String?) {
-        var url = imageUrl
-        Picasso.get()
-                .load(url)
-                .resizeDimen(R.dimen.profile_photo_width, R.dimen.profile_photo_height)
-                .centerCrop()
-                .into(image,object : Callback {
-                    override fun onSuccess() {
-                        val imageBitmap = (image.drawable as RoundedDrawable).toBitmap()
-                        val imageDrawable: RoundedBitmapDrawable = RoundedBitmapDrawableFactory.create(resources, imageBitmap)
-                        imageDrawable.isCircular = true
-                        imageDrawable.cornerRadius = Math.max(imageBitmap.width, imageBitmap.height) / 2.0f
-                        //image.setImageBitmap(imageBitmap)
-                        image.setImageDrawable(imageDrawable)
-                    }
-
-                    override fun onError(e: Exception?) {
-
-                    }
-                })
+        groupsAdapter.setImage(imageUrl,presenter.getUid())
+        selectImageDialog.dismiss()
     }
 
     override fun getLayoutResourceId(): Int {
@@ -157,9 +132,9 @@ class GroupsFragment : GrassrootFragment(), GroupFragmentPresenter.GroupFragment
     }
 
     override fun openSelectImageDialog() {
-        val dialog:SelectImageDialog = SelectImageDialog.newInstance(R.string.select_image,true)
-        dialog.setTargetFragment(this,0)
-        dialog.show(activity?.supportFragmentManager,"DIALOG_TAG")
+        selectImageDialog = SelectImageDialog.newInstance(R.string.select_image,true)
+        selectImageDialog.setTargetFragment(this,0)
+        selectImageDialog.show(activity?.supportFragmentManager,"DIALOG_TAG")
     }
 
     override fun ensureWriteExteralStoragePermission(): Observable<Boolean> {

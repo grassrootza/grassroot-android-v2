@@ -90,6 +90,15 @@ public class GroupsAdapter extends FooterEnabledAdapter<Group> {
         }
     }
 
+    public void setImage(String imageUrl,String groupUid){
+        for(Group group:items){
+            if(group.getUid().equals(groupUid)){
+                group.setProfileImageUrl(imageUrl);
+                notifyItemChanged(items.indexOf(group));
+            }
+        }
+    }
+
     static class GroupViewHolder extends RecyclerView.ViewHolder {
 
         @BindView(R.id.root)         View     root;
