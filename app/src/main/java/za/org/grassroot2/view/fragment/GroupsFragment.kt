@@ -61,7 +61,7 @@ class GroupsFragment : GrassrootFragment(), GroupFragmentPresenter.GroupFragment
     }
 
     override fun setImage(imageUrl: String?) {
-        groupsAdapter.setImage(imageUrl,presenter.getUid())
+        groupsAdapter.setImage(imageUrl!!,presenter.getUid())
         selectImageDialog.dismiss()
     }
 
@@ -82,7 +82,7 @@ class GroupsFragment : GrassrootFragment(), GroupFragmentPresenter.GroupFragment
         groupRecyclerView.visibility = View.VISIBLE
         emptyInfoContainer.visibility = View.GONE
         groupRecyclerView.layoutManager = LinearLayoutManager(activity)
-        groupsAdapter = GroupsAdapter(activity, groups)
+        groupsAdapter = GroupsAdapter(activity!!.applicationContext, groups)
         val footer = LayoutInflater.from(activity).inflate(R.layout.item_group_footer, null, false)
         groupsAdapter.addFooter(footer)
         groupRecyclerView.adapter = groupsAdapter

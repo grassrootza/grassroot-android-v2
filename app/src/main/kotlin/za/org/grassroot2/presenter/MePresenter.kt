@@ -146,7 +146,7 @@ class MePresenter(private val dbService: DatabaseService,
         val fileMultipart = getFileMultipart(mediaFile, "photo")
 
         disposableOnDetach(
-                grassrootUserApi.uploadProfilePhoto(fileMultipart)
+                grassrootUserApi.uploadProfilePhoto(fileMultipart!!)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(

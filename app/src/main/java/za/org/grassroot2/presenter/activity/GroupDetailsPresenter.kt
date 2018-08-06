@@ -69,7 +69,7 @@ constructor(private val databaseService: DatabaseService,
 
     fun inviteContacts(contacts: List<Contact>?) {
         view.showProgressBar()
-        disposableOnDetach(networkService.inviteContactsToGroup(groupUid!!, RequestMapper.map(groupUid, contacts)).observeOn(AndroidSchedulers.mainThread()).subscribeOn(Schedulers.io()).subscribe({ voidResponse ->
+        disposableOnDetach(networkService.inviteContactsToGroup(groupUid!!, RequestMapper.map(groupUid!!, contacts)).observeOn(AndroidSchedulers.mainThread()).subscribeOn(Schedulers.io()).subscribe({ voidResponse ->
             view.closeProgressBar()
             if (voidResponse.isSuccessful) {
             } else {
