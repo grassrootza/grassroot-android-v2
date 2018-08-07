@@ -21,6 +21,7 @@ import com.squareup.picasso.Picasso
 import com.tbruyelle.rxpermissions2.RxPermissions
 import io.reactivex.Observable
 import kotlinx.android.synthetic.main.activity_group_details.*
+import timber.log.Timber
 import za.org.grassroot2.GroupSettingsActivity
 import za.org.grassroot2.R
 import za.org.grassroot2.dagger.activity.ActivityComponent
@@ -48,8 +49,8 @@ class GroupDetailsActivity : GrassrootActivity(), GroupDetailsPresenter.GroupDet
     @Inject lateinit var groupFragmentPresenter:GroupFragmentPresenter
     @Inject lateinit var rxPermission: RxPermissions
 
-    private val REQUEST_TAKE_PHOTO = 1
-    private val REQUEST_GALLERY = 2
+    private val REQUEST_TAKE_PHOTO = 2
+    private val REQUEST_GALLERY = 3
     private var groupImageUrl:String = ""
 
     private val DIALOG_CAMERA = "Camera"
@@ -71,13 +72,15 @@ class GroupDetailsActivity : GrassrootActivity(), GroupDetailsPresenter.GroupDet
         about.setOnClickListener { launchGroupSettings() }
 
         addPhoto.setOnClickListener(View.OnClickListener {
-            if(ContextCompat.checkSelfPermission(this,Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED){
-                ActivityCompat.requestPermissions(this,
-                        arrayOf(Manifest.permission.CAMERA),3)
-            }else{
-                //uploadImage()
-                SelectImageDialog.newInstance(R.string.select_image,false).show(supportFragmentManager, DIALOG_TAG)
-            }
+            rxPermission.request(Manifest.permission.CAMERA).subscribe({
+                if(it){
+                    SelectImageDialog.newInstance(R.string.select_image,false).show(supportFragmentManager, DIALOG_TAG)
+                }else{
+                    ActivityCompat.requestPermissions(this,arrayOf(Manifest.permission.CAMERA),3)
+                }
+            },{
+                Timber.e(it)
+            })
         })
     }
 

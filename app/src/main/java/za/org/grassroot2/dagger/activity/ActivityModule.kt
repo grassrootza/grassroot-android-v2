@@ -79,8 +79,8 @@ class ActivityModule(private val act: AppCompatActivity) {
 
     @Provides
     @PerActivity
-    internal fun provideGroupDetailsPresenter(dbService: DatabaseService, networkService: NetworkService, mediaService: MediaService, grassrootUserApi: GrassrootUserApi): GroupDetailsPresenter {
-        return GroupDetailsPresenter(dbService, networkService, mediaService, grassrootUserApi)
+    internal fun provideGroupDetailsPresenter(dbService: DatabaseService, networkService: NetworkService, mediaService: MediaService): GroupDetailsPresenter {
+        return GroupDetailsPresenter(dbService, networkService, mediaService)
 
     }
 

@@ -435,6 +435,12 @@ constructor(private val grassrootUserApi: GrassrootUserApi,
 
     }
 
+    override fun uploadGroupProfilePhoto(groupUid: String, multipartBody: MultipartBody.Part?):Observable<Response<MediaUploadResult>> {
+        return grassrootUserApi.uploadGroupProfilePhoto(groupUid,multipartBody)
+                .doOnError { Timber.e(it) }
+    }
+
+
     private fun getFileFromPath(mediaFile: MediaFile, paramName: String): MultipartBody.Part? {
         return try {
             Timber.i("getting image from path : %s", mediaFile.absolutePath)

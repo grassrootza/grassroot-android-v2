@@ -21,17 +21,14 @@ import za.org.grassroot2.model.contact.Contact
 import za.org.grassroot2.model.util.GroupPermissionChecker
 import za.org.grassroot2.services.MediaService
 import za.org.grassroot2.services.NetworkService
-import za.org.grassroot2.services.rest.GrassrootUserApi
 import za.org.grassroot2.view.GrassrootView
-import za.org.grassroot2.view.dialog.SelectImageDialog
 import java.io.File
 
 
 class GroupDetailsPresenter @Inject
 constructor(private val databaseService: DatabaseService,
             private val networkService: NetworkService,
-            private val mediaService: MediaService,
-            private val grassrootUserApi: GrassrootUserApi) : BasePresenter<GroupDetailsPresenter.GroupDetailsView>() {
+            private val mediaService: MediaService) : BasePresenter<GroupDetailsPresenter.GroupDetailsView>() {
 
     private var groupUid: String? = null
     private var currentMediaFileUid: String? = null
@@ -124,7 +121,7 @@ constructor(private val databaseService: DatabaseService,
         val fileMultipart = getFileMultipart(mediaFile, "image")
 
         disposableOnDetach(
-                grassrootUserApi.uploadGroupProfilePhoto(groupUid,fileMultipart)
+                networkService.uploadGroupProfilePhoto(groupUid!!,fileMultipart)
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(

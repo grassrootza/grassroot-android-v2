@@ -409,11 +409,15 @@ class CreateActionActivity : GrassrootActivity(), BackNavigationListener, Create
         disposables.add(mediaPickerFragment.clickAction().subscribe { integer ->
             when (integer) {
                 R.id.photo -> {
-                    if(ContextCompat.checkSelfPermission(this,Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED){
-                        ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.CAMERA), REQUEST_TAKE_PHOTO)
-                    }else {
-                        presenter.takePhoto()
-                    }
+                    rxPermission.request(Manifest.permission.CAMERA).subscribe({
+                        if(it){
+                            presenter.takePhoto()
+                        }else{
+                            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.CAMERA), REQUEST_TAKE_PHOTO)
+                        }
+                    },{
+                        Timber.e(it)
+                    })
                 }
                 R.id.video -> {
                     val takeVideoIntent = Intent(MediaStore.ACTION_VIDEO_CAPTURE)

@@ -2,6 +2,7 @@ package za.org.grassroot2.services
 
 import io.reactivex.Flowable
 import io.reactivex.Observable
+import okhttp3.MultipartBody
 import retrofit2.Response
 import za.org.grassroot2.model.*
 import za.org.grassroot2.model.alert.LiveWireAlert
@@ -78,4 +79,6 @@ interface NetworkService {
     fun createGroup(group: Group): Observable<Resource<Group>>
 
     //fun getTodoPosts(taskUid: String): Flowable<Resource<List<Posts>>>
+
+    fun uploadGroupProfilePhoto(groupUid:String, multipartBody: MultipartBody.Part?): Observable<Response<MediaUploadResult>>
 }

@@ -73,7 +73,7 @@ constructor(private val accountManager: AccountManager, private val databaseServ
     override fun storeUserDetails(userUid: String,
                                   userPhone: String,
                                   userDisplayName: String,
-                                  userEmailAddress: String,
+                                  userEmailAddress: String?,
                                   userLanguageCode: String,
                                   userSystemRole: String?,
                                   userToken: String): Single<UserProfile> {

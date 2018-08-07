@@ -7,14 +7,13 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
-import butterknife.BindView
-import butterknife.ButterKnife
 
 import com.jakewharton.rxbinding2.view.RxView
 import com.squareup.picasso.Picasso
 
 import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
+import kotlinx.android.synthetic.main.item_group.view.*
 import za.org.grassroot2.R
 import za.org.grassroot2.model.Group
 import za.org.grassroot2.util.LastModifiedFormatter
@@ -51,9 +50,9 @@ class GroupsAdapter(private val context: Context, data: List<Group>) : FooterEna
             holder.letter!!.text = item?.name.substring(0, 1)
             holder.letter!!.visibility = View.VISIBLE
 
-            if (item.profileImageUrl != null) {
+            item.profileImageUrl?.let {
                 Picasso.get()
-                        .load(item.profileImageUrl)
+                        .load(it)
                         .resizeDimen(R.dimen.profile_photo_width, R.dimen.profile_photo_height)
                         .centerCrop()
                         .into(holder.image)
@@ -81,38 +80,19 @@ class GroupsAdapter(private val context: Context, data: List<Group>) : FooterEna
 
     internal class GroupViewHolder constructor(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
-        @JvmField
-        @BindView(R.id.root)
-        var root: View? = null
+        var root: View = itemView.root
 
-        @JvmField
-        @BindView(R.id.letter)
-        var letter: TextView? = null
+        var letter: TextView = itemView.letter
 
-        @JvmField
-        @BindView(R.id.name)
-        var name: TextView? = null
+        var name: TextView = itemView.name
 
-        @JvmField
-        @BindView(R.id.organiser)
-        var organiser: TextView? = null
+        var organiser: TextView = itemView.organiser
 
-        @JvmField
-        @BindView(R.id.count)
-        var count: TextView? = null
+        var count: TextView = itemView.count
 
-        @JvmField
-        @BindView(R.id.lastModified)
-        var lastModified: TextView? = null
+        var lastModified: TextView = itemView.lastModified
 
-        @JvmField
-        @BindView(R.id.image)
-        var image: ImageView? = null
-
-        init {
-            ButterKnife.bind(this, itemView)
-        }
-
+        var image: ImageView = itemView.image
     }
 
 }
