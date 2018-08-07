@@ -1,25 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@drawable/white_rounded"
     android:padding="24dp">
 
     <ImageView
-        android:id="@+id/vote_back_nav"
+        android:id="@+id/back"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="33dp"
         android:layout_marginTop="8dp"
-        app:layout_constraintBottom_toTopOf="@+id/add_vote_options_input_container"
+        app:layout_constraintBottom_toTopOf="@+id/inputContainer"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/ic_arrow_left_green_24dp" />
 
     <TextView
-        android:id="@+id/vote_options_header"
+        android:id="@+id/title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="30dp"
@@ -29,26 +28,26 @@
         android:textColor="@color/default_font_color"
         android:textSize="20sp"
         android:textStyle="normal"
-        app:layout_constraintBottom_toTopOf="@+id/add_vote_options_input_container"
+        app:layout_constraintBottom_toTopOf="@+id/inputContainer"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <android.support.design.widget.TextInputLayout
-        android:id="@+id/add_vote_options_input_container"
+        android:id="@+id/inputContainer"
         android:layout_width="150dp"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginRight="8dp"
         android:textColorHint="@color/colorPrimary"
-        app:layout_constraintBottom_toTopOf="@+id/vote_options_ist_view"
-        app:layout_constraintEnd_toStartOf="@+id/add_vote_response_button"
+        app:layout_constraintBottom_toTopOf="@+id/listView"
+        app:layout_constraintEnd_toStartOf="@+id/add"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent">
 
         <android.support.design.widget.TextInputEditText
-            android:id="@+id/vote_input"
+            android:id="@+id/input"
             style="@style/StandardInputField"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
@@ -64,7 +63,7 @@
         app:layout_constraintStart_toStartOf="parent">
 
         <Button
-            android:id="@+id/add_vote_option_cancel"
+            android:id="@+id/cancel"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_margin="8dp"
@@ -75,7 +74,7 @@
             android:textColor="@color/colorPrimary" />
 
         <Button
-            android:id="@+id/add_vote_option_next"
+            android:id="@+id/next"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_margin="8dp"
@@ -87,7 +86,7 @@
     </LinearLayout>
 
     <Button
-        android:id="@+id/add_vote_response_button"
+        android:id="@+id/add"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
@@ -95,11 +94,11 @@
         android:layout_marginRight="8dp"
         android:text="Add"
         android:layout_weight="1"
-        app:layout_constraintBottom_toTopOf="@+id/vote_options_ist_view"
+        app:layout_constraintBottom_toTopOf="@+id/listView"
         app:layout_constraintEnd_toEndOf="parent" />
 
     <ListView
-        android:id="@+id/vote_options_ist_view"
+        android:id="@+id/listView"
         android:layout_width="match_parent"
         android:layout_height="57dp"
         android:layout_marginBottom="8dp"

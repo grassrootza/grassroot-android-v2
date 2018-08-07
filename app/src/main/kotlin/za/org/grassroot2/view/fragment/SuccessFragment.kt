@@ -11,7 +11,8 @@ import za.org.grassroot2.R
 import za.org.grassroot2.dagger.activity.ActivityComponent
 
 class SuccessFragment : GrassrootFragment() {
-
+    override val layoutResourceId: Int
+        get() = R.layout.fragment_me
 
     override fun onInject(activityComponent: ActivityComponent) {}
 
@@ -41,12 +42,6 @@ class SuccessFragment : GrassrootFragment() {
                 { it.printStackTrace() }))
 
     }
-
-
-    override fun getLayoutResourceId(): Int {
-        return R.layout.fragment_success
-    }
-
 
     fun setText(titleText: String, subtitleText: String, buttonText: String) {
         this.titleText = titleText

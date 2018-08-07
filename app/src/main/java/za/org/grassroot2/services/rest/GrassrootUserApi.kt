@@ -5,25 +5,16 @@ import io.reactivex.Observable
 import okhttp3.MultipartBody
 import okhttp3.ResponseBody
 import retrofit2.Response
-import retrofit2.http.Body
-import retrofit2.http.GET
-import retrofit2.http.Multipart
-import retrofit2.http.POST
-import retrofit2.http.Part
-import retrofit2.http.Path
-import retrofit2.http.Query
-import za.org.grassroot2.model.AroundEntity
-import za.org.grassroot2.model.Group
-import za.org.grassroot2.model.MediaUploadResult
-import za.org.grassroot2.model.Post
-import za.org.grassroot2.model.TokenResponse
+
+import retrofit2.http.*
+import za.org.grassroot2.model.*
 import za.org.grassroot2.model.alert.LiveWireAlert
 import za.org.grassroot2.model.language.NluResponse
 import za.org.grassroot2.model.request.MemberRequest
 import za.org.grassroot2.model.task.PendingResponseDTO
 import za.org.grassroot2.model.task.Task
-import za.org.grassroot2.model.task.Vote
 import za.org.grassroot2.model.task.Todo
+import za.org.grassroot2.model.task.Vote
 
 interface GrassrootUserApi {
 
@@ -39,17 +30,16 @@ interface GrassrootUserApi {
 
     // Send a media file to the server for storage
     @Multipart
-    @POST("/v2/api/media/store/{userUid}")
-    fun sendMediaFile(@Path("userUid") userUid: String,
-                      @Query("imageKey") fileUid: String,
+    @POST("/v2/api/media/store")
+    fun sendMediaFile(@Query("imageKey") fileUid: String,
                       @Query("mediaFunction") function: String,
                       @Query("mimeType") mimeType: String,
                       @Part file: MultipartBody.Part?): Observable<Response<RestResponse<String>>>
 
     // Create a LiveWire alert
-    @POST("/v2/api/livewire/create/{userUid}")
-    fun createLiveWireAlert(@Path("userUid") userUid: String,
-                            @Query("headline") headline: String,
+
+    @POST("/v2/api/livewire/create")
+    fun createLiveWireAlert(@Query("headline") headline: String,
                             @Query("description") description: String,
                             @Query("type") type: String,
                             @Query("groupUid") groupUid: String,
@@ -69,9 +59,8 @@ interface GrassrootUserApi {
     fun respondToTodo(@Path("todoUid") taskUid: String,
                       @Query("response") response: String): Observable<Response<Todo>>
 
-    @POST("/v2/api/task/fetch/updated/group/{userUid}/{groupUid}")
-    fun fetchGroupTasksMinimumInfo(@Path("userUid") userUid: String, @Path("groupUid") groupUid: String, @Body timestamps: Map<String, Long>): Observable<List<Task>>
-
+    @POST("/v2/api/task/fetch/updated/group/{groupUid}")
+    fun fetchGroupTasksMinimumInfo(@Path("groupUid") groupUid: String, @Body timestamps: Map<String, Long>): Observable<List<Task>>
 
     @GET("/v2/api/user/pending")
     fun fetchPendingResponses(): Observable<PendingResponseDTO>
@@ -91,15 +80,11 @@ interface GrassrootUserApi {
     @POST("/v2/api/group/modify/leave/{groupUid}")
     fun leaveGroup(@Path("groupUid") groupUid: String): Observable<RestResponse<Boolean>>
 
+
     @Multipart
     @POST("/v2/api/group/modify/image/upload/{groupUid}")
     fun uploadGroupProfilePhoto(@Path("groupUid") groupUid: String?,
                                 @Part image: MultipartBody.Part?): Observable<Response<MediaUploadResult>>
-
-    //    @Multipart
-    //    @POST("/v2/api/user/profile/image/change")
-    //    Observable<Response<RestResponse<String>>> uploadProfilePhoto(@Part MultipartBody.Part file);
-
 
     // not bothering to stream since the XLS generated is tiny (< 20kb for large groups)
     @GET("/v2/api/group/fetch/export/{groupUid}")
@@ -182,15 +167,14 @@ interface GrassrootUserApi {
                     @Query("defaultAddToAccount") defaultAddToAccount: Boolean,
                     @Query("pinGroup") pinGroup: Boolean): Observable<Response<Group>>
 
-    @GET("/v2/api/location/all/alerts/{userUid}")
-    fun getAlertsAround(@Path("userUid") userUid: String,
-                        @Query("longitude") longitude: Double,
+
+    @GET("/v2/api/location/all/alerts")
+    fun getAlertsAround(@Query("longitude") longitude: Double,
                         @Query("latitude") latitude: Double,
                         @Query("radiusMetres") radius: Int): Observable<List<LiveWireAlert>>
 
-    @GET("/v2/api/location/all/{userUid}")
-    fun getAllAround(@Path("userUid") userUid: String,
-                     @Query("longitude") longitude: Double,
+    @GET("/v2/api/location/all")
+    fun getAllAround(@Query("longitude") longitude: Double,
                      @Query("latitude") latitude: Double,
                      @Query("radiusMetres") radius: Int,
                      @Query("saerchType") serachType: String): Observable<List<AroundEntity>>
@@ -198,8 +182,7 @@ interface GrassrootUserApi {
 
     @Multipart
     @POST("/v2/api/user/profile/image/change")
-    fun uploadProfilePhoto(@Part file: MultipartBody.Part): Observable<Response<RestResponse<String>>>
-
+    fun uploadProfilePhoto(@Part file: MultipartBody.Part?): Observable<Response<RestResponse<String>>>
 
     @POST("/v2/api/user/profile/data/update")
     fun updateProfileData(
@@ -209,16 +192,15 @@ interface GrassrootUserApi {
             @Query("languageCode") languageCode: String): Observable<RestResponse<TokenResponse>>
 
 
-    @POST("/v2/api/task/respond/meeting/{userUid}/{taskUid}")
-    fun respondToMeeting(@Path("userUid") userId: String, @Path("taskUid") taskUid: String, @Query("response") response: String): Observable<Response<Void>>
+    @POST("/v2/api/task/respond/meeting/{taskUid}")
+    fun respondToMeeting(@Path("taskUid") taskUid: String, @Query("response") response: String): Observable<Response<Void>>
 
     @POST("/v2/api/task/respond/vote/{taskUid}")
     fun respondToVote(@Path("taskUid") taskUid: String, @Query("vote") vote: String): Observable<Response<Vote>>
 
     @Multipart
-    @POST("/v2/api/task/respond/post/{userUid}/{taskType}/{taskUid}")
-    fun uploadPost(@Path("userUid") userId: String,
-                   @Path("taskType") taskType: String,
+    @POST("/v2/api/task/respond/post/{taskType}/{taskUid}")
+    fun uploadPost(@Path("taskType") taskType: String,
                    @Path("taskUid") taskUid: String,
                    @Query("caption") title: String,
                    @Part file: MultipartBody.Part?): Observable<Response<Void>>
@@ -232,9 +214,9 @@ interface GrassrootUserApi {
                      @Query("parseForIntent") parseForIntent: Boolean,
                      @Part file: MultipartBody.Part?): Observable<Response<Void>>
 
-    @GET("/v2/api/task/fetch/posts/{userUid}/{taskType}/{taskUid}")
-    fun getPostsForTask(@Path("userUid") userId: String,
-                        @Path("taskType") taskType: String,
+
+    @GET("/v2/api/task/fetch/posts/{taskType}/{taskUid}")
+    fun getPostsForTask(@Path("taskType") taskType: String,
                         @Path("taskUid") taskUid: String): Observable<List<Post>>
 
 

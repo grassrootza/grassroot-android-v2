@@ -26,6 +26,8 @@ import za.org.grassroot2.view.dialog.SelectImageDialog
 import javax.inject.Inject
 
 class GroupsFragment : GrassrootFragment(), GroupFragmentPresenter.GroupFragmentView,SelectImageDialog.SelectImageDialogEvents {
+    override val layoutResourceId: Int
+        get() = R.layout.fragment_groups
 
     override fun stopRefreshing() {
         refreshLayout.isRefreshing = false
@@ -60,13 +62,10 @@ class GroupsFragment : GrassrootFragment(), GroupFragmentPresenter.GroupFragment
         presenter.onViewCreated()
     }
 
+
     override fun setImage(imageUrl: String?) {
         groupsAdapter.setImage(imageUrl!!,presenter.getUid())
         selectImageDialog.dismiss()
-    }
-
-    override fun getLayoutResourceId(): Int {
-        return R.layout.fragment_groups
     }
 
     override fun onInject(activityComponent: ActivityComponent) {
@@ -82,7 +81,7 @@ class GroupsFragment : GrassrootFragment(), GroupFragmentPresenter.GroupFragment
         groupRecyclerView.visibility = View.VISIBLE
         emptyInfoContainer.visibility = View.GONE
         groupRecyclerView.layoutManager = LinearLayoutManager(activity)
-        groupsAdapter = GroupsAdapter(activity!!.applicationContext, groups)
+        groupsAdapter = GroupsAdapter(activity!!, groups)
         val footer = LayoutInflater.from(activity).inflate(R.layout.item_group_footer, null, false)
         groupsAdapter.addFooter(footer)
         groupRecyclerView.adapter = groupsAdapter

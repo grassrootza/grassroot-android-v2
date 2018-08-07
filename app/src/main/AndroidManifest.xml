@@ -93,11 +93,6 @@
         </provider>
 
         <activity
-            android:name=".view.activity.DashboardActivity"
-            android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.Toolbar"
-            android:windowSoftInputMode="stateHidden" />
-        <activity
             android:name=".view.activity.PickContactActivity"
             android:label="@string/title_pick_contact"
             android:screenOrientation="portrait"

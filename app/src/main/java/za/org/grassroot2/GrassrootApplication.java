@@ -1,11 +1,8 @@
 package za.org.grassroot2;
 
-import android.app.Application;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
-import android.net.ConnectivityManager;
 import android.support.multidex.MultiDex;
 import android.support.multidex.MultiDexApplication;
 
@@ -24,14 +21,14 @@ public class GrassrootApplication extends MultiDexApplication {
 
     private AppComponent appComponent;
 
-//    private BroadcastReceiver connectivityChangeReceiver = new BroadcastReceiver() {
-//        @Override
-//        public void onReceive(Context context, Intent intent) {
-//            if (NetworkUtil.hasInternetAccess(context)) {
-//                startService(new Intent(context, SyncOfflineDataService.class));
-//            }
-//        }
-//    };
+    private BroadcastReceiver connectivityChangeReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (NetworkUtil.INSTANCE.hasInternetAccess(context)) {
+                startService(new Intent(context, SyncOfflineDataService.class));
+            }
+        }
+    };
 
     protected AppComponent initDagger(GrassrootApplication application) {
         return DaggerAppComponent.builder()

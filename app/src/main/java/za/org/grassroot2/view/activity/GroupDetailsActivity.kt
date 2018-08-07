@@ -55,6 +55,11 @@ class GroupDetailsActivity : GrassrootActivity(), GroupDetailsPresenter.GroupDet
     private val DIALOG_CAMERA = "Camera"
     private val DIALOG_GALLERY = "Gallery"
 
+    override val layoutResourceId: Int
+        get(): Int = R.layout.activity_group_details
+
+    override fun onInject(component: ActivityComponent) = component.inject(this)
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         groupUid = intent.getStringExtra(EXTRA_GROUP_UID)
@@ -114,14 +119,6 @@ class GroupDetailsActivity : GrassrootActivity(), GroupDetailsPresenter.GroupDet
         presenter.loadData()
     }
 
-    override fun onInject(component: ActivityComponent) {
-        component.inject(this)
-    }
-
-    override fun getLayoutResourceId(): Int {
-        return R.layout.activity_group_details
-    }
-
     override fun onDestroy() {
         super.onDestroy()
         presenter.detach()
@@ -151,7 +148,7 @@ class GroupDetailsActivity : GrassrootActivity(), GroupDetailsPresenter.GroupDet
 
     private fun showFillDialog() {
         val df = AddMemberDialog.newInstance(AddMemberDialog.TYPE_INSERT_MANUAL)
-        df.setContactListener { name, phone -> presenter.inviteContact(name, phone) }
+//        df.setContactListener { name: String, phone: String -> presenter.inviteContact(name, phone) }
         df.show(supportFragmentManager, GrassrootActivity.DIALOG_TAG)
     }
 

@@ -1,33 +1,27 @@
 package za.org.grassroot2.view.adapter
 
 import android.content.Context
-import android.content.res.Resources
-import android.graphics.Bitmap
-import android.support.v4.graphics.drawable.RoundedBitmapDrawable
-import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
-
-import com.jakewharton.rxbinding2.view.RxView
-import com.makeramen.roundedimageview.RoundedDrawable
-import com.squareup.picasso.Callback
-import com.squareup.picasso.Picasso
-
 import butterknife.BindView
 import butterknife.ButterKnife
+
+import com.jakewharton.rxbinding2.view.RxView
+import com.squareup.picasso.Picasso
+
 import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
-import timber.log.Timber
 import za.org.grassroot2.R
 import za.org.grassroot2.model.Group
 import za.org.grassroot2.util.LastModifiedFormatter
 
 class GroupsAdapter(private val context: Context, data: List<Group>) : FooterEnabledAdapter<Group>(data) {
     private val viewClickSubject = PublishSubject.create<String>()
+
 
     private val groupImageClickSubject = PublishSubject.create<String>()
 
@@ -37,20 +31,17 @@ class GroupsAdapter(private val context: Context, data: List<Group>) : FooterEna
     val groupImageClickObservable: Observable<String>
         get() = groupImageClickSubject
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-        val v = super.onCreateViewHolder(parent, viewType)
-        if (v == null) {
-            val view = LayoutInflater.from(parent.context).inflate(R.layout.item_group, parent, false)
 
-            return GroupViewHolder(view)
-        }
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder =
+            super.createFooterEnabledViewHolder(parent, viewType) ?: nonFooterViewHolder(parent)
 
-        return v
-    }
+    private fun nonFooterViewHolder(parent: ViewGroup): RecyclerView.ViewHolder =
+            GroupViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.item_group, parent, false))
 
     override fun bindRegularViewHolder(vh: RecyclerView.ViewHolder, position: Int) {
         val item = items[position]
         val holder = vh as GroupViewHolder
+
 
         if (item != null) {
             holder.name!!.text = item.name
@@ -121,6 +112,7 @@ class GroupsAdapter(private val context: Context, data: List<Group>) : FooterEna
         init {
             ButterKnife.bind(this, itemView)
         }
+
     }
 
 }

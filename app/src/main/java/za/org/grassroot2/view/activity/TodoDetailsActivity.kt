@@ -26,7 +26,11 @@ class TodoDetailsActivity : GrassrootActivity(), TodoDetailsPresenter.TodoDetail
     @Inject lateinit var presenter: TodoDetailsPresenter
     @Inject lateinit var rxPermissions: RxPermissions
     @Inject lateinit var postAdapter: PostAdapter
-//    @Inject lateinit var resultsAdapter: TodoResponseAdapter
+
+    override val layoutResourceId: Int
+        get(): Int = R.layout.activity_todo_details
+
+    override fun onInject(component: ActivityComponent) = component.inject(this)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -67,12 +71,6 @@ class TodoDetailsActivity : GrassrootActivity(), TodoDetailsPresenter.TodoDetail
         Timber.d("inside activity, telling presenter to load data");
         presenter.loadData()
     }
-
-    override fun onInject(component: ActivityComponent) {
-        component.inject(this)
-    }
-
-    override fun getLayoutResourceId(): Int = R.layout.activity_todo_details
 
     override fun onDestroy() {
         super.onDestroy()

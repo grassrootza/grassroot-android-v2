@@ -11,16 +11,19 @@ import za.org.grassroot2.dagger.activity.ActivityComponent
 
 
 class PostConfirmFragment : GrassrootFragment() {
+    override val layoutResourceId: Int
+        get() = R.layout.fragment_task_confirm
 
     private val actionSubject = PublishSubject.create<Boolean>()
     private var listener: BackNavigationListener? = null
     private var title: String? = null
 
+    override fun onInject(activityComponent: ActivityComponent) = activityComponent.inject(this)
+
     override fun onAttach(context: Context?) {
         super.onAttach(context)
         listener = activity as BackNavigationListener
     }
-
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
@@ -33,12 +36,6 @@ class PostConfirmFragment : GrassrootFragment() {
     }
 
     fun taskConfirmed(): Observable<Boolean> = actionSubject
-
-    override fun onInject(activityComponent: ActivityComponent) {
-        activityComponent.inject(this)
-    }
-
-    override fun getLayoutResourceId(): Int = R.layout.fragment_task_confirm
 
     companion object {
 

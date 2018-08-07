@@ -21,10 +21,11 @@ class MembersActivity : GrassrootActivity() {
     private var groupUid: String? = null
     var menuItem: MenuItem? = null
 
-    override fun getLayoutResourceId(): Int = R.layout.activity_group_members
+    override val layoutResourceId: Int
+        get(): Int = R.layout.activity_group_members
 
-    override fun onCreate(icicle: Bundle?) {
-        super.onCreate(icicle)
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
         groupUid = intent.getStringExtra(GROUP_UID_FIELD)
 
         contentPager.adapter = MembersDashboardFragmentAdapter(supportFragmentManager)

@@ -25,13 +25,13 @@ import za.org.grassroot2.view.dialog.GenericSelectDialog
 import javax.inject.Inject
 
 class GroupSettingsActivity : GrassrootActivity(), GroupSettingsPresenter.GroupSettingsView {
+    override val layoutResourceId: Int
+        get() = R.layout.activity_group_settings
 
     @Inject lateinit var presenter: GroupSettingsPresenter
     @Inject lateinit var rxPermission: RxPermissions
 
     private var groupUid: String? = null
-
-    override fun getLayoutResourceId(): Int = R.layout.activity_group_settings
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

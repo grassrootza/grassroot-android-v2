@@ -41,6 +41,8 @@ import javax.inject.Inject
 
 
 class MeFragment : GrassrootFragment(), MeView {
+    override val layoutResourceId: Int
+        get() = R.layout.fragment_me
 
     @Inject lateinit var presenter: MePresenter
     @Inject lateinit var rxPermission: RxPermissions
@@ -52,13 +54,7 @@ class MeFragment : GrassrootFragment(), MeView {
 
     private val dataChangeWatcher = ProfileDataChangeWatcher()
 
-    override fun onInject(component: ActivityComponent) {
-        get().inject(this)
-    }
-
-    override fun getLayoutResourceId(): Int {
-        return R.layout.fragment_me
-    }
+    override fun onInject(activityComponent: ActivityComponent) = get().inject(this)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

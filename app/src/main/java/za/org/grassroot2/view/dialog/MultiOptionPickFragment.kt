@@ -24,14 +24,14 @@ import java.util.*
 import kotlin.collections.LinkedHashMap
 
 class MultiOptionPickFragment : GrassrootFragment() {
+    override val layoutResourceId: Int
+        get() = R.layout.fragment_multi_option_pick
 
     private val actionSubject = PublishSubject.create<Int>()
     private var options: HashMap<Int, ActionOption>? = null
     private lateinit var recyclerView: RecyclerView
 
     override fun onInject(activityComponent: ActivityComponent) {}
-
-    override fun getLayoutResourceId(): Int  = R.layout.fragment_multi_option_pick
 
     fun clickAction(): Observable<Int> = actionSubject
 
@@ -44,7 +44,6 @@ class MultiOptionPickFragment : GrassrootFragment() {
     fun itemSelection(): PublishSubject<Int> {
         return actionSubject
     }
-
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val v = super.onCreateView(inflater, container, savedInstanceState)
@@ -79,14 +78,12 @@ class MultiOptionPickFragment : GrassrootFragment() {
 
     private fun initView() {
         Timber.d("Initialising MultiOption view")
-        (arguments!!.getSerializable(EXTRA_GROUP) as? Group).let {g ->
-           if(g != null){
-               removeViewsForNoGroup(g)
-           }
-        }
+        val g = arguments!!.getSerializable(EXTRA_GROUP) as? Group
+        g?.let { removeViewsForNoGroup(it) }
+
     }
 
-    private fun removeViewsForNoGroup(g:Group?){
+    private fun removeViewsForNoGroup(g:Group) {
         if (!GroupPermissionChecker.canCallMeeting(g)) {
             options!!.remove(R.id.call_meeting)
             Timber.d("Current user does not have callMeeting permissions")
@@ -124,33 +121,34 @@ class MultiOptionPickFragment : GrassrootFragment() {
         }
 
 
-        fun homeActionPicker(canCreateMeeting:Boolean,canCreateVote:Boolean,canCreateTodo:Boolean): MultiOptionPickFragment
-             {
-                Timber.d("In homeActionPicker within MultiOptionFragment")
-                val options = LinkedHashMap<Int, ActionOption>()
-                options.put(R.id.dictate, ActionOption(R.id.dictate, R.string.dictate_my_action, R.drawable.ic_mic_24dp))
+        fun homeActionPicker(canCreateMeeting:Boolean, canCreateVote:Boolean, canCreateTodo:Boolean): MultiOptionPickFragment {
 
-                 if(canCreateMeeting){
-                     options.put(R.id.call_meeting, ActionOption(R.id.call_meeting, R.string.call_meeting, R.drawable.ic_date_range_green_24dp))
-                 }
+            Timber.d("In homeActionPicker within MultiOptionFragment")
+            val options = LinkedHashMap<Int, ActionOption>()
+            options.put(R.id.dictate, ActionOption(R.id.dictate, R.string.dictate_my_action, R.drawable.ic_mic_24dp))
 
-                 if(canCreateTodo){
-                     options.put(R.id.create_todo, ActionOption(R.id.create_todo, R.string.create_todo, R.drawable.ic_format_list_bulleted_24dp))
-                     options.put(R.id.create_livewire_alert, ActionOption(R.id.create_livewire_alert, R.string.create_livewire_alert, R.drawable.ic_format_list_bulleted_24dp))
-                 }
+             if(canCreateMeeting){
+                 options.put(R.id.call_meeting, ActionOption(R.id.call_meeting, R.string.call_meeting, R.drawable.ic_date_range_green_24dp))
+             }
 
-                 if(canCreateVote){
-                     options.put(R.id.take_vote, ActionOption(R.id.take_vote, R.string.take_vote, R.drawable.ic_format_list_bulleted_24dp))
-                 }
+             if(canCreateTodo){
+                 options.put(R.id.create_todo, ActionOption(R.id.create_todo, R.string.create_todo, R.drawable.ic_format_list_bulleted_24dp))
+             }
 
-                options.put(R.id.create_group, ActionOption(R.id.create_group, R.string.create_group, R.drawable.ic_format_list_bulleted_24dp))
+             if(canCreateVote){
+                 options.put(R.id.take_vote, ActionOption(R.id.take_vote, R.string.take_vote, R.drawable.ic_format_list_bulleted_24dp))
+             }
 
-                val f = MultiOptionPickFragment()
-                val b = Bundle()
-                b.putSerializable(EXTRA_OPTIONS, options)
-                f.arguments = b
-                Timber.d("Returning homeActionPicker fragment")
-                return f
+            options.put(R.id.create_livewire_alert, ActionOption(R.id.create_livewire_alert, R.string.create_livewire_alert, R.drawable.ic_format_list_bulleted_24dp))
+            options.put(R.id.create_group, ActionOption(R.id.create_group, R.string.create_group, R.drawable.ic_format_list_bulleted_24dp))
+
+            val f = MultiOptionPickFragment()
+            val b = Bundle()
+            b.putSerializable(EXTRA_OPTIONS, options)
+            f.arguments = b
+            Timber.d("Returning homeActionPicker fragment")
+            return f
+
             }
 
         val voteOptionPicker: MultiOptionPickFragment
@@ -183,26 +181,5 @@ class MultiOptionPickFragment : GrassrootFragment() {
                 return f
             }
 
-        fun homeTakeActionFragment(): MultiOptionPickFragment {
-            val options = LinkedHashMap<Int, ActionOption>()
-            options.put(R.id.dictate, ActionOption(R.id.dictate, R.string.dictate_my_action, R.drawable.ic_mic_24dp))
-            options.put(R.id.take_vote, ActionOption(R.id.take_vote, R.string.take_vote, R.drawable.ic_format_list_bulleted_24dp))
-            options.put(R.id.create_todo, ActionOption(R.id.create_todo, R.string.create_todo, R.drawable.ic_format_list_bulleted_24dp))
-            options.put(R.id.create_group, ActionOption(R.id.create_group, R.string.create_group, R.drawable.ic_format_list_bulleted_24dp))
-            options.put(R.id.call_meeting, ActionOption(R.id.call_meeting, R.string.call_meeting, R.drawable.ic_date_range_green_24dp))
-            options.put(R.id.create_livewire_alert, ActionOption(R.id.create_livewire_alert, R.string.create_livewire_alert, R.drawable.ic_format_list_bulleted_24dp))
-            val f = MultiOptionPickFragment()
-            val b = Bundle()
-            b.putSerializable(EXTRA_OPTIONS, options)
-            f.arguments = b
-            return f
-        }
-
-        // todo: think through
-//        fun voteOptionFragment(vote: Vote): MultiOptionPickFragment {
-//            val voteOptions = vote.voteOptions;
-//            val options = LinkedHashMap<Int, ActionOption>()
-//
-//        }
     }
 }

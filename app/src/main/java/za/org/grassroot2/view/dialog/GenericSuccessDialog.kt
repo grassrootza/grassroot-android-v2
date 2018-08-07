@@ -53,7 +53,7 @@ class GenericSuccessDialog : DialogFragment() {
         private val TITLE_RES_ID_ARG2 = "TITLE_RES_ID_ARG2"
 
         // todo: once migrate GrassrootActivity to Kotlin (one of only complex migrations, maybe), switch to operator
-        @JvmStatic fun newInstance(titleRes: Int,message:String,okListener: View.OnClickListener): DialogFragment {
+        @JvmStatic fun newInstance(titleRes: Int, message: String?, okListener: View.OnClickListener): DialogFragment {
             val dialog = GenericSuccessDialog()
             val args = Bundle()
             args.putInt(TITLE_RES_ID_ARG, titleRes)
