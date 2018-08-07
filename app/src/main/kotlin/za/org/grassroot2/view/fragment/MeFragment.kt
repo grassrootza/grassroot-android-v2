@@ -15,10 +15,7 @@ import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.PopupMenu
 import android.text.Editable
 import android.text.TextWatcher
-import android.view.Menu
-import android.view.MenuInflater
-import android.view.MenuItem
-import android.view.View
+import android.view.*
 import android.widget.AdapterView
 import android.widget.AdapterView.OnItemSelectedListener
 import android.widget.ArrayAdapter
@@ -47,18 +44,16 @@ class MeFragment : GrassrootFragment(), MeView {
     @Inject lateinit var presenter: MePresenter
     @Inject lateinit var rxPermission: RxPermissions
 
-    private val REQUEST_TAKE_PHOTO = 1
-    private val REQUEST_GALLERY = 2
-
     private lateinit var languagesAdapter: ArrayAdapter<Language>
 
     private val dataChangeWatcher = ProfileDataChangeWatcher()
 
     override fun onInject(activityComponent: ActivityComponent) = get().inject(this)
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setHasOptionsMenu(true)
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        Timber.e("Creating me fragment view ...");
+        progress = activity!!.findViewById(R.id.progress)
+        return inflater.inflate(layoutResourceId, container, false)
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -94,8 +89,13 @@ class MeFragment : GrassrootFragment(), MeView {
     }
 
     private fun initToolbar() {
-        (activity as AppCompatActivity).setSupportActionBar(toolbar)
-        (activity as AppCompatActivity).supportActionBar!!.setTitle(R.string.title_me)
+        toolbar.inflateMenu(R.menu.fragment_me);
+        toolbar.setTitle(R.string.title_me)
+        toolbar.setOnMenuItemClickListener { item ->
+            if (item?.itemId == R.id.menu_logout)
+                presenter.logout()
+            super.onOptionsItemSelected(item)
+        }
     }
 
     override fun onResume() {
@@ -104,21 +104,7 @@ class MeFragment : GrassrootFragment(), MeView {
         (activity as AppCompatActivity).invalidateOptionsMenu()
     }
 
-    override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
-        Timber.e("calling on create options menu inside me fragment")
-        inflater?.inflate(R.menu.fragment_me, menu)
-        super.onCreateOptionsMenu(menu, inflater)
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
-        when (item?.itemId) {
-            R.id.menu_logout -> presenter.logout()
-        }
-        return super.onOptionsItemSelected(item)
-    }
-
-
-    fun showPopup(v: View) {
+    private fun showPopup(v: View) {
         val popup = PopupMenu(activity!!, v)
         val inflater = popup.menuInflater
         inflater.inflate(R.menu.change_image_options, popup.menu)
@@ -181,13 +167,14 @@ class MeFragment : GrassrootFragment(), MeView {
     }
 
     override fun invalidateProfilePicCache(userUid: String) {
-        val url = BuildConfig.API_BASE + "user/profile/image/view/" + userUid
+        val url = BuildConfig.API_BASE + "v2/api/image/user/" + userUid
         Picasso.get().invalidate(url)
         loadProfilePic(userUid)
     }
 
     private fun loadProfilePic(userUid: String) {
-        val url = BuildConfig.API_BASE + "user/profile/image/view/" + userUid
+        val url = BuildConfig.API_BASE + "v2/api/image/user/" + userUid
+        Timber.d("Fetching user image profile: %s", url)
         Picasso.get()
                 .load(url)
                 .resizeDimen(R.dimen.profile_photo_width, R.dimen.profile_photo_height)
@@ -231,6 +218,10 @@ class MeFragment : GrassrootFragment(), MeView {
     }
 
     companion object {
+
+        private const val REQUEST_TAKE_PHOTO = 1
+        private const val REQUEST_GALLERY = 2
+
         fun newInstance(): Fragment {
             return MeFragment()
         }

@@ -7,11 +7,6 @@
         app:actionViewClass="android.support.v7.widget.SearchView"
         android:icon="@drawable/ic_search_white_24dp"
         app:showAsAction="always"
-        android:title="Search" />
+        android:title="@string/search" />
 
-    <item
-        android:id="@+id/more"
-        android:icon="@drawable/ic_more_vert_white_24dp"
-        app:showAsAction="always"
-        android:title="More" />
 </menu>
