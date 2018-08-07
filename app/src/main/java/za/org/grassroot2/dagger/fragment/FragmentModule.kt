@@ -18,13 +18,8 @@ class FragmentModule {
 
     @Provides
     @PerFragment
-<<<<<<< HEAD
     internal fun provideGroupFragmentPresenter(dbService: DatabaseService, networkService: UserDetailsService, mediaService: MediaService, grassrootUserApi: GrassrootUserApi): GroupFragmentPresenter {
         return GroupFragmentPresenter(dbService, networkService, mediaService, grassrootUserApi)
-=======
-    internal fun provideGroupFragmentPresenter(dbService: DatabaseService, networkService: UserDetailsService): GroupFragmentPresenter {
-        return GroupFragmentPresenter(dbService, networkService)
->>>>>>> 7cbe444f4e9fb9ceb76be7667ec776383fbeae4a
     }
 
     @Provides
