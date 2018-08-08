@@ -8,6 +8,7 @@ import android.os.Bundle
 import android.provider.MediaStore
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
+import android.support.v7.widget.Toolbar
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
@@ -15,6 +16,7 @@ import android.view.View
 import com.tbruyelle.rxpermissions2.RxPermissions
 import io.reactivex.Observable
 import kotlinx.android.synthetic.main.fragment_groups.*
+import timber.log.Timber
 import za.org.grassroot2.R
 import za.org.grassroot2.dagger.activity.ActivityComponent
 import za.org.grassroot2.model.Group
@@ -47,15 +49,9 @@ class GroupsFragment : GrassrootFragment(), GroupFragmentPresenter.GroupFragment
         setHasOptionsMenu(true)
     }
 
-    override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
-        inflater!!.inflate(R.menu.fragment_groups, menu)
-        super.onCreateOptionsMenu(menu, inflater)
-    }
-
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        (activity as AppCompatActivity).setSupportActionBar(toolbar)
-        (activity as AppCompatActivity).supportActionBar!!.setTitle(R.string.title_groups)
+        toolbar.setTitle(R.string.title_groups)
         fab.setOnClickListener { CreateActionActivity.startFromHome(activity as AppCompatActivity) }
         refreshLayout.setOnRefreshListener { presenter.refreshGroups() }
         presenter.attach(this)
@@ -64,8 +60,13 @@ class GroupsFragment : GrassrootFragment(), GroupFragmentPresenter.GroupFragment
 
 
     override fun setImage(imageUrl: String?) {
-        groupsAdapter.setImage(imageUrl!!,presenter.getUid())
+        groupsAdapter.setImage(imageUrl!!, presenter.getUid())
         selectImageDialog.dismiss()
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        toolbar.inflateMenu(R.menu.fragment_groups)
     }
 
     override fun onInject(activityComponent: ActivityComponent) {

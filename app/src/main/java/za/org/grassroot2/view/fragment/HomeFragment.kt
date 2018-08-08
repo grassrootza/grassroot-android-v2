@@ -107,8 +107,8 @@ class HomeFragment : GrassrootFragment(), HomePresenter.HomeView {
         super.onActivityCreated(savedInstanceState)
         homeItemList.layoutManager = LinearLayoutManager(activity)
         homeItemList.adapter = adapter
-        (activity as AppCompatActivity).setSupportActionBar(toolbar)
-        fab.setOnClickListener({ _ -> CreateActionActivity.startFromHome(activity as AppCompatActivity) })
+//        (activity as AppCompatActivity).setSupportActionBar(toolbar)
+        fab.setOnClickListener { _ -> CreateActionActivity.startFromHome(activity as AppCompatActivity) }
         toolbar.setTitle(R.string.title_home)
         refreshLayout.setOnRefreshListener { reloadView() }
         presenter.onViewCreated()

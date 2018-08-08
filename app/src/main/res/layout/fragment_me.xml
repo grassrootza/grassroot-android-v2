@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="@color/bg_default">
+    android:background="@color/white">
 
     <android.support.design.widget.AppBarLayout
         android:id="@+id/appbarLayout"
@@ -25,7 +25,7 @@
 
     </android.support.design.widget.AppBarLayout>
 
-    <ScrollView
+    <android.support.v4.widget.NestedScrollView
         android:id="@+id/scrollLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -34,6 +34,7 @@
 
         <LinearLayout
             android:orientation="vertical"
+            android:padding="@dimen/padding_std_medium"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
@@ -80,16 +81,20 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="@color/colorPrimary"
+                    android:textSize="@dimen/txt_header_3"
+                    android:layout_marginBottom="@dimen/margin_std_medium"
                     android:text="@string/me_display_name" />
 
                 <EditText
-                    android:id="@+id/displayNameInput"
                     style="@style/MeScreenTextInput"
-                    android:imeOptions="actionNext"
+                    android:id="@+id/displayNameInput"
+                    android:hint="@string/me_display_name"
                     android:lines="1"
+                    android:imeOptions="actionNext"
                     android:nextFocusDown="@id/phoneNumberInput"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:inputType="textCapSentences|textAutoCorrect" />
 
                 <View
                     android:layout_width="match_parent"
@@ -111,15 +116,19 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="@color/colorPrimary"
+                    android:textSize="@dimen/txt_header_3"
+                    android:layout_marginBottom="@dimen/margin_std_medium"
                     android:text="@string/me_phone_number" />
 
                 <EditText
+                    android:hint="@string/me_phone_number"
                     android:id="@+id/phoneNumberInput"
                     style="@style/MeScreenTextInput"
                     android:imeOptions="actionNext"
                     android:lines="1"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:inputType="phone"/>
 
                 <View
                     android:layout_width="match_parent"
@@ -140,16 +149,20 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="@color/colorPrimary"
+                    android:textSize="@dimen/txt_header_3"
+                    android:layout_marginBottom="@dimen/margin_std_medium"
                     android:text="@string/me_email" />
 
                 <EditText
-                    android:id="@+id/emailInput"
                     style="@style/MeScreenTextInput"
+                    android:id="@+id/emailInput"
+                    android:hint="@string/me_email"
                     android:imeOptions="actionNext"
                     android:lines="1"
                     android:nextFocusDown="@id/languageInput"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:inputType="textEmailAddress" />
 
                 <View
                     android:layout_width="match_parent"
@@ -170,6 +183,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="@color/colorPrimary"
+                    android:textSize="@dimen/txt_header_3"
+                    android:layout_marginBottom="@dimen/margin_std_medium"
                     android:text="@string/me_language" />
 
                 <Spinner
@@ -203,15 +218,17 @@
                     android:id="@+id/saveBtn"
                     style="DefaultActionButton"
                     android:text="@string/button_save"
-                    android:background="@color/colorPrimary"
+                    android:background="@drawable/btn_primary_default"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:paddingLeft="72dp"
+                    android:paddingRight="72dp"/>
 
             </LinearLayout>
 
 
         </LinearLayout>
 
-    </ScrollView>
+    </android.support.v4.widget.NestedScrollView>
 
 </android.support.design.widget.CoordinatorLayout>

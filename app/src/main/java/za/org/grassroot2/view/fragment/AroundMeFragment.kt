@@ -4,7 +4,6 @@ import android.Manifest
 import android.location.Location
 import android.os.Bundle
 import android.support.v4.app.Fragment
-import android.support.v7.app.AppCompatActivity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -19,6 +18,7 @@ import com.google.android.gms.maps.model.MarkerOptions
 import com.tbruyelle.rxpermissions2.RxPermissions
 import dagger.Lazy
 import kotlinx.android.synthetic.main.fragment_around_me.*
+import timber.log.Timber
 import za.org.grassroot2.R
 import za.org.grassroot2.dagger.activity.ActivityComponent
 import za.org.grassroot2.model.AroundEntity
@@ -36,7 +36,6 @@ class AroundMeFragment : GrassrootFragment(), AroundMePresenter.AroundMeView, Go
     @Inject internal lateinit var presenter: AroundMePresenter
     @Inject internal lateinit var imageUtil: ImageUtil
 
-    private var mapFragment: SupportMapFragment? = null
     private lateinit var googleMap: GoogleMap
 
     override fun onInject(activityComponent: ActivityComponent) {
@@ -51,10 +50,13 @@ class AroundMeFragment : GrassrootFragment(), AroundMePresenter.AroundMeView, Go
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         presenter.attach(this)
-        initToolbar()
-        mapFragment = SupportMapFragment.newInstance()
-        childFragmentManager.beginTransaction().add(R.id.mapContainer, mapFragment).commit()
-        mapFragment!!.getMapAsync { googleMap ->
+        toolbar.setTitle(R.string.title_around)
+        Timber.e("Set up around me fragment, calling the map")
+        val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
+//        childFragmentManager.beginTransaction().add(R.id.mapContainer, mapFragment).commit()
+        Timber.e("Map fragment is now up, or should be")
+        mapFragment.getMapAsync { googleMap ->
+            Timber.e("Received a map!")
             setMarkerInfoClick(googleMap)
             requestLocation()
         }
@@ -72,12 +74,6 @@ class AroundMeFragment : GrassrootFragment(), AroundMePresenter.AroundMeView, Go
                 }
             }
         }
-    }
-
-    private fun initToolbar() {
-        setHasOptionsMenu(false)
-        (activity as AppCompatActivity).setSupportActionBar(toolbar)
-        (activity as AppCompatActivity).supportActionBar!!.setTitle(R.string.title_around)
     }
 
     private fun requestLocation() {

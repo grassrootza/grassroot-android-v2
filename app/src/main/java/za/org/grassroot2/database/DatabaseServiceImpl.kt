@@ -460,12 +460,12 @@ class DatabaseServiceImpl(private val helper: DatabaseHelper) : DatabaseService 
     }
 
     override fun storeTasks(data: List<Task>) {
-        for (t in data) {
+        data.filter { it.name != null}.forEach { t->
             val type = t.type
             when (type) {
                 GrassrootEntityType.VOTE -> storeObject(Vote::class.javaObjectType, t as Vote)
                 GrassrootEntityType.MEETING -> storeObject(Meeting::class.javaObjectType, t as Meeting)
-                GrassrootEntityType.TODO -> storeObject(Todo::class.javaObjectType, t as Todo)
+                GrassrootEntityType.TODO -> (t as Todo).todoType?.let { storeObject(Todo::class.javaObjectType, t) }
                 else -> {
                 }
             }

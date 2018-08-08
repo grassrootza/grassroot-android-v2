@@ -350,5 +350,6 @@
     <string name="vote_results_header">RESULTS</string>
     <string name="sign_in">Sign in</string>
     <string name="forgot_password">I FORGOT MY PASSWORD</string>
+    <string name="search">Search</string>
 
 </resources>
