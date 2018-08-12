@@ -7,6 +7,7 @@ import android.content.Intent
 import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
 import android.os.Bundle
+import android.provider.MediaStore
 import android.support.v4.graphics.drawable.RoundedBitmapDrawable
 import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory
 import android.view.View
@@ -16,20 +17,25 @@ import com.squareup.picasso.Picasso
 import com.tbruyelle.rxpermissions2.RxPermissions
 import io.reactivex.Observable
 import kotlinx.android.synthetic.main.activity_group_settings.*
+import timber.log.Timber
 import za.org.grassroot2.dagger.activity.ActivityComponent
 import za.org.grassroot2.model.Group
 import za.org.grassroot2.presenter.activity.GroupSettingsPresenter
 import za.org.grassroot2.view.activity.DashboardActivity
 import za.org.grassroot2.view.activity.GrassrootActivity
 import za.org.grassroot2.view.dialog.GenericSelectDialog
+import za.org.grassroot2.view.dialog.SelectImageDialog
 import javax.inject.Inject
 
-class GroupSettingsActivity : GrassrootActivity(), GroupSettingsPresenter.GroupSettingsView {
+class GroupSettingsActivity : GrassrootActivity(), GroupSettingsPresenter.GroupSettingsView,SelectImageDialog.SelectImageDialogEvents {
     override val layoutResourceId: Int
         get() = R.layout.activity_group_settings
 
     @Inject lateinit var presenter: GroupSettingsPresenter
     @Inject lateinit var rxPermission: RxPermissions
+
+    private val REQUEST_TAKE_PHOTO = 2
+    private val REQUEST_GALLERY = 3
 
     private var groupUid: String? = null
 
@@ -57,7 +63,21 @@ class GroupSettingsActivity : GrassrootActivity(), GroupSettingsPresenter.GroupS
             getString(R.string.member_count_recent, group.memberCount, lastMonthCount)
         else
             getString(R.string.member_count_basic, group.memberCount)
-        loadProfilePic(group.uid)
+
+        if(group.profileImageUrl != null){
+            loadProfilePic(group.profileImageUrl)
+        }
+
+        if(!group.permissions.contains("GROUP_PERMISSION_UPDATE_GROUP_DETAILS")){
+            changePhoto.visibility = View.GONE
+        }else{
+            changePhoto.visibility = View.VISIBLE
+            changePhoto.setOnClickListener { v ->
+                val dialog:SelectImageDialog = SelectImageDialog.newInstance(R.string.select_image,false);
+                dialog.show(supportFragmentManager,"DIALOG_TAG")
+            }
+        }
+        //loadProfilePic(group.uid)
         viewMembers.isEnabled = group.hasMembersFetched()
     }
 
@@ -69,8 +89,8 @@ class GroupSettingsActivity : GrassrootActivity(), GroupSettingsPresenter.GroupS
             getString(R.string.member_count_basic, totalMembers)
     }
 
-    private fun loadProfilePic(groupUid: String) {
-        val url = BuildConfig.API_BASE + "group/image/view/" + groupUid
+    private fun loadProfilePic(url: String) {
+        //val url = BuildConfig.API_BASE + "group/image/view/" + groupUid
         Picasso.get()
                 .load(url)
                 .resizeDimen(R.dimen.profile_photo_s_width, R.dimen.profile_photo_s_height)
@@ -144,8 +164,37 @@ class GroupSettingsActivity : GrassrootActivity(), GroupSettingsPresenter.GroupS
         component.inject(this)
     }
 
+    override fun openCamera() {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun pickImageFromGallery() {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun cameraForResult(contentProviderPath: String, s: String) {
+        val intent:Intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.parse(contentProviderPath))
+        intent.putExtra("MY_UID", s)
+        startActivityForResult(intent,REQUEST_TAKE_PHOTO)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        if(resultCode == Activity.RESULT_OK){
+            if(requestCode == REQUEST_TAKE_PHOTO){
+                presenter.cameraResult()
+
+            } else if(requestCode == REQUEST_GALLERY){
+                val imageUri:Uri = data!!.data
+
+                //presenter.setGroupImageUrl(imageUri.toString())
+                //setImage(imageUri.toString())
+            }
+        }
+    }
+
     companion object {
-        private val EXTRA_GROUP_UID = "group_uid";
+        private val EXTRA_GROUP_UID = "group_uid"
 
         fun start(activity: Activity, groupUid: String?) {
             val intent = Intent(activity, GroupSettingsActivity::class.java)

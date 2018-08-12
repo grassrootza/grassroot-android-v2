@@ -5,11 +5,9 @@ import io.reactivex.Observable
 import okhttp3.MultipartBody
 import okhttp3.ResponseBody
 import retrofit2.Response
+
 import retrofit2.http.*
-import za.org.grassroot2.model.AroundEntity
-import za.org.grassroot2.model.Group
-import za.org.grassroot2.model.Post
-import za.org.grassroot2.model.TokenResponse
+import za.org.grassroot2.model.*
 import za.org.grassroot2.model.alert.LiveWireAlert
 import za.org.grassroot2.model.language.NluResponse
 import za.org.grassroot2.model.request.MemberRequest
@@ -39,6 +37,7 @@ interface GrassrootUserApi {
                       @Part file: MultipartBody.Part?): Observable<Response<RestResponse<String>>>
 
     // Create a LiveWire alert
+
     @POST("/v2/api/livewire/create")
     fun createLiveWireAlert(@Query("headline") headline: String,
                             @Query("description") description: String,
@@ -63,7 +62,6 @@ interface GrassrootUserApi {
     @POST("/v2/api/task/fetch/updated/group/{groupUid}")
     fun fetchGroupTasksMinimumInfo(@Path("groupUid") groupUid: String, @Body timestamps: Map<String, Long>): Observable<List<Task>>
 
-
     @GET("/v2/api/user/pending")
     fun fetchPendingResponses(): Observable<PendingResponseDTO>
 
@@ -81,6 +79,12 @@ interface GrassrootUserApi {
 
     @POST("/v2/api/group/modify/leave/{groupUid}")
     fun leaveGroup(@Path("groupUid") groupUid: String): Observable<RestResponse<Boolean>>
+
+
+    @Multipart
+    @POST("/v2/api/group/modify/image/upload/{groupUid}")
+    fun uploadGroupProfilePhoto(@Path("groupUid") groupUid: String?,
+                                @Part image: MultipartBody.Part?): Observable<Response<MediaUploadResult>>
 
     // not bothering to stream since the XLS generated is tiny (< 20kb for large groups)
     @GET("/v2/api/group/fetch/export/{groupUid}")
@@ -163,6 +167,7 @@ interface GrassrootUserApi {
                     @Query("defaultAddToAccount") defaultAddToAccount: Boolean,
                     @Query("pinGroup") pinGroup: Boolean): Observable<Response<Group>>
 
+
     @GET("/v2/api/location/all/alerts")
     fun getAlertsAround(@Query("longitude") longitude: Double,
                         @Query("latitude") latitude: Double,
@@ -208,6 +213,7 @@ interface GrassrootUserApi {
     fun uploadSpeech(@Query("sampleRate") sampleRate: Int?,
                      @Query("parseForIntent") parseForIntent: Boolean,
                      @Part file: MultipartBody.Part?): Observable<Response<Void>>
+
 
     @GET("/v2/api/task/fetch/posts/{taskType}/{taskUid}")
     fun getPostsForTask(@Path("taskType") taskType: String,

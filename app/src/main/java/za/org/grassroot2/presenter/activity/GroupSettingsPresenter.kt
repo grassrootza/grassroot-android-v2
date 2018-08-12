@@ -7,10 +7,18 @@ import android.support.v4.content.FileProvider
 import android.view.View
 import io.reactivex.Observable
 import io.reactivex.Single
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.schedulers.Schedulers
+import okhttp3.MediaType
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
 import timber.log.Timber
 import za.org.grassroot2.R
 import za.org.grassroot2.database.DatabaseService
 import za.org.grassroot2.model.Group
+import za.org.grassroot2.model.MediaFile
+import za.org.grassroot2.model.MediaUploadResult
+import za.org.grassroot2.services.MediaService
 import za.org.grassroot2.services.NetworkService
 import za.org.grassroot2.util.FileUtil
 import za.org.grassroot2.view.GrassrootView
@@ -26,10 +34,11 @@ import javax.inject.Inject
  * Created by luke on 2017/12/03.
  */
 class GroupSettingsPresenter @Inject
-constructor(private val networkService: NetworkService, private val dbService: DatabaseService) : BasePresenter<GroupSettingsPresenter.GroupSettingsView>() {
+constructor(private val networkService: NetworkService, private val dbService: DatabaseService,private val mediaService: MediaService) : BasePresenter<GroupSettingsPresenter.GroupSettingsView>() {
 
     private var groupUid: String? = null
     private var group: Group? = null
+    private var currentMediaFileUid: String? = null
 
     fun init(groupUid: String) {
         this.groupUid = groupUid;
@@ -128,6 +137,69 @@ constructor(private val networkService: NetworkService, private val dbService: D
         }
     }
 
+    fun takePhoto() {
+        disposableOnDetach(
+                mediaService
+                        .createFileForMedia("image/jpeg", MediaFile.FUNCTION_GROUP_PROFILE_PHOTO)
+                        .subscribeOn(io())
+                        .observeOn(main())
+                        .subscribe({ s ->
+                            val mediaFile = dbService.loadObjectByUid(MediaFile::class.java, s)
+                            currentMediaFileUid = s
+
+                            //view.cameraForResult(mediaFile!!.contentProviderPath, s)
+                        }) { throwable ->
+                            Timber.e(throwable, "Error creating file")
+                            view.showErrorSnackbar(R.string.error_file_creation)
+                        })
+    }
+
+    fun cameraResult(){
+        disposableOnDetach(mediaService.captureMediaFile(currentMediaFileUid!!,500,500)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        {
+                            val mediaFile = dbService.loadObjectByUid(MediaFile::class.java, currentMediaFileUid!!)
+                            if (mediaFile != null)
+                                uploadProfilePhoto(mediaFile)
+                        },
+                        {
+                            Timber.d(it)
+                        }
+                )
+        )
+    }
+
+    private fun uploadProfilePhoto(mediaFile: MediaFile){
+        val fileMultipart = getFileMultipart(mediaFile, "image")
+
+        disposableOnDetach(
+                networkService.uploadGroupProfilePhoto(groupUid!!,fileMultipart)
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                { result ->
+                                    val mediaUploadResult: MediaUploadResult? = result.body()
+                                    
+                                },
+                                { error ->
+                                    Timber.e(error)
+                                }
+                        )
+        )
+    }
+
+    private fun getFileMultipart(mediaFile: MediaFile, paramName: String): MultipartBody.Part? {
+        return try {
+            val file = File(mediaFile.absolutePath)
+            val requestFile = RequestBody.create(MediaType.parse(mediaFile.mimeType), file)
+            MultipartBody.Part.createFormData(paramName, file.name, requestFile)
+        } catch (e: Exception) {
+            Timber.e(e)
+            null
+        }
+    }
+
     @Throws(IOException::class)
     private fun createXlsFile(): File {
         val prefix = group!!.name.toLowerCase().trim().replace(" ", "-")
@@ -149,6 +221,7 @@ constructor(private val networkService: NetworkService, private val dbService: D
         fun exitToHome(messageToUser: Int)
         fun ensureWriteExteralStoragePermission(): Observable<Boolean>
         fun selectFileActionDialog(fileUri: Uri)
+        fun cameraForResult(contentProviderPath: String, s: String)
     }
 
     companion object {

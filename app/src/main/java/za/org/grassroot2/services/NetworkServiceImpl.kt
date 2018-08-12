@@ -402,16 +402,17 @@ constructor(private val grassrootUserApi: GrassrootUserApi,
                 mediaFile.uid,
                 mediaFile.mediaFunction,
                 mediaFile.mimeType,
-                getFileFromPath(mediaFile, "file")).flatMap(successHandler(mediaFile)).onErrorResumeNext(resumeHandler(mediaFile)).concatMap { uploadResult ->
-            if (uploadResult.uploadException == null) {
-                mediaFile.haltUploading(true)
-                mediaFile.isSentUpstream = true
-                mediaFile.serverUid = uploadResult.serverUid
-            } else {
-                mediaFile.haltUploading(false)
-            }
-            databaseService.storeObject(MediaFile::class.java, mediaFile)
-            Observable.just(uploadResult)
+                getFileFromPath(mediaFile, "file"))
+            .flatMap(successHandler(mediaFile)).onErrorResumeNext(resumeHandler(mediaFile)).concatMap { uploadResult ->
+                if (uploadResult.uploadException == null) {
+                    mediaFile.haltUploading(true)
+                    mediaFile.isSentUpstream = true
+                    mediaFile.serverUid = uploadResult.serverUid
+                } else {
+                    mediaFile.haltUploading(false)
+                }
+                databaseService.storeObject(MediaFile::class.java, mediaFile)
+                Observable.just(uploadResult)
         }
     }
 
@@ -435,6 +436,12 @@ constructor(private val grassrootUserApi: GrassrootUserApi,
         }, BackpressureStrategy.BUFFER)
 
     }
+
+    override fun uploadGroupProfilePhoto(groupUid: String, multipartBody: MultipartBody.Part?):Observable<Response<MediaUploadResult>> {
+        return grassrootUserApi.uploadGroupProfilePhoto(groupUid,multipartBody)
+                .doOnError { Timber.e(it) }
+    }
+
 
     private fun getFileFromPath(mediaFile: MediaFile, paramName: String): MultipartBody.Part? {
         return try {

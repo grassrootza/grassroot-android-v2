@@ -22,7 +22,7 @@ interface UserDetailsService {
     fun storeUserDetails(userUid: String,
                          userPhone: String,
                          userDisplayName: String,
-                         userEmailAddress: String,
+                         userEmailAddress: String?,
                          userLanguageCode: String,
                          userSystemRole: String?,
                          userToken: String): Single<UserProfile>

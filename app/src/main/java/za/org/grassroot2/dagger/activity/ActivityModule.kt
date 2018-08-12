@@ -2,6 +2,7 @@ package za.org.grassroot2.dagger.activity
 
 import android.content.Context
 import android.support.v7.app.AppCompatActivity
+
 import com.tbruyelle.rxpermissions2.RxPermissions
 import dagger.Module
 import dagger.Provides
@@ -19,14 +20,17 @@ import za.org.grassroot2.presenter.activity.PickContactPresenter
 import za.org.grassroot2.presenter.fragment.GroupFragmentPresenter
 import za.org.grassroot2.presenter.fragment.MemberListPresenter
 import za.org.grassroot2.presenter.fragment.SingleTextMultiButtonPresenter
+
 import za.org.grassroot2.services.*
 import za.org.grassroot2.services.rest.GrassrootAuthApi
+import za.org.grassroot2.services.rest.GrassrootUserApi
 import za.org.grassroot2.util.ContactHelper
 import za.org.grassroot2.util.ImageUtil
 import za.org.grassroot2.util.MediaRecorderWrapper
 import za.org.grassroot2.view.adapter.HomeAdapter
 import za.org.grassroot2.view.adapter.PostAdapter
 import za.org.grassroot2.view.adapter.VoteResultsAdapter
+
 import java.util.*
 
 /**
@@ -67,14 +71,17 @@ class ActivityModule(private val act: AppCompatActivity) {
 
     @Provides
     @PerActivity
-    internal fun provideGroupFragmentPresenter(dbService: DatabaseService, networkService: UserDetailsService): GroupFragmentPresenter {
-        return GroupFragmentPresenter(dbService, networkService)
+
+    internal fun provideGroupFragmentPresenter(dbService: DatabaseService, networkService: UserDetailsService, mediaService: MediaService, grassrootUserApi: GrassrootUserApi): GroupFragmentPresenter {
+        return GroupFragmentPresenter(dbService, networkService, mediaService, grassrootUserApi)
+
     }
 
     @Provides
     @PerActivity
-    internal fun provideGroupDetailsPresenter(dbService: DatabaseService, networkService: NetworkService): GroupDetailsPresenter {
-        return GroupDetailsPresenter(dbService, networkService)
+    internal fun provideGroupDetailsPresenter(dbService: DatabaseService, networkService: NetworkService, mediaService: MediaService): GroupDetailsPresenter {
+        return GroupDetailsPresenter(dbService, networkService, mediaService)
+
     }
 
     @Provides
@@ -97,6 +104,7 @@ class ActivityModule(private val act: AppCompatActivity) {
 
     @Provides
     @PerActivity
+
     internal fun provideRegistrationPresenter(grassrootAuthApi: GrassrootAuthApi,
                                               userDetailsService: UserDetailsService): RegistrationPresenter {
         return RegistrationPresenter(grassrootAuthApi, userDetailsService)

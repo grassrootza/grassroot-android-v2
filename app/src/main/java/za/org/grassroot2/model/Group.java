@@ -96,6 +96,9 @@ public class Group implements EntityForDownload, SelectableItem, Serializable, A
     @SerializedName("memberHistory")
     private Collection<MembershipLog> membershipLogs;
 
+    @DatabaseField
+    private String profileImageUrl;
+
     public Group() {
     }
 
@@ -213,6 +216,14 @@ public class Group implements EntityForDownload, SelectableItem, Serializable, A
 
     public void setMembershipLogs(Collection<MembershipLog> membershipLogs) {
         this.membershipLogs = membershipLogs;
+    }
+
+    public String getProfileImageUrl() {
+        return profileImageUrl;
+    }
+
+    public void setProfileImageUrl(String profileImageUrl) {
+        this.profileImageUrl = profileImageUrl;
     }
 
     @Override
