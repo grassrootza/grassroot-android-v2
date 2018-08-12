@@ -1,5 +1,6 @@
 package za.org.grassroot2.model.task;
 
+import android.location.Location;
 import android.text.TextUtils;
 
 import com.google.gson.annotations.SerializedName;
@@ -228,6 +229,12 @@ public class Vote implements Task, Syncable {
     @Override
     public boolean isPublic() {
         return false; // see above
+    }
+
+    @Override
+    public void setLocation(Location location) {
+//        this.longitude = location.getLongitude();
+//        this.latitude = location.getLatitude();
     }
 
     public List<String> getTags() {

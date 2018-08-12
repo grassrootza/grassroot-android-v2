@@ -1,5 +1,7 @@
 package za.org.grassroot2.model.task;
 
+import android.location.Location;
+
 import java.util.Date;
 
 import za.org.grassroot2.model.HomeFeedItem;
@@ -22,5 +24,7 @@ public interface Task extends EntityForDownload, SelectableItem, HomeFeedItem {
 
     boolean isUserPartOf();
     boolean isPublic();
+
+    void setLocation(Location location);
 
 }

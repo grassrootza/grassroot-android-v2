@@ -32,8 +32,7 @@ import za.org.grassroot2.view.fragment.HomeFragment
 import java.io.IOException
 
 class HomePresenter @Inject
-constructor(private val locationManager: LocationManager, private val dbService: DatabaseService, private val networkService: NetworkService,
-            private val userDetailsService: UserDetailsService ) : BaseFragmentPresenter<HomePresenter.HomeView>() {
+constructor(private val locationManager: LocationManager, private val dbService: DatabaseService, private val networkService: NetworkService) : BaseFragmentPresenter<HomePresenter.HomeView>() {
 
     private val testLat = -26.1925350
     private val testLong = 28.0373235
@@ -52,12 +51,12 @@ constructor(private val locationManager: LocationManager, private val dbService:
                 view.openTodoDetails(m)
             }
         }, { t -> t.printStackTrace() }))
-        disposableOnDetach(view.searchInputChanged().observeOn(main()).subscribe({ searchQuery ->
+        disposableOnDetach(view.searchInputChanged().observeOn(main()).subscribe { searchQuery ->
             view.filterData(searchQuery)
-        }))
-        disposableOnDetach(view.searchInputDone().observeOn(main()).subscribe({ searchQuery ->
+        })
+        disposableOnDetach(view.searchInputDone().observeOn(main()).subscribe { searchQuery ->
             seekIntentInSearch(searchQuery)
-        }))
+        })
     }
 
     private fun seekIntentInSearch(inputText: String) {

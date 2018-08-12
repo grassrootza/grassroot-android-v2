@@ -1,10 +1,12 @@
 package za.org.grassroot2.presenter.activity
 
+import android.location.Location
 import android.net.Uri
 import android.text.TextUtils
 import io.reactivex.Maybe
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 import timber.log.Timber
 import za.org.grassroot2.R
@@ -17,6 +19,7 @@ import za.org.grassroot2.model.task.Task
 import za.org.grassroot2.model.task.Todo
 import za.org.grassroot2.model.task.Vote
 import za.org.grassroot2.model.util.GroupPermissionChecker
+import za.org.grassroot2.services.LocationManager
 import za.org.grassroot2.services.MediaService
 import za.org.grassroot2.services.NetworkService
 import za.org.grassroot2.util.MediaRecorderWrapper
@@ -29,7 +32,8 @@ import javax.inject.Inject
 
 
 class CreateActionPresenter @Inject
-constructor(private val networkService: NetworkService, private val dbService: DatabaseService, private val mediaService: MediaService) : BasePresenter<CreateActionPresenter.CreateActionView>() {
+constructor(private val networkService: NetworkService, private val dbService: DatabaseService,
+            private val mediaService: MediaService, private val locationManager: LocationManager) : BasePresenter<CreateActionPresenter.CreateActionView>() {
 
     var task: Task? = null
         private set
@@ -37,13 +41,23 @@ constructor(private val networkService: NetworkService, private val dbService: D
     var group: Group? = null
         private set
 
-    private var currentMediaFileUid: String? = null
+    var currentMediaFileUid: String? = null
 
     var alert: LiveWireAlert? = null
         private set
 
     val alertAndGroupName: Maybe<Pair<String, LiveWireAlert>>
         get() = dbService.load(Group::class.java, alert!!.groupUid).map { group -> Pair(group.name, alert!!) }
+
+    private var locationSubscription = CompositeDisposable()
+
+    var currentLocation: Location? = null
+
+    fun establishLocation() {
+        locationSubscription.add(locationManager.currentLocation.subscribe({ location ->
+            currentLocation = location;
+        }, {t -> Timber.e(t) }))
+    }
 
     fun handleAudio(data: Uri?) {
         data?.let {
@@ -59,6 +73,7 @@ constructor(private val networkService: NetworkService, private val dbService: D
     }
 
     fun initTask(type: ActionType) {
+        establishLocation()
         when (type) {
             CreateActionPresenter.ActionType.Meeting -> {
                 task = Meeting()
@@ -85,13 +100,19 @@ constructor(private val networkService: NetworkService, private val dbService: D
 
     fun createTask(Type: GrassrootEntityType) {
         view.showProgressBar()
-        disposableOnDetach(networkService.createTask(task!!).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe({ task ->
+        Timber.d("Establishing task, have location? : %s", currentLocation)
+        currentLocation?.let { it -> task?.setLocation(it) }
+        disposableOnDetach(networkService.createTask(task!!)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({ _ ->
             Timber.e("subscriber completed, task created")
             view.closeProgressBar()
             view.uploadSuccessfull(Type)
-        }) { throwable ->
-            view.closeProgressBar()
-            view.uploadSuccessfull(Type)
+        }) {
+                    Timber.e(it, "Error creating task!")
+                    view.closeProgressBar()
+                    view.uploadSuccessfull(Type)
         })
     }
 

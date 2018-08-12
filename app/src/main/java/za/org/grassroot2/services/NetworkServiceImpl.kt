@@ -204,7 +204,9 @@ constructor(private val grassrootUserApi: GrassrootUserApi,
                     if (t.type.toString() == "MEETING") {
                         val m = localObject as Meeting
                         Timber.d("Here's what I'm sending: %s", m.toString())
-                        return grassrootUserApi.createMeeting("GROUP", m.parentUid, m.name,m.locationDescription, m.deadlineMillis, m.description, true, m.latitude, m.longitude,  m.assignedMemberUids, m.mediaFileUid)
+                        return grassrootUserApi.createMeeting("GROUP", m.parentUid, m.name, m.locationDescription,
+                                m.deadlineMillis, true, m.description,
+                                m.latitude, m.longitude,  m.assignedMemberUids, m.mediaFileUid)
                     }
                     else if (t.type.toString() == "VOTE") {
                         val v = localObject as Vote
