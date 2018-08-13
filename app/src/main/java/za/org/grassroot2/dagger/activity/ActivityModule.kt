@@ -92,8 +92,8 @@ class ActivityModule(private val act: AppCompatActivity) {
 
     @Provides
     @PerActivity
-    internal fun provideGroupSettingsPresenter(dbService: DatabaseService, networkService: NetworkService): GroupSettingsPresenter {
-        return GroupSettingsPresenter(networkService, dbService)
+    internal fun provideGroupSettingsPresenter(dbService: DatabaseService, networkService: NetworkService,mediaService: MediaService): GroupSettingsPresenter {
+        return GroupSettingsPresenter(networkService, dbService,mediaService)
     }
 
     @Provides

@@ -147,7 +147,7 @@ constructor(private val networkService: NetworkService, private val dbService: D
                             val mediaFile = dbService.loadObjectByUid(MediaFile::class.java, s)
                             currentMediaFileUid = s
 
-                            //view.cameraForResult(mediaFile!!.contentProviderPath, s)
+                            view.cameraForResult(mediaFile!!.contentProviderPath, s)
                         }) { throwable ->
                             Timber.e(throwable, "Error creating file")
                             view.showErrorSnackbar(R.string.error_file_creation)
@@ -155,19 +155,32 @@ constructor(private val networkService: NetworkService, private val dbService: D
     }
 
     fun cameraResult(){
-        disposableOnDetach(mediaService.captureMediaFile(currentMediaFileUid!!,500,500)
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        {
-                            val mediaFile = dbService.loadObjectByUid(MediaFile::class.java, currentMediaFileUid!!)
-                            if (mediaFile != null)
-                                uploadProfilePhoto(mediaFile)
-                        },
-                        {
-                            Timber.d(it)
-                        }
-                )
+        disposableOnDetach(
+                mediaService.captureMediaFile(currentMediaFileUid!!,500,500)
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                {
+                                    val mediaFile = dbService.loadObjectByUid(MediaFile::class.java, currentMediaFileUid!!)
+                                    if (mediaFile != null)
+                                        uploadProfilePhoto(mediaFile)
+                                },
+                                {
+                                    Timber.d(it)
+                                }
+                        )
         )
+    }
+
+    fun pickFromGallery() {
+        disposableOnDetach(view.ensureWriteExteralStoragePermission().flatMapSingle { aBoolean ->
+            when {
+                aBoolean -> mediaService.createFileForMedia("image/jpeg", MediaFile.FUNCTION_GROUP_PROFILE_PHOTO)
+                else -> throw Exception("Permission not granted")
+            }
+        }.subscribeOn(io()).observeOn(main()).subscribe({ s ->
+            currentMediaFileUid = s
+            view.pickFromGallery()
+        }, { it.printStackTrace() }))
     }
 
     private fun uploadProfilePhoto(mediaFile: MediaFile){
@@ -180,13 +193,20 @@ constructor(private val networkService: NetworkService, private val dbService: D
                         .subscribe(
                                 { result ->
                                     val mediaUploadResult: MediaUploadResult? = result.body()
-                                    
+                                    setGroupImageUrl(mediaUploadResult?.imageUrl)
+                                    view.setImage(mediaUploadResult?.imageUrl as String)
                                 },
                                 { error ->
                                     Timber.e(error)
                                 }
                         )
         )
+    }
+
+    fun setGroupImageUrl(imageUrl:String?){
+        val group :Group = dbService.loadGroup(groupUid as String) as Group
+        group?.profileImageUrl = imageUrl
+        dbService.storeObject(Group::class.java,group)
     }
 
     private fun getFileMultipart(mediaFile: MediaFile, paramName: String): MultipartBody.Part? {
@@ -222,6 +242,8 @@ constructor(private val networkService: NetworkService, private val dbService: D
         fun ensureWriteExteralStoragePermission(): Observable<Boolean>
         fun selectFileActionDialog(fileUri: Uri)
         fun cameraForResult(contentProviderPath: String, s: String)
+        fun setImage(imageUrl:String)
+        fun pickFromGallery()
     }
 
     companion object {

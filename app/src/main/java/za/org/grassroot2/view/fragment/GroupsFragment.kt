@@ -119,7 +119,7 @@ class GroupsFragment : GrassrootFragment(), GroupFragmentPresenter.GroupFragment
     override fun pickFromGallery() {
         val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
         intent.type = "image/*"
-        activity?.startActivityForResult(intent, REQUEST_GALLERY)
+        startActivityForResult(intent, REQUEST_GALLERY)
     }
 
     override fun renderEmptyFailedSync() {
@@ -142,7 +142,6 @@ class GroupsFragment : GrassrootFragment(), GroupFragmentPresenter.GroupFragment
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-
         if (resultCode == Activity.RESULT_OK) {
             if (requestCode == REQUEST_TAKE_PHOTO) {
                 presenter.cameraResult()

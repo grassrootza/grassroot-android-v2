@@ -8,6 +8,7 @@ import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
+import android.support.v4.app.ActivityCompat
 import android.support.v4.graphics.drawable.RoundedBitmapDrawable
 import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory
 import android.view.View
@@ -37,6 +38,7 @@ class GroupSettingsActivity : GrassrootActivity(), GroupSettingsPresenter.GroupS
     private val REQUEST_TAKE_PHOTO = 2
     private val REQUEST_GALLERY = 3
 
+    private lateinit var dialog:SelectImageDialog
     private var groupUid: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -73,7 +75,7 @@ class GroupSettingsActivity : GrassrootActivity(), GroupSettingsPresenter.GroupS
         }else{
             changePhoto.visibility = View.VISIBLE
             changePhoto.setOnClickListener { v ->
-                val dialog:SelectImageDialog = SelectImageDialog.newInstance(R.string.select_image,false);
+                dialog = SelectImageDialog.newInstance(R.string.select_image,false);
                 dialog.show(supportFragmentManager,"DIALOG_TAG")
             }
         }
@@ -165,11 +167,25 @@ class GroupSettingsActivity : GrassrootActivity(), GroupSettingsPresenter.GroupS
     }
 
     override fun openCamera() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        rxPermission.request(Manifest.permission.CAMERA).subscribe({
+            if(it){
+                presenter.takePhoto()
+            }else{
+                ActivityCompat.requestPermissions(this,arrayOf(Manifest.permission.CAMERA),3)
+            }
+        },{
+            Timber.e(it)
+        })
     }
 
     override fun pickImageFromGallery() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        presenter.pickFromGallery()
+    }
+
+    override fun pickFromGallery() {
+        val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+        intent.type = "image/*"
+        startActivityForResult(intent, REQUEST_GALLERY)
     }
 
     override fun cameraForResult(contentProviderPath: String, s: String) {
@@ -187,10 +203,34 @@ class GroupSettingsActivity : GrassrootActivity(), GroupSettingsPresenter.GroupS
             } else if(requestCode == REQUEST_GALLERY){
                 val imageUri:Uri = data!!.data
 
-                //presenter.setGroupImageUrl(imageUri.toString())
-                //setImage(imageUri.toString())
+                presenter.setGroupImageUrl(imageUri.toString())
+                setImage(imageUri.toString())
             }
         }
+    }
+
+    override fun setImage(imageUrl: String) {
+
+        Picasso.get()
+                .load(imageUrl)
+                .resizeDimen(R.dimen.profile_photo_width, R.dimen.profile_photo_height)
+                .centerCrop()
+                .into(groupPhoto, object : Callback {
+                    override fun onSuccess() {
+                        val imageBitmap = (groupPhoto.drawable as BitmapDrawable).bitmap
+                        val imageDrawable: RoundedBitmapDrawable = RoundedBitmapDrawableFactory.create(resources, imageBitmap)
+                        imageDrawable.isCircular = true
+                        imageDrawable.cornerRadius = Math.max(imageBitmap.width, imageBitmap.height) / 2.0f
+                        groupPhoto.setImageDrawable(imageDrawable)
+                        dialog.dismiss()
+                    }
+
+                    override fun onError(e: java.lang.Exception?) {
+                        Timber.e(e)
+                        dialog.dismiss()
+                    }
+
+                })
     }
 
     companion object {

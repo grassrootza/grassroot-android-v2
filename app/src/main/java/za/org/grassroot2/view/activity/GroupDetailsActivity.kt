@@ -215,6 +215,7 @@ class GroupDetailsActivity : GrassrootActivity(), GroupDetailsPresenter.GroupDet
                     }
 
                     override fun onError(e: Exception?) {
+                        Timber.e(e?.message)
                     }
 
                 })
