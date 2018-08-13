@@ -135,7 +135,6 @@
     </activity>
         <activity
             android:name=".view.activity.CreateActionActivity"
-            android:screenOrientation="portrait"
             android:theme="@style/Theme.AppCompat.Transparent"
             android:windowSoftInputMode="adjustPan" />
         <activity
@@ -162,11 +161,9 @@
 
         <activity
             android:name=".view.activity.RecordAudioActivity"
-            android:screenOrientation="portrait"
             android:theme="@style/Theme.AppCompat.Transparent" />
         <activity
             android:name=".view.activity.RecordVideoActivity"
-            android:screenOrientation="portrait"
             android:theme="@style/Theme.AppCompat.FullScreen" />
 
         <receiver

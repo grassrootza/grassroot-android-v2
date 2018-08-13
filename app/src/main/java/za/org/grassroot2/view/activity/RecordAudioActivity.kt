@@ -16,6 +16,7 @@ import kotlinx.android.synthetic.main.activity_record_audio.*
 import timber.log.Timber
 import za.org.grassroot2.R
 import za.org.grassroot2.dagger.activity.ActivityComponent
+import za.org.grassroot2.model.task.LanguageEntity
 import za.org.grassroot2.presenter.activity.RecordAudioPresenter
 import za.org.grassroot2.view.adapter.GenericViewPagerAdapter
 import za.org.grassroot2.view.fragment.ActionSingleInputFragment
@@ -94,9 +95,10 @@ class RecordAudioActivity : GrassrootActivity(), RecordAudioPresenter.RecordAudi
         }
     }
 
-    override fun initiateCreateAction(actionToInitiate: Int) {
+    override fun initiateCreateAction(actionToInitiate: Int, entities: ArrayList<LanguageEntity>?) {
         Timber.d("initiating create action activity, with actionToInitiate ... " + actionToInitiate)
-        CreateActionActivity.startOnAction(activity, actionToInitiate, null)
+        Timber.e("Entities found: %s. Passing to CreateActionActivity...", entities)
+        CreateActionActivity.startOnAction(activity, actionToInitiate, null, entities)
     }
 
     override fun onDestroy() {

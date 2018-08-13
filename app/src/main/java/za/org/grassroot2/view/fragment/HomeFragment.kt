@@ -120,7 +120,7 @@ class HomeFragment : GrassrootFragment(), HomePresenter.HomeView {
 
     override fun initiateCreateAction(actionToInitiate: Int) {
         Timber.d("initiating create action activity, with actionToInitiate ... %s", actionToInitiate)
-        activity?.let { CreateActionActivity.startOnAction(it, actionToInitiate, null) }
+        activity?.let { CreateActionActivity.startOnAction(it, actionToInitiate, null, null) }
     }
 
     private fun refreshView() {

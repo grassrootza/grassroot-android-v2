@@ -1,8 +1,11 @@
 package za.org.grassroot2.model.task;
 
-public class LanguageEntity {
+import android.os.Parcel;
+import android.os.Parcelable;
 
-    private String entityType;
+public class LanguageEntity implements Parcelable {
+
+    private String entity;
 
     private String value;
 
@@ -10,10 +13,42 @@ public class LanguageEntity {
 
     private int end;
 
+    protected LanguageEntity(Parcel in) {
+        entity = in.readString();
+        value = in.readString();
+        start = in.readInt();
+        end = in.readInt();
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(entity);
+        dest.writeString(value);
+        dest.writeInt(start);
+        dest.writeInt(end);
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    public static final Creator<LanguageEntity> CREATOR = new Creator<LanguageEntity>() {
+        @Override
+        public LanguageEntity createFromParcel(Parcel in) {
+            return new LanguageEntity(in);
+        }
+
+        @Override
+        public LanguageEntity[] newArray(int size) {
+            return new LanguageEntity[size];
+        }
+    };
+
     @Override
     public String toString() {
         return "LanguageEntity{" +
-                "entityType='" + entityType + '\'' +
+                "entityType='" + entity + '\'' +
                 ", value='" + value + '\'' +
                 ", start=" + start +
                 ", end=" + end +
@@ -21,11 +56,11 @@ public class LanguageEntity {
     }
 
     public String getEntityType() {
-        return entityType;
+        return entity;
     }
 
     public void setEntityType(String entityType) {
-        this.entityType = entityType;
+        this.entity = entityType;
     }
 
     public String getValue() {

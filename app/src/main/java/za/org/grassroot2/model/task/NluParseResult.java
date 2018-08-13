@@ -1,5 +1,6 @@
 package za.org.grassroot2.model.task;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class NluParseResult {
@@ -8,7 +9,7 @@ public class NluParseResult {
 
     private LanguageIntent intent;
 
-    private List<LanguageEntity> entities;
+    private ArrayList<LanguageEntity> entities;
 
     public String getOriginalText() {
         return originalText;
@@ -20,7 +21,7 @@ public class NluParseResult {
         return "NluParseResult{" +
                 "originalText='" + originalText + '\'' +
                 ", intent=" + intent.toString() +
-                ", entiities=" + entities +
+                ", entities=" + entities +
                 '}';
     }
 
@@ -36,11 +37,11 @@ public class NluParseResult {
         this.intent = intent;
     }
 
-    public List<LanguageEntity> getEntities() {
+    public ArrayList<LanguageEntity> getEntities() {
         return entities;
     }
 
-    public void setEntiities(List<LanguageEntity> entiities) {
+    public void setEntiities(ArrayList<LanguageEntity> entiities) {
         this.entities = entiities;
     }
 }
