@@ -1,5 +1,6 @@
 package za.org.grassroot2.model.task;
 
+import android.location.Location;
 import android.text.TextUtils;
 
 import com.google.gson.annotations.SerializedName;
@@ -339,6 +340,12 @@ public class Todo implements Task, Syncable {
     @Override
     public boolean isPublic() {
         return publicTodo;
+    }
+
+    @Override
+    public void setLocation(Location location) {
+//        this.longitude = location.getLongitude();
+//        this.latitude = location.getLatitude();
     }
 
     public String getRecorderName() {

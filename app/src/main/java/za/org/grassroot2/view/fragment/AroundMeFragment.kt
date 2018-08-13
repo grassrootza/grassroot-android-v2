@@ -51,16 +51,13 @@ class AroundMeFragment : GrassrootFragment(), AroundMePresenter.AroundMeView, Go
         super.onViewCreated(view, savedInstanceState)
         presenter.attach(this)
         toolbar.setTitle(R.string.title_around)
-        Timber.e("Set up around me fragment, calling the map")
         val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
-//        childFragmentManager.beginTransaction().add(R.id.mapContainer, mapFragment).commit()
-        Timber.e("Map fragment is now up, or should be")
         mapFragment.getMapAsync { googleMap ->
-            Timber.e("Received a map!")
             setMarkerInfoClick(googleMap)
             requestLocation()
         }
 
+        fab.setOnClickListener { presenter.loadItemsAround() }
     }
 
     private fun setMarkerInfoClick(googleMap: GoogleMap) {

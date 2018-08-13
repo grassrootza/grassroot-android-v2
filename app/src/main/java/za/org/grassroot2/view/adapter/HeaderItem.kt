@@ -1,5 +1,6 @@
 package za.org.grassroot2.view.adapter
 
+import android.location.Location
 import java.util.Date
 
 import za.org.grassroot2.model.enums.GrassrootEntityType
@@ -70,4 +71,6 @@ class HeaderItem(private val headerName: String) : Task {
     override fun searchableContent(): String? {
         return null
     }
+
+    override fun setLocation(location: Location?) { }
 }

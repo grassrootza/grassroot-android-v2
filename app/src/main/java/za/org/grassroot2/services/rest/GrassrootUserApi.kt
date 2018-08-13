@@ -102,12 +102,12 @@ interface GrassrootUserApi {
                       @Query("subject") subject: String,
                       @Query("location") location: String,
                       @Query("dateTimeEpochMillis") created: Long,
-                      @Query("description") description: String,
                       @Query("publicMeeting") publicMeeting: Boolean,
-                      @Query("userLat") userLatitude: Double,
-                      @Query("userLong") userLongitude: Double,
-                      @Query("assignedMembersUids") assignedMembersUids: List<String>,
-                      @Query("mediaFileUid") mediaFileUid: String): Observable<Response<Task>>
+                      @Query("description") description: String?,
+                      @Query("userLat") userLatitude: Double?,
+                      @Query("userLong") userLongitude: Double?,
+                      @Query("assignedMembersUids") assignedMembersUids: List<String>?,
+                      @Query("mediaFileUid") mediaFileUid: String?): Observable<Response<Task>>
 
     @POST("/v2/api/task/create/vote/{parentType}/{parentUid}")
     fun createVote(@Path("parentType") parentType: String,
@@ -177,7 +177,7 @@ interface GrassrootUserApi {
     fun getAllAround(@Query("longitude") longitude: Double,
                      @Query("latitude") latitude: Double,
                      @Query("radiusMetres") radius: Int,
-                     @Query("saerchType") serachType: String): Observable<List<AroundEntity>>
+                     @Query("searchType") serachType: String): Observable<List<AroundEntity>>
 
 
     @Multipart

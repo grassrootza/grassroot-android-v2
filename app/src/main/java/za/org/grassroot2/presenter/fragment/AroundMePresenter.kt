@@ -10,6 +10,7 @@ import javax.inject.Inject
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
+import timber.log.Timber
 import za.org.grassroot2.database.DatabaseService
 import za.org.grassroot2.model.AroundEntity
 import za.org.grassroot2.model.Group
@@ -23,6 +24,8 @@ class AroundMePresenter @Inject
 constructor(private val locationManager: LocationManager, private val networkService: NetworkService, private val dbService: DatabaseService) : BaseFragmentPresenter<AroundMePresenter.AroundMeView>() {
     private val testLat = -26.1925350
     private val testLong = 28.0373235
+
+    private var userLocation: Location? = null;
     private val existingLocations = HashSet<String>()
     private var locationSubscription = CompositeDisposable()
 
@@ -30,13 +33,19 @@ constructor(private val locationManager: LocationManager, private val networkSer
         val l = Location("")
         l.latitude = testLat
         l.longitude = testLong
-        locationSubscription.add(locationManager.currentLocation.subscribe({ location -> view.renderLocation(l) }, {t -> t.printStackTrace() }))
+        locationSubscription.add(locationManager.currentLocation.subscribe({ location ->
+            view.renderLocation(location)
+            userLocation = location;
+        }, {t -> Timber.e(t) }))
     }
 
     override fun onViewCreated() {}
 
     fun loadItemsAround() {
+        Timber.e("Fetching items around: default long - %f, default lat - %f, user location: %s", testLong, testLat, userLocation)
         unsubscribeLocation()
+        val long = userLocation?.longitude ?: testLong;
+        val lat = userLocation?.latitude ?: testLat;
         disposableOnDetach(networkService.getAllAround(testLong, testLat, 5000).flatMap { resource ->
             if (resource.status != Status.ERROR) {
                 adjustLocations(resource.data!!)
