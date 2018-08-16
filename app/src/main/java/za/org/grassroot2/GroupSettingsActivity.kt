@@ -4,6 +4,7 @@ import android.Manifest
 import android.app.Activity
 import android.content.ActivityNotFoundException
 import android.content.Intent
+import android.database.Cursor
 import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
 import android.os.Bundle
@@ -12,6 +13,7 @@ import android.support.v4.app.ActivityCompat
 import android.support.v4.graphics.drawable.RoundedBitmapDrawable
 import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory
 import android.view.View
+import android.webkit.MimeTypeMap
 import android.widget.Toast
 import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
@@ -22,6 +24,7 @@ import timber.log.Timber
 import za.org.grassroot2.dagger.activity.ActivityComponent
 import za.org.grassroot2.model.Group
 import za.org.grassroot2.presenter.activity.GroupSettingsPresenter
+import za.org.grassroot2.util.FileUtil
 import za.org.grassroot2.view.activity.DashboardActivity
 import za.org.grassroot2.view.activity.GrassrootActivity
 import za.org.grassroot2.view.dialog.GenericSelectDialog
@@ -203,8 +206,15 @@ class GroupSettingsActivity : GrassrootActivity(), GroupSettingsPresenter.GroupS
             } else if(requestCode == REQUEST_GALLERY){
                 val imageUri:Uri = data!!.data
 
-                presenter.setGroupImageUrl(imageUri.toString())
-                setImage(imageUri.toString())
+                val filePathColumn = arrayOf(MediaStore.Images.Media.DATA)
+                val cursor:Cursor = contentResolver.query(imageUri,filePathColumn,null,null,null)!!
+
+                cursor.moveToFirst()
+
+                val columdIndex = cursor.getColumnIndex(filePathColumn[0])
+                val mediaPath = cursor.getString(columdIndex)
+
+                presenter.uploadFromGallery(imageUri,mediaPath)
             }
         }
     }

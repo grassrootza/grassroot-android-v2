@@ -5,6 +5,7 @@ import android.app.Activity
 import android.app.AlertDialog
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.database.Cursor
 import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
 import android.os.Bundle
@@ -195,8 +196,15 @@ class GroupDetailsActivity : GrassrootActivity(), GroupDetailsPresenter.GroupDet
             } else if(requestCode == REQUEST_GALLERY){
                 val imageUri:Uri = data!!.data
 
-                presenter.setGroupImageUrl(imageUri.toString())
-                setImage(imageUri.toString())
+                val filePathColumn = arrayOf(MediaStore.Images.Media.DATA)
+                val cursor: Cursor = contentResolver.query(imageUri,filePathColumn,null,null,null)!!
+
+                cursor.moveToFirst()
+
+                val columdIndex = cursor.getColumnIndex(filePathColumn[0])
+                val mediaPath = cursor.getString(columdIndex)
+
+                presenter.uploadFromGallery(imageUri,mediaPath)
             } else if (requestCode == REQUEST_PICK_CONTACTS && resultCode == Activity.RESULT_OK) {
                 val contacts = data!!.getSerializableExtra(PickContactActivity.EXTRA_CONTACTS) as? ArrayList<Contact>
                 presenter.inviteContacts(contacts)

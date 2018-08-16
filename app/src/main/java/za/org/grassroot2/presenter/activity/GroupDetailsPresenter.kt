@@ -1,5 +1,6 @@
 package za.org.grassroot2.presenter.activity
 
+import android.net.Uri
 import io.reactivex.Observable
 import org.greenrobot.eventbus.EventBus
 
@@ -111,6 +112,45 @@ constructor(private val databaseService: DatabaseService,
         }, { it.printStackTrace() }))
     }
 
+    fun uploadFromGallery(imageUri: Uri, fileName:String){
+
+        disposableOnDetach(
+                mediaService.storeGalleryFile(currentMediaFileUid!!,imageUri)
+                        .observeOn(main())
+                        .subscribe({
+                            val mediaFile = databaseService.loadObjectByUid(MediaFile::class.java, currentMediaFileUid!!)
+                            if(mediaFile != null){
+                                //uploadProfilePhoto(mediaFile)
+                                uploadProfilePhotoFromGallery(fileName,mediaFile)
+                            }
+                        }){
+                            Timber.d("ERROR ------>>>>")
+                            Timber.e(it)
+                        }
+        )
+    }
+
+    fun uploadProfilePhotoFromGallery(mediaPath: String?,mediaFile: MediaFile){
+        val fileMultipartBody = getFileMultipartFromMediaPath(mediaPath,"image",mediaFile)
+
+        disposableOnDetach(
+                networkService.uploadGroupProfilePhoto(groupUid!!,fileMultipartBody)
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                { result ->
+                                    val mediaUploadResult: MediaUploadResult? = result.body()
+
+                                    setGroupImageUrl(mediaUploadResult?.imageUrl)
+                                    view.setImage(mediaUploadResult?.imageUrl as String)
+                                },
+                                { error ->
+                                    Timber.e(error)
+                                }
+                        )
+        )
+    }
+
     fun setGroupImageUrl(imageUrl:String?){
         val group :Group = databaseService.loadGroup(groupUid as String) as Group
         group?.profileImageUrl = imageUrl
@@ -141,6 +181,17 @@ constructor(private val databaseService: DatabaseService,
     private fun getFileMultipart(mediaFile: MediaFile, paramName: String): MultipartBody.Part? {
         return try {
             val file = File(mediaFile.absolutePath)
+            val requestFile = RequestBody.create(MediaType.parse(mediaFile.mimeType), file)
+            MultipartBody.Part.createFormData(paramName, file.name, requestFile)
+        } catch (e: Exception) {
+            Timber.e(e)
+            null
+        }
+    }
+
+    private fun getFileMultipartFromMediaPath(mediaPath:String?, paramName: String, mediaFile: MediaFile) : MultipartBody.Part? {
+        return try {
+            val file = File(mediaPath)
             val requestFile = RequestBody.create(MediaType.parse(mediaFile.mimeType), file)
             MultipartBody.Part.createFormData(paramName, file.name, requestFile)
         } catch (e: Exception) {

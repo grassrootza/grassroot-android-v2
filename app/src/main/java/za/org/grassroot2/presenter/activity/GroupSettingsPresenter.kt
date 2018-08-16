@@ -183,6 +183,24 @@ constructor(private val networkService: NetworkService, private val dbService: D
         }, { it.printStackTrace() }))
     }
 
+    fun uploadFromGallery(imageUri: Uri,fileName:String){
+
+        disposableOnDetach(
+                mediaService.storeGalleryFile(currentMediaFileUid!!,imageUri)
+                        .observeOn(main())
+                        .subscribe({
+                            val mediaFile = dbService.loadObjectByUid(MediaFile::class.java, currentMediaFileUid!!)
+                            if(mediaFile != null){
+                                //uploadProfilePhoto(mediaFile)
+                                uploadProfilePhotoFromGallery(fileName,mediaFile)
+                            }
+                        }){
+                            Timber.d("ERROR ------>>>>")
+                            Timber.e(it)
+                        }
+        )
+    }
+
     private fun uploadProfilePhoto(mediaFile: MediaFile){
         val fileMultipart = getFileMultipart(mediaFile, "image")
 
@@ -203,6 +221,27 @@ constructor(private val networkService: NetworkService, private val dbService: D
         )
     }
 
+    fun uploadProfilePhotoFromGallery(mediaPath: String?,mediaFile: MediaFile){
+        val fileMultipartBody = getFileMultipartFromMediaPath(mediaPath,"image",mediaFile)
+
+        disposableOnDetach(
+                networkService.uploadGroupProfilePhoto(groupUid!!,fileMultipartBody)
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                { result ->
+                                    val mediaUploadResult: MediaUploadResult? = result.body()
+
+                                    setGroupImageUrl(mediaUploadResult?.imageUrl)
+                                    view.setImage(mediaUploadResult?.imageUrl as String)
+                                },
+                                { error ->
+                                    Timber.e(error)
+                                }
+                        )
+        )
+    }
+
     fun setGroupImageUrl(imageUrl:String?){
         val group :Group = dbService.loadGroup(groupUid as String) as Group
         group?.profileImageUrl = imageUrl
@@ -212,6 +251,17 @@ constructor(private val networkService: NetworkService, private val dbService: D
     private fun getFileMultipart(mediaFile: MediaFile, paramName: String): MultipartBody.Part? {
         return try {
             val file = File(mediaFile.absolutePath)
+            val requestFile = RequestBody.create(MediaType.parse(mediaFile.mimeType), file)
+            MultipartBody.Part.createFormData(paramName, file.name, requestFile)
+        } catch (e: Exception) {
+            Timber.e(e)
+            null
+        }
+    }
+
+    private fun getFileMultipartFromMediaPath(mediaPath:String?, paramName: String, mediaFile: MediaFile) : MultipartBody.Part? {
+        return try {
+            val file = File(mediaPath)
             val requestFile = RequestBody.create(MediaType.parse(mediaFile.mimeType), file)
             MultipartBody.Part.createFormData(paramName, file.name, requestFile)
         } catch (e: Exception) {
