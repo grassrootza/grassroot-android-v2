@@ -120,7 +120,7 @@ constructor(private val locationManager: LocationManager, private val dbService:
                         Timber.e("No pending task found. MOving on..")
                     }
                 }, { t -> t.printStackTrace() }))*/
-        view.closeProgressBar()
+//        view.closeProgressBar()
         Timber.d("Network request sent?")
     }
 
@@ -145,10 +145,10 @@ constructor(private val locationManager: LocationManager, private val dbService:
                 Timber.d("The contents of variable t are: %s", t)
             }
             networkService.getTasksByUids(uids)
-        }.observeOn(main()).subscribe({ tasksFull ->
+        }.observeOn(main()).subscribe { tasksFull ->
             dbService.storeTasks(tasksFull)
             prepareAndRenderItems()
-        })
+        }
         Timber.d("location beta exit ping.")
     }
 
@@ -160,6 +160,7 @@ constructor(private val locationManager: LocationManager, private val dbService:
         homeItems.sortByDescending { homeFeedItem -> homeFeedItem.date() }
         view.render(homeItems)
         view.stopRefreshing()
+        view.closeProgressBar()
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
