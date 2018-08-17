@@ -84,11 +84,10 @@ class HomeFragment : GrassrootFragment(), HomePresenter.HomeView {
         entity.setText(pending.entityType)
 
         val creator = dialogView.findViewById(R.id.creatorField) as TextView
-        creator.text = "Created by: " + pending.creatorName
+        creator.text = getString(R.string.created_by_string, pending.creatorName)
 
         val pendingDescription = dialogView.findViewById(R.id.contentField) as TextView
-        pendingDescription.setText(pending.title)
-
+        pendingDescription.text = pending.title
 
         (dialogView.findViewById(R.id.pending_task_open) as Button).setOnClickListener { _ ->
             openPendingTask(pending)
@@ -105,15 +104,16 @@ class HomeFragment : GrassrootFragment(), HomePresenter.HomeView {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        homeItemList.layoutManager = LinearLayoutManager(activity)
-        homeItemList.adapter = adapter
-//        (activity as AppCompatActivity).setSupportActionBar(toolbar)
+
         fab.setOnClickListener { _ -> CreateActionActivity.startFromHome(activity as AppCompatActivity) }
         toolbar.setTitle(R.string.title_home)
         refreshLayout.setOnRefreshListener { reloadView() }
         presenter.onViewCreated()
-        refreshView()
 
+        homeItemList.layoutManager = LinearLayoutManager(activity)
+        homeItemList.adapter = adapter
+
+        refreshView()
     }
 
     override fun initiateCreateAction(actionToInitiate: Int) {
@@ -122,13 +122,13 @@ class HomeFragment : GrassrootFragment(), HomePresenter.HomeView {
     }
 
     private fun refreshView() {
-        presenter.loadHomeItems()
+        presenter.reloadHomeItems()
         requestLocation()
+        presenter.getTasksFromDbAndRender()
     }
 
     private fun reloadView() {
         presenter.reloadHomeItems()
-        Timber.d("Positive ping at location alpha")
         requestLocation()
     }
 
@@ -143,6 +143,12 @@ class HomeFragment : GrassrootFragment(), HomePresenter.HomeView {
     }
 
     override fun render(tasks: List<HomeFeedItem>) {
+        Timber.e("Calling render tasks, etc, with %d items", tasks.size);
+        if (alert.visibility == View.VISIBLE) {
+            alert.visibility = View.GONE
+        }
+        refreshLayout.visibility = View.VISIBLE
+        homeItemList.visibility = View.VISIBLE
         adapter.setData(tasks)
     }
 

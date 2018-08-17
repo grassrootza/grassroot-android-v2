@@ -351,5 +351,7 @@
     <string name="sign_in">Sign in</string>
     <string name="forgot_password">I FORGOT MY PASSWORD</string>
     <string name="search">Search</string>
+    <string name="loading_meetings_tasks_alerts">Loading meetings, tasks, alerts …</string>
+    <string name="created_by_string">Created by: %1$s</string>
 
 </resources>

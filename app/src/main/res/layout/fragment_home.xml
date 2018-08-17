@@ -70,6 +70,7 @@
         android:id="@+id/refreshLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:visibility="gone"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <android.support.v7.widget.RecyclerView
@@ -78,6 +79,18 @@
             android:layout_height="wrap_content" />
 
     </android.support.v4.widget.SwipeRefreshLayout>
+
+    <TextView
+        android:id="@+id/alert"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
+        android:gravity="center"
+        style="@style/LargeHeader"
+        android:paddingStart="@dimen/padding_std_xlarge"
+        android:paddingEnd="@dimen/padding_std_xlarge"
+        android:visibility="visible"
+        android:text="@string/loading_meetings_tasks_alerts" />
 
 
     <android.support.design.widget.FloatingActionButton

@@ -59,7 +59,7 @@ class NetworkModule {
                 builder.sslSocketFactory(sslSocketFactory, trustAllCerts[0] as X509TrustManager)
                 builder.hostnameVerifier { hostname, session -> true }
                 val logging = HttpLoggingInterceptor()
-                logging.level = HttpLoggingInterceptor.Level.BODY
+                logging.level = HttpLoggingInterceptor.Level.HEADERS
                 builder.addInterceptor(logging)
                 builder.retryOnConnectionFailure(true)
                 return builder.build()

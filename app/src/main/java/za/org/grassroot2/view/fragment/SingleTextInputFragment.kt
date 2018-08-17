@@ -46,12 +46,13 @@ class SingleTextInputFragment : TextInputFragment(), SingleInputNextOtherView {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         val v = super.onCreateView(inflater, container, savedInstanceState)
-        header.setText(headerTextRes)
-        explanation!!.setText(explanTextRes)
 
-        nextButton.setText(nextBtnRes)
-        inputLabel.setText(inputLabelRes)
-        inputText.setHint(inputHintRes)
+        header?.setText(headerTextRes)
+        explanation?.setText(explanTextRes)
+
+        nextButton?.setText(nextBtnRes)
+        inputLabel?.setText(inputLabelRes)
+        inputText?.setHint(inputHintRes)
 
         lifecyclePublisher.onNext(GrassrootFragment.ACTION_FRAGMENT_VIEW_CREATED)
         return v

@@ -32,16 +32,20 @@ import za.org.grassroot2.view.fragment.HomeFragment
 import java.io.IOException
 
 class HomePresenter @Inject
-constructor(private val locationManager: LocationManager, private val dbService: DatabaseService, private val networkService: NetworkService) : BaseFragmentPresenter<HomePresenter.HomeView>() {
+constructor(private val locationManager: LocationManager, private val dbService: DatabaseService, private val networkService: NetworkService, private val userDetailsService: UserDetailsService) : BaseFragmentPresenter<HomePresenter.HomeView>() {
 
     private val testLat = -26.1925350
     private val testLong = 28.0373235
+
     private var currentAlerts: List<LiveWireAlert> = listOf()
     private var currentTasks: List<Task> = listOf()
     private var currentPublicMeetings: List<AroundEntity> = listOf()
     private var homeItems: MutableList<HomeFeedItem> = mutableListOf()
 
+    private var syncComplete = false;
+
     override fun onViewCreated() {
+        view.showProgressBar()
         disposableOnDetach(view.listItemClick().subscribe({ m ->
             if (m is Meeting) {
                 view.openMeetingDetails(m)
@@ -59,6 +63,35 @@ constructor(private val locationManager: LocationManager, private val dbService:
         })
     }
 
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun syncComplete(e: SyncAdapter.SyncCompletedEvent) {
+        Timber.e("Complete! Sync done, proceed to draw from DB")
+        getTasksFromDbAndRender()
+    }
+
+    fun getTasksFromDbAndRender() {
+        disposableOnDetach(dbService.loadAllTasksSorted().subscribeOn(io()).observeOn(main()).subscribe({ tasks ->
+            currentTasks = tasks.toList()
+            Timber.e("getTaskFromDBAndRender : Fetched tasks from DB, rendering")
+            prepareAndRenderItems()
+        }, { t -> t.printStackTrace() }))
+    }
+
+    private fun prepareAndRenderItems() {
+        if (userDetailsService.isSyncCompleted) {
+            homeItems.clear()
+            homeItems.addAll(currentTasks)
+            homeItems.addAll(currentAlerts)
+            homeItems.addAll(currentPublicMeetings)
+            homeItems.sortByDescending { homeFeedItem -> homeFeedItem.date() }
+            Timber.e("Preparing and rendering items, %d current tasks", currentTasks.size)
+            view.render(homeItems)
+            view.stopRefreshing()
+            view.closeProgressBar()
+        }
+    }
+
+
     private fun seekIntentInSearch(inputText: String) {
         disposableOnDetach(networkService.seekIntentInText(inputText).observeOn(main()).subscribeOn(io()).subscribe({ t: NluResponse? ->
             if (t?.intent != null && t.intent.getActionEquivalent() != R.id.unknownIntent) {
@@ -74,7 +107,8 @@ constructor(private val locationManager: LocationManager, private val dbService:
         l.longitude = testLong
         disposableOnDetach(locationManager.currentLocation.subscribe({ location ->
             loadAlertsAround(l)
-            getPublicMeetings(l)
+            if (syncComplete)
+                getPublicMeetings(l)
         }, { t ->
             t.printStackTrace()
             view.stopRefreshing()
@@ -85,11 +119,13 @@ constructor(private val locationManager: LocationManager, private val dbService:
         disposableOnDetach(dbService.loadPublicMeetings().observeOn(main()).subscribeOn(io()).subscribe({ meetings ->
             if (!meetings.isEmpty()) {
                 currentPublicMeetings = meetings.toList()
+                Timber.e("Calling prepare and render from get public meetings")
                 prepareAndRenderItems()
             } else {
                 disposableOnDetach(networkService.getAllAround(location.longitude, location.latitude, 5000).observeOn(main()).subscribeOn(io()).subscribe({ t ->
                     currentPublicMeetings = t.data?.filter { aroundEntity -> aroundEntity.type == GrassrootEntityType.MEETING } ?: listOf()
-                    if (!currentPublicMeetings.isEmpty()) {
+                    if (syncComplete && !currentPublicMeetings.isEmpty()) {
+                        Timber.e("Calling prepare and render from get public meetings")
                         prepareAndRenderItems()
                     }
                 }, { t -> t.printStackTrace() }))
@@ -100,36 +136,32 @@ constructor(private val locationManager: LocationManager, private val dbService:
     private fun loadAlertsAround(location: Location) {
         disposableOnDetach(networkService.getAlertsAround(location.longitude, location.latitude, 5000).subscribeOn(io()).observeOn(main()).subscribe({ alerts ->
             currentAlerts = alerts.toList()
-            prepareAndRenderItems()
+            if (syncComplete) {
+                Timber.e("")
+                prepareAndRenderItems()
+            }
         }, { t -> t.printStackTrace() }))
     }
 
-    fun loadHomeItems() {
-        var currentTask: PendingResponseDTO = PendingResponseDTO()
-        getTasks()
-        Timber.d("About to run network request for pending todos")
-        /*disposableOnDetach(networkService.fetchPendingResponses()
-                .subscribeOn(io()).observeOn(main()).subscribe({ task ->
-                    currentTask = task
-                    if (task.hasPendingResponse != false) {
-                        Timber.d("Contents of task are %s", task.toString())
-                        view.closeProgressBar()
-                        view.displayAlert(currentTask)
-                    } else {
-                        view.closeProgressBar()
-                        Timber.e("No pending task found. MOving on..")
-                    }
-                }, { t -> t.printStackTrace() }))*/
-//        view.closeProgressBar()
-        Timber.d("Network request sent?")
-    }
+//    fun loadHomeItems() {
+//        getTasks()
+////        Timber.d("About to run network request for pending todos")
+//        /*disposableOnDetach(networkService.fetchPendingResponses()
+//                .subscribeOn(io()).observeOn(main()).subscribe({ task ->
+//                    currentTask = task
+//                    if (task.hasPendingResponse != false) {
+//                        Timber.d("Contents of task are %s", task.toString())
+//                        view.closeProgressBar()
+//                        view.displayAlert(currentTask)
+//                    } else {
+//                        view.closeProgressBar()
+//                        Timber.e("No pending task found. MOving on..")
+//                    }
+//                }, { t -> t.printStackTrace() }))*/
+////        view.closeProgressBar()
+//        Timber.d("Network request sent?")
+//    }
 
-    private fun getTasks() {
-        disposableOnDetach(dbService.loadAllTasksSorted().subscribeOn(io()).observeOn(main()).subscribe({ tasks ->
-            currentTasks = tasks.toList()
-            prepareAndRenderItems()
-        }, { t -> t.printStackTrace() }))
-    }
 
     fun reloadHomeItems() {
         refreshTasks()
@@ -147,26 +179,13 @@ constructor(private val locationManager: LocationManager, private val dbService:
             networkService.getTasksByUids(uids)
         }.observeOn(main()).subscribe { tasksFull ->
             dbService.storeTasks(tasksFull)
+            Timber.e("Calling prepare and render from refresh tasks")
             prepareAndRenderItems()
         }
         Timber.d("location beta exit ping.")
     }
 
-    private fun prepareAndRenderItems() {
-        homeItems.clear()
-        homeItems.addAll(currentTasks)
-        homeItems.addAll(currentAlerts)
-        homeItems.addAll(currentPublicMeetings)
-        homeItems.sortByDescending { homeFeedItem -> homeFeedItem.date() }
-        view.render(homeItems)
-        view.stopRefreshing()
-        view.closeProgressBar()
-    }
 
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    fun syncComplete(e: SyncAdapter.SyncCompletedEvent) {
-        loadHomeItems()
-    }
 
     interface HomeView : FragmentView {
         fun render(tasks: List<HomeFeedItem>)
