@@ -85,6 +85,14 @@ class GroupsFragment : GrassrootFragment(), GroupFragmentPresenter.GroupFragment
         groupsAdapter = GroupsAdapter(activity!!, groups)
         val footer = LayoutInflater.from(activity).inflate(R.layout.item_group_footer, null, false)
         groupsAdapter.addFooter(footer)
+
+        footer.findViewById<View>(R.id.newGroup).setOnClickListener { v ->
+            CreateActionActivity.startOnAction(activity as AppCompatActivity,R.id.create_group, null )
+        }
+
+        footer.findViewById<View>(R.id.joinGroup).setOnClickListener { v1 ->
+
+        }
         groupRecyclerView.adapter = groupsAdapter
     }
 

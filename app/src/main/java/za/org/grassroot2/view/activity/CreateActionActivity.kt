@@ -58,7 +58,16 @@ class CreateActionActivity : GrassrootActivity(), BackNavigationListener, Create
         presenter.attach(this)
         if (intent.hasExtra(EXTRA_FROM_HOME)) {
             addHomeActionTypeFragment()
-        } else {
+        } else if(intent.hasExtra(EXTRA_START_ON_ACTION)){
+            val action = intent.getIntExtra(EXTRA_START_ON_ACTION,1)
+
+            when(action){
+                R.id.create_group -> {
+                    launchGroupSequence()
+                }
+            }
+        }
+        else {
             presenter.verifyGroupPermissions(intent.getStringExtra(EXTRA_GROUP_UID))
         }
     }
